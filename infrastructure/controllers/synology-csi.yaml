@@ -21,6 +21,7 @@ spec:
   vaultAuthGlobalRef:
     allowDefault: true
     namespace:  vault-secrets-operator-system
+    name: default
 ---
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
