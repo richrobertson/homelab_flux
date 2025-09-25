@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
   - cert-manager.yaml
   - ingress-nginx.yaml
+  - vault-secrets-operator.yaml
   - synology-csi.yaml
   - sealed-secrets.yaml
-  - vault-secrets-operator.yaml
