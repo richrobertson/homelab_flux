@@ -9,6 +9,15 @@ metadata:
     pod-security.kubernetes.io/enforce: privileged
     pod-security.kubernetes.io/warn: privileged
 ---
+apiVersion: v1
+data:
+  client-info-template.yml: LS0tCmNsaWVudHM6CiAgLSBob3N0OiAxOTIuMTY4LjEuMjE1CiAgICBwb3J0OiA1MDEwCiAgICBodHRwczogZmFsc2UKICAgIHVzZXJuYW1lOiBrOHMtY3NpLWNsMAogICAgcGFzc3dvcmQ6IDNoPlZtVjY0CgojaG9zdDogICAgICAgICAgICAgICAgICAgICAgIyBpcHY0IGFkZHJlc3Mgb3IgZG9tYWluIG9mIHRoZSBEU00KI3BvcnQ6ICAgICAgICAgICAgICAgICAgICAgICMgcG9ydCBmb3IgY29ubmVjdGluZyB0byB0aGUgRFNNCiNodHRwczogICAgICAgICAgICAgICAgICAgICAjIHNldCB0aGlzIHRydWUgdG8gdXNlIGh0dHBzLiB5b3UgbmVlZCB0byBzcGVjaWZ5IHRoZSBwb3J0IHRvIERTTSBIVFRQUyBwb3J0IGFzIHdlbGwKI3VzZXJuYW1lOiAgICAgICAgICAgICAgICAgICMgdXNlcm5hbWUKI3Bhc3N3b3JkOiAgICAgICAgICAgICAgICAgICMgcGFzc3dvcmQ=
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: client-info-secret
+  namespace: synology-csi
+---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
