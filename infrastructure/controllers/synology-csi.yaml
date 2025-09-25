@@ -10,12 +10,25 @@ metadata:
     pod-security.kubernetes.io/warn: privileged
 ---
 apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: synology-csi
+  namespace: synology-csi
+spec:
+  kubernetes:
+    role:  synology-csi
+    serviceAccount: default
+  vaultAuthGlobalRef:
+    allowDefault: true
+    namespace:  vault-secrets-operator-system
+---
+apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
   name: client-info-secret
   namespace: synology-csi
 spec:
-  vaultAuthRef: vault-auth
+  vaultAuthRef: default
   mount: kvv1
   type: kv-v1
   path: synology/staging/csi-client-info
