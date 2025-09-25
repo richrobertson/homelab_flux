@@ -16,7 +16,7 @@ metadata:
   namespace: synology-csi
 spec:
   kubernetes:
-    role:  synology-csi
+    role:  vault-secrets-operator-role
     serviceAccount: default
   vaultAuthGlobalRef:
     allowDefault: true
