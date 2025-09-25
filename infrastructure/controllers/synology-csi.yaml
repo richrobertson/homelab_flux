@@ -28,7 +28,7 @@ metadata:
   name: client-info-secret
   namespace: synology-csi
 spec:
-  vaultAuthRef: default
+  vaultAuthRef: synology-csi
   mount: kvv1
   type: kv-v1
   path: synology/staging/csi-client-info
