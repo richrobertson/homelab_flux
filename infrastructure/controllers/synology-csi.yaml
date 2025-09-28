@@ -9,17 +9,18 @@ metadata:
     pod-security.kubernetes.io/enforce: privileged
     pod-security.kubernetes.io/warn: privileged
 ---
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultAuth
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
 metadata:
-  name: synology-csi
-  namespace: synology-csi
-spec:
-  kubernetes:
-    role:  vault-secrets-operator-role
-    serviceAccount: default
-  method: kubernetes
-  mount: staging-kubernetes
+  name: vault-secrets-operator-tokenreview
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: "synology-csi"
 ---
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
