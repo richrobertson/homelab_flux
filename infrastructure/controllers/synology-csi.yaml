@@ -27,8 +27,6 @@ metadata:
   name: client-info-secret
   namespace: synology-csi
 spec:
-  vaultAuthRef: synology-csi
-  mount: staging-kubernetes
   type: kv-v2
   path: synology/staging/csi-client-info
   refreshAfter: 60s
