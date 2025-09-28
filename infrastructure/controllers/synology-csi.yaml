@@ -35,6 +35,8 @@ spec:
   destination:
     create: true
     name: client-info-secret
+  dependsOn
+    - name: vault-secrets-operator
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository

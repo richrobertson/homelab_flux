@@ -8,6 +8,7 @@ resources:
   - ingress-nginx.yaml
   - vault-secrets-operator.yaml
   - rook-ceph.yaml
+  - synology-csi.yaml
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -15,7 +16,6 @@ metadata:
   name: second-phase-controllers
   namespace: flux-system
 resources:
-  - synology-csi.yaml
   - rook-ceph-cluster.yaml
 spec:
   dependsOn:
