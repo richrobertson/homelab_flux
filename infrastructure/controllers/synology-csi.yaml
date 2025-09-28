@@ -29,7 +29,7 @@ metadata:
   name: client-info-secret
   namespace: synology-csi
 spec:
-  vaultAuthRef: synology-csi
+  vaultAuthRef: default
   mount: staging-kubernetes
   type: kv-v1
   path: synology/staging/csi-client-info
