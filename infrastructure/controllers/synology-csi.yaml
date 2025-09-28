@@ -22,22 +22,6 @@ subjects:
     name: default
     namespace: "synology-csi"
 ---
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultStaticSecret
-metadata:
-  name: client-info-secret
-  namespace: synology-csi
-spec:
-  type: kv-v2
-  mount: secret
-  path: synology/staging/csi-client-info
-  refreshAfter: 60s
-  destination:
-    create: true
-    name: client-info-secret
-  dependsOn:
-    - name: vault-secrets-operator
----
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
