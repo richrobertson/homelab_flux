@@ -18,7 +18,7 @@ spec:
     - patch: |
         - op: replace
           path: /spec/defaultAuthMethod
-          value: staging-kubernetes
+          value: kubernetes
         - op: replace
           path: /spec/kubernetes/mount
           value: staging-kubernetes
