@@ -83,7 +83,7 @@ metadata:
   name: rgw-admin-ops-user
   namespace: rook-ceph
 spec:
-  type: kv-v2
+  type: "kubernetes.io/rook"
   mount: secret
   path: proxmox/cl0/ceph/rgw-admin-ops-user
   refreshAfter: 60s
@@ -92,9 +92,9 @@ spec:
     name: client-info-secret
 
 
-kubectl -n rook-ceph-external create secret generic 
---type="kubernetes.io/rook" rgw-admin-ops-user 
---from-literal=accessKey=3H65EE4UAVMOCM2KQMVM 
---from-literal=secretKey=ubJ3t7Zfbv3yTMeDTSuTsIs3TkDjCBEqUcHh92Gc
+# kubectl -n rook-ceph-external create secret generic 
+# --type="" rgw-admin-ops-user 
+# --from-literal=accessKey=3H65EE4UAVMOCM2KQMVM 
+# --from-literal=secretKey=ubJ3t7Zfbv3yTMeDTSuTsIs3TkDjCBEqUcHh92Gc
 
 
