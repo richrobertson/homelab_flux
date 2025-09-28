@@ -6,3 +6,4 @@ resources:
   - vault-secrets-operator.yaml
   - synology-csi.yaml
   - rook-ceph.yaml
+  - rook-ceph-cluster.yaml
