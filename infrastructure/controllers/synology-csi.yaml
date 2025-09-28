@@ -31,7 +31,7 @@ metadata:
 spec:
   vaultAuthRef: synology-csi
   mount: staging-kubernetes
-  type: kv-v1
+  type: kv-v2
   path: synology/staging/csi-client-info
   refreshAfter: 60s
   destination:
