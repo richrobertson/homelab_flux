@@ -24,7 +24,7 @@ spec:
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: client-info-secret
+  name: client-info-secret-from-vault
   namespace: synology-csi
 spec:
   type: kv-v2
@@ -33,6 +33,7 @@ spec:
   destination:
     create: true
     name: client-info-secret-from-vault
+    namespace: synology-csi
 ---
 apiVersion: v1
 data:
