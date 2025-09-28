@@ -18,10 +18,8 @@ spec:
   kubernetes:
     role:  vault-secrets-operator-role
     serviceAccount: default
-  vaultAuthGlobalRef:
-    allowDefault: true
-    namespace:  vault-secrets-operator-system
-    name: default
+  method: kubernetes
+  mount: staging-kubernetes
 ---
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
