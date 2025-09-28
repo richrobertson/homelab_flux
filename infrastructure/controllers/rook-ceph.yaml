@@ -51,6 +51,17 @@ spec:
         namespace: rook-ceph
       interval: 12h
   values:
+---
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStore
+metadata:
+  name: external-store
+  namespace: rook-ceph
+spec:
+  gateway:
+    port: 7480
+    externalRgwEndpoints:
+      - ip: 192.168.10.3
 
 
 
