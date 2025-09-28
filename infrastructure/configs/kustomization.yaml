@@ -4,3 +4,12 @@ resources:
   - cluster-issuers.yaml
   - secrets.yaml
   - ceph-object-store.yaml
+spec:
+  wait: true
+  timeout: 2m
+  healthCheckExprs:
+    - apiVersion: secrets.hashicorp.com/v1beta1
+      kind: VaultStaticSecret
+      failed: status.conditions.filter(e, e.type == 'SecretSynced').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'SecretSynced').all(e, e.status == 'True')
+    
