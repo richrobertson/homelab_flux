@@ -34,7 +34,6 @@ spec:
   destination:
     create: true
     name: client-info-secret-from-vault
-    namespace: synology-csi
 ---
 apiVersion: v1
 data:
