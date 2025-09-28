@@ -5,3 +5,4 @@ resources:
   - ingress-nginx.yaml
   - vault-secrets-operator.yaml
   - synology-csi.yaml
+  - rook-ceph.yaml
