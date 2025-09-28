@@ -1,0 +1,47 @@
+---
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStore
+metadata:
+  name: external-store
+  namespace: rook-ceph
+spec:
+  gateway:
+    port: 7480
+    externalRgwEndpoints:
+      - ip: 192.168.10.3 
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rook-ceph-operator-tokenreview
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: "rook-ceph"
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: rgw-admin-ops-user
+  namespace: rook-ceph
+spec:
+  type: "kv-v2"
+  mount: secret
+  path: proxmox/cl0/ceph/rgw-admin-ops-user
+  refreshAfter: 60s
+  destination:
+    create: true
+    name: rgw-admin-ops-user
+    type: kubernetes.io/rook
+
+
+# kubectl -n rook-ceph-external create secret generic 
+# --type="" rgw-admin-ops-user 
+# --from-literal=accessKey=3H65EE4UAVMOCM2KQMVM 
+# --from-literal=secretKey=ubJ3t7Zfbv3yTMeDTSuTsIs3TkDjCBEqUcHh92Gc
+
+
