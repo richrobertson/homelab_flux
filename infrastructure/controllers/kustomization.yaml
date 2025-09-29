@@ -11,4 +11,5 @@ resources:
   - rook-ceph.yaml
   - synology-csi-ns.yaml
   - open-telemetry.yaml
+  - kube-prometheus-stack.yaml
 

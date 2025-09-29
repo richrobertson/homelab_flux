@@ -5,6 +5,7 @@ resources:
   - ceph-object-store.yaml
   - rook-external-cluster.yaml
   - synology-csi.yaml
+  - gotify-bridge.yml
 spec:
   wait: true
     
