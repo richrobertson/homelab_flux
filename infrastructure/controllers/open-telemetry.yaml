@@ -31,7 +31,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: open-telemetry
-        namespace: open-telemetry
+        namespace: opentelemetry-operator-system
       interval: 12h
   values:
     opentelemetry-operator:
