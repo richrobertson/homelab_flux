@@ -1,0 +1,33 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jellyfin
+  namespace: jellyfin
+spec:
+  releaseName: jellyfin
+  chart:
+    spec:
+      chart: jellyfin
+      sourceRef:
+        kind: HelmRepository
+        name: jellyfin
+  interval: 50m
+  install:
+    remediation:
+      retries: 3
+  values:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        additionalLabels:
+          release: jellyfin
+    persistence:
+      config:
+        storageClass: synology-iscsi-storage
+        accessMode: ReadWriteMany
+        size: 10Gi
+      media:
+        storageClass: synology-iscsi-storage
+        accessMode: ReadWriteMany
+        size: 200Gi
