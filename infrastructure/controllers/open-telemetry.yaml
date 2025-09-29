@@ -37,7 +37,7 @@ spec:
     opentelemetry-operator:
       admissionWebhooks:
         certManager:
-          enabled=false
+          enabled: false
     admissionWebhooks:
       autoGenerateCert:
-        enabled=true
+        enabled: true
