@@ -71,7 +71,7 @@ metadata:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: ceph-rbd
+  name: ceph-block
 parameters:
   clusterID: rook-ceph-external
   csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
@@ -92,7 +92,7 @@ allowVolumeExpansion: true
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: ceph-cephfs
+  name: ceph-filesystem
 parameters:
   clusterID: rook-ceph-external
   csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
@@ -111,7 +111,7 @@ allowVolumeExpansion: true
 apiVersion: ceph.rook.io/v1
 kind: CephObjectStore
 metadata:
-  name: ceph-object-store
+  name: ceph-bucket
   namespace: rook-ceph
 spec:
   gateway:
