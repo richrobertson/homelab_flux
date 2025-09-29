@@ -92,7 +92,7 @@ allowVolumeExpansion: true
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: cephfs
+  name: ceph-cephfs
 parameters:
   clusterID: rook-ceph-external
   csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
@@ -107,3 +107,15 @@ provisioner: rook-ceph.cephfs.csi.ceph.com
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
+---
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStore
+metadata:
+  name: ceph-object-store
+  namespace: rook-ceph
+spec:
+  gateway:
+    port: 7480
+    externalRgwEndpoints:
+      - ip: 192.168.10.3
+        # hostname: example.com
