@@ -13,3 +13,7 @@ kind: Kustomization
 namespace: jellyfin
 resources:
   - ../base/jellyfin
+patches:
+  - path: jellyfin-values.yaml
+    target:
+      kind: HelmRelease
