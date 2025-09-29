@@ -86,6 +86,11 @@ spec:
         ## Skip TLS certificate validation when scraping
         insecureSkipVerify: true
 
+    kubeEtcd:
+      service:
+        port: 2381
+        targetPort: 2381
+
     prometheus:
       prometheusSpec:
         podMonitorSelectorNilUsesHelmValues: false
