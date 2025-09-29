@@ -33,7 +33,7 @@ subjects:
     namespace: "rook-ceph"
   - kind: ServiceAccount
     name: default
-    namespace: "rook-ceph-external
+    namespace: "rook-ceph-external"
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
