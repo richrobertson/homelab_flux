@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: import-external-cluster
+spec:
+  template:
+    spec:
+      containers:
+      - name: python-runner
+        image: python:3.9  # Or your custom image with the script
+        command: ["/bin/bash", "/app/script.sh"]
+        volumeMounts:
+        - name: script-volume
+          mountPath: /app
+      volumes:
+      - name: script-volume
+        secretRef:
+          name: import-external-cluster-script
+      restartPolicy: OnFailure
+  backoffLimit: 4
