@@ -66,6 +66,15 @@ spec:
             webhook_configs:
               - url: 'http://gotify-bridge.monitoring.svc.cluster.local/gotify_webhook'
                 send_resolved: true
+      alertmanagerSpec:
+        storage:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteMany"]
+              resources:
+                requests:
+                  storage: 10Gi
+              storageClassName: synology-iscsi-storage-delete
 
     kubeScheduler:
       serviceMonitor:
@@ -81,3 +90,11 @@ spec:
       prometheusSpec:
         podMonitorSelectorNilUsesHelmValues: false
         serviceMonitorSelectorNilUsesHelmValues: false
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteMany"]
+            resources:
+              requests:
+                storage: 50Gi
+            storageClassName: synology-iscsi-storage-delete
