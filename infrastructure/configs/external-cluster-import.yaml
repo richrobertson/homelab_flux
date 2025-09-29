@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: python-runner
-        image: python:3.9  # Or your custom image with the script
+        image: bitnami/kubectl
         command: ["/bin/bash", "/app/script.sh"]
         volumeMounts:
           - name: secret-volume
