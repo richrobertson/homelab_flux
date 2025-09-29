@@ -60,31 +60,5 @@ spec:
         namespace: rook-ceph
       interval: 12h
   values:
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
-  name: rook-ceph-cluster
-  namespace: rook-ceph-external
-spec:
-  interval: 30m
-  chart:
-    spec:
-      chart: rook-ceph-cluster
-      sourceRef:
-        kind: HelmRepository
-        name: rook-release
-        namespace: rook-ceph
-      interval: 12h
-  values:
-    cephClusterSpec:
-      external:
-        enable: true
-      crashCollector:
-        disable: true
-      healthCheck:
-        daemonHealth:
-          mon:
-            disabled: false
-            interval: 45s
+
     

@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - cluster-issuers.yaml
   - ceph-object-store.yaml
-  - external-cluster-import.yaml
+  - rook-external-cluster.yaml
   - synology-csi.yaml
 spec:
   wait: true

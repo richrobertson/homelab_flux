@@ -1,0 +1,57 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rook-ceph-cluster
+  namespace: rook-ceph-external
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: rook-ceph-cluster
+      sourceRef:
+        kind: HelmRepository
+        name: rook-release
+        namespace: rook-ceph
+      interval: 12h
+  values:
+    cephClusterSpec:
+      external:
+        enable: true
+      crashCollector:
+        disable: true
+      healthCheck:
+        daemonHealth:
+          mon:
+            disabled: false
+            interval: 45s
+---
+apiVersion: v1
+data:
+  csi-cluster-config-json: '[{"clusterID":"rook-ceph-external","monitors":["192.168.10.4:6789","192.168.10.3:6789","192.168.10.5:6789"],"cephFS":{"netNamespaceFilePath":"","subvolumeGroup":"","radosNamespace":"","kernelMountOptions":"","fuseMountOptions":""},"rbd":{"netNamespaceFilePath":"","radosNamespace":"","mirrorDaemonCount":0},"nfs":{"netNamespaceFilePath":""},"readAffinity":{"enabled":false,"crushLocationLabels":null},"namespace":""}]'
+  data: pve5=192.168.10.5:6789,pve4=192.168.10.4:6789,pve3=192.168.10.3:6789
+  externalMons: ""
+  mapping: '{"node":{}}'
+  maxMonId: "2"
+  outOfQuorum: ""
+kind: ConfigMap
+metadata:
+  name: rook-ceph-mon-endpoints
+  namespace: rook-ceph-external
+---
+apiVersion: v1
+data:
+  args: |
+    [Configurations]
+    namespace = rook-ceph-external
+    rgw-pool-prefix = default
+    format = bash
+    cephfs-filesystem-name = rook_prod
+    cephfs-metadata-pool-name = rook_prod_metadata
+    cephfs-data-pool-name = rook_prod_data
+    rbd-data-pool-name = rook_prod
+    rgw-endpoint = 192.168.10.3:8080
+kind: ConfigMap
+metadata:
+  name: external-cluster-user-command
+  namespace: rook-ceph-external
