@@ -20,7 +20,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: default
-    namespace: "monitoring"
+    namespace: monitoring
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
