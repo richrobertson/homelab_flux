@@ -12,4 +12,5 @@ resources:
   - synology-csi-ns.yaml
   - open-telemetry.yaml
   - kube-prometheus-stack.yaml
+  - cloudnative-pg.yaml
 
