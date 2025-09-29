@@ -112,7 +112,7 @@ apiVersion: ceph.rook.io/v1
 kind: CephObjectStore
 metadata:
   name: ceph-bucket
-  namespace: rook-ceph
+  namespace: rook-ceph-external
 spec:
   gateway:
     port: 7480
