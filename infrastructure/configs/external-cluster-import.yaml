@@ -19,4 +19,3 @@ spec:
         secret:
           secretName: import-external-cluster-script
       restartPolicy: OnFailure
-  backoffLimit: 10
