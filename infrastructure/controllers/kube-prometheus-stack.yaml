@@ -87,9 +87,24 @@ spec:
         insecureSkipVerify: true
 
     kubeEtcd:
+      enabled: true
       service:
+        selector:
+          k8s-app: kube-controller-manager 
+        enabled: true
         port: 2381
         targetPort: 2381
+      serviceMonitor:
+        relabelings:   # Add nodename label
+          - sourceLabels: [__meta_kubernetes_pod_node_name]
+            separator: ;
+            regex: ^(.*)$
+            targetLabel: nodename
+            replacement: $1
+            action: replace
+        metricRelabelings:   # Remove pod label
+          - action: labeldrop
+            regex: pod
 
     prometheus:
       prometheusSpec:
