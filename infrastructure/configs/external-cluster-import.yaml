@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: import-external-cluster
-  namespace: rook-ceph
+  namespace: rook-ceph-external
 spec:
   template:
     spec:
