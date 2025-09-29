@@ -9,6 +9,16 @@ metadata:
     pod-security.kubernetes.io/enforce: privileged
     pod-security.kubernetes.io/warn: privileged
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rook-ceph-external
+  labels:
+    toolkit.fluxcd.io/tenant: sre-team
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/warn: privileged
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -52,7 +62,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: rook-ceph-cluster
-  namespace: rook-ceph
+  namespace: rook-ceph-external
 spec:
   interval: 30m
   chart:
