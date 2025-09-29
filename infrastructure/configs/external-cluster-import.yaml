@@ -15,7 +15,7 @@ spec:
           mountPath: /app
       volumes:
       - name: script-volume
-        secretRef:
-          name: import-external-cluster-script
+        secret:
+          secretName: import-external-cluster-script
       restartPolicy: OnFailure
   backoffLimit: 4
