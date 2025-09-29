@@ -20,8 +20,6 @@ spec:
       enabled: true
       serviceMonitor:
         enabled: true
-        additionalLabels:
-          release: jellyfin
     persistence:
       config:
         storageClass: synology-iscsi-storage
