@@ -15,7 +15,7 @@ spec:
             readOnly: true
             mountPath: "/app"
       volumes:
-      - name: script-volume
+      - name: secret-volume
         secret:
           secretName: import-external-cluster-script
       restartPolicy: OnFailure
