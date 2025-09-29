@@ -43,3 +43,4 @@ spec:
           location: /volume1
       synology-iscsi-storage-delete:
         reclaimPolicy: Delete
+        isDefault: true
