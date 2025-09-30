@@ -83,7 +83,7 @@ spec:
       initContainers:
       - name: change-volume-permissions
         image: docker.io/grafana/loki:3.5.5
-        command: ["sh", "-c", "chown -R 1000:2000 /var/loki && chmod -R 775 /var/loki"]
+        command: ["sh", "-c", "find /var/loki -not -path "*/lost+found*" -exec chown 1000:2000 {} + && chmod -R 775 /var/loki"]
         volumeMounts:
         - name: storage
           mountPath: /var/loki
