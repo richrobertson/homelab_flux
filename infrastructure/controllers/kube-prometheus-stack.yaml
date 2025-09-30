@@ -46,6 +46,10 @@ spec:
         name: kube-prometheus-stack
         namespace: monitoring
       interval: 12h
+  valuesFrom:
+    - kind: ConfigMap
+      name: flux-kube-state-metrics-config
+      valuesKey: kube-state-metrics-config.yaml
   values:
     alertmanager:
       config:
@@ -118,3 +122,4 @@ spec:
               requests:
                 storage: 50Gi
             storageClassName: synology-iscsi-storage-delete
+    
