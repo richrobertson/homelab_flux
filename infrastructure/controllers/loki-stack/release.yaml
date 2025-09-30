@@ -87,6 +87,13 @@ spec:
         volumeMounts:
         - name: storage
           mountPath: /var/loki
+        securityContext:
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["all"]
+            add: ["CHOWN","CHMOD"]
+          runAsUser: 0
+          runAsNonRoot: false
     # Zero out replica counts of other deployment modes
     backend:
       replicas: 0
