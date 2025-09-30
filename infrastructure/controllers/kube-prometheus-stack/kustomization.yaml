@@ -1,21 +1,12 @@
----
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-metadata:
-  name: base-controllers
-  namespace: flux-system
+namespace: monitoring
 resources:
-  - cert-manager.yaml
-  - metallb.yaml
-  - vault-secrets-operator.yaml
-  - rook-ceph.yaml
-  - synology-csi-ns.yaml
-  - open-telemetry.yaml
-  - kube-prometheus-stack.yaml
-  - cloudnative-pg.yaml
+  - namespace.yaml
+  - repository.yaml
+  - release.yaml
 configMapGenerator:
   - name: flux-kube-state-metrics-config
-    namespace: monitoring
     files:
       - kube-state-metrics-config.yaml
     options:
