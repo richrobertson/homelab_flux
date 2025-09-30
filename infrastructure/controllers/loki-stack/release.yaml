@@ -51,6 +51,11 @@ spec:
         fsGroup: 2000
         seccompProfile:
           type: RuntimeDefault
+      # -- The SecurityContext for Loki containers
+      containerSecurityContext:
+        readOnlyRootFilesystem: false
+        capabilities: {}
+        allowPrivilegeEscalation: true
       auth_enabled: false
       serviceMonitor:
         enabled: true
