@@ -1,0 +1,18 @@
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Provider
+metadata:
+  name: alertmanager
+  namespace: flux-system
+spec:
+  type: alertmanager
+  secretRef:
+    name: alertmanager-address
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alertmanager-address
+  namespace: flux-system
+stringData:
+    address: http://kube-prometheus-stack-alertmanager.monitoring:9093/api/v2/alerts/
