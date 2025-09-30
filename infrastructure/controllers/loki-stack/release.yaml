@@ -73,6 +73,11 @@ spec:
         enable_api: true
         storage:
           type: local
+      containerSecurityContext:
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop: []
+        allowPrivilegeEscalation: false
     minio:
       enabled: true
     lokiCanary:
