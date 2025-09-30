@@ -44,6 +44,12 @@ spec:
               version: 1
               isDefault: false
     loki:
+      podSecurityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+      
       auth_enabled: false
       serviceMonitor:
         enabled: true
@@ -82,7 +88,7 @@ spec:
       replicas: 1
       persistence:
         enabled: true
-        storageClass: "synology-iscsi-storage-delete"
+        storageClass: "ceph-block"
         accessModes:
           - ReadWriteMany
         size: 10Gi
