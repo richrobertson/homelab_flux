@@ -83,6 +83,8 @@ spec:
       persistence:
         enabled: true
         storageClass: "synology-iscsi-storage-delete"
+        accessModes:
+          - ReadWriteMany
         size: 10Gi
     # Zero out replica counts of other deployment modes
     backend:
