@@ -6,6 +6,7 @@ resources:
   - synology-csi.yaml
   - gotify-bridge.yml
   - ipaddresspool.yaml
+  - flux-alertmanager.yaml
 spec:
   wait: true
     
