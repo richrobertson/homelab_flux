@@ -15,6 +15,7 @@ resources:
   - cloudnative-pg.yaml
 configMapGenerator:
   - name: flux-kube-state-metrics-config
+    namespace: monitoring
     files:
       - kube-state-metrics-config.yaml
     options:
