@@ -13,6 +13,7 @@ resources:
   - open-telemetry.yaml
   - kube-prometheus-stack.yaml
   - cloudnative-pg.yaml
+  - podmonitor.yaml
 configMapGenerator:
   - name: flux-kube-state-metrics-config
     namespace: monitoring
