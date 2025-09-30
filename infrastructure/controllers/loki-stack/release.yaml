@@ -82,7 +82,7 @@ spec:
       replicas: 1
       initContainers:
       - name: change-volume-permissions
-        image: loki
+        image: loki:3.5.5
         command: ["sh", "-c", "chown -R 1000:2000 /var/loki && chmod -R 775 /var/loki"]
         volumeMounts:
         - name: storage
