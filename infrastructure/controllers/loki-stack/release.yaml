@@ -81,6 +81,20 @@ spec:
         allowPrivilegeEscalation: false
     minio:
       enabled: true
+      initContainers:
+      - name: change-volume-permissions
+        image: docker.io/grafana/loki:3.5.5
+        command: ["sh", "-c", 'find "/export-?"" -not -path "*/lost+found*" -exec chown 1000:1000 {} + && chmod -R 775 /export-0 && chmod -R 775 /export-1']
+        volumeMounts:
+        - name: storage
+          mountPath: /var/loki
+        securityContext:
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: []
+            add: ["CHOWN","CHMOD"]
+          runAsUser: 0
+          runAsNonRoot: false
     lokiCanary:
       enabled: false
     deploymentMode: SingleBinary
