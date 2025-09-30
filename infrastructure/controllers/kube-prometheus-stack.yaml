@@ -49,7 +49,6 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: flux-kube-state-metrics-config
-      namespace: monitoring
       valuesKey: kube-state-metrics-config.yaml
   values:
     alertmanager:
