@@ -108,14 +108,14 @@ reclaimPolicy: Delete
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
 ---
-# apiVersion: ceph.rook.io/v1
-# kind: CephObjectStore
-# metadata:
-#   name: ceph-bucket
-#   namespace: rook-ceph-external
-# spec:
-#   gateway:
-#     port: 7480
-#     externalRgwEndpoints:
-#       - ip: 192.168.10.3
-#         # hostname: example.com
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStore
+metadata:
+  name: ceph-bucket
+  namespace: rook-ceph-external
+spec:
+  gateway:
+    port: 7480
+    externalRgwEndpoints:
+      - ip: 192.168.10.3
+        # hostname: example.com
