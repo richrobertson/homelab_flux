@@ -80,7 +80,7 @@ spec:
           add: ["ALL"]
         allowPrivilegeEscalation: false
     minio:
-      enabled: false
+      enabled: true
     lokiCanary:
       enabled: false
     deploymentMode: SingleBinary
