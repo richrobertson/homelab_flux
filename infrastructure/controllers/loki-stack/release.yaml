@@ -82,7 +82,7 @@ spec:
       replicas: 1
       persistence:
         enabled: true
-        storageClass: local-path
+        storageClass: local-storage
     # Zero out replica counts of other deployment modes
     backend:
       replicas: 0
