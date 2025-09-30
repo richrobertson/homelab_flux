@@ -5,6 +5,7 @@ resources:
   - rook-external-cluster.yaml
   - synology-csi.yaml
   - gotify-bridge.yml
+  - ipaddresspool.yaml
 spec:
   wait: true
     
