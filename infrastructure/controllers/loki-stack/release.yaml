@@ -67,8 +67,12 @@ spec:
               period: 24h
       pattern_ingester:
         enabled: true
+      storage:
+        type: filesystem
       ruler:
         enable_api: true
+        storage:
+          type: local
     minio:
       enabled: true
     lokiCanary:
@@ -76,6 +80,9 @@ spec:
     deploymentMode: SingleBinary
     singleBinary:
       replicas: 1
+      persistence:
+        enabled: true
+        size: 10Gi
     # Zero out replica counts of other deployment modes
     backend:
       replicas: 0
