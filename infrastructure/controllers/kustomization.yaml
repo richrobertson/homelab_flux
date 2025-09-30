@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 resources:
   - cert-manager.yaml
-  - ingress-nginx.yaml
+  - metallb.yaml
   - vault-secrets-operator.yaml
   - rook-ceph.yaml
   - synology-csi-ns.yaml
