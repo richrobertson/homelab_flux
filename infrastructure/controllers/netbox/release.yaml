@@ -85,6 +85,7 @@ spec:
       image:
         repository: bitnamisecure/valkey
         tag: latest
+        debug: true
     postgresql:
       enabled: false
     externalDatabase:
