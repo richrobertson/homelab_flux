@@ -79,6 +79,16 @@ spec:
       value: 1
 
     valkey:
+      primary:
+        containerSecurityContext:
+          capabilities:
+            drop: []
+            add: ["ALL"]
+      replica:
+        containerSecurityContext:
+          capabilities:
+            drop: []
+            add: ["ALL"]
       global:
         security:
           allowInsecureImages: true
