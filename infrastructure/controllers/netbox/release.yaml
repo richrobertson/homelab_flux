@@ -75,8 +75,6 @@ spec:
         secretKeyRef:
           key: host
           name: netbox-cluster-app
-    - name: DB_WAIT_DEBUG
-      value: 1
 
     valkey:
       primary:
