@@ -43,7 +43,7 @@ spec:
           emptyDir: {}
       containers:
         - name: pdns-recursor
-          image: "powerdns/pdns-recursor-49:latest"
+          image: "powerdns/pdns-recursor-master:latest"
           imagePullPolicy: IfNotPresent
           command: ["/usr/local/sbin/pdns_recursor-startup"]
           args: ["--api-key=PowerDNSAPI", "--webserver-allow-from=0.0.0.0/0"]
