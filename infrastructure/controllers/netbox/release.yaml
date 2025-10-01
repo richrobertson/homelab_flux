@@ -89,6 +89,8 @@ spec:
           capabilities:
             drop: []
             add: ["ALL"]
+      volumePermissions:
+        enabled: true
       global:
         security:
           allowInsecureImages: true
