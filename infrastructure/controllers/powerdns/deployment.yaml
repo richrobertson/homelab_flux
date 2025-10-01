@@ -50,5 +50,5 @@ spec:
               port: api
           resources: {}
       nodeSelector: {}
-      affinity: []
+      affinity: {}
       tolerations: []
