@@ -24,12 +24,12 @@ spec:
           imagePullPolicy: IfNotPresent
           command: ["/entrypoint.sh"]
           args: ["--api=yes", "--api-key=PowerDNSAPI", "--webserver=yes", "--webserver-port=8081", "--webserver-address=0.0.0.0", "--webserver-allow-from=0.0.0.0/0", "--slave=yes", "--dnsupdate=no"]
-          env:
-            - name: POWERDNS_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: powerdns-api-key
-                  key: POWERDNS_API_KEY
+          # env:
+          #   - name: POWERDNS_API_KEY
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: powerdns-api-key
+          #         key: POWERDNS_API_KEY
           ports:
             - name: dns-udp
               containerPort: 53
