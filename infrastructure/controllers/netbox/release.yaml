@@ -62,7 +62,9 @@ spec:
         secretKeyRef:
           name: netbox-cluster-app
           key: username
-
+    valkey:
+      image:
+        tag: latest
     postgresql:
       enabled: false
     externalDatabase:
