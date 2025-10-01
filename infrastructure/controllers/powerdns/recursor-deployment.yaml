@@ -10,8 +10,8 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-    app: pdns-recursor
-    release: pdns-recursor
+      app: pdns-recursor
+      release: pdns-recursor
   template:
     metadata:
       labels:
