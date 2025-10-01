@@ -91,6 +91,8 @@ spec:
             add: ["ALL"]
       volumePermissions:
         enabled: true
+        repository: bitnamisecure/os-shell
+        tag: latest
       global:
         security:
           allowInsecureImages: true
