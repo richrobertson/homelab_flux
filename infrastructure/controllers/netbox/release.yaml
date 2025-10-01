@@ -62,6 +62,11 @@ spec:
         secretKeyRef:
           key: username
           name: netbox-cluster-app
+    - name: PG_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: netbox-cluster-app
     - name: PG_DATABASE_RW_SERVICE_HOST
       valueFrom:
         secretKeyRef:
@@ -78,7 +83,7 @@ spec:
       port: 5432
       database: "${PG_DATABASE_NAME}"
       username: "${PG_USER_NAME}"
-      password: ""
+      password: "${PG_PASSWORD}"
       existingSecretName: "netbox-cluster-app"
       existingSecretKey: password
 
