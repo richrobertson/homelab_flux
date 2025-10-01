@@ -47,8 +47,8 @@ spec:
         - name: pdns-admin
           image: "powerdnsadmin/pda-legacy:latest"
           imagePullPolicy: IfNotPresent
-          command: ["entrypoint.sh"]
-          args: ["SECRET_KEY='PowerDNSAPI'"]
+          # command: ["entrypoint.sh"]
+          # args: ["SECRET_KEY='PowerDNSAPI'"]
           # env:
           #   - name: PDNS_API_KEY
           #     valueFrom:
@@ -59,6 +59,9 @@ spec:
             - name: api
               containerPort: 80
               protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: powerdnsadmin-env
           volumeMounts:
           # - name: config
           #   mountPath: /etc/pdns
