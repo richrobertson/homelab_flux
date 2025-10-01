@@ -74,6 +74,7 @@ spec:
           accessKeyId: "${AWS_ACCESS_KEY_ID}"
           secretAccessKey: "${AWS_SECRET_ACCESS_KEY}"
           endpoint: "http://${BUCKET_HOST}:${BUCKET_PORT}"
+          s3forcepathstyle: true
         bucketNames:
           chunks: ${BUCKET_NAME}
           ruler: ${BUCKET_NAME}
