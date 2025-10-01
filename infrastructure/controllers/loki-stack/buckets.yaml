@@ -1,0 +1,27 @@
+---
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: loki-chunks
+  namespace: monitoring
+spec:
+  generateBucketName: loki-chunks
+  storageClassName: rook-ceph-bucket
+---
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: loki-ruler
+  namespace: monitoring
+spec:
+  generateBucketName: loki-ruler
+  storageClassName: rook-ceph-bucket
+---
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: loki-admin
+  namespace: monitoring
+spec:
+  generateBucketName: loki-admin
+  storageClassName: rook-ceph-bucket

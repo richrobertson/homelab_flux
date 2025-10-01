@@ -44,6 +44,13 @@ spec:
               version: 1
               isDefault: false
     loki:
+      extraArgs:
+        - -config.expand-env=true
+      extraEnvFrom:
+        - secretRef:
+            name: loki-chunks
+        - configMapRef:
+            name: loki-chunks
       auth_enabled: false
       serviceMonitor:
         enabled: true
@@ -68,7 +75,14 @@ spec:
       pattern_ingester:
         enabled: true
       storage:
-        type: filesystem
+        type: "s3"
+        s3:
+          region: ${BUCKET_REGION}
+          accessKeyId: "${AWS_ACCESS_KEY_ID}"
+          secretAccessKey: "${AWS_SECRET_ACCESS_KEY}"
+          endpoint: "http://${BUCKET_HOST}:${BUCKET_PORT}"
+        bucketNames:
+          chunks: ${BUCKET_NAME}
       ruler:
         enable_api: true
         storage:
@@ -80,11 +94,7 @@ spec:
           add: ["ALL"]
         allowPrivilegeEscalation: false
     minio:
-      enabled: true
-      securityContext:
-        enabled: true
-        fsGroup: 1001
-        runAsUser: 0
+      enabled: false
     lokiCanary:
       enabled: false
     deploymentMode: SingleBinary
