@@ -56,7 +56,7 @@ spec:
       valueFrom:
         secretKeyRef:
           name: netbox-cluster-app
-          key: DATABASE_NAME
+          key: dbname
     - name: PG_USER_NAME
       valueFrom:
         secretKeyRef:
