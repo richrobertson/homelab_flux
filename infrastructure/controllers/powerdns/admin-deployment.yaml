@@ -48,7 +48,7 @@ spec:
           image: "powerdnsadmin/pda-legacy:latest"
           imagePullPolicy: IfNotPresent
           command: ["entrypoint.sh"]
-          args: ["SECRET_KEY=PowerDNSAPI"]
+          args: ["SECRET_KEY='PowerDNSAPI'"]
           # env:
           #   - name: PDNS_API_KEY
           #     valueFrom:
