@@ -1,0 +1,16 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: netbox-cluster
+  namespace: netbox
+spec:
+  instances: 3
+
+  storage:
+    size: 35Gi
+    storageClass: ceph-filesystem
+  
+  monitoring:
+    enablePodMonitor: true
+
+        

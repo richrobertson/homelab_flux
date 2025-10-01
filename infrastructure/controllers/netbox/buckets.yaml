@@ -1,0 +1,10 @@
+---
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: netbox-s3
+  namespace: netbox
+spec:
+  generateBucketName: netbox-s3
+  storageClassName: rook-ceph-bucket
+---
