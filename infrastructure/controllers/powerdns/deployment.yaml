@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdns-auth
+  labels:
+    app: pdns-auth
+    release: pdns-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pdns-auth
+      release: pdns-auth
+  template:
+    metadata:
+      labels:
+        app: pdns-auth
+        release: pdns-auth
+    spec:
+      containers:
+        - name: pdns-auth
+          image: "powerdns/pdns-auth-49:latest"
+          imagePullPolicy: IfNotPresent
+          command: ["/entrypoint.sh"]
+          args: ["--api=yes", "--api-key=PowerDNSAPI", "--webserver=yes", "--webserver-port=8081", "--webserver-address=0.0.0.0", "--webserver-allow-from=0.0.0.0/0", "--slave=yes", "--dnsupdate=no"]
+          env:
+            - name: POWERDNS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: powerdns-api-key
+                  key: POWERDNS_API_KEY
+          ports:
+            - name: dns-udp
+              containerPort: 53
+              protocol: UDP
+            - name: dns-tcp
+              containerPort: 53
+              protocol: TCP
+            - name: api
+              containerPort: 8081
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: api
+          readinessProbe:
+            httpGet:
+              path: /
+              port: api
+          resources: {}
+      nodeSelector: {}
+      affinity: []
+      tolerations: []
