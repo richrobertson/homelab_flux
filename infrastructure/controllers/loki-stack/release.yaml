@@ -73,7 +73,7 @@ spec:
           region: ${BUCKET_REGION}
           accessKeyId: "${AWS_ACCESS_KEY_ID}"
           secretAccessKey: "${AWS_SECRET_ACCESS_KEY}"
-          endpoint: "${BUCKET_HOST}:${BUCKET_PORT}/"
+          endpoint: "http://${BUCKET_HOST}:${BUCKET_PORT}"
         bucketNames:
           chunks: ${BUCKET_NAME}
           ruler: ${BUCKET_NAME}
