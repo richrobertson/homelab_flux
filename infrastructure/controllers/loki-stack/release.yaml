@@ -83,6 +83,8 @@ spec:
           endpoint: "http://${BUCKET_HOST}:${BUCKET_PORT}"
         bucketNames:
           chunks: ${BUCKET_NAME}
+          ruler: ${BUCKET_NAME}
+          admin: ${BUCKET_NAME}
       ruler:
         enable_api: true
         storage:
