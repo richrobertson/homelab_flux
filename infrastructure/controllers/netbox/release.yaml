@@ -111,6 +111,59 @@ spec:
       pdb:
         enabled: true
         maxUnavailable: 1
+      extraEnvs:
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            key: AWS_ACCESS_KEY_ID
+            name: netbox-s3
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            key: AWS_SECRET_ACCESS_KEY
+            name: netbox-s3
+      - name: AWS_STORAGE_BUCKET_NAME
+        valueFrom:
+          configMapKeyRef:
+            name: netbox-s3
+            key: BUCKET_NAME
+      - name: AWS_S3_REGION_NAME
+        valueFrom:
+          configMapKeyRef:
+            name: netbox-s3
+            key: BUCKET_REGION
+      - name: BUCKET_HOST
+        valueFrom:
+          configMapKeyRef:
+            name: netbox-s3
+            key: BUCKET_HOST
+      - name: BUCKET_PORT
+        valueFrom:
+          configMapKeyRef:
+            name: netbox-s3
+            key: BUCKET_PORT
+      - name: PG_DATABASE_NAME
+        valueFrom:
+          secretKeyRef:
+            name: netbox-cluster-app
+            key: dbname
+      - name: PG_USER_NAME
+        valueFrom:
+          secretKeyRef:
+            key: username
+            name: netbox-cluster-app
+      - name: PG_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: password
+            name: netbox-cluster-app
+      - name: PG_DATABASE_RW_SERVICE_HOST
+        valueFrom:
+          secretKeyRef:
+            key: host
+            name: netbox-cluster-app
+      - name: DB_WAIT_DEBUG
+        value: 1
 
 
     
