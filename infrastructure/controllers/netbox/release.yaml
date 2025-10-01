@@ -102,11 +102,11 @@ spec:
     postgresql:
       enabled: false
     externalDatabase:
-      host: "${PG_DATABASE_RW_SERVICE_HOST}"
+      host: "netbox-cluster-rw"
       port: 5432
-      database: "${PG_DATABASE_NAME}"
-      username: "${PG_USER_NAME}"
-      password: "${PG_PASSWORD}"
+      database: "app"
+      username: "app"
+      password: ""
       existingSecretName: "netbox-cluster-app"
       existingSecretKey: password
 
