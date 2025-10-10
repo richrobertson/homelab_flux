@@ -1,9 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: jellyfin
-name: jellyfin
 resources:
-  - ../base/jellyfin
+  - ../../base/jellyfin
 patches:
   - path: jellyfin-values.yaml
     target:
