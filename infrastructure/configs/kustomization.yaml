@@ -2,9 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   #- cluster-issuers.yaml
-  - loki_buckets.yaml
-  - netbox-buckets.yaml
-  - netbox-postgres-cluster.yaml
   - rook-external-cluster.yaml
   - synology-csi.yaml
   - gotify-bridge.yml
