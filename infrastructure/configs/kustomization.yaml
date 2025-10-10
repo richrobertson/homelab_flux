@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   #- cluster-issuers.yaml
   - loki_buckets.yaml
+  - netbox-buckets.yaml
   - rook-external-cluster.yaml
   - synology-csi.yaml
   - gotify-bridge.yml
