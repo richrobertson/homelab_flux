@@ -4,6 +4,7 @@ resources:
   #- cluster-issuers.yaml
   - loki_buckets.yaml
   - netbox-buckets.yaml
+  - netbox-postgres-cluster.yaml
   - rook-external-cluster.yaml
   - synology-csi.yaml
   - gotify-bridge.yml
