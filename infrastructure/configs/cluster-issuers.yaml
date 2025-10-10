@@ -1,17 +1,33 @@
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: issuer
+  namespace: cert-manager
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: issuer-token-lmzpj
+  namespace: cert-manager
+  annotations:
+    kubernetes.io/service-account.name: issuer
+type: kubernetes.io/service-account-token
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt
+  name: vault-issuer
+  namespace: cert-manager
 spec:
-  acme:
-    # Replace the email address with your own contact email
-    email: rich@myrobertson.net
-    # The server is replaced in /clusters/production/infrastructure.yaml
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
-    privateKeySecretRef:
-      name: letsencrypt-nginx
-    solvers:
-      - http01:
-          ingress:
-            class: nginx
+  vault:
+    server: https://vault.myrobertson.net:8200
+    path: pki-int/sign/myrobertson.net
+    auth:
+      kubernetes:
+        mountPath: /v1/auth/staging-kubernetes
+        role: cert-issuer-role
+        secretRef:
+          name: issuer-token-lmzpj
+          key: token
