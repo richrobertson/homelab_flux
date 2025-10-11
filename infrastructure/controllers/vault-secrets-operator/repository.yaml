@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: vault-secrets-operator
+  namespace: vault-secrets-operator-system
+spec:
+  interval: 24h
+  url: https://helm.releases.hashicorp.com

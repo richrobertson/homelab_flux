@@ -1,23 +1,4 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: vault-secrets-operator-system
-  labels:
-    toolkit.fluxcd.io/tenant: sre-team
-    pod-security.kubernetes.io/audit: privileged
-    pod-security.kubernetes.io/enforce: privileged
-    pod-security.kubernetes.io/warn: privileged
----
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
-  name: vault-secrets-operator
-  namespace: vault-secrets-operator-system
-spec:
-  interval: 24h
-  url: https://helm.releases.hashicorp.com
----
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -49,4 +30,3 @@ spec:
         namespace: "vault-secrets-operator-system"
         tokenAudiences:
           - "https://cp.staging.myrobertson.net:6443"
-
