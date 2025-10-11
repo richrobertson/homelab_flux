@@ -77,6 +77,6 @@ spec:
         mountPath: /v1/auth/staging-kubernetes
         role: vault-cert-issuer-role
         serviceAccountRef:
-          name: issuer
+          name: default
           audiences: 
             - "https://cp.staging.myrobertson.net:6443"
