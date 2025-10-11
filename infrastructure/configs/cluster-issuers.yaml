@@ -29,8 +29,9 @@ spec:
       kubernetes:
         mountPath: /v1/auth/staging-kubernetes
         role: vault_pki_role_name
-        tokenAudiences:
-          - "https://cp.staging.myrobertson.net:6443"
+        serviceAccountRef:
+          audiences: 
+            - "https://cp.staging.myrobertson.net:6443"
         secretRef:
           name: issuer-token-lmzpj
           key: token
