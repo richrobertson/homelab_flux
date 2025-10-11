@@ -13,7 +13,6 @@ metadata:
   namespace: cert-manager
   annotations:
     kubernetes.io/service-account.name: issuer
-    kubernetes.io/service-account.audiences: "https://cp.staging.myrobertson.net:6443"
 type: kubernetes.io/service-account-token
 ---
 apiVersion: cert-manager.io/v1
@@ -30,6 +29,10 @@ spec:
       kubernetes:
         mountPath: /v1/auth/staging-kubernetes
         role: vault_pki_role_name
-        secretRef:
-          name: issuer-token-lmzpj
-          key: token
+        serviceAccountRef:
+          name: issuer
+          audiences: 
+            - "https://cp.staging.myrobertson.net:6443"
+        # secretRef:
+        #   name: issuer-token-lmzpj
+        #   key: token
