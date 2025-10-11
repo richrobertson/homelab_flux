@@ -23,11 +23,11 @@ metadata:
 spec:
   vault:
     server: https://vault.myrobertson.net:8200
-    path: pki-int/sign/myrobertson.net
+    path: pki-int/sign/vault_pki_role_name
     auth:
       kubernetes:
         mountPath: /v1/auth/staging-kubernetes
-        role: cert-issuer-role
+        role: vault_pki_role_name
         secretRef:
           name: issuer-token-lmzpj
           key: token
