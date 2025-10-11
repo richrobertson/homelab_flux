@@ -30,6 +30,7 @@ spec:
         mountPath: /v1/auth/staging-kubernetes
         role: vault_pki_role_name
         serviceAccountRef:
+          name: issuer
           audiences: 
             - "https://cp.staging.myrobertson.net:6443"
         secretRef:
