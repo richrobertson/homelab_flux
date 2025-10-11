@@ -7,7 +7,6 @@ metadata:
 resources:
   - cert-manager.yaml
   - metallb.yaml
-  - vault-secrets-operator.yaml
   - rook-ceph.yaml
   - synology-csi-ns.yaml
   - open-telemetry.yaml
