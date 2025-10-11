@@ -53,7 +53,7 @@ spec:
     auth:
       kubernetes:
         mountPath: /v1/auth/staging-kubernetes
-        role: vault_pki_role
+        role: vault-cert-issuer-role
         serviceAccountRef:
           name: issuer
           audiences: 
