@@ -43,6 +43,25 @@ roleRef:
   kind: Role
   name: cert-manager-vault-token-creator
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-manager-tokenreview
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: cert-manager 
+  - kind: ServiceAccount
+    name: cert-manager
+    namespace: cert-manager 
+  - kind: ServiceAccount
+    name: issuer
+    namespace: cert-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
