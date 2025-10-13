@@ -5,21 +5,13 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-  - 10.22.0.128/25
+  - 192.168.7.0/24
   avoidBuggyIPs: true
 ---
-apiVersion: metallb.io/v1beta2
-kind: BGPPeer
-metadata:
-  name: to-router
-  namespace: metallb-system
-spec:
-  myASN: 64500
-  peerASN: 65000
-  peerAddress: 192.168.1.241
----
 apiVersion: metallb.io/v1beta1
-kind: BGPAdvertisement
+kind: L2Advertisement
 metadata:
-  name: external
+  name: l2-advertisement
   namespace: metallb-system
+spec: {}
+
