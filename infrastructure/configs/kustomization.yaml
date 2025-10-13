@@ -8,6 +8,7 @@ resources:
   - ipaddresspool.yaml
   - flux-alertmanager.yaml
   - podmonitor.yaml
+  - monitoring-gateway.yaml
 spec:
   wait: true
 configMapGenerator:
