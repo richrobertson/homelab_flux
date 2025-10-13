@@ -51,7 +51,7 @@ spec:
               accessModes: ["ReadWriteMany"]
               resources:
                 requests:
-                  storage: 10Gi
+                  storage: 100Gi
               storageClassName: synology-iscsi-storage-delete
     kubeScheduler:
       serviceMonitor:
@@ -94,8 +94,25 @@ spec:
         podMonitorSelector:
           matchLabels:
             app.kubernetes.io/component: monitoring
-        podMonitorSelectorNilUsesHelmValues: false
-        serviceMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelectorNilUsesHelmValues: true
+        serviceMonitorSelectorNilUsesHelmValues: true
+        addtionalScrapeConfigs:
+          - job_name: 'istio-prometheus'
+            honor_labels: true
+            metrics_path: '/federate'
+            kubernetes_sd_configs:
+            - role: pod
+              namespaces:
+                names: ['istio-system']
+            metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: 'workload:(.*)'
+              target_label: __name__
+              action: replace
+            params:
+              'match[]':
+              - '{__name__=~"workload:(.*)"}'
+              - '{__name__=~"pilot(.*)"}'
       storageSpec:
         volumeClaimTemplate:
           spec:

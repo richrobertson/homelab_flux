@@ -17,5 +17,8 @@ kind: L2Advertisement
 metadata:
   name: l2-advertisement
   namespace: metallb-system
-spec: {}
-
+# spec:
+#   ipAddressPools:
+#   - local-pool
+#   interfaces:
+#   - eth1

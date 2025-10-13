@@ -9,3 +9,4 @@ resources:
   - release-istio-istiod.yaml
   - release-istio-cni.yaml
   - release-istio-ztunnel.yaml
+  - workload-metrics.yaml
