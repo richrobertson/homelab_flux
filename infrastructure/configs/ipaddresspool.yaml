@@ -9,10 +9,24 @@ spec:
   avoidBuggyIPs: true
 ---
 apiVersion: metallb.io/v1beta1
-kind: L2Advertisement
+kind: BGPAdvertisement
 metadata:
-  name: local-pool
+  name: local
   namespace: metallb-system
 spec:
   ipAddressPools:
   - local-pool
+  aggregationLength: 32
+  localPref: 100
+  communities:
+  - 65000:2000
+---
+apiVersion: metallb.io/v1beta1
+kind: BGPAdvertisement
+metadata:
+  name: external
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - local-pool
+  aggregationLength: 24
