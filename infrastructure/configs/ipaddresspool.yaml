@@ -8,25 +8,18 @@ spec:
   - 10.22.0.128/25
   avoidBuggyIPs: true
 ---
-apiVersion: metallb.io/v1beta1
-kind: BGPAdvertisement
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
 metadata:
-  name: local
+  name: to-router
   namespace: metallb-system
 spec:
-  ipAddressPools:
-  - local-pool
-  aggregationLength: 32
-  localPref: 100
-  communities:
-  - 65000:2000
+  myASN: 64500
+  peerASN: 65000
+  peerAddress: 192.168.1.241
 ---
 apiVersion: metallb.io/v1beta1
 kind: BGPAdvertisement
 metadata:
   name: external
   namespace: metallb-system
-spec:
-  ipAddressPools:
-  - local-pool
-  aggregationLength: 25
