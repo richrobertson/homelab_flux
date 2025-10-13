@@ -22,40 +22,6 @@ spec:
       certificateRefs:
       - name: grafana-cert
 ---
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: gateway
-  namespace: monitoring
-spec:
-  # Match the generated Deployment by reference
-  # Note: Do not use `kind: Gateway`.
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: gateway
-  minReplicas: 2
-  maxReplicas: 5
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 50
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: gateway
-  namespace: monitoring
-spec:
-  minAvailable: 1
-  selector:
-    # Match the generated Deployment by label
-    matchLabels:
-      gateway.networking.k8s.io/gateway-name: gateway
----
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
