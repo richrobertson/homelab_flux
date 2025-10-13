@@ -5,7 +5,11 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-  - 192.168.7.0/24
+  - 192.168.7.151/32
+  - 192.168.7.152/29
+  - 192.168.7.160/28
+  - 192.168.7.176/30
+  - 192.168.7.180/32
   avoidBuggyIPs: true
 ---
 apiVersion: metallb.io/v1beta1
