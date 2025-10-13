@@ -5,7 +5,7 @@ resources:
   - namespace.yaml
   - repository.yaml
   - release-istio-base.yaml
-  - github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.0/standard-install.yaml
+  - gateway-api/v1.4.0/standard-install.yaml
   - release-istio-istiod.yaml
   - release-istio-cni.yaml
   - release-istio-ztunnel.yaml
