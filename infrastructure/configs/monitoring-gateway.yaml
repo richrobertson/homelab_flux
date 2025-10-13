@@ -68,6 +68,5 @@ spec:
   hostnames: ["grafana.staging.myrobertson.net"]
   rules:
   - backendRefs:
-    - kind: Service
-      name: kube-prometheus-stack-grafana
+    - name: kube-prometheus-stack-grafana
       port: 3000

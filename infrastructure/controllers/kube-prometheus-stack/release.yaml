@@ -119,7 +119,7 @@ spec:
             accessModes: ["ReadWriteMany"]
             resources:
               requests:
-                storage: 50Gi
+                storage: 100Gi
             storageClassName: synology-iscsi-storage-delete
         
    
