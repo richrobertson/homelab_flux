@@ -25,6 +25,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: gateway
+  namespace: monitoring
 spec:
   # Match the generated Deployment by reference
   # Note: Do not use `kind: Gateway`.
@@ -46,6 +47,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: gateway
+  namespace: monitoring
 spec:
   minAvailable: 1
   selector:
