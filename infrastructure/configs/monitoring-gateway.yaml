@@ -63,7 +63,7 @@ metadata:
   namespace: monitoring
 spec:
   parentRefs:
-  - name: grafana-istio
+  - name: grafana
     namespace: monitoring
   hostnames: ["grafana.staging.myrobertson.net"]
   rules:
@@ -73,4 +73,5 @@ spec:
         value: /
     backendRefs:
     - name: kube-prometheus-stack-grafana
+      namespace: monitoring
       port: 3000
