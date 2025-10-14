@@ -4,9 +4,6 @@ metadata:
   name: external-dns
   namespace: external-dns
 spec:
-  chart:
-    spec:
-      version: ">=1.0.0"
   values:
     txtOwnerId: staging.myrobertson.net
     domainFilters: [ staging.myrobertson.net ]
