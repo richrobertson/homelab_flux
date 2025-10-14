@@ -2,7 +2,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: grafana-gateway
+  name: grafana
   namespace: monitoring
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
@@ -10,7 +10,7 @@ metadata:
 spec:
   gatewayClassName: istio
   listeners:
-  - name: grafana-http
+  - name: grafana
     hostname: grafana.staging.myrobertson.net
     port: 443
     protocol: HTTPS
@@ -25,7 +25,7 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: grafana-gateway
+  name: grafana
   namespace: monitoring
 spec:
   # Match the generated Deployment by reference
@@ -33,7 +33,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: grafana-gateway
+    name: grafana
   minReplicas: 2
   maxReplicas: 5
   metrics:
@@ -47,23 +47,23 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: grafana-gateway
+  name: grafana
   namespace: monitoring
 spec:
   minAvailable: 1
   selector:
     # Match the generated Deployment by label
     matchLabels:
-      gateway.networking.k8s.io/gateway-name: grafana-gateway
+      gateway.networking.k8s.io/gateway-name: grafana
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: grafana-http
+  name: grafana
   namespace: monitoring
 spec:
   parentRefs:
-  - name: grafana-gateway
+  - name: grafana
     namespace: monitoring
   hostnames: ["grafana.staging.myrobertson.net"]
   rules:

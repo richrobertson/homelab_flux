@@ -53,6 +53,16 @@ spec:
                 requests:
                   storage: 100Gi
               storageClassName: synology-iscsi-storage-delete
+    
+    grafana:
+      grafana.ini:
+        server:
+          # Set the domain if using an Ingress or specific domain
+          domain: "staging.myrobertson.net" 
+          # Set the full external URL for Grafana, including protocol and any sub-path
+          root_url: "https://staging.myrobertson.net/"
+          # If using a sub-path, ensure this is enabled
+          serve_from_sub_path: false 
     kubeScheduler:
       serviceMonitor:
         ## Skip TLS certificate validation when scraping
