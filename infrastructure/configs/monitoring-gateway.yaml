@@ -33,7 +33,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: grafana
+    name: grafana-istio
   minReplicas: 2
   maxReplicas: 5
   metrics:
@@ -67,6 +67,10 @@ spec:
     namespace: monitoring
   hostnames: ["grafana.staging.myrobertson.net"]
   rules:
-  - backendRefs:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
     - name: kube-prometheus-stack-grafana
       port: 3000
