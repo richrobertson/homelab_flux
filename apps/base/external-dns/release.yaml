@@ -19,7 +19,7 @@ spec:
     pdns:
       apiUrl: http://192.168.7.201
       apiPort: 8001
-      secretName: external-dns-pdns-apiKey
+      secretName: external-dns-pdns-apikey
     loglevel: info
     logformat: json
     interval: 30s
