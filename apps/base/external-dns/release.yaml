@@ -18,21 +18,6 @@ spec:
   upgrade:
     crds: CreateReplace
   
-  extraVolumes: # to mount the PDNS API key secret
-    - name: pdns-apikey
-      secret:
-        secretName: external-dns-pdns-apikey
-
-  extraVolumeMounts:
-    - name: pdns-apikey
-      mountPath: /var/secrets/pdns
-      readOnly: true
-  env: # to set the PDNS API key from the mounted secret
-    - name: PDNS_API_KEY
-      valueFrom:
-        secretKeyRef:
-          name: external-dns-pdns-apikey
-          key: pdns-api-key
   values:
     # global:
     #   imagePullSecrets:
@@ -50,13 +35,24 @@ spec:
         - --domain-filter=staging.myrobertson.net # will make ExternalDNS see only the zones matching provided domain; omit to process all available zones in PowerDNS
         - --log-level=info
         - --interval=30s
-    pdns:
-      apiUrl:
-      apiPort: 
-      secretName: external-dns-pdns-apikey
+    extraVolumes: # to mount the PDNS API key secret
+      - name: pdns-apikey
+        secret:
+          secretName: external-dns-pdns-apikey
+
+    extraVolumeMounts:
+      - name: pdns-apikey
+        mountPath: /var/secrets/pdns
+        readOnly: true
+    env: # to set the PDNS API key from the mounted secret
+      - name: PDNS_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: external-dns-pdns-apikey
+            key: pdns-api-key
     loglevel: info
     logformat: json
     interval: 30s
-    metrics:
-      serviceMonitor:
-        enabled: true
+
+    serviceMonitor:
+      enabled: true
