@@ -14,7 +14,7 @@ spec:
   upgrade:
     crds: CreateReplace
   values:
-    serviceTypeFilter: LoadBalancer
+    serviceTypeFilter: [ LoadBalancer ]
     provider: pdns
     pdns.apiUrl	: http://192.168.7.201
     pdns.apiPort: 8001
