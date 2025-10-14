@@ -5,10 +5,14 @@ metadata:
   namespace: external-dns
 spec:
   interval: 30m
-  chartRef:
-    kind: GitRepository
-    name: external-dns
-    namespace: external-dns
+  chart:
+    spec:
+      chart: './charts/external-dns'
+      sourceRef:
+        kind: GitRepository
+        name: external-dns
+        namespace: external-dns
+      interval: 10m
   install:
     crds: Create
   upgrade:
