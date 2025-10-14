@@ -1,0 +1,82 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: alertmanager
+  namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: vault-issuer
+    cert-manager.io/common-name: alertmanager.staging.myrobertson.net
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: alertmanager
+    hostname: alertmanager.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: alertmanager-cert
+  infrastructure:
+    labels:
+      istio-injection: enabled
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: alertmanager.staging.myrobertson.net
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: alertmanager
+  namespace: monitoring
+spec:
+  # Match the generated Deployment by reference
+  # Note: Do not use `kind: Gateway`.
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: alertmanager-istio
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: alertmanager
+  namespace: monitoring
+spec:
+  minAvailable: 1
+  selector:
+    # Match the generated Deployment by label
+    matchLabels:
+      gateway.networking.k8s.io/gateway-name: alertmanager
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: alertmanager
+  namespace: monitoring
+spec:
+  parentRefs:
+  - name: alertmanager
+    namespace: monitoring
+  hostnames: ["alertmanager.staging.myrobertson.net"]
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: kube-prometheus-stack-alertmanager
+      namespace: monitoring
+      port: 9093

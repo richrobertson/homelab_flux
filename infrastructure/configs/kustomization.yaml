@@ -10,6 +10,7 @@ resources:
   - podmonitor.yaml
   - monitoring-gateway.yaml
   - prometheus-gateway.yaml
+  - alertmanager-gateway.yaml
 spec:
   wait: true
 configMapGenerator:
