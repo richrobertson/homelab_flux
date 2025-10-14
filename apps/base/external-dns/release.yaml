@@ -9,12 +9,6 @@ spec:
     kind: OCIRepository
     name: external-dns
     namespace: external-dns
-  install:
-    crds: Create
-  upgrade:
-    crds: CreateReplace
-  driftDetection:
-    mode: enabled
   values:
     serviceTypeFilter: LoadBalancer
     provider: pdns
