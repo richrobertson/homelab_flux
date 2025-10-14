@@ -10,7 +10,7 @@ spec:
     spec:
       chart: external-dns
       sourceRef:
-        kind: HelmRepository
+        kind: OCIRepository
         name: external-dns
         namespace: external-dns
       interval: 12h
