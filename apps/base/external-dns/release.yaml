@@ -18,7 +18,7 @@ spec:
   upgrade:
     crds: CreateReplace
   
-  extraVolume: # to mount the PDNS API key secret
+  extraVolumes: # to mount the PDNS API key secret
     - name: pdns-apikey
       secret:
         secretName: external-dns-pdns-apikey
