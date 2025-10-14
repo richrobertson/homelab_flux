@@ -27,7 +27,6 @@ spec:
       name: pdns
     extraArgs:
         - --source=service # or ingress or both
-        - --provider=pdns
         - --pdns-server=http://192.168.7.201:8001
         - --pdns-server-id=subns
         - --pdns-api-key=$(PDNS_API_KEY) 
