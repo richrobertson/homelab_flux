@@ -16,9 +16,10 @@ spec:
   values:
     serviceTypeFilter: [ LoadBalancer ]
     provider: pdns
-    pdns.apiUrl	: http://192.168.7.201
-    pdns.apiPort: 8001
-    pdns.secretName: external-dns-pdns-apiKey
+    pdns:
+      apiUrl: http://192.168.7.201
+      apiPort: 8001
+      secretName: external-dns-pdns-apiKey
     loglevel: info
     logformat: json
     interval: 30s
