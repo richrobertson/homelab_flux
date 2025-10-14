@@ -3,7 +3,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: grafana-gateway
-  namespace: istio-ingress
+  namespace: monitoring
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
     cert-manager.io/common-name: grafana.staging.myrobertson.net
@@ -26,7 +26,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: grafana-gateway
-  namespace: istio-ingress
+  namespace: monitoring
 spec:
   # Match the generated Deployment by reference
   # Note: Do not use `kind: Gateway`.
@@ -48,7 +48,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: grafana-gateway
-  namespace: istio-ingress
+  namespace: monitoring
 spec:
   minAvailable: 1
   selector:
@@ -64,7 +64,7 @@ metadata:
 spec:
   parentRefs:
   - name: grafana-gateway
-    namespace: istio-ingress
+    namespace: monitoring
   hostnames: ["grafana.staging.myrobertson.net"]
   rules:
   - backendRefs:
