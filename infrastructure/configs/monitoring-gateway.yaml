@@ -63,7 +63,7 @@ metadata:
   namespace: monitoring
 spec:
   parentRefs:
-  - name: grafana
+  - name: grafana-istio
     namespace: monitoring
   hostnames: ["grafana.staging.myrobertson.net"]
   rules:
