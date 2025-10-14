@@ -31,6 +31,8 @@ spec:
         - --pdns-server=http://192.168.7.201:8001
         - --pdns-server-id=subns
         - --pdns-api-key=$(PDNS_API_KEY) 
+        - --log-level=debug
+        - --log-format=json
     extraVolumes: # to mount the PDNS API key secret
       - name: pdns-apikey
         secret:
@@ -45,8 +47,6 @@ spec:
           secretKeyRef:
             name: external-dns-pdns-apikey
             key: pdns-api-key
-    loglevel: info
-    logformat: json
     interval: 30s
 
     serviceMonitor:
