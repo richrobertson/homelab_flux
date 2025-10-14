@@ -17,3 +17,6 @@ spec:
       interval: 12h
   values:
     profile: ambient
+    meshConfig:
+      accessLogFile: /dev/stdout
+      enablePrometheusMerge: true
