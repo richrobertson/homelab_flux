@@ -77,6 +77,6 @@ spec:
         type: PathPrefix
         value: /
     backendRefs:
-    - name: prometheus
+    - name: kube-prometheus-stack-prometheus
       namespace: monitoring
-      port: 8096
+      port: 9090
