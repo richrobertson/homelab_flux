@@ -1,13 +1,11 @@
+---
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: OCIRepository
+kind: GitRepository
 metadata:
   name: external-dns
   namespace: external-dns
 spec:
-  interval: 1h
-  url: oci://registry-1.docker.io/bitnamicharts/external-dns
-  layerSelector:
-    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
-    operation: copy
+  interval: 120m0s
+  url: https://github.com/kubernetes-sigs/external-dns/
   ref:
-    semver: ">= 9.0.x"
+    branch: master
