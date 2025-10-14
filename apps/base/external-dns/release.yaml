@@ -22,7 +22,8 @@ spec:
     # global:
     #   imagePullSecrets:
     #     - name: imagepullsecrets
-    serviceTypeFilter: [ LoadBalancer ]
+    sources: 
+      - gateway-httproute
     provider:
       name: pdns
     extraArgs:
@@ -34,7 +35,6 @@ spec:
       - name: pdns-apikey
         secret:
           secretName: external-dns-pdns-apikey
-
     extraVolumeMounts:
       - name: pdns-apikey
         mountPath: /var/secrets/pdns
