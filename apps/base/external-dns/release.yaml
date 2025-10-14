@@ -6,14 +6,9 @@ metadata:
   namespace: external-dns
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: external-dns
-      sourceRef:
-        kind: OCIRepository
-        name: external-dns
-        namespace: external-dns
-      interval: 12h
+  chartRef:
+    kind: OCIRepository
+    name: external-dns
   values:
     serviceTypeFilter: LoadBalancer
     provider: pdns
