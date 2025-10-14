@@ -30,10 +30,6 @@ spec:
         - --pdns-server=http://192.168.7.201:8001
         - --pdns-server-id=subns
         - --pdns-api-key=$(PDNS_API_KEY) 
-        - --txt-owner-id=staging.myrobertson.net
-        - --domain-filter=staging.myrobertson.net # will make ExternalDNS see only the zones matching provided domain; omit to process all available zones in PowerDNS
-        - --log-level=info
-        - --interval=30s
     extraVolumes: # to mount the PDNS API key secret
       - name: pdns-apikey
         secret:
