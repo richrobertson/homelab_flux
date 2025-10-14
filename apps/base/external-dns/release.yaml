@@ -27,6 +27,12 @@ spec:
     - name: pdns-apikey
       mountPath: /var/secrets/pdns
       readOnly: true
+  env: # to set the PDNS API key from the mounted secret
+    - name: PDNS_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: external-dns-pdns-apikey
+          key: pdns-api-key
   values:
     # global:
     #   imagePullSecrets:
@@ -34,12 +40,6 @@ spec:
     serviceTypeFilter: [ LoadBalancer ]
     provider:
       name: pdns
-      env: # to set the PDNS API key from the mounted secret
-        - name: PDNS_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: external-dns-pdns-apikey
-              key: pdns-api-key
     extraArgs:
         - --source=service # or ingress or both
         - --provider=pdns
