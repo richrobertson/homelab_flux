@@ -7,4 +7,3 @@ spec:
   values:
     txtOwnerId: staging.myrobertson.net
     domainFilters: [ .staging.myrobertson.net ]
-    loglevel: debug
