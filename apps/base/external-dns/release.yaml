@@ -61,6 +61,9 @@ spec:
         - apiGroups: ["gateway.networking.k8s.io"]
           resources: ["gateways", "httproutes"]
           verbs: ["get", "watch", "list"]
+        - apiGroups: ["discovery.k8s.io"]
+          resources: ["endpointslices"]
+          verbs: ["get", "watch", "list"]
 
     serviceMonitor:
       enabled: true
