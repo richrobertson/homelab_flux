@@ -30,7 +30,6 @@ spec:
       config:
         global:
           resolve_timeout: 3m
-          external_url: "https://alertmanager.staging.myrobertson.net/"
         route:
           receiver: 'gotify-receiver'
           group_by: ['alertname']
@@ -46,8 +45,6 @@ spec:
             webhook_configs:
               - url: 'http://gotify-bridge.monitoring.svc.cluster.local/gotify_webhook'
                 send_resolved: true
-        alertmanagerConfigMatcherStrategy:
-          type: None
       alertmanagerSpec:
         storage:
           volumeClaimTemplate:
