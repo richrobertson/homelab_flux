@@ -9,7 +9,7 @@ spec:
     kind: OCIRepository
     name: kube-prometheus-stack
   install:
-    crds: Create
+    crds: Skip
   upgrade:
     crds: CreateReplace
   driftDetection:
