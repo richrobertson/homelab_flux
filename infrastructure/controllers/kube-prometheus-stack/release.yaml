@@ -29,6 +29,7 @@ spec:
       config:
         global:
           resolve_timeout: 5m
+          external_url: "https://alertmanager.staging.myrobertson.net/"
         route:
           receiver: 'gotify-receiver'
           group_by: ['alertname']
