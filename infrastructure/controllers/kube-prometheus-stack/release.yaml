@@ -1,7 +1,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: kube-prometheus-stack
+  name: kube-prometheus-stack-monitoring
+  namespace: monitoring
 spec:
   interval: 1h
   chartRef:
@@ -45,6 +46,8 @@ spec:
             webhook_configs:
               - url: 'http://gotify-bridge.monitoring.svc.cluster.local/gotify_webhook'
                 send_resolved: true
+        alertmanagerConfigMatcherStrategy:
+          type: None
       alertmanagerSpec:
         storage:
           volumeClaimTemplate:
@@ -54,6 +57,8 @@ spec:
                 requests:
                   storage: 100Gi
               storageClassName: synology-iscsi-storage-delete
+
+      
     
     grafana:
       grafana.ini:
