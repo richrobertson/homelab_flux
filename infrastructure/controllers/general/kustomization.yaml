@@ -8,6 +8,5 @@ resources:
   - cert-manager.yaml
   - metallb.yaml
   - rook-ceph.yaml
-  - synology-csi-ns.yaml
   - open-telemetry.yaml
   - cloudnative-pg.yaml
