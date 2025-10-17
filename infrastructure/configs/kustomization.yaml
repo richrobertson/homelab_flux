@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - cluster-issuers.yaml
   - rook-external-cluster.yaml
-  - synology-csi.yaml
   - gotify-bridge.yml
   - ipaddresspool.yaml
   - flux-alertmanager.yaml
