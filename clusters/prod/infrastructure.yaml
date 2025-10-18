@@ -2,6 +2,33 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
+  name: infra-p0
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./infrastructure/p0
+  prune: true
+  wait: true
+  patches:
+    - patch: |
+        - op: replace
+          path: /spec/values/defaultAuthMethod/mount
+          value: prod-kubernetes
+        - op: replace
+          path: /spec/values/defaultAuthMethod/kubernetes/tokenAudiences/0
+          value: https://cp.prod.myrobertson.net:6443
+      target:
+        kind: HelmRelease
+        name: vault-secrets-operator
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
   name: infra-controllers
   namespace: flux-system
 spec:

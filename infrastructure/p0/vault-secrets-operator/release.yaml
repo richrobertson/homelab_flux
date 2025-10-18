@@ -21,7 +21,7 @@ spec:
       skipTLSVerify: true
     defaultAuthMethod:
       enabled: true
-      mount: staging-kubernetes
+      mount: dev-kubernetes
       allowed_namespaces:
         - "*"
       kubernetes:
@@ -29,4 +29,4 @@ spec:
         serviceAccountName: "default"
         namespace: "vault-secrets-operator-system"
         tokenAudiences:
-          - "https://cp.staging.myrobertson.net:6443"
+          - "https://cp.dev.myrobertson.net:6443"
