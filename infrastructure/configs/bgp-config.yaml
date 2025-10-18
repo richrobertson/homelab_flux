@@ -5,8 +5,8 @@ metadata:
   name: my-bgp-peer
 spec:
   peerAddress: 10.21.2.1 # IP of your external BGP router
-  peerASN: 65000:2000       # ASN of your external BGP router
-  myASN: 65000:2000         # Your ASN
+  peerASN: 65000       # ASN of your external BGP router
+  myASN: 65000         # Your ASN
   eBGPMultihop: true
 ---
 apiVersion: metallb.io/v1beta1
@@ -17,6 +17,8 @@ metadata:
 spec:
   addresses:
     - 10.21.2.64/28 # Range of IPs for MetalLB to allocate
+  communities:
+  - 65000:2000 
 ---
 apiVersion: metallb.io/v1beta1
 kind: BGPAdvertisement
