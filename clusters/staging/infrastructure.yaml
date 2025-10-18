@@ -81,7 +81,7 @@ spec:
   patches:
     - patch: |
         - op: replace
-          path: /metadata/annotations/acme.cert-manager.io/http-domain
+          path: /metadata/annotations/cert-manager.io/common-name
           value: prometheus.staging.myrobertson.net
         - op: replace
           path: /spec/listeners/0/hostname
