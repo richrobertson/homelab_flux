@@ -4,7 +4,7 @@ resources:
   - cluster-issuers.yaml
   - rook-external-cluster.yaml
   - gotify-bridge.yml
-  - ipaddresspool.yaml
+  - bgp-config.yaml
   - flux-alertmanager.yaml
   - podmonitor.yaml
   - monitoring-grafana-gateway.yaml
