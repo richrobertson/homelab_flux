@@ -2,16 +2,16 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: grafana
+  name: alertmanager
   namespace: monitoring
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
-    cert-manager.io/common-name: grafana.staging.myrobertson.net
+    cert-manager.io/common-name: alertmanager.dev.myrobertson.net
 spec:
   gatewayClassName: istio
   listeners:
-  - name: grafana
-    hostname: grafana.staging.myrobertson.net
+  - name: alertmanager
+    hostname: alertmanager.dev.myrobertson.net
     port: 443
     protocol: HTTPS
     allowedRoutes:
@@ -20,17 +20,17 @@ spec:
     tls:
       mode: Terminate
       certificateRefs:
-      - name: grafana-cert
+      - name: alertmanager-cert
   infrastructure:
     labels:
       istio-injection: enabled
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: grafana.staging.myrobertson.net
+      external-dns.alpha.kubernetes.io/hostname: alertmanager.dev.myrobertson.net
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: grafana
+  name: alertmanager
   namespace: monitoring
 spec:
   # Match the generated Deployment by reference
@@ -38,7 +38,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: grafana-istio
+    name: alertmanager-istio
   minReplicas: 2
   maxReplicas: 5
   metrics:
@@ -52,31 +52,31 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: grafana
+  name: alertmanager
   namespace: monitoring
 spec:
   minAvailable: 1
   selector:
     # Match the generated Deployment by label
     matchLabels:
-      gateway.networking.k8s.io/gateway-name: grafana
+      gateway.networking.k8s.io/gateway-name: alertmanager
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: grafana
+  name: alertmanager
   namespace: monitoring
 spec:
   parentRefs:
-  - name: grafana
+  - name: alertmanager
     namespace: monitoring
-  hostnames: ["grafana.staging.myrobertson.net"]
+  hostnames: ["alertmanager.dev.myrobertson.net"]
   rules:
   - matches:
     - path:
         type: PathPrefix
         value: /
     backendRefs:
-    - name: kube-prometheus-stack-grafana
+    - name: kube-prometheus-stack-alertmanager
       namespace: monitoring
-      port: 80
+      port: 9093

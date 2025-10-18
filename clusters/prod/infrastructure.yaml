@@ -99,3 +99,43 @@ spec:
       target:
         kind: HTTPRoute
         name: prometheus
+    - patch: |
+        - op: replace
+          path: /metadata/annotations/cert-manager.io~1common-name
+          value: grafana.prod.myrobertson.net
+        - op: replace
+          path: /spec/listeners/0/hostname
+          value: grafana.prod.myrobertson.net
+        - op: replace
+          path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
+          value: grafana.prod.myrobertson.net
+      target:
+        kind: Gateway
+        name: grafana
+    - patch: |
+        - op: replace
+          path: /spec/hostnames/0
+          value: grafana.prod.myrobertson.net
+      target:
+        kind: HTTPRoute
+        name: grafana
+    - patch: |
+        - op: replace
+          path: /metadata/annotations/cert-manager.io~1common-name
+          value: alertmanager.prod.myrobertson.net
+        - op: replace
+          path: /spec/listeners/0/hostname
+          value: alertmanager.prod.myrobertson.net
+        - op: replace
+          path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
+          value: alertmanager.prod.myrobertson.net
+      target:
+        kind: Gateway
+        name: alertmanager
+    - patch: |
+        - op: replace
+          path: /spec/hostnames/0
+          value: alertmanager.prod.myrobertson.net
+      target:
+        kind: HTTPRoute
+        name: alertmanager
