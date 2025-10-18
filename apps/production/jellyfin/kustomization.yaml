@@ -10,20 +10,20 @@ patches:
   - patch: |
       - op: replace
         path: /metadata/annotations/cert-manager.io~1common-name
-        value: jellyfin.staging.myrobertson.net
+        value: jellyfin.prod.myrobertson.net
       - op: replace
         path: /spec/listeners/0/hostname
-        value: jellyfin.staging.myrobertson.net
+        value: jellyfin.prod.myrobertson.net
       - op: replace
         path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
-        value: jellyfin.staging.myrobertson.net
+        value: jellyfin.prod.myrobertson.net
     target:
       kind: Gateway
       name: jellyfin
   - patch: |
       - op: replace
         path: /spec/hostnames/0
-        value: jellyfin.staging.myrobertson.net
+        value: jellyfin.prod.myrobertson.net
     target:
       kind: HTTPRoute
       name: jellyfin

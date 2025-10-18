@@ -6,12 +6,12 @@ metadata:
   namespace: jellyfin
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
-    cert-manager.io/common-name: jellyfin.staging.myrobertson.net
+    cert-manager.io/common-name: jellyfin.dev.myrobertson.net
 spec:
   gatewayClassName: istio
   listeners:
   - name: jellyfin
-    hostname: jellyfin.staging.myrobertson.net
+    hostname: jellyfin.dev.myrobertson.net
     port: 443
     protocol: HTTPS
     allowedRoutes:
@@ -25,7 +25,7 @@ spec:
     labels:
       istio-injection: enabled
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: jellyfin.staging.myrobertson.net
+      external-dns.alpha.kubernetes.io/hostname: jellyfin.dev.myrobertson.net
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -70,7 +70,7 @@ spec:
   parentRefs:
   - name: jellyfin
     namespace: jellyfin
-  hostnames: ["jellyfin.staging.myrobertson.net"]
+  hostnames: ["jellyfin.dev.myrobertson.net"]
   rules:
   - matches:
     - path:
