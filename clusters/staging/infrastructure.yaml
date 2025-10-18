@@ -81,13 +81,13 @@ spec:
   patches:
     - patch: |
         - op: replace
-          path: /metadata/annotations/0/cert-manager.io/common-name
+          path: /metadata/annotations/cert-manager.io~1common-name
           value: prometheus.staging.myrobertson.net
         - op: replace
           path: /spec/listeners/0/hostname
           value: prometheus.staging.myrobertson.net
         - op: replace
-          path: /spec/infrastructure/annotations/0/external-dns.alpha.kubernetes.io/hostname
+          path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
           value: prometheus.staging.myrobertson.net
       target:
         kind: Gateway
