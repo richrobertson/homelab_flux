@@ -26,7 +26,7 @@ spec:
   ipAddressPools:
     - my-ip-pool
   aggregationLength: 32
-  localPref: 2000
+  localPref: 100
 # RT:65000:2000 RT:65000:4000 ET:8 Rmac:06:ea:c6:40:fe:d1
 # *>i [2]:[0]:[48]:[bc:24:11:83:a8:84]:[32]:[10.21.1.2]
 #                    192.168.1.242(pve4)
