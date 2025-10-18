@@ -6,12 +6,12 @@ metadata:
   namespace: monitoring
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
-    cert-manager.io/common-name: prometheus.staging.myrobertson.net
+    cert-manager.io/common-name: prometheus.dev.myrobertson.net
 spec:
   gatewayClassName: istio
   listeners:
   - name: prometheus
-    hostname: prometheus.staging.myrobertson.net
+    hostname: prometheus.dev.myrobertson.net
     port: 443
     protocol: HTTPS
     allowedRoutes:
@@ -25,7 +25,7 @@ spec:
     labels:
       istio-injection: enabled
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: prometheus.staging.myrobertson.net
+      external-dns.alpha.kubernetes.io/hostname: prometheus.dev.myrobertson.net
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -70,7 +70,7 @@ spec:
   parentRefs:
   - name: prometheus
     namespace: monitoring
-  hostnames: ["prometheus.staging.myrobertson.net"]
+  hostnames: ["prometheus.dev.myrobertson.net"]
   rules:
   - matches:
     - path:

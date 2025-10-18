@@ -81,8 +81,21 @@ spec:
   patches:
     - patch: |
         - op: replace
-          path: /spec/acme/server
-          value: https://acme-v02.api.letsencrypt.org/directory
+          path: /metadata/annotations/acme.cert-manager.io/http-domain
+          value: prometheus.prod.myrobertson.net
+        - op: replace
+          path: /spec/listeners/0/hostname
+          value: prometheus.prod.myrobertson.net
+        - op: replace
+          path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io/hostname
+          value: prometheus.prod.myrobertson.net
       target:
-        kind: ClusterIssuer
-        name: letsencrypt
+        kind: Gateway
+        name: prometheus
+    - patch: |
+        - op: replace
+          path: /spec/hostnames/0
+          value: prometheus.prod.myrobertson.net
+      target:
+        kind: HTTPRoute
+        name: prometheus
