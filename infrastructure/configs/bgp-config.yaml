@@ -16,7 +16,6 @@ metadata:
 spec:
   addresses:
     - 10.26.0.64/28 # Range of IPs for MetalLB to allocate
-  protocol: bgp
 ---
 apiVersion: metallb.io/v1beta1
 kind: BGPAdvertisement
