@@ -32,6 +32,8 @@ metadata:
   name: infra-controllers
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: infra-p0
   interval: 1h
   retryInterval: 1m
   timeout: 5m
@@ -41,6 +43,24 @@ spec:
   path: ./infrastructure/controllers
   prune: true
   wait: true
+  patches:
+    - patch: |
+        - op: replace
+          path: /spec/path
+          value: synology/prod/csi-client-info
+      target:
+        kind: VaultStaticSecret
+        name: client-info-secret
+    - patch: |
+        - op: replace
+          path: /spec/values/grafana/grafana.ini/server/domain
+          value: grafana.prod.myrobertson.net
+        - op: replace
+          path: /spec/values/grafana/grafana.ini/server/root_url
+          value: https://grafana.prod.myrobertson.net/
+      target:
+        kind: HelmRelease
+        name: kube-prometheus-stack
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization

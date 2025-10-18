@@ -46,14 +46,21 @@ spec:
   patches:
     - patch: |
         - op: replace
-          path: /spec/defaultAuthMethod
-          value: kubernetes
-        - op: replace
-          path: /spec/kubernetes/mount
-          value: staging-kubernetes
+          path: /spec/path
+          value: synology/staging/csi-client-info
       target:
-        kind: VaultAuthGlobal
-        name: default
+        kind: VaultStaticSecret
+        name: client-info-secret
+    - patch: |
+        - op: replace
+          path: /spec/values/grafana/grafana.ini/server/domain
+          value: grafana.staging.myrobertson.net
+        - op: replace
+          path: /spec/values/grafana/grafana.ini/server/root_url
+          value: https://grafana.staging.myrobertson.net/
+      target:
+        kind: HelmRelease
+        name: kube-prometheus-stack
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
