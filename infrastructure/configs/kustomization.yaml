@@ -10,6 +10,7 @@ resources:
   - monitoring-grafana-gateway.yaml
   - monitoring-prometheus-gateway.yaml
   - monitoring-alertmanager-gateway.yaml
+  - toolbox.yaml
 spec:
   wait: true
 configMapGenerator:
