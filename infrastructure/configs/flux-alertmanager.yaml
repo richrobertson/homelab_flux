@@ -27,7 +27,7 @@ spec:
     name: alertmanager
   eventMetadata:
     summary: Cluster addons impacted
-    env: staging
+    env: dev
     region: us-east-2
   eventSeverity: error
   eventSources:

@@ -139,3 +139,30 @@ spec:
       target:
         kind: HTTPRoute
         name: alertmanager
+    - patch: |
+        - op: replace
+          path: /spec/eventMetadata/env
+          value: staging
+      target:
+        kind: Alert
+        name: alertmanager
+    - patch: |
+        - op: replace
+          path: /spec/vault/auth/kubernetes/mountPath
+          value: /v1/auth/staging-kubernetes
+        - op: replace
+          path: /spec/vault/auth/kubernetes/serviceAccountRef/audiences/0
+          value: https://cp.staging.myrobertson.net:6443
+      target:
+        kind: ClusterIssuer
+        name: vault-issuer
+    - patch: |
+        - op: replace
+          path: /spec/vault/auth/kubernetes/mountPath
+          value: /v1/auth/staging-kubernetes
+        - op: replace 
+          path: /spec/vault/auth/kubernetes/serviceAccountRef/audiences/0
+          value: https://cp.staging.myrobertson.net:6443
+      target:
+        kind: Issuer
+        name: vault-issuer
