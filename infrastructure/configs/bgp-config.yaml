@@ -4,7 +4,7 @@ metadata:
   namespace: metallb-system
   name: my-bgp-peer
 spec:
-  peerAddress: 192.168.1.243 # IP of your external BGP router
+  peerAddress: 10.21.2.1 # IP of your external BGP router
   peerASN: 65000       # ASN of your external BGP router
   myASN: 65000         # Your ASN
 ---
@@ -15,7 +15,7 @@ metadata:
   name: my-ip-pool
 spec:
   addresses:
-    - 10.21.3.64/28 # Range of IPs for MetalLB to allocate
+    - 10.21.2.64/28 # Range of IPs for MetalLB to allocate
 ---
 apiVersion: metallb.io/v1beta1
 kind: BGPAdvertisement
