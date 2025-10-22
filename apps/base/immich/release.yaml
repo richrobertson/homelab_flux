@@ -51,4 +51,4 @@ spec:
       auth:
         enabled: false
       global:
-        defaultStorageClass: csi-rbd-sc
+        defaultStorageClass: ceph-block

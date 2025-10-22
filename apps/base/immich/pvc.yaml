@@ -9,5 +9,5 @@ spec:
   resources:
     requests:
       storage: 300Gi
-  storageClassName: csi-cephfs-sc
+  storageClassName: ceph-filesystem
   volumeMode: Filesystem
