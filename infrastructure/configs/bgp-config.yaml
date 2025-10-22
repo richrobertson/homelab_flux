@@ -6,7 +6,7 @@ metadata:
 spec:
   peerAddress: 10.21.2.1 # IP of your external BGP router
   peerASN: 65000       # ASN of your external BGP router
-  myASN: 65000         # Your ASN
+  myASN: 65001         # Your ASN
 ---
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
