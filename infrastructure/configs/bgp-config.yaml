@@ -17,6 +17,8 @@ metadata:
 spec:
   ipAddressPools:
   -  my-ip-pool
+  interfaces:
+  - eth0
 # ---
 # apiVersion: metallb.io/v1beta2
 # kind: BGPPeer
