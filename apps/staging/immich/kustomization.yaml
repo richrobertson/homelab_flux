@@ -27,3 +27,10 @@ patches:
     target:
       kind: HTTPRoute
       name: immich
+  - patch: |
+      - op: replace
+        path: /spec/resources/requests/storage
+        value: 1Gi
+    target:
+      kind: PersistentVolumeClaim
+      name: immich-data-pvc
