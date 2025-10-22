@@ -8,6 +8,8 @@ spec:
   url: https://github.com/kubernetes-csi/external-snapshotter.git
   ref:
     branch: main 
+  sparseCheckout:
+  - client/config/crd
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
