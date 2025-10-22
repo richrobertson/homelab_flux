@@ -1,0 +1,54 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+  namespace: immich
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: immich
+    namespace: immich
+  values:
+    envFrom:
+      - secretRef:
+          name: immich-postgres-user
+    env:
+      DB_HOSTNAME: 'cluster-immich-rw'
+
+    image:
+      tag: v1.142.0
+
+    immich:
+      metrics:
+        # Enabling this will create the service monitors needed to monitor immich with the prometheus operator
+        enabled: true
+      persistence:
+        # Main data store for all photos shared between different components.
+        library:
+          # Automatically creating the library volume is not supported by this chart
+          # You have to specify an existing PVC to use
+          existingClaim: immich-data-pvc
+      
+
+    server:
+      controller:
+        replicas: 3
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: server
+                  topologyKey: "kubernetes.io/hostname"
+
+    redis:
+      enabled: true
+      architecture: standalone
+      auth:
+        enabled: false
+      global:
+        defaultStorageClass: csi-rbd-sc

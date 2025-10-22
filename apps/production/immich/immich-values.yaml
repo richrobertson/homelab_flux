@@ -1,0 +1,13 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+  namespace: immich
+spec:
+  values:
+    image:
+      tag: v1.142.0
+    server:
+      controller:
+        replicas: 0
+   
