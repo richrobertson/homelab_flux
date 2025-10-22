@@ -1,13 +1,4 @@
-apiVersion: metallb.io/v1beta2
-kind: BGPPeer
-metadata:
-  namespace: metallb-system
-  name: my-bgp-peer
-spec:
-  peerAddress: 10.21.2.1 # IP of your external BGP router
-  peerASN: 65000       # ASN of your external BGP router
-  myASN: 65001         # Your ASN
----
+
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
@@ -16,17 +7,37 @@ metadata:
 spec:
   addresses:
     - 10.21.0.64/28 # Range of IPs for MetalLB to allocate
+
 ---
 apiVersion: metallb.io/v1beta1
-kind: BGPAdvertisement
+kind: L2Advertisement
 metadata:
+  name: my-l2-advertisment
   namespace: metallb-system
-  name: my-bgp-advertisement
 spec:
   ipAddressPools:
-    - my-ip-pool
-  aggregationLength: 32
- # localPref: 100
+  -  my-ip-pool
+# ---
+# apiVersion: metallb.io/v1beta2
+# kind: BGPPeer
+# metadata:
+#   namespace: metallb-system
+#   name: my-bgp-peer
+# spec:
+#   peerAddress: 10.21.2.1 # IP of your external BGP router
+#   peerASN: 65000       # ASN of your external BGP router
+#   myASN: 65001         # Your ASN
+# ---
+# apiVersion: metallb.io/v1beta1
+# kind: BGPAdvertisement
+# metadata:
+#   namespace: metallb-system
+#   name: my-bgp-advertisement
+# spec:
+#   ipAddressPools:
+#     - my-ip-pool
+#   aggregationLength: 32
+#   localPref: 100
 # RT:65000:2000 RT:65000:4000 ET:8 Rmac:06:ea:c6:40:fe:d1
 # *>i [2]:[0]:[48]:[bc:24:11:83:a8:84]:[32]:[10.21.1.2]
 #                    192.168.1.242(pve4)
