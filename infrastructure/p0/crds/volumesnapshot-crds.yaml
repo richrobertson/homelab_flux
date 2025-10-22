@@ -22,7 +22,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: kubernetes-csi-extrernal-snapshotter
-  path: .client/config/crd 
+  path: client/config/crd 
   prune: true
   validation: client 
 
