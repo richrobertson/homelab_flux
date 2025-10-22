@@ -1,0 +1,26 @@
+    apiVersion: source.toolkit.fluxcd.io/v1beta2
+    kind: GitRepository
+    metadata:
+      name: kubernetes-csi-extrernal-snapshotter
+      namespace: flux-system # Or your desired namespace
+    spec:
+      interval: 4h
+      url: https://github.com/kubernetes-csi/external-snapshotter.git
+      ref:
+        branch: main #
+
+---
+aapiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: kubernetes-csi-extrernal-snapshotter
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: kubernetes-csi-extrernal-snapshotter
+  path: .client/config/crd 
+  prune: true
+  validation: client 
+
+
