@@ -11,14 +11,18 @@ spec:
     name: immich
     namespace: immich
   values:
-    envFrom:
-      - secretRef:
-          name: immich-postgres-user
-    env:
-      DB_HOSTNAME: "cluster-immich-rw"
+    controllers:
+      main:
+        containers:
+          main:
+            envFrom:
+              - secretRef:
+                  name: immich-postgres-user
+            env:
+              DB_HOSTNAME: "cluster-immich-rw"
 
-    image:
-      tag: v1.142.0
+            image:
+              tag: v1.142.0
 
     immich:
       metrics:
@@ -46,8 +50,9 @@ spec:
 
     valkey:
       enabled: true
-      architecture: standalone
-      auth:
-        enabled: false
-      global:
-        defaultStorageClass: synology-iscsi-storage
+      persistence:
+        data:
+          type: block
+          accessMode: ReadWriteMany
+          size: 10Gi
+          storageClass: synology-iscsi-storage
