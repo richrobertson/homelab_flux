@@ -44,7 +44,7 @@ spec:
                       app.kubernetes.io/name: server
                   topologyKey: "kubernetes.io/hostname"
 
-    redis:
+    valkey:
       enabled: true
       architecture: standalone
       auth:
