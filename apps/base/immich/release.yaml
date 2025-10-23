@@ -48,7 +48,6 @@ spec:
       enabled: true
       persistence:
         data:
-          type: block
           accessMode: ReadWriteMany
           size: 10Gi
           storageClass: synology-iscsi-storage
