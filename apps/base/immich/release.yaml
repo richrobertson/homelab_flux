@@ -15,7 +15,7 @@ spec:
       - secretRef:
           name: immich-postgres-user
     env:
-      DB_HOSTNAME: 'cluster-immich-rw'
+      DB_HOSTNAME: "cluster-immich-rw"
 
     image:
       tag: v1.142.0
@@ -29,8 +29,7 @@ spec:
         library:
           # Automatically creating the library volume is not supported by this chart
           # You have to specify an existing PVC to use
-          existingClaim:  immich-data-pvc
-      
+          existingClaim: immich-data-pvc
 
     server:
       controller:
@@ -51,4 +50,4 @@ spec:
       auth:
         enabled: false
       global:
-        defaultStorageClass: ceph-filesystem
+        defaultStorageClass: synology-iscsi-storage
