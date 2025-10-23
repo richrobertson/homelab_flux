@@ -7,7 +7,7 @@ spec:
   interval: 4h
   url: https://github.com/kubernetes-csi/external-snapshotter.git
   ref:
-    branch: main 
+    branch: master 
   sparseCheckout:
   - client/config/crd
 
