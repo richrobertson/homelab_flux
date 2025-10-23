@@ -11,18 +11,27 @@ spec:
     name: immich
     namespace: immich
   values:
-    controllers:
-      main:
-        containers:
-          main:
-            envFrom:
-              - secretRef:
-                  name: immich-postgres-user
-            env:
-              DB_HOSTNAME: "cluster-immich-rw"
-
-            image:
-              tag: v1.142.0
+    server:
+      controllers:
+        main:
+          containers:
+            main:
+              envFrom:
+                - secretRef:
+                    name: immich-postgres-user
+              env:
+                DB_HOSTNAME: "cluster-immich-rw"
+    
+        replicas: 3
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: server
+                  topologyKey: "kubernetes.io/hostname"
 
     immich:
       metrics:
@@ -34,19 +43,6 @@ spec:
           # Automatically creating the library volume is not supported by this chart
           # You have to specify an existing PVC to use
           existingClaim: immich-data-pvc
-
-    server:
-      controller:
-        replicas: 3
-        affinity:
-          podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-              - weight: 100
-                podAffinityTerm:
-                  labelSelector:
-                    matchLabels:
-                      app.kubernetes.io/name: server
-                  topologyKey: "kubernetes.io/hostname"
 
     valkey:
       enabled: true
