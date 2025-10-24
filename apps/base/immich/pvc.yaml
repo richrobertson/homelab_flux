@@ -9,5 +9,5 @@ spec:
   resources:
     requests:
       storage: 320Gi
-  storageClassName: synology-iscsi-storage
+  storageClassName: ceph-filesystem
   volumeMode: Filesystem
