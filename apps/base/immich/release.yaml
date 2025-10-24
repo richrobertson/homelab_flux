@@ -16,10 +16,22 @@ spec:
         main:
           containers:
             main:
-              envFrom:
-                - secretRef:
-                    name: immich-postgres-user
               env:
+                DB_USERNAME:
+                  valueFrom:
+                    secretKeyRef:
+                      name: immich-postgres-user
+                      key: DB_USERNAME
+                DB_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      name: immich-postgres-user
+                      key: DB_PASSWORD
+                DB_DATABASE_NAME:
+                  valueFrom:
+                    secretKeyRef:
+                      name: immich-postgres-user
+                      key: DB_DATABASE_NAME
                 DB_HOSTNAME: "cluster-immich-rw"
     
           replicas: 3
