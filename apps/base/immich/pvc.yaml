@@ -9,5 +9,19 @@ spec:
   resources:
     requests:
       storage: 320Gi
+  storageClassName: synology-iscsi-storage
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-data-files-pvc
+  namespace: immich
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 320Gi
   storageClassName: ceph-filesystem
   volumeMode: Filesystem

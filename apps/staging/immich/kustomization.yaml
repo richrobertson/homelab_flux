@@ -33,4 +33,4 @@ patches:
         value: 2Gi
     target:
       kind: PersistentVolumeClaim
-      name: immich-data-pvc
+      name: immich-data-files-pvc
