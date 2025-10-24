@@ -34,7 +34,7 @@ spec:
                       key: DB_DATABASE_NAME
                 DB_HOSTNAME: "cluster-immich-rw"
     
-          replicas: 3
+          replicas: 1
           affinity:
             podAntiAffinity:
               preferredDuringSchedulingIgnoredDuringExecution:
