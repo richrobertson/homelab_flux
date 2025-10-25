@@ -10,8 +10,9 @@ spec:
   storage:
     size: 4Gi
     storageClass: ceph-filesystem
-    accessModes:
-      - ReadWriteMany
+    pvcTemplate:
+      accessModes:
+        - ReadWriteMany
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.9-0.4.3
 
   postgresql:
