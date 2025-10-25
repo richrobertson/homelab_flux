@@ -10,7 +10,7 @@ spec:
   storage:
     size: 4Gi
     storageClass: ceph-filesystem
-  imageName: ghcr.io/immich-app/postgres:16-vectorchord0.3.0-pgvectors0.3.0
+  imageName: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
   postgresql:
     shared_preload_libraries:
       - "vectors.so"
@@ -19,16 +19,6 @@ spec:
       - name: immich
         superuser: true
         login: true
-  bootstrap:
-    initdb:
-      database: immich
-      owner: immich
-      secret:
-        name: immich-postgres-user
-      postInitSQL:
-        - CREATE EXTENSION IF NOT EXISTS "vectors";
-        - CREATE EXTENSION IF NOT EXISTS "cube" CASCADE;
-        - CREATE EXTENSION IF NOT EXISTS "earthdistance" CASCADE;
 
 ---
 apiVersion: v1
