@@ -16,6 +16,7 @@ spec:
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.9-0.4.3
 
   postgresql:
+    enableSuperuserAccess: true
     shared_preload_libraries:
       - "vchord.so"
   managed:
