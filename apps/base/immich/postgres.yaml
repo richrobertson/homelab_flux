@@ -9,10 +9,10 @@ spec:
   instances: 3
   storage:
     size: 4Gi
-    storageClass: ceph-filesystem
+    storageClass: ceph-block
     pvcTemplate:
       accessModes:
-        - ReadWriteMany
+        - ReadWriteOnce
   enableSuperuserAccess: true
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.9-0.4.3
 
