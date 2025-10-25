@@ -86,7 +86,7 @@ parameters:
   imageFeatures: layering
   imageFormat: "2"
   pool: rook_prod
-provisioner: rook-ceph-external.rbd.csi.ceph.com
+provisioner: rook-ceph.rbd.csi.ceph.com
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
@@ -105,7 +105,7 @@ parameters:
   csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph-external
   fsName: rook_prod
   pool: rook_prod_data
-provisioner: rook-ceph-external.cephfs.csi.ceph.com
+provisioner: rook-ceph.cephfs.csi.ceph.com
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
