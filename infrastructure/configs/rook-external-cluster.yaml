@@ -24,18 +24,18 @@ spec:
         daemonHealth:
           mon:
             disabled: false
-            interval: 45s
-      # -- A list of CephBlockPool configurations to deploy
-      # @default -- See [below](#ceph-block-pools)
-      cephBlockPools: {}
+          interval: 45s
+    # -- A list of CephBlockPool configurations to deploy
+    # @default -- See [below](#ceph-block-pools)
+    cephBlockPools: {}
 
-      # -- A list of CephFileSystem configurations to deploy
-      # @default -- See [below](#ceph-file-systems)
-      cephFileSystems: {}
+    # -- A list of CephFileSystem configurations to deploy
+    # @default -- See [below](#ceph-file-systems)
+    cephFileSystems: {}
 
-      # -- A list of CephObjectStore configurations to deploy
-      # @default -- See [below](#ceph-object-stores)
-      cephObjectStores: {}
+    # -- A list of CephObjectStore configurations to deploy
+    # @default -- See [below](#ceph-object-stores)
+    cephObjectStores: {}
 
 ---
 apiVersion: v1
