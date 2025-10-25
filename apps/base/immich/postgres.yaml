@@ -6,10 +6,12 @@ metadata:
   name: cluster-immich
   namespace: immich
 spec:
-  instances: 1
+  instances: 3
   storage:
     size: 4Gi
     storageClass: ceph-filesystem
+    accessModes:
+      - ReadWriteMany
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.9-0.4.3
 
   postgresql:
