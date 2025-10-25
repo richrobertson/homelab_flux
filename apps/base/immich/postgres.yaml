@@ -19,6 +19,12 @@ spec:
       - name: immich
         superuser: true
         login: true
+  bootstrap:
+    initdb:
+      database: immich
+      owner: immich
+      secret:
+        name: immich-postgres-user
 
 ---
 apiVersion: v1
