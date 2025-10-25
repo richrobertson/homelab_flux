@@ -9,7 +9,7 @@ spec:
   instances: 3
   storage:
     size: 4Gi
-    storageClass: ceph-block
+    storageClass: csi-cephfs-sc
     pvcTemplate:
       accessModes:
         - ReadWriteOnce
