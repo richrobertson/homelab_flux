@@ -33,6 +33,7 @@ spec:
     # -- A list of CephFileSystem configurations to deploy
     # @default -- See [below](#ceph-file-systems)
     cephFileSystems: {}
+    
 
     # -- A list of CephObjectStore configurations to deploy
     # @default -- See [below](#ceph-object-stores)
