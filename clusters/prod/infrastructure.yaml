@@ -148,6 +148,9 @@ spec:
         name: alertmanager
     - patch: |
         - op: replace
+          path: /spec/vault/path
+          value: pki_int_prod/sign/cluster_ssl_certs
+        - op: replace
           path: /spec/vault/auth/kubernetes/mountPath
           value: /v1/auth/prod-kubernetes
         - op: replace
