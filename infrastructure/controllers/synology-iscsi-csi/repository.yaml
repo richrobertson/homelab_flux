@@ -18,4 +18,4 @@ spec:
   interval: 24h
   url: https://github.com/SynologyOpenSource/synology-csi/
   ref:
-    branch: master
+    branch: main
