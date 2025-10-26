@@ -31,12 +31,12 @@ spec:
           dsm: "192.168.1.215"
           fsType: ext4
           location: /volume1
-          mountPermissions: '0755'
+          mountPermissions: '0777'
       synology-iscsi-storage-delete:
         reclaimPolicy: Delete
         isDefault: true
         parameters:
-          mountPermissions: '0755'
+          mountPermissions: '0777'
     volumeSnapshotClasses: 
       synology-snapshotclass:
         disabled: false
