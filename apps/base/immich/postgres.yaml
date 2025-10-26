@@ -13,23 +13,25 @@ spec:
     pvcTemplate:
       accessModes:
         - ReadWriteMany
-  enableSuperuserAccess: true
+  # enableSuperuserAccess: false
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.9-0.4.3
+
+  # postgresUID: 26
 
   postgresql:
     shared_preload_libraries:
       - "vchord.so"
-  managed:
-    roles:
-      - name: immich
-        superuser: true
-        login: true
+  # managed:
+  #   roles:
+  #     - name: immich
+  #       superuser: false
+  #       login: true
   bootstrap:
     initdb:
-      database: immich
-      owner: immich
-      secret:
-        name: immich-postgres-user
+      # database: immich
+      # owner: immich
+      # secret:
+      #   name: immich-postgres-user
       # TODO: Use managed extensions (pg 18)
       postInitApplicationSQL:
         # Commands based on: https://immich.app/docs/administration/postgres-standalone/#without-superuser-permission
