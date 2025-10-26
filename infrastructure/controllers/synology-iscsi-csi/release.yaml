@@ -31,6 +31,17 @@ spec:
           dsm: "192.168.1.215"
           fsType: ext4
           location: /volume1
+          mountPermissions: '0755'
       synology-iscsi-storage-delete:
         reclaimPolicy: Delete
         isDefault: true
+        parameters:
+          mountPermissions: '0755'
+      volumeSnapshotClasses: 
+        synology-iscsi-snapshot:
+          disabled: false
+          deletionPolicy: Delete
+          isDefault: true
+          parameters:
+            description: "Kubernetes CSI"
+            is_locked: "false"
