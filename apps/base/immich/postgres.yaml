@@ -12,7 +12,7 @@ spec:
     storageClass: csi-cephfs-sc
     pvcTemplate:
       accessModes:
-        - ReadWriteOnce
+        - ReadWriteMany
   enableSuperuserAccess: true
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.9-0.4.3
 
