@@ -6,7 +6,7 @@ metadata:
   name: cluster-immich
   namespace: immich
 spec:
-  instances: 3
+  instances: 1
   storage:
     size: 10Gi
     storageClass: synology-iscsi-storage
@@ -90,87 +90,4 @@ spec:
       - name: pgdata
         persistentVolumeClaim:
           claimName: cluster-immich-1
-      restartPolicy: OnFailure
-
----
-
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: change-pvc-permissions
-  namespace: immich
-spec:
-  template:
-    spec:
-      initContainers:
-        - name: volume-permissions
-          image: busybox # Or any image with 'chown', 'chmod' utilities
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: VOLUME_MOUNT_PATH
-              value: /var/lib/postgresql/data # Adjust to your PVC's mount path
-            - name: TARGET_USER_ID
-              value: "26" # Target user ID
-            - name: TARGET_GROUP_ID
-              value: "26" # Target group ID
-          command:
-            - sh
-            - -c
-            - |
-              chown -R $TARGET_USER_ID:$TARGET_GROUP_ID $VOLUME_MOUNT_PATH
-              chmod -R 775 $VOLUME_MOUNT_PATH # Adjust permissions as needed
-              echo 'Volume permissions updated'
-          volumeMounts:
-          - name: pgdata
-            mountPath: /var/lib/postgresql/data
-      containers:
-        - name: dummy-container # A placeholder container, as the main work is in initContainer
-          image: busybox
-          command: ["sh", "-c", "echo 'Permissions changed, job complete'; sleep 30"]
-      volumes:
-      - name: pgdata
-        persistentVolumeClaim:
-          claimName: cluster-immich-2
-      restartPolicy: OnFailure
----
-
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: change-pvc-permissions
-  namespace: immich
-spec:
-  template:
-    spec:
-      initContainers:
-        - name: volume-permissions
-          image: busybox # Or any image with 'chown', 'chmod' utilities
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: VOLUME_MOUNT_PATH
-              value: /var/lib/postgresql/data # Adjust to your PVC's mount path
-            - name: TARGET_USER_ID
-              value: "26" # Target user ID
-            - name: TARGET_GROUP_ID
-              value: "26" # Target group ID
-          command:
-            - sh
-            - -c
-            - |
-              chown -R $TARGET_USER_ID:$TARGET_GROUP_ID $VOLUME_MOUNT_PATH
-              chmod -R 775 $VOLUME_MOUNT_PATH # Adjust permissions as needed
-              echo 'Volume permissions updated'
-          volumeMounts:
-          - name: pgdata
-            mountPath: /var/lib/postgresql/data
-      containers:
-        - name: dummy-container # A placeholder container, as the main work is in initContainer
-          image: busybox
-          command: ["sh", "-c", "echo 'Permissions changed, job complete'; sleep 30"]
-      volumes:
-      - name: pgdata
-        persistentVolumeClaim:
-          claimName: cluster-immich-3
       restartPolicy: OnFailure
