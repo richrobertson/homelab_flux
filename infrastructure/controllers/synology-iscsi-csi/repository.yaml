@@ -16,6 +16,6 @@ metadata:
   namespace: synology-csi
 spec:
   interval: 24h
-  url: https://github.com/SynologyOpenSource/synology-csi/
+  url: https://github.com/QuadmanSWE/synology-csi-talos/
   ref:
     branch: main
