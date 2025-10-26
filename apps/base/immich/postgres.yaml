@@ -9,7 +9,7 @@ spec:
   instances: 3
   storage:
     size: 10Gi
-    storageClass: local-storage
+    storageClass: synology-iscsi-storage
     pvcTemplate:
       accessModes:
         - ReadWriteMany
