@@ -38,7 +38,7 @@ spec:
         parameters:
           mountPermissions: '0755'
       volumeSnapshotClasses: 
-        synology-iscsi-snapshot:
+        synology-snapshotclass:
           disabled: false
           deletionPolicy: Delete
           isDefault: true
