@@ -9,7 +9,7 @@ spec:
   instances: 3
   storage:
     size: 10Gi
-    storageClass: csi-cephfs-sc
+    storageClass: local-storage
     pvcTemplate:
       accessModes:
         - ReadWriteMany
