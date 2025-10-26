@@ -37,11 +37,11 @@ spec:
         isDefault: true
         parameters:
           mountPermissions: '0755'
-      volumeSnapshotClasses: 
-        synology-snapshotclass:
-          disabled: false
-          deletionPolicy: Delete
-          isDefault: true
-          parameters:
-            description: "Kubernetes CSI"
-            is_locked: "false"
+    volumeSnapshotClasses: 
+      synology-snapshotclass:
+        disabled: false
+        deletionPolicy: Delete
+        isDefault: true
+        parameters:
+          description: "Kubernetes CSI"
+          is_locked: "false"
