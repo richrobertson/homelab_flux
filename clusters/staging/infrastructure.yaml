@@ -161,6 +161,9 @@ spec:
         name: vault-issuer
     - patch: |
         - op: replace
+          path: /spec/vault/path
+          value: pki_int_staging/sign/cluster_ssl_certs
+        - op: replace
           path: /spec/vault/auth/kubernetes/mountPath
           value: /v1/auth/staging-kubernetes
         - op: replace 
