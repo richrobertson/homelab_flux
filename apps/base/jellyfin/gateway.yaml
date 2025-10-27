@@ -3,7 +3,6 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: jellyfin
-  namespace: jellyfin
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
     cert-manager.io/common-name: jellyfin.dev.myrobertson.net
@@ -31,7 +30,6 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: jellyfin
-  namespace: jellyfin
 spec:
   # Match the generated Deployment by reference
   # Note: Do not use `kind: Gateway`.
@@ -53,7 +51,6 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: jellyfin
-  namespace: jellyfin
 spec:
   minAvailable: 1
   selector:
@@ -65,11 +62,9 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: jellyfin
-  namespace: jellyfin
 spec:
   parentRefs:
   - name: jellyfin
-    namespace: jellyfin
   hostnames: ["jellyfin.dev.myrobertson.net"]
   rules:
   - matches:
@@ -78,5 +73,4 @@ spec:
         value: /
     backendRefs:
     - name: jellyfin
-      namespace: jellyfin
       port: 8096

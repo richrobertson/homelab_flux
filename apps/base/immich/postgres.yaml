@@ -4,7 +4,6 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: cluster-immich
-  namespace: immich
 spec:
   instances: 1
   storage:
@@ -49,7 +48,6 @@ stringData:
 kind: Secret
 metadata:
   name: immich-postgres-user
-  namespace: immich
 type: kubernetes.io/basic-auth
 
 ---
@@ -57,7 +55,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: change-pvc-permissions
-  namespace: immich
 spec:
   template:
     spec:

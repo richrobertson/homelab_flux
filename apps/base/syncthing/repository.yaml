@@ -2,7 +2,6 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
   name: syncthing
-  namespace: syncthing
 spec:
   interval: 1h
   url: oci://oci.trueforge.org/truecharts/syncthing
