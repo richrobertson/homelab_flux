@@ -9,6 +9,14 @@ spec:
     kind: OCIRepository
     name: syncthing
   values:
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              securityContext:
+                runAsNonRoot: false
+                privileged: true
     persistence:
       config:
         storageClass: synology-iscsi-storage
