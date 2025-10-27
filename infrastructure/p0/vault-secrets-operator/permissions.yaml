@@ -23,3 +23,6 @@ subjects:
   - kind: ServiceAccount
     name: default
     namespace: ceph-csi
+  - kind: ServiceAccount
+    name: default
+    namespace: default
