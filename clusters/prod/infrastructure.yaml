@@ -81,6 +81,13 @@ spec:
   patches:
     - patch: |
         - op: replace
+          path: /spec/addresses/0
+          value: 10.31.0.64/28
+      target:
+        kind: IPAddressPool
+        name: my-ip-pool
+    - patch: |
+        - op: replace
           path: /metadata/annotations/cert-manager.io~1common-name
           value: prometheus.prod.myrobertson.net
         - op: replace
