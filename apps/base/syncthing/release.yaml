@@ -12,9 +12,9 @@ spec:
     persistence:
       config:
         storageClass: synology-iscsi-storage
-      immich-data:
-        existingClaim: immich-data-files-pvc
-        targetSelector:
-          syncthing:
-            syncthing:
-              mountPath: /var/immich-data
+      # immich-data:
+      #   existingClaim: immich-data-files-pvc
+      #   targetSelector:
+      #     syncthing:
+      #       syncthing:
+      #         mountPath: /var/immich-data
