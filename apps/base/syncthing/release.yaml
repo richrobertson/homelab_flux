@@ -16,7 +16,7 @@ spec:
         enabled: true
         existingClaim: immich-data-files-pvc
         mountPath: /var/immich-data
-        readOnly: true
+        readOnly: false
     service:
       listeners:
         enabled: true
