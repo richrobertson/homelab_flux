@@ -7,7 +7,7 @@ metadata:
 spec:
   type: kv-v2
   mount: secret
-  path:  monitoring/gotify
+  path:  monitoring/gotify/dev
   refreshAfter: 60s
   destination:
     create: true

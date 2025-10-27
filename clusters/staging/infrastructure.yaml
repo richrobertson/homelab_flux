@@ -47,6 +47,13 @@ spec:
     - patch: |
         - op: replace
           path: /spec/path
+          value: monitoring/gotify/staging
+      target:
+        kind: VaultStaticSecret
+        name: gotify-token
+    - patch: |
+        - op: replace
+          path: /spec/path
           value: synology/staging/csi-client-info
       target:
         kind: VaultStaticSecret
