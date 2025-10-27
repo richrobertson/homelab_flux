@@ -5,8 +5,12 @@ metadata:
   namespace: immich
 spec:
   values:
-    image:
-      tag: v1.142.0
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              tag: v1.142.0
     server:
       controller:
         replicas: 0
