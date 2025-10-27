@@ -3,3 +3,24 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/syncthing
+patches:
+  - patch: |
+      - op: replace
+        path: /metadata/annotations/cert-manager.io~1common-name
+        value: syncthing.prod.myrobertson.net
+      - op: replace
+        path: /spec/listeners/0/hostname
+        value: syncthing.prod.myrobertson.net
+      - op: replace
+        path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
+        value: syncthing.prod.myrobertson.net
+    target:
+      kind: Gateway
+      name: syncthing
+  - patch: |
+      - op: replace
+        path: /spec/hostnames/0
+        value: syncthing.prod.myrobertson.net
+    target:
+      kind: HTTPRoute
+      name: syncthing
