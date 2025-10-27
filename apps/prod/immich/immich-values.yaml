@@ -12,6 +12,7 @@ spec:
             image:
               tag: v1.142.0
     server:
-      controller:
-        replicas: 0
+      controllers:
+        main:
+          replicas: 0
    
