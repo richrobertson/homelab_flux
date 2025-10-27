@@ -7,6 +7,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
     cert-manager.io/common-name: grafana.dev.myrobertson.net
+    cert-manager.io/private-key-algorithm: "ECDSA"
 spec:
   gatewayClassName: istio
   listeners:
