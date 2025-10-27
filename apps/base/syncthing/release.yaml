@@ -17,3 +17,30 @@ spec:
         existingClaim: immich-data-files-pvc
         mountPath: /var/immich-data
         readOnly: true
+    service:
+      listeners:
+        enabled: true
+        type: LoadBalancer
+        ports:
+          tcp:
+            enabled: true
+            port: 22000
+            targetPort: 22000
+      listeners-udp:
+        enabled: true
+        type: LoadBalancer
+        ports:
+          udp:
+            enabled: true
+            port: 22000
+            targetPort: 22000
+            protocol: udp
+      discovery:
+        enabled: true
+        type: LoadBalancer
+        ports:
+          discovery:
+            enabled: true
+            port: 21027
+            targetPort: 21027
+            protocol: udp
