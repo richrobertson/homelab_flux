@@ -7,9 +7,9 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: './deploy/helm/'
+      chart: synology-csi
       sourceRef:
-        kind: GitRepository
+        kind: HelmRepository
         name: synology-csi-chart
         namespace: synology-csi
       interval: 12h

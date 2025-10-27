@@ -1,21 +1,10 @@
-# apiVersion: source.toolkit.fluxcd.io/v1
-# kind: HelmRepository
-# metadata:
-#   name: synology-csi-chart
-#   namespace: synology-csi
-# spec:
-#   interval: 24h
-#   url: https://zebernst.github.io/synology-csi-talos
-
-
----
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: GitRepository
+kind: HelmRepository
 metadata:
   name: synology-csi-chart
   namespace: synology-csi
 spec:
   interval: 24h
-  url: https://github.com/QuadmanSWE/synology-csi-talos/
-  ref:
-    branch: main
+  url: https://zebernst.github.io/synology-csi-talos
+
+
