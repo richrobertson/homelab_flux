@@ -12,10 +12,8 @@ spec:
     persistence:
       config:
         storageClass: synology-iscsi-storage
-      immich-data:
+      immich-data-files-pvc:
         enabled: true
         existingClaim: immich-data-files-pvc
-        targetSelector:
-          syncthing:
-            syncthing:
-              mountPath: /var/immich-data
+        mountPath: /var/immich-data
+        readOnly: true
