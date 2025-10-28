@@ -1,0 +1,15 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: meailie
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: meailie
+  values:
+    persistence:
+      config:
+        storageClass: synology-iscsi-storage
+    

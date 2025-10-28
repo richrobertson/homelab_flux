@@ -1,0 +1,77 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: mealie
+  annotations:
+    cert-manager.io/cluster-issuer: vault-issuer
+    cert-manager.io/common-name: mealie.dev.myrobertson.net
+    cert-manager.io/private-key-algorithm: "ECDSA"
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: mealie
+    hostname: mealie.dev.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: mealie-cert
+  infrastructure:
+    labels:
+      istio-injection: enabled
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: mealie.dev.myrobertson.net
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: mealie
+spec:
+  # Match the generated Deployment by reference
+  # Note: Do not use `kind: Gateway`.
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mealie-istio
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: mealie
+spec:
+  minAvailable: 1
+  selector:
+    # Match the generated Deployment by label
+    matchLabels:
+      gateway.networking.k8s.io/gateway-name: mealie
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: mealie
+spec:
+  parentRefs:
+  - name: mealie
+  hostnames: ["mealie.dev.myrobertson.net"]
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: mealie
+      port: 8384
