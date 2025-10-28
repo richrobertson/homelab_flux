@@ -11,6 +11,7 @@ spec:
   values:
     workload:
       main:
+        replicas: 0
         podSpec:
           containers:
             main:
