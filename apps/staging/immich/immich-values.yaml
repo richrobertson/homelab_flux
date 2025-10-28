@@ -10,4 +10,8 @@ spec:
           main:
             image:
               tag: v2.1.0
+    server:
+      controllers:
+        main:
+          replicas: 1
    
