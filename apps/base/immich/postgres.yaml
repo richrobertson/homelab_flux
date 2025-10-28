@@ -29,26 +29,11 @@ spec:
     initdb:
       database: immich
       owner: immich
-      secret:
-        name: immich-postgres-user
-      # TODO: Use managed extensions (pg 18)
+      
       postInitApplicationSQL:
         # Commands based on: https://immich.app/docs/administration/postgres-standalone/#without-superuser-permission
         - CREATE EXTENSION vchord CASCADE;
         - CREATE EXTENSION earthdistance CASCADE;
-
----
-apiVersion: v1
-stringData:
-  DB_USERNAME: immich
-  DB_DATABASE_NAME: immich
-  DB_PASSWORD: immich
-  username: immich
-  password: immich
-kind: Secret
-metadata:
-  name: immich-postgres-user
-type: kubernetes.io/basic-auth
 
 ---
 apiVersion: batch/v1
