@@ -70,6 +70,7 @@ kind: Job
 metadata:
   name: change-pvc-permissions
 spec:
+  ttlSecondsAfterFinished: 100
   template:
     spec:
       initContainers:
