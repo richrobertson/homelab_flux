@@ -18,18 +18,18 @@ spec:
                 DB_USERNAME:
                   valueFrom:
                     secretKeyRef:
-                      name: immich-postgres-user
-                      key: DB_USERNAME
+                      name: cluster-immich-app
+                      key: username
                 DB_PASSWORD:
                   valueFrom:
                     secretKeyRef:
-                      name: immich-postgres-user
-                      key: DB_PASSWORD
+                      name: luster-immich-app
+                      key: password
                 DB_DATABASE_NAME:
                   valueFrom:
                     secretKeyRef:
-                      name: immich-postgres-user
-                      key: DB_DATABASE_NAME
+                      name: luster-immich-app
+                      key: dbname
                 DB_HOSTNAME: "cluster-immich-rw"
     
           replicas: 1
