@@ -10,7 +10,11 @@ spec:
     name: mealie
   values:
     persistence:
-      config:
+      data:
         enabled: true
         storageClass: synology-iscsi-storage
+        targetSelector:
+          main:
+            main:
+              mountPath: /app/data
     
