@@ -5,3 +5,6 @@ resources:
   - repository.yaml
   - release.yaml
   - gateway.yaml
+  - mealie-cnpg-main-1-permissions-fix.yaml
+  - mealie-cnpg-main-1-wal-permissions-fix.yaml
+
