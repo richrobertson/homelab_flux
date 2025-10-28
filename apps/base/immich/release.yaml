@@ -23,12 +23,12 @@ spec:
                 DB_PASSWORD:
                   valueFrom:
                     secretKeyRef:
-                      name: luster-immich-app
+                      name: cluster-immich-app
                       key: password
                 DB_DATABASE_NAME:
                   valueFrom:
                     secretKeyRef:
-                      name: luster-immich-app
+                      name: cluster-immich-app
                       key: dbname
                 DB_HOSTNAME: "cluster-immich-rw"
     
