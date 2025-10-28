@@ -1,39 +1,70 @@
 
+# ---
+# apiVersion: postgresql.cnpg.io/v1
+# kind: Cluster
+# metadata:
+#   name: cluster-immich
+# spec:
+#   instances: 1
+#   storage:
+#     size: 10Gi
+#     storageClass: synology-iscsi-storage
+#     pvcTemplate:
+#       accessModes:
+#         - ReadWriteMany
+#   # enableSuperuserAccess: false
+#   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.9-0.4.3
+
+#   # postgresUID: 26
+#   enableSuperuserAccess: true
+#   postgresql:
+#     shared_preload_libraries:
+#       - "vchord.so"
+#   managed:
+#     roles:
+#       - name: immich
+#         superuser: false
+#         login: true
+#   bootstrap:
+#     initdb:
+#       database: immich
+#       owner: immich
+      
+#       postInitApplicationSQL:
+#         # Commands based on: https://immich.app/docs/administration/postgres-standalone/#without-superuser-permission
+#         - CREATE EXTENSION vchord CASCADE;
+#         - CREATE EXTENSION earthdistance CASCADE;
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: cluster-immich
+  name: cluster-immich 
+  namespace: immich
 spec:
   instances: 1
+  enableSuperuserAccess: true
   storage:
     size: 10Gi
     storageClass: synology-iscsi-storage
-    pvcTemplate:
-      accessModes:
-        - ReadWriteMany
-  # enableSuperuserAccess: false
-  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.9-0.4.3
-
-  # postgresUID: 26
-  enableSuperuserAccess: true
+  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:16.5-v0.3.0@sha256:be3f025d79aa1b747817f478e07e71be43236e14d00d8a9eb3914146245035ba
   postgresql:
     shared_preload_libraries:
-      - "vchord.so"
+      - "vectors.so"
   managed:
     roles:
       - name: immich
-        superuser: false
+        superuser: true
         login: true
   bootstrap:
     initdb:
       database: immich
       owner: immich
-      
-      postInitApplicationSQL:
-        # Commands based on: https://immich.app/docs/administration/postgres-standalone/#without-superuser-permission
-        - CREATE EXTENSION vchord CASCADE;
-        - CREATE EXTENSION earthdistance CASCADE;
+      secret:
+        name: immich-postgres-user
+      postInitSQL:
+        - CREATE EXTENSION IF NOT EXISTS "vectors";
+        - CREATE EXTENSION IF NOT EXISTS "cube" CASCADE;
+        - CREATE EXTENSION IF NOT EXISTS "earthdistance" CASCADE;
 
 ---
 apiVersion: batch/v1
