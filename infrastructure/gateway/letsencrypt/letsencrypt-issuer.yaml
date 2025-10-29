@@ -1,0 +1,15 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt
+  namespace: default
+spec:
+  acme:
+    solvers:
+      - http01:
+          gatewayHTTPRoute:
+            parentRefs:
+              - name: istio-80-gateway
+                namespace: default
+                kind: Gateway
