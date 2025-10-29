@@ -4,7 +4,7 @@ metadata:
   name: myrobertson-com-gateway
   namespace: default
   annotations:
-    cert-manager.io/clusterissuer: lets-encrypt-issuer
+    cert-manager.io/clusterissuer: letsencrypt-prod
 spec:
   gatewayClassName: istio
   listeners:
