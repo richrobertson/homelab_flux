@@ -17,6 +17,8 @@ spec:
         podSpec:
           containers:
             main:
+              env: 
+                LOG_LEVEL: DEBUG
               envFrom:
                 - secretRef:
                     name: mealie-oidc
