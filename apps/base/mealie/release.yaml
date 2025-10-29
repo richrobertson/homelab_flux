@@ -17,4 +17,11 @@ spec:
           main:
             main:
               mountPath: /app/data
-    
+    cnpg:
+      main:
+        cluster:
+          storage:
+            storageClass: synology-iscsi-storage
+          walStorage:
+            storageClass: synology-iscsi-storage
+        
