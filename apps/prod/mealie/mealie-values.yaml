@@ -4,12 +4,23 @@ metadata:
   name: mealie
 spec:
   values:
-    mealie:
-      api:
-        general:
-          baseUrl: https://mealie.myrobertson.net
+    # mealie:
+    #   api:
+    #     general:
+    #       baseUrl: https://mealie.myrobertson.com
     server:
       controllers:
         main:
           replicas: 1
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env: 
+                API_PORT: "10018"
+              envFrom:
+                - secretRef:
+                    name: mealie-oidc
+                    expandObjectName: false
    

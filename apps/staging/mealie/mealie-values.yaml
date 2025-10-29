@@ -27,7 +27,6 @@ spec:
               env: 
                 API_PORT: "10018"
                 LOG_LEVEL: debug
-                # BASE_URL: https://mealie.staging.myrobertson.net
               envFrom:
                 - secretRef:
                     name: mealie-oidc
