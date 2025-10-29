@@ -47,7 +47,7 @@ spec:
     - patch: |
         - op: replace
           path: /spec/path
-          value: monitoring/gotify/staging
+          value: monitoring/gotify/prod
       target:
         kind: VaultStaticSecret
         name: gotify-token
