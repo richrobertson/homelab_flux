@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/mealie
+patches:
+  - path: mealie-values.yaml
+    target:
+      kind: HelmRelease
+  - patch: |
+      - op: replace
+        path: /metadata/annotations/cert-manager.io~1common-name
+        value: mealie.prod.myrobertson.net
+      - op: replace
+        path: /spec/listeners/0/hostname
+        value: mealie.prod.myrobertson.net
+      - op: replace
+        path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
+        value: mealie.prod.myrobertson.net
+    target:
+      kind: Gateway
+      name: mealie
+  - patch: |
+      - op: replace
+        path: /spec/hostnames/0
+        value: mealie.prod.myrobertson.net
+    target:
+      kind: HTTPRoute
+      name: mealie
+  - patch: |
+      - op: replace
+        path: /spec/resources/requests/storage
+        value: 2Gi
+    target:
+      kind: PersistentVolumeClaim
+      name: mealie-data-files-pvc
