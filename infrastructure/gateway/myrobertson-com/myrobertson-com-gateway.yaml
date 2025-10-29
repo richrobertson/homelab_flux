@@ -18,7 +18,9 @@ spec:
     tls:
       mode: Terminate
       certificateRefs:
-      - name: immich-cert
+      - name: immich-myrobertson-com-cert
+        kind: Secret 
+      
   - name: mealie
     hostname: mealie.myrobertson.com
     port: 443
@@ -29,4 +31,5 @@ spec:
     tls:
       mode: Terminate
       certificateRefs:
-      - name: mealie-cert
+      - name: mealie-myrobertson-com-cert
+        kind: Secret 
