@@ -4,10 +4,10 @@ metadata:
   name: mealie
 spec:
   values:
-    # mealie:
-    #   api:
-    #     general:
-    #       baseUrl: https://mealie.staging.myrobertson.net
+    mealie:
+      api:
+        general:
+          baseUrl: https://mealie.staging.myrobertson.net
     server:
       controllers:
         main:
@@ -19,7 +19,7 @@ spec:
             main:
               env: 
                 LOG_LEVEL: debug
-                BASE_URL: https://mealie.staging.myrobertson.net
+                # BASE_URL: https://mealie.staging.myrobertson.net
               # envFrom:
               #   - secretRef:
               #       name: mealie-oidc
