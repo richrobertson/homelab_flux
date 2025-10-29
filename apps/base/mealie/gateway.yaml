@@ -74,4 +74,4 @@ spec:
         value: /
     backendRefs:
     - name: mealie
-      port: 8384
+      port: 10018
