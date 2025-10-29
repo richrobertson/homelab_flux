@@ -13,15 +13,6 @@ spec:
       api:
         general:
           baseUrl: https://mealie.dev.myrobertson.net
-        
-        oidc:
-          auth_enabled: true
-          signup_enabled: true
-          configuration_url: "https://auth.myrobertson.com/.well-known/openid-configuration"
-          client_id: "mealie_dev"
-          user_group: "users"
-          admin_group: "proxAdmins"
-          auto_redirect: false
     workload:
       main:
         podSpec:
