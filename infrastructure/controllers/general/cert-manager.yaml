@@ -39,4 +39,5 @@ spec:
       enableGatewayAPI: true
     extraArgs: 
       - --enable-gateway-api
+      - --feature-gates=ExperimentalGatewayAPISupport=true
 
