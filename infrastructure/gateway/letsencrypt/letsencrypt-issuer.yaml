@@ -1,11 +1,15 @@
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
-  name: letsencrypt
+  name: letsencrypt-prod
   namespace: default
 spec:
   acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: roy@myrobertson.com
+    privateKeySecretRef:
+      name: letsencrypt-prod-key
     solvers:
       - http01:
           gatewayHTTPRoute:
