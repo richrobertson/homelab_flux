@@ -19,3 +19,14 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: immich-cert
+  - name: mealie
+    hostname: mealie.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: mealie-cert
