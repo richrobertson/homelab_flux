@@ -4,10 +4,10 @@ metadata:
   name: mealie
 spec:
   values:
-    # mealie:
-    #   api:
-    #     general:
-    #       baseUrl: https://mealie.myrobertson.com
+    mealie:
+      api:
+        general:
+          baseUrl: https://mealie.myrobertson.com
     server:
       controllers:
         main:
