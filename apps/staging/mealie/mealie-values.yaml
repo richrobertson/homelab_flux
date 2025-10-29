@@ -8,6 +8,8 @@ spec:
       api:
         general:
           baseUrl: https://mealie.staging.myrobertson.net
+        oidc:
+          client_id: "mealie_staging"
     server:
       controllers:
         main:
