@@ -22,14 +22,15 @@ spec:
           user_group: "users"
           admin_group: "proxAdmins"
           auto_redirect: false
-    # workload:
-    #   main:
-    #     podSpec:
-    #       containers:
-    #         main:
-    #           envFrom:
-    #             - secretRef:
-    #                 name: mealie-oidc
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              envFrom:
+                - secretRef:
+                    name: mealie-oidc
+                    expandObjectName: false
     persistence:
       data:
         enabled: true
