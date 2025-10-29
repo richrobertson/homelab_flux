@@ -34,3 +34,10 @@ patches:
     target:
       kind: PersistentVolumeClaim
       name: immich-data-files-pvc
+  - patch: |
+      - op: replace
+        patch: /spec/suspend
+        value: true
+    target:
+      kind: Job
+      name: change-pvc-permissions

@@ -3,6 +3,7 @@ kind: Job
 metadata:
   name: change-pvc-permissions
 spec:
+  suspend: false
   ttlSecondsAfterFinished: 100
   template:
     spec:
