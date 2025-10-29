@@ -6,6 +6,6 @@ resources:
   - imageCatalog.yaml
   - postgres.yaml
   - pvc.yaml
-  - change-pvc-permissions.yaml
+  # - change-pvc-permissions.yaml
   - repository.yaml
   - release.yaml
