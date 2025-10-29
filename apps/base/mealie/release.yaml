@@ -20,6 +20,7 @@ spec:
     cnpg:
       main:
         cluster:
+          instances: 1
           storage:
             storageClass: synology-iscsi-storage
           walStorage:
