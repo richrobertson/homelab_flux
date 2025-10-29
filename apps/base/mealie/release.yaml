@@ -13,15 +13,15 @@ spec:
       api:
         general:
           baseUrl: https://mealie.dev.myrobertson.net
-    workload:
-      main:
-        podSpec:
-          containers:
-            main:
-              envFrom:
-                - secretRef:
-                    name: mealie-oidc
-                    expandObjectName: false
+    # workload:
+    #   main:
+    #     podSpec:
+    #       containers:
+    #         main:
+    #           envFrom:
+    #             - secretRef:
+    #                 name: mealie-oidc
+    #                 expandObjectName: false
     persistence:
       data:
         enabled: true
