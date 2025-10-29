@@ -4,6 +4,13 @@ metadata:
   name: mealie
 spec:
   values:
+
+    service:
+      main:
+        ports:
+          main:
+            port: 10018
+            protocol: http
     mealie:
       api:
         general:
