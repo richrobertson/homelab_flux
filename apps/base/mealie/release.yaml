@@ -9,6 +9,10 @@ spec:
     kind: OCIRepository
     name: mealie
   values:
+    mealie:
+      api:
+        general:
+          baseUrl: https://mealie.dev.myrobertson.net
     persistence:
       data:
         enabled: true

@@ -4,6 +4,10 @@ metadata:
   name: mealie
 spec:
   values:
+    mealie:
+      api:
+        general:
+          baseUrl: https://mealie.staging.myrobertson.net
     server:
       controllers:
         main:
