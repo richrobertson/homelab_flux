@@ -44,7 +44,6 @@ spec:
       storage:
         postgres:
           enabled: true
-          secret_name: 'cluster-authelia-app'
           username: 'authelia'
       
       notifier:
@@ -72,11 +71,9 @@ spec:
               - 'revocation'
               - 'introspection'
               - 'userinfo'
-      
-          allowed_origins:
-            - '*'
-
-          allowed_origins_from_client_redirect_uris: false
+            allowed_origins:
+              - '*'
+            allowed_origins_from_client_redirect_uris: false
     
           clients:
             - client_id: 'mealie_prod'
