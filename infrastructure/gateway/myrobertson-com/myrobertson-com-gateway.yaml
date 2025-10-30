@@ -168,7 +168,7 @@ spec:
         kind: Secret 
 
   - name: tautulli
-    hostname: syncthing.myrobertson.com
+    hostname: tautulli.myrobertson.com
     port: 443
     protocol: HTTPS
     allowedRoutes:
@@ -181,7 +181,7 @@ spec:
         kind: Secret 
 
   - name: whisparr
-    hostname: syncthing.myrobertson.com
+    hostname: whisparr.myrobertson.com
     port: 443
     protocol: HTTPS
     allowedRoutes:
