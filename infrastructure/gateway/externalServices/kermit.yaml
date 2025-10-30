@@ -11,9 +11,9 @@ spec:
   - "kermit.myrobertson.net"
   location: MESH_EXTERNAL
   ports:
-  - name: https
-    number: 5011
-    protocol: HTTPS
+  - name: http
+    number: 5010
+    protocol: HTTP
   resolution: STATIC
 
 
