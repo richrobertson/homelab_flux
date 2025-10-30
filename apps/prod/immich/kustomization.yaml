@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/immich
+  - httpRoute.yaml
 patches:
   - path: immich-values.yaml
     target:
