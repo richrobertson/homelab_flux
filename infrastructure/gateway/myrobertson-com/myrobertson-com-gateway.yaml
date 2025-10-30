@@ -127,3 +127,16 @@ spec:
       certificateRefs:
       - name: sonarr-myrobertson-com-cert
         kind: Secret 
+
+  - name: syncthing
+    hostname: syncthing.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: syncthing-myrobertson-com-cert
+        kind: Secret 
