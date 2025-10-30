@@ -179,3 +179,16 @@ spec:
       certificateRefs:
       - name: tautulli-myrobertson-com-cert
         kind: Secret 
+
+  - name: whisparr
+    hostname: syncthing.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: whisparr-myrobertson-com-cert
+        kind: Secret 
