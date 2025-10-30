@@ -10,6 +10,20 @@ metadata:
 spec:
   gatewayClassName: istio
   listeners:
+
+  - name: auth
+    hostname: auth.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: auth-myrobertson-com-cert
+        kind: Secret 
+
   - name: immich
     hostname: immich.myrobertson.com
     port: 443

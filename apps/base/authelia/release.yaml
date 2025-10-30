@@ -1,0 +1,121 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authelia
+spec:
+  releaseName: authelia
+  chart:
+    spec:
+      chart: authelia
+      sourceRef:
+        kind: HelmRepository
+        name: authelia
+  interval: 50m
+  install:
+    remediation:
+      retries: 10
+  values:
+
+    configMap:
+      authentication_backend:
+        ldap:
+          enabled: true
+          implementation: 'activedirectory'
+          address: 'ldap://rhonda.myrobertson.net'
+          base_dn: 'cn=Users,dc=myrobertson,dc=net'
+          user: 'ldap@myrobertson.net'
+
+      session:
+        name: 'authelia_session'
+        same_site: 'lax'
+        inactivity: '5m'
+        expiration: '1h'
+        remember_me: '1M'
+        cookies:
+          - domain: "myrobertson.com"
+            authelia_url: "https://auth.myrobertson.com"
+
+      access_control:
+        default_policy: 'deny'
+        rules:
+          - domain: '*.myrobertson.com'
+            policy: 'one_factor'
+
+      storage:
+        postgres:
+          enabled: true
+          secret_name: 'cluster-authelia-app'
+          username: 'authelia'
+      
+      notifier:
+        filesystem:
+          enabled: true
+
+      log:
+        level: trace
+
+      identity_providers:
+        oidc:
+          
+          authorization_policies:
+            default:
+              default_policy: one_factor
+              rules:
+              - policy: deny
+                subject: group:lldap_strict_readonly
+    
+          cors:
+            endpoints:
+              - 'authorization'
+              - 'pushed-authorization-request'
+              - 'token'
+              - 'revocation'
+              - 'introspection'
+              - 'userinfo'
+      
+          allowed_origins:
+            - '*'
+
+          allowed_origins_from_client_redirect_uris: false
+    
+          clients:
+            - client_id: 'mealie_prod'
+              client_name: 'Mealie'
+              public: false
+              authorization_policy: 'one_factor'
+              require_pkce: true
+              pkce_challenge_method: 'S256'
+              redirect_uris:
+                - 'https://mealie.myrobertson.com/login'
+              scopes:
+                - 'openid'
+                - 'email'
+                - 'profile'
+                - 'groups'
+              response_types:
+                - 'code'
+              grant_types:
+                - 'authorization_code'
+              access_token_signed_response_alg: 'none'
+              userinfo_signed_response_alg: 'none'
+              token_endpoint_auth_method: 'client_secret_basic'
+            # - client_id: 'mealie_staging'
+            #   client_name: 'Mealie'
+            #   public: false
+            #   authorization_policy: 'one_factor'
+            #   require_pkce: true
+            #   pkce_challenge_method: 'S256'
+            #   redirect_uris:
+            #     - 'https://mealie.staging.myrobertson.net/login'
+            #   scopes:
+            #     - 'openid'
+            #     - 'email'
+            #     - 'profile'
+            #     - 'groups'
+            #   response_types:
+            #     - 'code'
+            #   grant_types:
+            #     - 'authorization_code'
+            #   access_token_signed_response_alg: 'none'
+            #   userinfo_signed_response_alg: 'none'
+            #   token_endpoint_auth_method: 'client_secret_basic'
