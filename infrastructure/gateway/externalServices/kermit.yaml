@@ -12,6 +12,8 @@ kind: HTTPRoute
 metadata:
   name: external-service-kermit-route
   namespace: default
+  annotations:
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
 spec:
   parentRefs:
     - name:  myrobertson-com-gateway # Reference your Gateway resource
