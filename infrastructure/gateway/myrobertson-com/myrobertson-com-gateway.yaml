@@ -37,6 +37,19 @@ spec:
       - name: kermit-myrobertson-com-cert
         kind: Secret 
 
+  - name: gotify
+    hostname: gotify.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: gotify-myrobertson-com-cert
+        kind: Secret 
+
   - name: immich
     hostname: immich.myrobertson.com
     port: 443
@@ -61,4 +74,17 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: mealie-myrobertson-com-cert
+        kind: Secret 
+
+  - name: plex
+    hostname: plex.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: plex-myrobertson-com-cert
         kind: Secret 

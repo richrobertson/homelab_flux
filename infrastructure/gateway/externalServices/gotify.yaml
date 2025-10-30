@@ -2,17 +2,17 @@
 apiVersion: networking.istio.io/v1
 kind: ServiceEntry
 metadata:
-  name: plex-ext
+  name: gotify-ext
   namespace: default
 spec:
   endpoints:
-  - address: 192.168.7.131
+  - address: 192.168.1.215
   hosts:
-  - "plex.myrobertson.net"
+  - "gotify.myrobertson.net"
   location: MESH_EXTERNAL
   ports:
   - name: http
-    number: 32400
+    number: 8180
     protocol: HTTP
   resolution: STATIC
 
@@ -20,7 +20,7 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: plex-ext-route
+  name: gotify-ext-route
   namespace: default
   annotations:
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
@@ -28,7 +28,7 @@ spec:
   parentRefs:
     - name:  myrobertson-com-gateway # Reference your Gateway resource
   hostnames:
-    - "plex.myrobertson.com" # Hostname for which this route applies
+    - "gotify.myrobertson.com" # Hostname for which this route applies
   rules:
     - matches:
         - path:
@@ -37,6 +37,6 @@ spec:
       backendRefs:
         - group: networking.istio.io
           kind: Hostname
-          name: "plex.myrobertson.net"
-          port: 32400
+          name: "gotify.myrobertson.net"
+          port: 8180
           weight: 1
