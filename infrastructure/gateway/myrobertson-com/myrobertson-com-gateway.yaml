@@ -100,4 +100,30 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: plex-myrobertson-com-cert
+        kind: Secret   
+
+  - name: radarr
+    hostname: radarr.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: radarr-myrobertson-com-cert
+        kind: Secret 
+
+  - name: sonarr
+    hostname: sonarr.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: sonarr-myrobertson-com-cert
         kind: Secret 
