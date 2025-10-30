@@ -4,6 +4,5 @@ namespace: external-dns
 resources:
   - imagepullsecrets.yaml
   - namespace.yaml
-  - pdns-apikey.yaml
   - repository.yaml
   - release.yaml
