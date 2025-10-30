@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/mealie
+  - gateway.yaml
 patches:
   - path: mealie-values.yaml
     target:
