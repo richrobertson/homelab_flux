@@ -2,7 +2,7 @@
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: cloudflare-api-key
+  name: cloudflare-api-token
   namespace: external-dns
 spec:
   type: kv-v2
@@ -11,4 +11,4 @@ spec:
   refreshAfter: 60s
   destination:
     create: true
-    name: cloudflare-api-key
+    name: cloudflare-api-token
