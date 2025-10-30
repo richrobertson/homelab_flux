@@ -2,17 +2,17 @@
 apiVersion: networking.istio.io/v1
 kind: ServiceEntry
 metadata:
-  name: auth-ext
+  name: plex-ext
   namespace: default
 spec:
   endpoints:
-  - address: 192.168.7.36
+  - address: 192.168.7.131
   hosts:
-  - "authelia.myrobertson.net"
+  - "plex.myrobertson.net"
   location: MESH_EXTERNAL
   ports:
   - name: http
-    number: 9091
+    number: 32400
     protocol: HTTP
   resolution: STATIC
 
@@ -20,7 +20,7 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: auth-ext-route
+  name: plext-ext-route
   namespace: default
   annotations:
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
@@ -28,7 +28,7 @@ spec:
   parentRefs:
     - name:  myrobertson-com-gateway # Reference your Gateway resource
   hostnames:
-    - "auth.myrobertson.com" # Hostname for which this route applies
+    - "plex.myrobertson.com" # Hostname for which this route applies
   rules:
     - matches:
         - path:
@@ -37,6 +37,6 @@ spec:
       backendRefs:
         - group: networking.istio.io
           kind: Hostname
-          name: "authelia.myrobertson.net"
-          port: 9091
+          name: "plex.myrobertson.net"
+          port: 32400
           weight: 1
