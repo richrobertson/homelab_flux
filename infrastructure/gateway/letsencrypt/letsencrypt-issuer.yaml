@@ -1,6 +1,6 @@
 ---
 apiVersion: cert-manager.io/v1
-kind: Cluster-Issuer
+kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod
   namespace: default
