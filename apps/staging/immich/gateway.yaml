@@ -5,14 +5,14 @@ metadata:
   name: immich
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
-    cert-manager.io/common-name: immich.dev.myrobertson.net
+    cert-manager.io/common-name: immich.staging.myrobertson.net
     cert-manager.io/private-key-algorithm: "ECDSA"
     cert-manager.io/alt-names: immich.myrobertson.com
 spec:
   gatewayClassName: istio
   listeners:
   - name: immich
-    hostname: immich.dev.myrobertson.net
+    hostname: immich.staging.myrobertson.net
     port: 443
     protocol: HTTPS
     allowedRoutes:
@@ -26,7 +26,7 @@ spec:
     labels:
       istio-injection: enabled
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: immich.dev.myrobertson.net
+      external-dns.alpha.kubernetes.io/hostname: immich.staging.myrobertson.net
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -67,7 +67,7 @@ metadata:
 spec:
   parentRefs:
   - name: immich
-  hostnames: ["immich.dev.myrobertson.net"]
+  hostnames: ["immich.staging.myrobertson.net"]
   rules:
   - matches:
     - path:
