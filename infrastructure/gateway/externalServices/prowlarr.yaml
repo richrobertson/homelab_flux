@@ -6,7 +6,7 @@ metadata:
   namespace: default
 spec:
   endpoints:
-  - address: 192.168.7.202
+  - address: 192.168.7.7
   hosts:
   - "prowlarr.myrobertson.net"
   location: MESH_EXTERNAL
