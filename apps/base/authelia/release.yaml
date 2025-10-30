@@ -15,7 +15,8 @@ spec:
     remediation:
       retries: 10
   values:
-
+    secret:
+      existingSecret: authelia-secret
     configMap:
       authentication_backend:
         ldap:
