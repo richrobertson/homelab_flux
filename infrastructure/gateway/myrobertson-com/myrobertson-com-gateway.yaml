@@ -24,6 +24,19 @@ spec:
       - name: auth-myrobertson-com-cert
         kind: Secret 
 
+  - name: kermit
+    hostname: kermit.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: kermit-myrobertson-com-cert
+        kind: Secret 
+
   - name: immich
     hostname: immich.myrobertson.com
     port: 443
