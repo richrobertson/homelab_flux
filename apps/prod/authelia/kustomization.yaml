@@ -3,14 +3,14 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/authelia
-
+patches:
   # - path: authelia-values.yaml
   #   target:
   #     kind: HelmRelease
-  # - patch: |
-  #     - op: replace
-  #       path: /spec/path
-  #       value: oidc/staging
-  #   target:
-  #     kind: VaultStaticSecret
-  #     name: authelia-oidc-secret
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: authelia/prod
+    target:
+      kind: VaultStaticSecret
+      name: authelia-secret
