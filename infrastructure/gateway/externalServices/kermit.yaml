@@ -1,16 +1,28 @@
-apiVersion: v1
-kind: Service
+
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
 metadata:
-  name: external-service-kermit
+  name: kermit-ext
   namespace: default
 spec:
-  type: ExternalName
-  externalName: 192.168.1.215
+  endpoints:
+  - address: 192.168.1.141
+  hosts:
+  - "kermit.myrobertson.net"
+  location: MESH_EXTERNAL
+  ports:
+  - name: https
+    number: 5011
+    protocol: HTTPS
+  resolution: STATIC
+
+
+
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: external-service-kermit-route
+  name: kermit-ext-route
   namespace: default
   annotations:
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
@@ -25,5 +37,8 @@ spec:
             type: PathPrefix
             value: "/"
       backendRefs:
-        - name: external-service-kermit # Reference the ExternalName Service
-          port: 5011 # Or the appropriate port for the external service
+        - group: networking.istio.io
+          kind: Hostname
+          name: "kermit.myrobertson.net"
+          port: 5011
+          weight: 1
