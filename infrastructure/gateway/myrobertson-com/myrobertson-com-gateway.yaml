@@ -166,3 +166,16 @@ spec:
       certificateRefs:
       - name: syncthing-myrobertson-com-cert
         kind: Secret 
+
+  - name: tautulli
+    hostname: syncthing.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: tautulli-myrobertson-com-cert
+        kind: Secret 
