@@ -78,6 +78,7 @@ spec:
           clients:
             - client_id: 'mealie_prod'
               client_name: 'Mealie'
+              client_secret: '$pbkdf2-sha512$310000$5yN82gJUtFGGXq1KjY8WPQ$WKmNQ4/FADfr/X0csG6jFB1Z5Jvw8qkyQQoYbtoaLCf8XsCe3yyZ/Nw4jj8wLRdtYIVXBN4pa6Fir/gzsQ9kKg'
               public: false
               authorization_policy: 'one_factor'
               require_pkce: true
