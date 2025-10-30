@@ -180,6 +180,32 @@ spec:
       - name: tautulli-myrobertson-com-cert
         kind: Secret 
 
+  - name: trilium
+    hostname: trilium.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: trilium-myrobertson-com-cert
+        kind: Secret 
+
+  - name: vault
+    hostname: vault.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: vault-myrobertson-com-cert
+        kind: Secret 
+
   - name: whisparr
     hostname: whisparr.myrobertson.com
     port: 443
