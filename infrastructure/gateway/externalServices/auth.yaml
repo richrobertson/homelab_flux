@@ -2,17 +2,17 @@
 apiVersion: networking.istio.io/v1
 kind: ServiceEntry
 metadata:
-  name: kermit-ext
+  name: auth-ext
   namespace: default
 spec:
   endpoints:
   - address: 192.168.1.141
   hosts:
-  - "kermit.myrobertson.net"
+  - "authelia.myrobertson.net"
   location: MESH_EXTERNAL
   ports:
   - name: http
-    number: 5010
+    number: 9091
     protocol: HTTP
   resolution: STATIC
 
@@ -20,7 +20,7 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: kermit-ext-route
+  name: auth-ext-route
   namespace: default
   annotations:
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
@@ -28,7 +28,7 @@ spec:
   parentRefs:
     - name:  myrobertson-com-gateway # Reference your Gateway resource
   hostnames:
-    - "kermit.myrobertson.com" # Hostname for which this route applies
+    - "auth.myrobertson.com" # Hostname for which this route applies
   rules:
     - matches:
         - path:
@@ -37,6 +37,6 @@ spec:
       backendRefs:
         - group: networking.istio.io
           kind: Hostname
-          name: "kermit.myrobertson.net"
-          port: 5010
+          name: "authelia.myrobertson.net"
+          port: 9091
           weight: 1
