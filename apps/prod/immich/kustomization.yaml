@@ -10,26 +10,6 @@ patches:
       kind: HelmRelease
   - patch: |
       - op: replace
-        path: /metadata/annotations/cert-manager.io~1common-name
-        value: immich.prod.myrobertson.net
-      - op: replace
-        path: /spec/listeners/0/hostname
-        value: immich.prod.myrobertson.net
-      - op: replace
-        path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
-        value: immich.prod.myrobertson.net
-    target:
-      kind: Gateway
-      name: immich
-  - patch: |
-      - op: replace
-        path: /spec/hostnames/0
-        value: immich.prod.myrobertson.net
-    target:
-      kind: HTTPRoute
-      name: immich
-  - patch: |
-      - op: replace
         path: /spec/resources/requests/storage
         value: 300Gi
     target:
