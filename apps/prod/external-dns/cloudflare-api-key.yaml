@@ -2,13 +2,13 @@
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: cloudflare-api-token-secret
-  namespace: default
+  name: cloudflare-api-key
+  namespace: external-dns
 spec:
   type: kv-v2
   mount: secret
-  path: cloudflare/letsencrypt
+  path:  cloudflare/external-dns
   refreshAfter: 60s
   destination:
     create: true
-    name: cloudflare-api-token-secret
+    name: cloudflare-api-key

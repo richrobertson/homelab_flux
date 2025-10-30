@@ -24,29 +24,8 @@ spec:
     #     - name: imagepullsecrets
     sources: 
       - gateway-httproute
-    provider:
-      name: pdns
-    extraArgs:
-        - --source=service # or ingress or both
-        - --pdns-server=http://192.168.7.201:8001
-        - --pdns-server-id=localhost
-        - --pdns-api-key=$(PDNS_API_KEY) 
-    logLevel: debug
+    logLevel: info
     logFormat: json
-    extraVolumes: # to mount the PDNS API key secret
-      - name: pdns-apikey
-        secret:
-          secretName: external-dns-pdns-apikey
-    extraVolumeMounts:
-      - name: pdns-apikey
-        mountPath: /var/secrets/pdns
-        readOnly: true
-    env: # to set the PDNS API key from the mounted secret
-      - name: PDNS_API_KEY
-        valueFrom:
-          secretKeyRef:
-            name: external-dns-pdns-apikey
-            key: pdns-api-key
     rbac:  # @schema additionalProperties: true
       # -- If `true`, create a `ClusterRole` & `ClusterRoleBinding` with access to the Kubernetes API.
       create: true
