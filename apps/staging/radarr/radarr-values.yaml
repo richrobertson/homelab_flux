@@ -1,0 +1,16 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: radarr
+spec:
+  values:
+
+    radarr:
+      api:
+        general:
+          baseUrl: https://radarr.staging.myrobertson.net
+    server:
+      controllers:
+        main:
+          replicas: 1
+   
