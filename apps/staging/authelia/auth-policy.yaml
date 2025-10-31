@@ -5,13 +5,14 @@ metadata:
   namespace: default
 spec:
   targetRefs:
-  - kind: Service
-    group: ""
-    name: radarr
+  - kind: Gateway
+    group: gateway.networking.k8s.io
+    name: waypoint
   action: 'CUSTOM'
   provider:
     name:  'authelia'
   rules:
     - to:
         - operation:
-            paths: ["/"]
+            hosts:
+              - 'radarr.staging.myrobertson.net'
