@@ -13,11 +13,4 @@ spec:
       data:
         enabled: true
         storageClass: synology-iscsi-storage
-        targetSelector:
-          main:
-            main:
-              mountPath: /config
-            exportarr:
-              mountPath: /config
-              readOnly: true
         
