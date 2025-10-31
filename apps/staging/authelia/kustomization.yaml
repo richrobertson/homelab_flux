@@ -4,6 +4,7 @@ namespace: default
 resources:
   - ../../base/authelia
   - gateway.yaml
+  - auth-policy.yaml
 patches:
   # - path: authelia-values.yaml
   #   target:

@@ -1,0 +1,18 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: productpage-waypoint
+  namespace: default
+spec:
+  targetRefs:
+  - kind: Service
+    group: ""
+    name: radarr
+  action: 'CUSTOM'
+  provider:
+    name:  'authelia'
+  rules:
+    - to:
+        - operation:
+            hosts:
+              - 'radarr.staging.myrobertson.net'
