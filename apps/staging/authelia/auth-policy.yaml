@@ -1,7 +1,7 @@
 apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
 metadata:
-  name: productpage-waypoint
+  name: auth-policy-waypoint
   namespace: default
 spec:
   targetRefs:
@@ -14,5 +14,4 @@ spec:
   rules:
     - to:
         - operation:
-            hosts:
-              - 'radarr.staging.myrobertson.net'
+            paths: ["/"]
