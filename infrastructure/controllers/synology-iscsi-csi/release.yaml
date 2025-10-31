@@ -19,7 +19,7 @@ spec:
         # One of true or false (default):
         disabled: false
         # One of true or false (default):
-        isDefault: false
+        isDefault: true
         # One of "Retain" or "Delete" (default):
         reclaimPolicy: Retain
         # One of "WaitForFirstConsumer" or "Immediate" (default):
@@ -34,7 +34,7 @@ spec:
           mountPermissions: '0777'
       synology-iscsi-storage-delete:
         reclaimPolicy: Delete
-        isDefault: true
+        isDefault: false
         parameters:
           mountPermissions: '0777'
     volumeSnapshotClasses: 

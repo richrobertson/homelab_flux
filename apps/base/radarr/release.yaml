@@ -8,9 +8,4 @@ spec:
   chartRef:
     kind: OCIRepository
     name: radarr
-  values:
-    persistence:
-      data:
-        enabled: true
-        storageClass: synology-iscsi-storage
         
