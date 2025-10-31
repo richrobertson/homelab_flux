@@ -7,5 +7,4 @@ resources:
   - release.yaml
   - secret.yaml
   - istio-waypoint.yaml
-patchesStrategicMerge:
-  - default-ns-patch.yaml
+  - default-ns.yaml 
