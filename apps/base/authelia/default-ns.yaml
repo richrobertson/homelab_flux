@@ -3,6 +3,7 @@ kind: Namespace
 metadata:
   name: default
   labels:
+    istio.io/dataplane-mode: ambient
     istio.io/use-waypoint: waypoint
     pod-security.kubernetes.io/audit: privileged
     pod-security.kubernetes.io/enforce: privileged
