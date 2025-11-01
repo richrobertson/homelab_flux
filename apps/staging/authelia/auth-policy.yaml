@@ -7,7 +7,7 @@ spec:
   targetRefs:
   - kind: Gateway
     group: gateway.networking.k8s.io
-    name: waypoint
+    name: radarr
   action: 'CUSTOM'
   provider:
     name:  'authelia'
