@@ -36,6 +36,7 @@ spec:
               - 'authelia-*'
             includeAdditionalHeadersInCheck:
               X-Forwarded-Proto: '%REQ(:SCHEME)%'
+              X-Authelia-URL: 'https://auth.staging.myrobertson.net'
             headersToDownstreamOnDeny:
               - 'set-cookie'
             headersToDownstreamOnAllow:
