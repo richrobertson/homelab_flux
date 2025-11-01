@@ -35,7 +35,7 @@ spec:
         cookies:
           - domain: "myrobertson.com"
             authelia_url: "https://auth.myrobertson.com"
-          - domain: "staging.myrobertson.net"
+          - domain: "auth.staging.myrobertson.net"
             authelia_url: "https://auth.staging.myrobertson.net"
 
       access_control:
