@@ -37,6 +37,8 @@ spec:
             authelia_url: "https://auth.myrobertson.com"
           - domain: "auth.staging.myrobertson.net"
             authelia_url: "https://auth.staging.myrobertson.net"
+          - domain: "authelia.default.svc.cluster.local"
+            authelia_url: "https://auth.staging.myrobertson.net"
 
       access_control:
         default_policy: 'deny'
