@@ -7,4 +7,6 @@ spec:
     workload:
       main:
         replicas: 1
-   
+    persistence:
+      downloads:
+        enabled: true
