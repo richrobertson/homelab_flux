@@ -27,3 +27,23 @@ spec:
         existingClaim: syncthing-downloads
         mountPath: /var/downloads
         readOnly: true
+      
+      media:
+        enabled: false
+        type: pvc
+        mountPath: /media
+        targetSelectAll: true
+        static:
+          mode: nfs
+          server: "192.168.1.215"
+          share: "/volume1/radarr/radarr"
+      
+      plex:
+        enabled: false
+        type: pvc
+        mountPath: /plex
+        targetSelectAll: true
+        static:
+          mode: nfs
+          server: "192.168.1.215"
+          share: "/volume1/plex"

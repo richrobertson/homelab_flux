@@ -12,4 +12,9 @@ spec:
     workload:
       main:
         replicas: 1
+    persistence:
+      media:
+        enabled: true
+      plex:
+        enabled: true
    
