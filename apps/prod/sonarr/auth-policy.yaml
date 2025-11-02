@@ -1,7 +1,7 @@
 apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
 metadata:
-  name: auth-policy-waypoint
+  name: auth-policy-sonarr
   namespace: default
 spec:
   targetRefs:
