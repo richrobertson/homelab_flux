@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/prowlarr
+  - gateway.yaml
+patches:
+  - path: prowlarr-values.yaml
+    target:
+      kind: HelmRelease
+  - patch: |
+      - op: replace
+        path: /metadata/annotations/cert-manager.io~1common-name
+        value: prowlarr.staging.myrobertson.net
+      - op: replace
+        path: /spec/listeners/0/hostname
+        value: prowlarr.staging.myrobertson.net
+      - op: replace
+        path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
+        value: prowlarr.staging.myrobertson.net
+    target:
+      kind: Gateway
+      name: prowlarr
+  - patch: |
+      - op: replace
+        path: /spec/hostnames/0
+        value: prowlarr.staging.myrobertson.net
+    target:
+      kind: HTTPRoute
+      name: prowlarr

@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: prowlarr
+spec:
+  values:
+
+    prowlarr:
+      api:
+        general:
+          baseUrl: https://prowlarr.myrobertson.com
+    workload:
+      main:
+        replicas: 0
+   
