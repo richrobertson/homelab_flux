@@ -7,4 +7,4 @@ resources:
   - release.yaml
   - secret.yaml
   #- istio-waypoint.yaml
-  - default-ns.yaml ≈
+  - default-ns.yaml
