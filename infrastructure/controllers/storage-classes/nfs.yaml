@@ -4,7 +4,7 @@ metadata:
   name: synostorage-nfs-delete
 provisioner: csi.san.synology.com
 parameters:
-  protocol: "nfs"
+  protocol: nfs
   dsm: "192.168.1.215"
   location: '/volume1'
   mountPermissions: '0755'
