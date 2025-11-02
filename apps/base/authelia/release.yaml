@@ -57,7 +57,7 @@ spec:
           enabled: true
 
       log:
-        level: trace
+        level: debug
 
       identity_providers:
         oidc:
