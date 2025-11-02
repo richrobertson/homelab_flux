@@ -23,7 +23,9 @@ spec:
       config:
         storageClass: synology-iscsi-storage
       downloads:
+        enabled: true
         storageClass: synology-iscsi-storage
+        accessModes: ReadWriteMany
       immich-data-files-pvc:
         enabled: true
         existingClaim: immich-data-files-pvc
