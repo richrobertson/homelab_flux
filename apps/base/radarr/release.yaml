@@ -25,7 +25,7 @@ spec:
       downloads:
         enabled: true
         existingClaim: syncthing-downloads
-        mountPath: /downloads/torrents
+        mountPath: /downloads/
         readOnly: true
       
       media:
