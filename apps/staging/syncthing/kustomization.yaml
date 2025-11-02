@@ -3,7 +3,11 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/syncthing
+  - gateway.yaml
 patches:
+  - path: sonarr-values.yaml
+    target:
+      kind: HelmRelease
   - patch: |
       - op: replace
         path: /metadata/annotations/cert-manager.io~1common-name

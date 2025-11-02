@@ -22,11 +22,13 @@ spec:
     persistence:
       config:
         storageClass: synology-iscsi-storage
+      downloads:
+        storageClass: synology-iscsi-storage
       immich-data-files-pvc:
         enabled: true
         existingClaim: immich-data-files-pvc
         mountPath: /var/immich-data
-        readOnly: false
+        readOnly: true
     service:
       listeners:
         enabled: true

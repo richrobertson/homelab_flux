@@ -5,3 +5,4 @@ infrastructure/gateway/externalServices/sonarr.yaml
 infrastructure/gateway/externalServices/radarr.yaml
 infrastructure/gateway/externalServices/prowlarr.yaml
 infrastructure/gateway/externalServices/auth.yaml
+infrastructure/gateway/externalServices/syncthing.yaml
