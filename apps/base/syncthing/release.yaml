@@ -24,7 +24,7 @@ spec:
         storageClass: synology-iscsi-storage
       downloads:
         enabled: true
-        storageClass: synology-iscsi-storage
+        storageClass: synostorage-nfs-delete
         accessModes: ReadWriteMany
         mountPath: /var/downloads
       immich-data-files-pvc:

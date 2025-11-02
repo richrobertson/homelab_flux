@@ -7,7 +7,4 @@ spec:
     workload:
       main:
         replicas: 1
-    persistence:
-      downloads:
-        size: 3000Gi
    
