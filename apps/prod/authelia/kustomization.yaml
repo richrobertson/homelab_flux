@@ -4,7 +4,6 @@ namespace: default
 resources:
   - change-pvc-permissions.yaml
   - httpRoute.yaml
-  - auth-policy.yaml
   - ../../base/authelia
 patches:
   # - path: authelia-values.yaml
