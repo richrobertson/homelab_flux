@@ -32,18 +32,14 @@ spec:
         enabled: false
         type: nfs
         mountPath: /media
+        path: /volume1/radarr/radarr
+        server: scooter.myrobertson.net
         targetSelectAll: true
-        static:
-          mode: nfs
-          server: "scooter.myrobertson.net"
-          share: "/volume1/radarr/radarr"
-      
+
       plex:
         enabled: false
         type: nfs
         mountPath: /plex
+        server: "scooter.myrobertson.net"
+        path: "/volume1/plex"
         targetSelectAll: true
-        static:
-          mode: nfs
-          server: "scooter.myrobertson.net"
-          share: "/volume1/plex"
