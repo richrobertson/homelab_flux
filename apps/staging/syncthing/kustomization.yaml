@@ -5,7 +5,7 @@ resources:
   - ../../base/syncthing
   - gateway.yaml
 patches:
-  - path: sonarr-values.yaml
+  - path: syncthing-values.yaml
     target:
       kind: HelmRelease
   - patch: |
