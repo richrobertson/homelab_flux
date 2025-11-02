@@ -4,6 +4,9 @@ metadata:
   name: sonarr
 spec:
   values:
+    workload:
+      main:
+        replicas: 1
     persistence:
       downloads:
         size: 3000Gi
