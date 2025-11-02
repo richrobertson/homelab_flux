@@ -13,4 +13,7 @@ spec:
       controllers:
         main:
           replicas: 0
+    workload:
+      main:
+        replicaCount: 0
    
