@@ -30,7 +30,7 @@ spec:
       
       media:
         enabled: false
-        type: pvc
+        type: nfs
         mountPath: /media
         targetSelectAll: true
         static:
@@ -40,7 +40,7 @@ spec:
       
       plex:
         enabled: false
-        type: pvc
+        type: nfs
         mountPath: /plex
         targetSelectAll: true
         static:
