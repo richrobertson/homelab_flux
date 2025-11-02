@@ -1,14 +1,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: radarr
+  name: sonarr
 spec:
   values:
 
-    radarr:
+    sonarr:
       api:
         general:
-          baseUrl: https://radarr.myrobertson.com
+          baseUrl: https://sonarr.myrobertson.com
     server:
       controllers:
         main:

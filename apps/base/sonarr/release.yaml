@@ -1,0 +1,23 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sonarr
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: sonarr
+  values:
+    persistence:
+      config:
+        enabled: true
+        storageClass: synology-iscsi-storage
+        accessModes: ReadWriteMany
+        targetSelector:
+          main:
+            main:
+              mountPath: /config
+            exportarr:
+              mountPath: /config
+              readOnly: true
