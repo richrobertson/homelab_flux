@@ -9,11 +9,7 @@ spec:
       api:
         general:
           baseUrl: https://radarr.myrobertson.com
-    server:
-      controllers:
-        main:
-          replicas: 0
     workload:
       main:
-        replicaCount: 0
+        replicas: 0
    
