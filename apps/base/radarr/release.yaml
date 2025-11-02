@@ -13,6 +13,7 @@ spec:
       config:
         enabled: true
         storageClass: synology-iscsi-storage
+        accessModes: ReadWriteMany
         targetSelector:
           main:
             main:
