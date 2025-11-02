@@ -25,5 +25,5 @@ spec:
       downloads:
         enabled: true
         existingClaim: syncthing-downloads
-        mountPath: /downloads
+        mountPath: /var/downloads
         readOnly: true
