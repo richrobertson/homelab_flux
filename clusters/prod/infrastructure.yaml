@@ -46,6 +46,13 @@ spec:
   patches:
     - patch: |
         - op: replace
+          path: /spec/values/meshConfig/extensionProviders/0/envoyExtAuthzHttp/includeAdditionalHeadersInCheck/X-Authelia-URL
+          value: 'https://auth.myrobertson.com'
+      target:
+        kind: HelmRelease
+        name: istio-istiod
+    - patch: |
+        - op: replace
           path: /spec/path
           value: monitoring/gotify/prod
       target:
