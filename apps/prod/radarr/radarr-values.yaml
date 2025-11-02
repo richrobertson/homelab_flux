@@ -11,5 +11,5 @@ spec:
           baseUrl: https://radarr.myrobertson.com
     workload:
       main:
-        replicas: 0
+        replicas: 1
    
