@@ -15,6 +15,9 @@ spec:
     remediation:
       retries: 10
   values:
+    pod:
+      kind: Deployment
+      replicas: 1
     secret:
       existingSecret: authelia-secret
     configMap:
@@ -37,9 +40,6 @@ spec:
             authelia_url: "https://auth.myrobertson.com"
           - domain: "myrobertson.net"
             authelia_url: "https://auth.staging.myrobertson.net"
-        redis:
-          enabled: true
-          deploy: true
 
       access_control:
         default_policy: 'deny'
