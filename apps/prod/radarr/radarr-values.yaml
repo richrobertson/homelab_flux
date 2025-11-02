@@ -17,4 +17,6 @@ spec:
         enabled: true
       plex:
         enabled: true
+      downloads:
+        enabled: true
    
