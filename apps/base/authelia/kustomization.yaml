@@ -6,5 +6,5 @@ resources:
   - repository.yaml
   - release.yaml
   - secret.yaml
-  - istio-waypoint.yaml
+  #- istio-waypoint.yaml
   - default-ns.yaml 
