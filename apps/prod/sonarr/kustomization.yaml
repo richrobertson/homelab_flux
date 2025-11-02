@@ -6,7 +6,7 @@ resources:
   - httpRoute.yaml
   - auth-policy.yaml
 patches:
-  - path: sonarr-values.yaml
+  - path: helm-values.yaml
     target:
       kind: HelmRelease
   - patch: |
