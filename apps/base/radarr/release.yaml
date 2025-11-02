@@ -35,7 +35,7 @@ spec:
         targetSelectAll: true
         static:
           mode: nfs
-          server: "scooter.myrobertson.net:"
+          server: "scooter.myrobertson.net"
           share: "/volume1/radarr/radarr"
       
       plex:
@@ -45,5 +45,5 @@ spec:
         targetSelectAll: true
         static:
           mode: nfs
-          server: "scooter.myrobertson.net:"
+          server: "scooter.myrobertson.net"
           share: "/volume1/plex"
