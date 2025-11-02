@@ -22,11 +22,15 @@ spec:
     persistence:
       config:
         storageClass: synology-iscsi-storage
+      
       downloads:
-        enabled: true
-        storageClass: synology-iscsi-storage-delete
-        accessModes: ReadWriteMany
+        enabled: false
+        type: nfs
         mountPath: /var/downloads
+        path: /volume1/downloads/
+        server: scooter.myrobertson.net
+        targetSelectAll: true
+
       immich-data-files-pvc:
         enabled: true
         existingClaim: immich-data-files-pvc

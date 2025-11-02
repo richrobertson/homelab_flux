@@ -22,11 +22,14 @@ spec:
               mountPath: /config
               readOnly: true
       
+      
       downloads:
-        enabled: true
-        existingClaim: syncthing-downloads
-        mountPath: /downloads/
-        readOnly: true
+        enabled: false
+        type: nfs
+        mountPath: /var/downloads
+        path: /volume1/downloads/
+        server: scooter.myrobertson.net
+        targetSelectAll: true
       
       media:
         enabled: false
