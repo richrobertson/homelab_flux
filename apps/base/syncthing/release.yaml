@@ -26,6 +26,7 @@ spec:
         enabled: true
         storageClass: synology-iscsi-storage
         accessModes: ReadWriteMany
+        mountPath: /var/downloads
       immich-data-files-pvc:
         enabled: true
         existingClaim: immich-data-files-pvc
