@@ -21,3 +21,9 @@ spec:
             exportarr:
               mountPath: /config
               readOnly: true
+      
+      downloads:
+        enabled: true
+        existingClaim: syncthing-downloads
+        mountPath: /var/downloads
+        readOnly: true
