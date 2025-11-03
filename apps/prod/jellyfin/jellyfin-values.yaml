@@ -9,3 +9,14 @@ spec:
   test:
     enable: false
   values:
+    # -- Additional volumes to mount in the Jellyfin pod.
+    volumes: 
+      - name: xxx
+        nfs:
+          path: /volume1/janice/xxx
+          server: scooter.myrobertson.net
+
+    # -- Additional volume mounts for the Jellyfin container.
+    volumeMounts: 
+      - name: xxx
+        mountPath: /var/xxx
