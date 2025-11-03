@@ -18,4 +18,4 @@ spec:
         value: /
     backendRefs:
     - name: overseerr
-      port: 9696
+      port: 5055
