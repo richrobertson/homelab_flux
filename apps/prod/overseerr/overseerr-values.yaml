@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: overseerr
+spec:
+  values:
+
+    overseerr:
+      api:
+        general:
+          baseUrl: https://overseerr.myrobertson.com
+    workload:
+      main:
+        replicas: 0
+   
