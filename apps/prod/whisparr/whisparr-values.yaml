@@ -11,7 +11,7 @@ spec:
           baseUrl: https://whisparr.myrobertson.com
     workload:
       main:
-        replicas: 0
+        replicas: 1
     persistence:
       media:
         enabled: true
