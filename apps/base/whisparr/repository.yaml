@@ -6,7 +6,7 @@ spec:
   interval: 1h
   url: oci://oci.trueforge.org/truecharts/whisparr
   ref:
-    semver: ">=22.x"
+    semver: ">=13.x"
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
