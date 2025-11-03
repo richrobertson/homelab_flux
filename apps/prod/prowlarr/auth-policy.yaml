@@ -14,5 +14,6 @@ spec:
   rules:
     - to:
         - operation:
+            notPaths: ["/api/*"]
             hosts:
               - 'prowlarr.myrobertson.com'
