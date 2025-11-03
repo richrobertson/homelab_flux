@@ -21,3 +21,19 @@ spec:
             exportarr:
               mountPath: /config
               readOnly: true
+      
+      downloads:
+        enabled: false
+        type: nfs
+        mountPath: /Downloads
+        path: /volume1/downloads/torrents
+        server: scooter.myrobertson.net
+        targetSelectAll: true
+      
+      media:
+        enabled: false
+        type: nfs
+        mountPath: /media
+        path: /volume1/radarr/sonarr
+        server: scooter.myrobertson.net
+        targetSelectAll: true

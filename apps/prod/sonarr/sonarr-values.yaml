@@ -11,5 +11,10 @@ spec:
           baseUrl: https://sonarr.myrobertson.com
     workload:
       main:
-        replicas: 0
+        replicas: 1
+    persistence:
+      media:
+        enabled: true
+      downloads:
+        enabled: true
    
