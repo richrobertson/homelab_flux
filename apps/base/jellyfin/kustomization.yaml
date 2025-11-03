@@ -4,4 +4,3 @@ namespace: default
 resources:
   - repository.yaml
   - release.yaml
-  - gateway.yaml
