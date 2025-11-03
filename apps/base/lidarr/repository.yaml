@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: lidarr
+spec:
+  interval: 1h
+  url: oci://oci.trueforge.org/truecharts/lidarr
+  ref:
+    semver: ">=13.x"
+  layerSelector:
+    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
+    operation: copy

@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: lidarr
+spec:
+  values:
+
+    lidarr:
+      api:
+        general:
+          baseUrl: https://lidarr.staging.myrobertson.net
+    workload:
+      main:
+        replicas: 0
+   

@@ -1,0 +1,39 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: lidarr
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: lidarr
+  values:
+    persistence:
+      config:
+        enabled: true
+        storageClass: synology-iscsi-storage
+        accessModes: ReadWriteMany
+        targetSelector:
+          main:
+            main:
+              mountPath: /config
+            exportarr:
+              mountPath: /config
+              readOnly: true
+      
+      downloads:
+        enabled: false
+        type: nfs
+        mountPath: /downloads
+        path: /volume1/downloads/torrents
+        server: scooter.myrobertson.net
+        targetSelectAll: true
+      
+      media:
+        enabled: false
+        type: nfs
+        mountPath: /music
+        path: /volume1/plex/Music
+        server: scooter.myrobertson.net
+        targetSelectAll: true
