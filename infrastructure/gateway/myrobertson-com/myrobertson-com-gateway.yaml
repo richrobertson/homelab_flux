@@ -75,7 +75,20 @@ spec:
       certificateRefs:
       - name: immich-myrobertson-com-cert
         kind: Secret 
-      
+
+  - name: lidarr
+    hostname: lidarr.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: lidarr-myrobertson-com-cert
+        kind: Secret   
+
   - name: mealie
     hostname: mealie.myrobertson.com
     port: 443
