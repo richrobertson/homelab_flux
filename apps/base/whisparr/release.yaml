@@ -34,6 +34,6 @@ spec:
         enabled: false
         type: nfs
         mountPath: /xxx
-        path: /volume1/remotes/completed_xxx_janice/completed
+        path: /volume1/janice/xxx
         server: scooter.myrobertson.net
         targetSelectAll: true
