@@ -49,6 +49,7 @@ spec:
           dsm: "192.168.1.141"
           fsType: btrfs
           location: /volume1
+          type: thin
           mountPermissions: '0777'
       synology-iscsi-storage-delete:
         reclaimPolicy: Delete
