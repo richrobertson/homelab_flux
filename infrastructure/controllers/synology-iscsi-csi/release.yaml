@@ -47,10 +47,9 @@ spec:
         # Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
         parameters:
           dsm: kermit.myrobertson.net
-          fsType: btrfs
+          fsType: ext4
           location: /volume1
-          type: thin
-          mountPermissions: '0777'
+          protocol: iSCSI
       synology-iscsi-storage-delete:
         reclaimPolicy: Delete
         isDefault: false
