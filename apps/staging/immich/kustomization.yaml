@@ -20,7 +20,7 @@ patches:
         path: /spec/postgresql/shared_preload_libraries/-
         value: "vchord.so"
       - op: replace
-        path: /spec/postgresql/imageName
+        path: /spec/imageName
         value: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     target:
       kind: Cluster
