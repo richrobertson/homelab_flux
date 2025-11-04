@@ -11,5 +11,5 @@ spec:
           baseUrl: https://whisparr.staging.myrobertson.net
     workload:
       main:
-        replicas: 0
+        replicas: 1
    
