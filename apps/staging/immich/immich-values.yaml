@@ -9,7 +9,7 @@ spec:
         containers:
           main:
             image:
-              tag: v2.2.2
+              tag: v1.144.1
     server:
       controllers:
         main:
