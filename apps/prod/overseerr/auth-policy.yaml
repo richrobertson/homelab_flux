@@ -14,6 +14,6 @@ spec:
   rules:
     - to:
         - operation:
-            notPaths: ["/{*}/api"]
+            notPaths: ["/api/v1/*"]
             hosts:
               - 'overseerr.myrobertson.com'
