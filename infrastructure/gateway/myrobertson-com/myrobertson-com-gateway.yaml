@@ -76,8 +76,8 @@ spec:
       - name: immich-myrobertson-com-cert
         kind: Secret 
 
-  - name: jellfin
-    hostname: jellfin.myrobertson.com
+  - name: jellyfin
+    hostname: jellyfin.myrobertson.com
     port: 443
     protocol: HTTPS
     allowedRoutes:
@@ -86,7 +86,7 @@ spec:
     tls:
       mode: Terminate
       certificateRefs:
-      - name: jellfin-myrobertson-com-cert
+      - name: jellyfin-myrobertson-com-cert
         kind: Secret 
 
   - name: lidarr

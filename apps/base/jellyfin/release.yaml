@@ -25,7 +25,3 @@ spec:
         storageClass: synology-iscsi-storage
         accessMode: ReadWriteMany
         size: 10Gi
-      media:
-        storageClass: synology-iscsi-storage
-        accessMode: ReadWriteMany
-        size: 200Gi
