@@ -28,7 +28,7 @@ spec:
         # If not present, some location will be chosen to create volumes with the filesystem type ext4.
         # Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
         parameters:
-          dsm: 192.168.1.215
+          dsm: "192.168.1.215"
           fsType: ext4
           location: /volume1
           mountPermissions: '0777'
