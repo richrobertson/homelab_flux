@@ -32,6 +32,24 @@ spec:
           fsType: ext4
           location: /volume1
           mountPermissions: '0777'
+      
+      synology-iscsi-storage-kermit:
+        # One of true or false (default):
+        disabled: false
+        # One of true or false (default):
+        isDefault: false
+        # One of "Retain" or "Delete" (default):
+        reclaimPolicy: Retain
+        # One of "WaitForFirstConsumer" or "Immediate" (default):
+        volumeBindingMode: Immediate
+
+        # If not present, some location will be chosen to create volumes with the filesystem type ext4.
+        # Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
+        parameters:
+          dsm: "192.168.1.141"
+          fsType: ext4
+          location: /volume1
+          mountPermissions: '0777'
       synology-iscsi-storage-delete:
         reclaimPolicy: Delete
         isDefault: false
