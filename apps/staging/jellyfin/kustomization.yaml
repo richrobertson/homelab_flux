@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/jellyfin
+  - gateway.yaml
 patches:
   - path: jellyfin-values.yaml
     target:
