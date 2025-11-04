@@ -4,7 +4,10 @@ metadata:
   name: whisparr
 spec:
   values:
-
+    image:
+      repository: ghcr.io/hotio/whisparr
+      pullPolicy: IfNotPresent
+      tag: latest
     whisparr:
       api:
         general:
