@@ -47,7 +47,7 @@ spec:
         # Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
         parameters:
           dsm: "192.168.1.141"
-          fsType: ext4
+          fsType: btrfs
           location: /volume1
           mountPermissions: '0777'
       synology-iscsi-storage-delete:
