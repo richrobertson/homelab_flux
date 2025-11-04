@@ -21,7 +21,7 @@ patches:
         value: "vchord.so"
       - op: replace
         path: /spec/imageName
-        value: ghcr.io/immich-app/postgres:18-vectorchord0.5.3
+        value: ghcr.io/immich-app/postgres:16-vectorchord0.4.3-pgvector0.8.1-pgvectors0.3.0
     target:
       kind: Cluster
       name: cluster-immich
