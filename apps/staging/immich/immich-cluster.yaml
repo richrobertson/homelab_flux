@@ -11,6 +11,7 @@ spec:
   bootstrap:
     initdb:
       dataChecksums: true
+      postInitSQL: []
       postInitApplicationSQL:
         - "ALTER USER immich WITH SUPERUSER;"
         - "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;"

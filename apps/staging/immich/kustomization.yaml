@@ -5,6 +5,9 @@ resources:
   - gateway.yaml
   - ../../base/immich
 patches:
+  - path: immich-cluster.yaml
+    target:
+      kind: Cluster
   - path: immich-values.yaml
     target:
       kind: HelmRelease
@@ -15,13 +18,10 @@ patches:
     target:
       kind: PersistentVolumeClaim
       name: immich-data-files-pvc
-  - path: immich-cluster.yaml
-    target:
-      kind: Cluster
 
-  - patch: |
-     - op: remove
-        path: /spec/bootstrap/initdb/postInitSQL
-    target:
-      kind: Cluster
-      name: cluster-immich
+  # - patch: |
+  #    - op: remove
+  #       path: /spec/bootstrap/initdb/postInitSQL
+  #   target:
+  #     kind: Cluster
+  #     name: cluster-immich
