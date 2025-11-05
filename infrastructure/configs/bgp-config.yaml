@@ -6,7 +6,7 @@ metadata:
   name: my-ip-pool
 spec:
   addresses:
-    - 10.21.0.64/28 # Range of IPs for MetalLB to allocate
+    - 10.21.0.64/26 # Range of IPs for MetalLB to allocate
 
 ---
 apiVersion: metallb.io/v1beta1

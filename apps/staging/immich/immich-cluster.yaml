@@ -10,6 +10,6 @@ spec:
         - selectorType: rw
           serviceTemplate:
             metadata:
-              name: "immich-cluster-lb"
+              name: "cluster-immich-lb"
             spec:
               type: LoadBalancer
