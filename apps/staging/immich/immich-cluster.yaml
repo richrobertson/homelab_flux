@@ -11,5 +11,7 @@ spec:
           serviceTemplate:
             metadata:
               name: "cluster-immich-lb"
+              annotations:
+                external-dns.alpha.kubernetes.io/hostname: immich-db.staging.myrobertson.net
             spec:
               type: LoadBalancer
