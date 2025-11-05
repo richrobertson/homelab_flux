@@ -31,8 +31,8 @@ patches:
         path: /spec/bootstrap/initdb/dataChecksums
         value: true
       - op: add
-        path: /spec/monitoring/enablePodMonitor
-        value: true
+        path: /spec/monitoring
+        value: { enablePodMonitor: true }
     target:
       kind: Cluster
       name: cluster-immich
