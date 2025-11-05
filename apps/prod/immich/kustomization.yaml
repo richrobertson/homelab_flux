@@ -5,6 +5,9 @@ resources:
   - ../../base/immich
   - httpRoute.yaml
 patches:
+  - path: immich-cluster.yaml
+    target:
+      kind: Cluster
   - path: immich-values.yaml
     target:
       kind: HelmRelease
