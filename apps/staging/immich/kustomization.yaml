@@ -24,8 +24,7 @@ patches:
         value: "vchord.so"
       - op: replace
         path: /spec/bootstrap/initdb/postInitSQL
-        value: |
-          - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
+        value: [ "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;" ]
     target:
       kind: Cluster
       name: cluster-immich
