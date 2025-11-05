@@ -15,16 +15,16 @@ patches:
     target:
       kind: PersistentVolumeClaim
       name: immich-data-files-pvc
-  - patch: |
-      - op: replace
-        path: /spec/imageName
-        value: ghcr.io/tensorchord/cloudnative-vectorchord:16.5@sha256:72c2c656c65b9ae345f92028a236a763d40a02339676e6ad4ada63f85e95795e
-      - op: add
-        path: /spec/postgresql/shared_preload_libraries/-
-        value: "vchord.so"
-      - op: replace
-        path: /spec/bootstrap/initdb/postInitSQL
-        value: [ "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;" ]
-    target:
-      kind: Cluster
-      name: cluster-immich
+  # - patch: |
+  #     - op: replace
+  #       path: /spec/imageName
+  #       value: ghcr.io/tensorchord/cloudnative-vectorchord:16.5@sha256:72c2c656c65b9ae345f92028a236a763d40a02339676e6ad4ada63f85e95795e
+  #     - op: add
+  #       path: /spec/postgresql/shared_preload_libraries/-
+  #       value: "vchord.so"
+  #     - op: replace
+  #       path: /spec/bootstrap/initdb/postInitSQL
+  #       value: [ "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;" ]
+  #   target:
+  #     kind: Cluster
+  #     name: cluster-immich
