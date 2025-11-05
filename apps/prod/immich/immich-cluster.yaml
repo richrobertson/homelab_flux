@@ -4,6 +4,20 @@ kind: Cluster
 metadata:
   name: cluster-immich 
 spec:
+  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.9-0.4.3
+  postgresql:
+    shared_preload_libraries:
+      - "vchord.so"
+  bootstrap:
+    initdb:
+      dataChecksums: true
+      postInitSQL: []
+      postInitApplicationSQL:
+        - ALTER USER immich WITH SUPERUSER;
+        - CREATE EXTENSION IF NOT EXISTS "cube";
+        - CREATE EXTENSION IF NOT EXISTS "earthdistance";
+  monitoring:
+    enablePodMonitor: true
   managed:
     services:
       additional:
