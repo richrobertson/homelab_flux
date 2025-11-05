@@ -4,6 +4,20 @@ kind: Cluster
 metadata:
   name: cluster-immich 
 spec:
+  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.5@sha256:72c2c656c65b9ae345f92028a236a763d40a02339676e6ad4ada63f85e95795e
+  postgresql:
+    shared_preload_libraries:
+      - "vchord.so"
+  bootstrap:
+    initdb:
+      dataChecksums: true
+      postInitApplicationSQL:
+        - "ALTER USER immich WITH SUPERUSER;"
+        - "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;"
+        - "CREATE EXTENSION IF NOT EXISTS \"cube\";"
+        - "CREATE EXTENSION IF NOT EXISTS \"earthdistance\";"
+  monitoring:
+    enablePodMonitor: true
   managed:
     services:
       additional:
