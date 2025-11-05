@@ -24,7 +24,7 @@ patches:
         value: "vchord.so"
       - op: add
         path: /spec/bootstrap/initdb/postInitApplicationSQL
-        value: [ "ALTER USER immich WITH SUPERUSER;", "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;", "CREATE EXTENSION IF NOT EXISTS \"cube\";", "CREATE EXTENSION IF NOT EXISTS \"earthdistance\";" ]
+        value: [ "ALTER USER immich WITH SUPERUSER;", "ALTER SYSTEM SET search_path TO \"$user\", public, vectors;", "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;", "CREATE EXTENSION IF NOT EXISTS \"cube\";", "CREATE EXTENSION IF NOT EXISTS \"earthdistance\";" ]
       - op: remove
         path: /spec/bootstrap/initdb/postInitSQL
       - op: add
