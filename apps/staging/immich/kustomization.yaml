@@ -19,25 +19,25 @@ patches:
     target:
       kind: Cluster
 
-  # - patch: |
-  #     - op: replace
-  #       path: /spec/imageName
-  #       value: ghcr.io/tensorchord/cloudnative-vectorchord:16.5@sha256:72c2c656c65b9ae345f92028a236a763d40a02339676e6ad4ada63f85e95795e
-  #     - op: replace
-  #       path: /spec/postgresql/shared_preload_libraries/0
-  #       value: "vchord.so"
-  #     - op: add
-  #       path: /spec/bootstrap/initdb/postInitApplicationSQL
-  #       value: [ "ALTER USER immich WITH SUPERUSER;", "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;", "CREATE EXTENSION IF NOT EXISTS \"cube\";", "CREATE EXTENSION IF NOT EXISTS \"earthdistance\";" ]
-  #       # value: [ "ALTER USER immich WITH SUPERUSER;", "ALTER SYSTEM SET search_path TO \"$user\", public, vectors;", "SET search_path TO \"$user\", public, vectors;", "CREATE EXTENSION IF NOT EXISTS \"vectors\";", "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;", "CREATE EXTENSION IF NOT EXISTS \"cube\";", "CREATE EXTENSION IF NOT EXISTS \"earthdistance\";" ]
-  #     - op: remove
-  #       path: /spec/bootstrap/initdb/postInitSQL
-  #     - op: add
-  #       path: /spec/bootstrap/initdb/dataChecksums
-  #       value: true
-  #     - op: add
-  #       path: /spec/monitoring
-  #       value: { enablePodMonitor: true }
-  #   target:
-  #     kind: Cluster
-  #     name: cluster-immich
+  - patch: |
+      - op: replace
+        path: /spec/imageName
+        value: ghcr.io/tensorchord/cloudnative-vectorchord:16.5@sha256:72c2c656c65b9ae345f92028a236a763d40a02339676e6ad4ada63f85e95795e
+      - op: replace
+        path: /spec/postgresql/shared_preload_libraries/0
+        value: "vchord.so"
+      - op: add
+        path: /spec/bootstrap/initdb/postInitApplicationSQL
+        value: [ "ALTER USER immich WITH SUPERUSER;", "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;", "CREATE EXTENSION IF NOT EXISTS \"cube\";", "CREATE EXTENSION IF NOT EXISTS \"earthdistance\";" ]
+        # value: [ "ALTER USER immich WITH SUPERUSER;", "ALTER SYSTEM SET search_path TO \"$user\", public, vectors;", "SET search_path TO \"$user\", public, vectors;", "CREATE EXTENSION IF NOT EXISTS \"vectors\";", "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;", "CREATE EXTENSION IF NOT EXISTS \"cube\";", "CREATE EXTENSION IF NOT EXISTS \"earthdistance\";" ]
+      - op: remove
+        path: /spec/bootstrap/initdb/postInitSQL
+      - op: add
+        path: /spec/bootstrap/initdb/dataChecksums
+        value: true
+      - op: add
+        path: /spec/monitoring
+        value: { enablePodMonitor: true }
+    target:
+      kind: Cluster
+      name: cluster-immich
