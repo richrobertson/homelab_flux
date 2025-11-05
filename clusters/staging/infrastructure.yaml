@@ -89,7 +89,7 @@ spec:
     - patch: |
         - op: replace
           path: /spec/addresses/0
-          value: 10.21.0.64/28
+          value: 10.21.0.64/26
       target:
         kind: IPAddressPool
         name: my-ip-pool
