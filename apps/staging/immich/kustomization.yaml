@@ -23,7 +23,7 @@ patches:
         path: /spec/postgresql/shared_preload_libraries/-
         value: "vchord.so"
       - op: replace
-        path: /spec/bootstrap/initdb/postInitSql
+        path: /spec/bootstrap/initdb/postInitSQL
         value: |
           CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
     target:
