@@ -13,8 +13,9 @@ spec:
       dataChecksums: true
       postInitSQL: []
       postInitApplicationSQL:
-        - CREATE EXTENSION vchord CASCADE;
-        - CREATE EXTENSION earthdistance CASCADE;
+        - ALTER USER immich WITH SUPERUSER;
+        - CREATE EXTENSION IF NOT EXISTS "cube";
+        - CREATE EXTENSION IF NOT EXISTS "earthdistance";
   monitoring:
     enablePodMonitor: true
   managed:
