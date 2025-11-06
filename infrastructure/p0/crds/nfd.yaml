@@ -1,0 +1,43 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: nfd
+  namespace: default
+spec:
+  interval: 4h
+  url: https://github.com/intel/intel-device-plugins-for-kubernetes.git
+  ref:
+    branch: main 
+  sparseCheckout:
+  - deployments/nfd
+
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: nfd
+  namespace: default
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: nfd
+  path: deployments/nfd
+  prune: true
+  validation: client 
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: node-feature-rules
+  namespace: default
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: nfd
+  path: deployments/nfd/overlays/node-feature-rules
+  prune: true
+  validation: client 
+
+
