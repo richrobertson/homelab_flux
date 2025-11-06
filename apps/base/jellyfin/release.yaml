@@ -16,6 +16,9 @@ spec:
       retries: 10
   values:
     replicaCount: 1
+    resources: 
+      requests: 
+        gpu.intel.com/i915: "1" 
     metrics:
       enabled: true
       serviceMonitor:
