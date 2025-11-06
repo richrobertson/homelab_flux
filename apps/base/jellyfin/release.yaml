@@ -30,3 +30,19 @@ spec:
         size: 10Gi
       media:
         enabled: false
+    securityContext:
+      capabilities:
+        add:
+          - "SYS_ADMIN"
+        drop:
+          - "ALL"
+      privileged: false
+
+    extraVolumes:
+      - name: hwa
+        hostPath:
+          path: /dev/dri
+
+    extraVolumeMounts:
+      - name: hwa
+        mountPath: /dev/dri 
