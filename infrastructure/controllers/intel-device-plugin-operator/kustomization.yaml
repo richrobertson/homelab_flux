@@ -4,3 +4,4 @@ namespace: default
 resources:
   - repository.yaml
   - release.yaml
+  - release-intel-device-plugins-gpu.yaml
