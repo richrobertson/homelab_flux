@@ -98,18 +98,26 @@ spec:
     
     prometheus:
       prometheusSpec:
-        retention: 24h
-        resources:
-          requests:
-            cpu: 200m
-            memory: 200Mi
         podMonitorNamespaceSelector: { }
         podMonitorSelector:
           matchLabels:
             app.kubernetes.io/component: monitoring
         podMonitorSelectorNilUsesHelmValues: true
         serviceMonitorSelectorNilUsesHelmValues: true
-        addtionalScrapeConfigs:
+        enableAdminAPI: true
+        walCompression: true
+        enableFeatures:
+          - memory-snapshot-on-shutdown
+        retention: 14d
+        retentionSize: 50GB
+        resources:
+          requests:
+            cpu: 75m
+            memory: 500Mi
+          limits:
+            memory: 2000Mi
+            
+        additionalScrapeConfigs:
           - job_name: 'istio-prometheus'
             honor_labels: true
             metrics_path: '/federate'
@@ -126,6 +134,7 @@ spec:
               'match[]':
               - '{__name__=~"workload:(.*)"}'
               - '{__name__=~"pilot(.*)"}'
+        
       storageSpec:
         volumeClaimTemplate:
           spec:

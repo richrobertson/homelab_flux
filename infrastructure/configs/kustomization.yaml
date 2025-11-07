@@ -7,7 +7,6 @@ resources:
   - bgp-config.yaml
   - flux-alertmanager.yaml
   - podmonitor.yaml
-  - monitoring-grafana-gateway.yaml
   - monitoring-prometheus-gateway.yaml
   - monitoring-alertmanager-gateway.yaml
   - toolbox.yaml
