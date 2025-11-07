@@ -28,10 +28,3 @@ patches:
     target:
       kind: HTTPRoute
       name: grafana
-  - patch: |
-      - op: replace
-        path: /spec/resources/requests/storage
-        value: 2Gi
-    target:
-      kind: PersistentVolumeClaim
-      name: grafana-data-files-pvc
