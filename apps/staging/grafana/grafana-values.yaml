@@ -8,7 +8,7 @@ spec:
       main:
         enabled: true
         hosts:
-          - grafana.staging.myrobertson.net
+          - host: grafana.staging.myrobertson.net
     grafana:
       api:
         general:
