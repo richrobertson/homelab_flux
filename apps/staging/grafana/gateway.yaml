@@ -74,4 +74,4 @@ spec:
         value: /
     backendRefs:
     - name: grafana
-      port: 8686
+      port: 3000
