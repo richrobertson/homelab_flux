@@ -4,7 +4,11 @@ metadata:
   name: grafana
 spec:
   values:
-
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - grafana.staging.myrobertson.net
     grafana:
       api:
         general:
