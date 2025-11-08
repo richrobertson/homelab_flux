@@ -103,7 +103,7 @@ spec:
           matchLabels:
             app.kubernetes.io/component: monitoring
         podMonitorSelectorNilUsesHelmValues: true
-        serviceMonitorSelectorNilUsesHelmValues: true
+        serviceMonitorSelectorNilUsesHelmValues: false
         enableAdminAPI: true
         walCompression: true
         enableFeatures:
