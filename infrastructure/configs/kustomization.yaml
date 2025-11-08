@@ -9,6 +9,7 @@ resources:
   - podmonitor.yaml
   - monitoring-prometheus-gateway.yaml
   - monitoring-alertmanager-gateway.yaml
+  - monitoring-grafana-gateway.yaml
   - toolbox.yaml
 spec:
   wait: true
