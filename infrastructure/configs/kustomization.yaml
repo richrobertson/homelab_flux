@@ -11,6 +11,7 @@ resources:
   - monitoring-alertmanager-gateway.yaml
   - monitoring-grafana-gateway.yaml
   - toolbox.yaml
+  - istio-servicemonitor.yaml
 spec:
   wait: true
 configMapGenerator:
