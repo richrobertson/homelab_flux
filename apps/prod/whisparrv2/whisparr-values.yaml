@@ -1,17 +1,17 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: whisparr
+  name: whisparrv2
 spec:
   values:
-    # image:
-    #   repository: ghcr.io/hotio/whisparr
-    #   pullPolicy: IfNotPresent
-    #   tag: latest
+    image:
+      repository: ghcr.io/hotio/whisparr
+      pullPolicy: IfNotPresent
+      tag: latest
     whisparr:
       api:
         general:
-          baseUrl: https://whisparr.myrobertson.com
+          baseUrl: https://whisparrv2.myrobertson.com
     workload:
       main:
         replicas: 1
