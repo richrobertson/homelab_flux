@@ -11,3 +11,4 @@ resources:
   - release-istio-ztunnel.yaml
   #- workload-metrics.yaml
   - prometheus.yaml
+  - prometheus-operator.yaml
