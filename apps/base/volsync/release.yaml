@@ -9,4 +9,9 @@ spec:
     kind: OCIRepository
     name: volsync
   values:
+    workload:
+      main:
+        podSpec:
+          hostUsers: true
+
     
