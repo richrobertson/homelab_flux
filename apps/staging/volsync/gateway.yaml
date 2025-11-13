@@ -2,16 +2,16 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: jellyfin
+  name: volsync
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
-    cert-manager.io/common-name: jellyfin.dev.myrobertson.net
+    cert-manager.io/common-name: volsync.dev.myrobertson.net
     cert-manager.io/private-key-algorithm: "ECDSA"
 spec:
   gatewayClassName: istio
   listeners:
-  - name: jellyfin
-    hostname: jellyfin.dev.myrobertson.net
+  - name: volsync
+    hostname: volsync.dev.myrobertson.net
     port: 443
     protocol: HTTPS
     allowedRoutes:
@@ -20,24 +20,24 @@ spec:
     tls:
       mode: Terminate
       certificateRefs:
-      - name: jellyfin-cert
+      - name: volsync-cert
   infrastructure:
     labels:
       istio-injection: enabled
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: jellyfin.dev.myrobertson.net
+      external-dns.alpha.kubernetes.io/hostname: volsync.dev.myrobertson.net
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: jellyfin
+  name: volsync
 spec:
   # Match the generated Deployment by reference
   # Note: Do not use `kind: Gateway`.
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: jellyfin-istio
+    name: volsync-istio
   minReplicas: 2
   maxReplicas: 5
   metrics:
@@ -51,27 +51,27 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: jellyfin
+  name: volsync
 spec:
   minAvailable: 1
   selector:
     # Match the generated Deployment by label
     matchLabels:
-      gateway.networking.k8s.io/gateway-name: jellyfin
+      gateway.networking.k8s.io/gateway-name: volsync
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: jellyfin
+  name: volsync
 spec:
   parentRefs:
-  - name: jellyfin
-  hostnames: ["jellyfin.dev.myrobertson.net"]
+  - name: volsync
+  hostnames: ["volsync.dev.myrobertson.net"]
   rules:
   - matches:
     - path:
         type: PathPrefix
         value: /
     backendRefs:
-    - name: jellyfin
-      port: 8096
+    - name: volsync
+      port: 8081
