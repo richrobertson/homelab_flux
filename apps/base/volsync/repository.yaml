@@ -6,7 +6,7 @@ spec:
   interval: 1h
   url: oci://oci.trueforge.org/truecharts/volsync
   ref:
-    semver: ">=22.x"
+    semver: ">=3.x"
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
