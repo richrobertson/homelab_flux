@@ -6,6 +6,8 @@ metadata:
 spec:
   interval: 1h
   url: oci://gcr.io/k8s-staging-nfd/charts/node-feature-discovery
+  ref:
+    semver: ">=0.0.0-master"
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
