@@ -1,12 +1,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: sonarr
+  name: syncthing
 spec:
   values:
     workload:
       main:
-        replicas: 1
+        replicas: 0
     persistence:
       downloads:
         enabled: true
