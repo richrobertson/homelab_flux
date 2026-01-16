@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: ceph-csi
         namespace: ceph-csi
-      interval: 12h
+      interval: 24h
   values:
     selinuxMount: false
 
