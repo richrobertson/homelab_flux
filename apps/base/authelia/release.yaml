@@ -64,7 +64,7 @@ spec:
 
       identity_providers:
         oidc:
-          
+          enabled: true
           authorization_policies:
             default:
               default_policy: one_factor
