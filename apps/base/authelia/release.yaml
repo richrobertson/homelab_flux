@@ -65,6 +65,9 @@ spec:
       identity_providers:
         oidc:
           enabled: true
+          hmac_secret:
+            enabled: true
+            
           authorization_policies:
             default:
               default_policy: one_factor
