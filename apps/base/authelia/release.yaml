@@ -64,7 +64,7 @@ spec:
 
       identity_providers:
         oidc:
-          enabled: false
+          enabled: true
           hmac_secret:
             disabled: false
 
