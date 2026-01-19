@@ -66,7 +66,7 @@ spec:
         oidc:
           enabled: true
           hmac_secret:
-            disabled: false
+            disabled: true
 
           authorization_policies:
             default:
