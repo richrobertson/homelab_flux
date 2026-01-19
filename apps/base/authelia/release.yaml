@@ -64,10 +64,10 @@ spec:
 
       identity_providers:
         oidc:
-          enabled: true
+          enabled: false
           hmac_secret:
-            enabled: true
-            
+            disabled: false
+
           authorization_policies:
             default:
               default_policy: one_factor
