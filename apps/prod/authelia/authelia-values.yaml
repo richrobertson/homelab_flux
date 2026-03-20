@@ -8,6 +8,7 @@ spec:
       identity_providers:
         oidc:
           hmac_secret:
+            path: /secrets/authelia-secret/identity_providers.oidc.hmac.key
             secret_name: authelia-secret
     secret:
       additionalSecrets:
