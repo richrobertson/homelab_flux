@@ -1,3 +1,4 @@
+---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -6,8 +7,8 @@ metadata:
 spec:
   parentRefs:
   - name: myrobertson-com-gateway
-  hostnames:
-  - myrobertson.com
+    namespace: default
+  hostnames: ["myrobertson.com"] 
   rules:
   - matches:
     - path:
