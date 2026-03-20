@@ -11,4 +11,3 @@ resources:
   - externalServices/plex.yaml
   - externalServices/tautulli.yaml
   - externalServices/trilium.yaml
-  - externalServices/whisparr.yaml
