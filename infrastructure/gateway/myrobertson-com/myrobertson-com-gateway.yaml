@@ -4,6 +4,7 @@ metadata:
   name: myrobertson-com-gateway
   namespace: default
   annotations:
+    external-dns.alpha.kubernetes.io/target: myrobertson.com
     cert-manager.io/issuer: letsencrypt-prod
 spec:
   gatewayClassName: istio
