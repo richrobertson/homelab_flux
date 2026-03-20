@@ -34,6 +34,22 @@ spec:
                               path: storage.postgres.password.txt
                             - key: identity_providers.oidc.hmac.key
                               path: identity_providers.oidc.hmac.key
+          - target:
+              kind: Deployment
+              name: authelia
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: authelia
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: authelia
+                        env:
+                          - name: AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE
+                            $patch: delete
   chart:
     spec:
       chart: authelia
