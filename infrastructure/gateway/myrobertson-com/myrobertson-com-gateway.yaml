@@ -11,6 +11,27 @@ spec:
   gatewayClassName: istio
   listeners:
 
+  - name: apex-http
+    hostname: myrobertson.com
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: apex-https
+    hostname: myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: myrobertson-com-cert
+        kind: Secret
+
   - name: auth
     hostname: auth.myrobertson.com
     port: 443

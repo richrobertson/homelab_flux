@@ -1,0 +1,24 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: myrobertson-com-redirect
+  namespace: default
+  annotations:
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  parentRefs:
+  - name: myrobertson-com-gateway
+    namespace: default
+  hostnames:
+  - myrobertson.com
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    filters:
+    - type: RequestRedirect
+      requestRedirect:
+        hostname: www.myrobertson.com
+        scheme: https
+        statusCode: 301
