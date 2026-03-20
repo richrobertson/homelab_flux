@@ -56,6 +56,10 @@ spec:
       # https://grafana.com/docs/loki/latest/setup/install/helm/install-monolithic/
       commonConfig:
         replication_factor: 1
+        ring:
+          instance_addr: 127.0.0.1
+          kvstore:
+            store: inmemory
       schemaConfig:
         configs:
           - from: "2024-04-01"
