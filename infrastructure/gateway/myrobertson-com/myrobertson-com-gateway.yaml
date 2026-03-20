@@ -4,11 +4,13 @@ metadata:
   name: myrobertson-com-gateway
   namespace: default
   annotations:
-    external-dns.alpha.kubernetes.io/target: myrobertson.com
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
     cert-manager.io/issuer: letsencrypt-prod
 spec:
   gatewayClassName: istio
+  infrastructure:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: myrobertson.com
   listeners:
 
   - name: apex-http
