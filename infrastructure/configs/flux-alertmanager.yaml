@@ -27,6 +27,7 @@ spec:
     name: alertmanager
   eventMetadata:
     summary: Cluster addons impacted
+    description: Flux detected an issue while reconciling cluster addons.
     env: dev
     region: us-east-2
   eventSeverity: error
