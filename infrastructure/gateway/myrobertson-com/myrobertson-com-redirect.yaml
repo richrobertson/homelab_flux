@@ -6,7 +6,6 @@ metadata:
 spec:
   parentRefs:
   - name: myrobertson-com-gateway
-    namespace: default
   hostnames:
   - myrobertson.com
   rules:
