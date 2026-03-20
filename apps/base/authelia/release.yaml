@@ -48,8 +48,22 @@ spec:
                     containers:
                       - name: authelia
                         env:
-                          - name: AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE
-                            $patch: delete
+                          - name: AUTHELIA_SERVER_DISABLE_HEALTHCHECK
+                            value: "true"
+                          - name: AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE
+                            value: /secrets/internal/identity_validation.reset_password.jwt.hmac.key
+                          - name: AUTHELIA_SESSION_SECRET_FILE
+                            value: /secrets/internal/session.encryption.key
+                          - name: AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE
+                            value: /secrets/internal/authentication.ldap.password.txt
+                          - name: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
+                            value: /secrets/internal/storage.encryption.key
+                          - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
+                            value: /secrets/internal/storage.postgres.password.txt
+                          - name: X_AUTHELIA_CONFIG
+                            value: /configuration.yaml
+                          - name: X_AUTHELIA_CONFIG_FILTERS
+                            value: template
   chart:
     spec:
       chart: authelia
