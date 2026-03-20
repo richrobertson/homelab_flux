@@ -6,9 +6,9 @@ resources:
   - httpRoute.yaml
   - ../../base/authelia
 patches:
-  # - path: authelia-values.yaml
-  #   target:
-  #     kind: HelmRelease
+  - path: authelia-values.yaml
+    target:
+      kind: HelmRelease
   - patch: |
       - op: replace
         path: /spec/path

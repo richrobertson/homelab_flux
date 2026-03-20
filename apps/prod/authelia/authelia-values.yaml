@@ -4,5 +4,12 @@ metadata:
   name: authelia
 spec:
   values:
-
+    configMap:
+      identity_providers:
+        oidc:
+          hmac_secret:
+            secret_name: authelia-secret
+    secret:
+      additionalSecrets:
+        authelia-secret: {}
    
