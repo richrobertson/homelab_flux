@@ -36,6 +36,8 @@ configMapGenerator:
       - dashboards/istio-pilot-dashboard.json
       - dashboards/istio-ztunnel-dashboard.json
       - dashboards/istio-performance-dashboard.json
+      - dashboards/istio-gateway-case-metrics.json
+      - dashboards/istio-gateway-service-drilldown.json
     options:
       labels:
         grafana_dashboard: "1"

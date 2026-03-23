@@ -1,0 +1,209 @@
+{
+  "title": "Istio Gateway Case Metrics",
+  "uid": "istio-gateway-case-metrics",
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "graphTooltip": 1,
+  "tags": ["istio", "gateway", "myrobertson.com"],
+  "links": [
+    {"title": "drilldown: myrobertson.com", "url": "/d/istio-gateway-service-drilldown?var-service=myrobertson.com", "keepTime": true},
+    {"title": "drilldown: auth", "url": "/d/istio-gateway-service-drilldown?var-service=auth.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: bitwarden", "url": "/d/istio-gateway-service-drilldown?var-service=bitwarden.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: gotify", "url": "/d/istio-gateway-service-drilldown?var-service=gotify.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: immich", "url": "/d/istio-gateway-service-drilldown?var-service=immich.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: jellyfin", "url": "/d/istio-gateway-service-drilldown?var-service=jellyfin.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: kermit", "url": "/d/istio-gateway-service-drilldown?var-service=kermit.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: lidarr", "url": "/d/istio-gateway-service-drilldown?var-service=lidarr.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: mealie", "url": "/d/istio-gateway-service-drilldown?var-service=mealie.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: overseerr", "url": "/d/istio-gateway-service-drilldown?var-service=overseerr.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: plex", "url": "/d/istio-gateway-service-drilldown?var-service=plex.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: prowlarr", "url": "/d/istio-gateway-service-drilldown?var-service=prowlarr.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: radarr", "url": "/d/istio-gateway-service-drilldown?var-service=radarr.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: sonarr", "url": "/d/istio-gateway-service-drilldown?var-service=sonarr.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: syncthing", "url": "/d/istio-gateway-service-drilldown?var-service=syncthing.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: tautulli", "url": "/d/istio-gateway-service-drilldown?var-service=tautulli.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: trilium", "url": "/d/istio-gateway-service-drilldown?var-service=trilium.myrobertson.com", "keepTime": true},
+    {"title": "drilldown: whisparr", "url": "/d/istio-gateway-service-drilldown?var-service=whisparr.myrobertson.com", "keepTime": true}
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {
+          "selected": true,
+          "text": "Prometheus",
+          "value": "prometheus"
+        }
+      },
+      {
+        "name": "service",
+        "type": "custom",
+        "query": "myrobertson.com,auth.myrobertson.com,bitwarden.myrobertson.com,gotify.myrobertson.com,immich.myrobertson.com,jellyfin.myrobertson.com,kermit.myrobertson.com,lidarr.myrobertson.com,mealie.myrobertson.com,overseerr.myrobertson.com,plex.myrobertson.com,prowlarr.myrobertson.com,radarr.myrobertson.com,sonarr.myrobertson.com,syncthing.myrobertson.com,tautulli.myrobertson.com,trilium.myrobertson.com,whisparr.myrobertson.com",
+        "multi": true,
+        "includeAll": true,
+        "allValue": "(myrobertson\\.com|auth\\.myrobertson\\.com|bitwarden\\.myrobertson\\.com|gotify\\.myrobertson\\.com|immich\\.myrobertson\\.com|jellyfin\\.myrobertson\\.com|kermit\\.myrobertson\\.com|lidarr\\.myrobertson\\.com|mealie\\.myrobertson\\.com|overseerr\\.myrobertson\\.com|plex\\.myrobertson\\.com|prowlarr\\.myrobertson\\.com|radarr\\.myrobertson\\.com|sonarr\\.myrobertson\\.com|syncthing\\.myrobertson\\.com|tautulli\\.myrobertson\\.com|trilium\\.myrobertson\\.com|whisparr\\.myrobertson\\.com)",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Gateway RPS",
+      "gridPos": {"h": 5, "w": 6, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "$datasource"},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(istio_requests_total{request_host=~\"^(${service:regex})(:[0-9]+)?$\",reporter=~\"source|waypoint\"}[$__rate_interval]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 200},
+              {"color": "red", "value": 500}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "4xx RPS (Upper Bound)",
+      "gridPos": {"h": 5, "w": 6, "x": 6, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "$datasource"},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(istio_requests_total{request_host=~\"^(${service:regex})(:[0-9]+)?$\",reporter=~\"source|waypoint\",response_code=~\"4..\"}[$__rate_interval]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 5},
+              {"color": "red", "value": 20}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "5xx RPS (Upper Bound)",
+      "gridPos": {"h": 5, "w": 6, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "$datasource"},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(istio_requests_total{request_host=~\"^(${service:regex})(:[0-9]+)?$\",reporter=~\"source|waypoint\",response_code=~\"5..\"}[$__rate_interval]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 0.5},
+              {"color": "red", "value": 2}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "P95 Latency ms (Upper Bound)",
+      "gridPos": {"h": 5, "w": 6, "x": 18, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "$datasource"},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{request_host=~\"^(${service:regex})(:[0-9]+)?$\",reporter=~\"source|waypoint\"}[$__rate_interval])))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 400},
+              {"color": "red", "value": 1000}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Requests by Service",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 5},
+      "datasource": {"type": "prometheus", "uid": "$datasource"},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (request_host) (rate(istio_requests_total{request_host=~\"^(${service:regex})(:[0-9]+)?$\",reporter=~\"source|waypoint\"}[$__rate_interval]))",
+          "legendFormat": "{{request_host}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "5xx by Service (Upper Bound)",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 5},
+      "datasource": {"type": "prometheus", "uid": "$datasource"},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (request_host) (rate(istio_requests_total{request_host=~\"^(${service:regex})(:[0-9]+)?$\",reporter=~\"source|waypoint\",response_code=~\"5..\"}[$__rate_interval]))",
+          "legendFormat": "{{request_host}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 0.25},
+              {"color": "red", "value": 1}
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
