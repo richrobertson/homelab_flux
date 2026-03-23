@@ -36,19 +36,12 @@
       },
       {
         "name": "service",
-        "type": "query",
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${datasource}"
-        },
-        "query": {
-          "query": "label_values(istio_requests_total{source_workload=\"myrobertson-com-gateway-istio\", reporter=\"source\"}, destination_service_name)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "sort": 1,
+        "type": "custom",
+        "label": "service",
+        "query": "auth : authelia,bitwarden : bitwarden.myrobertson.net,gotify : gotify.myrobertson.net,immich : immich-server,kermit : kermit.myrobertson.net,lidarr : lidarr,mealie : mealie,overseerr : overseerr,plex : plex.myrobertson.net,prowlarr : prowlarr,radarr : radarr,sonarr : sonarr,syncthing : syncthing,tautulli : tautulli.myrobertson.net,trilium : trilium.myrobertson.net,whisparr : whisparr",
         "multi": false,
         "includeAll": false,
+        "sort": 0,
         "current": {}
       }
     ]

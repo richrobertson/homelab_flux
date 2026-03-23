@@ -15,112 +15,112 @@
     {
       "title": "Drilldown: auth",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=authelia&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=authelia",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: bitwarden",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=bitwarden.myrobertson.net&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=bitwarden.myrobertson.net",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: gotify",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=gotify.myrobertson.net&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=gotify.myrobertson.net",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: immich",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=immich-server&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=immich-server",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: kermit",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=kermit.myrobertson.net&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=kermit.myrobertson.net",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: lidarr",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=lidarr&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=lidarr",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: mealie",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=mealie&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=mealie",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: overseerr",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=overseerr&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=overseerr",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: plex",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=plex.myrobertson.net&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=plex.myrobertson.net",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: prowlarr",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=prowlarr&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=prowlarr",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: radarr",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=radarr&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=radarr",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: sonarr",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=sonarr&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=sonarr",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: syncthing",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=syncthing&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=syncthing",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: tautulli",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=tautulli.myrobertson.net&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=tautulli.myrobertson.net",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: trilium",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=trilium.myrobertson.net&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=trilium.myrobertson.net",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: whisparr",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=whisparr&${__url_time_range}",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=whisparr",
       "keepTime": true,
       "targetBlank": false
     }
@@ -361,7 +361,7 @@
           "links": [
             {
               "title": "Drilldown: ${__series.name}",
-              "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=${__series.name}&${__url_time_range}",
+              "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=${__series.name}",
               "targetBlank": false
             }
           ]
@@ -412,7 +412,7 @@
           "links": [
             {
               "title": "Drilldown: ${__series.name}",
-              "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=${__series.name}&${__url_time_range}",
+              "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=${__series.name}",
               "targetBlank": false
             }
           ]
