@@ -2,6 +2,14 @@
 
 GitOps repository for managing a two-environment Kubernetes homelab (`staging` and `prod`) with Flux, Kustomize, Helm, Istio, and Prometheus/Grafana.
 
+## Related repositories
+
+This repository is one part of a shared homelab stack:
+
+- [homelab_bootstrap](https://github.com/richrobertson/homelab_bootstrap) - first-stage cluster bootstrap/orchestration before Flux management.
+- [homelab_ansible](https://github.com/richrobertson/homelab_ansible) - host and node configuration automation outside Kubernetes manifests.
+- [homelab_flux](https://github.com/richrobertson/homelab_flux) - in-cluster GitOps state (apps, controllers, configs, and gateway resources).
+
 ## What this repository manages
 
 - **Cluster bootstrapping and reconciliation** through Flux Kustomizations under `clusters/`.
