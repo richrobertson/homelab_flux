@@ -16,8 +16,8 @@
     {
       "title": "Back to Gateway Case Metrics",
       "type": "link",
-      "url": "/d/istio-gateway-case-metrics/istio-gateway-case-metrics",
-      "includeVars": true,
+      "url": "/d/istio-gateway-case-metrics/istio-gateway-case-metrics?var-service=All",
+      "includeVars": false,
       "keepTime": true,
       "targetBlank": false
     }
