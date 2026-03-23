@@ -15,10 +15,11 @@
   "links": [
     {
       "title": "Back to Gateway Case Metrics",
-      "type": "dashboard",
-      "uid": "istio-gateway-case-metrics",
+      "type": "link",
+      "url": "/d/istio-gateway-case-metrics/istio-gateway-case-metrics",
       "includeVars": true,
-      "keepTime": true
+      "keepTime": true,
+      "targetBlank": false
     }
   ],
   "templating": {
