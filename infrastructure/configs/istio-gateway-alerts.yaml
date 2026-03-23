@@ -11,7 +11,7 @@ spec:
     - name: istio-gateway-case-alerts
       rules:
         - alert: IstioGatewayHighTraffic
-          expr: sum(rate(istio_requests_total{request_host=~"(myrobertson\\.com|auth\\.myrobertson\\.com|bitwarden\\.myrobertson\\.com|gotify\\.myrobertson\\.com|immich\\.myrobertson\\.com|jellyfin\\.myrobertson\\.com|kermit\\.myrobertson\\.com|lidarr\\.myrobertson\\.com|mealie\\.myrobertson\\.com|overseerr\\.myrobertson\\.com|plex\\.myrobertson\\.com|prowlarr\\.myrobertson\\.com|radarr\\.myrobertson\\.com|sonarr\\.myrobertson\\.com|syncthing\\.myrobertson\\.com|tautulli\\.myrobertson\\.com|trilium\\.myrobertson\\.com|whisparr\\.myrobertson\\.com)(:[0-9]+)?$",reporter=~"source|waypoint"}[5m])) > 500
+          expr: sum(rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])) > 500
           for: 10m
           labels:
             severity: warning
@@ -20,7 +20,7 @@ spec:
             description: Gateway traffic is above the configured upper bound of 500 req/s for 10m.
 
         - alert: IstioGatewayHigh4xxRate
-          expr: sum(rate(istio_requests_total{request_host=~"(myrobertson\\.com|auth\\.myrobertson\\.com|bitwarden\\.myrobertson\\.com|gotify\\.myrobertson\\.com|immich\\.myrobertson\\.com|jellyfin\\.myrobertson\\.com|kermit\\.myrobertson\\.com|lidarr\\.myrobertson\\.com|mealie\\.myrobertson\\.com|overseerr\\.myrobertson\\.com|plex\\.myrobertson\\.com|prowlarr\\.myrobertson\\.com|radarr\\.myrobertson\\.com|sonarr\\.myrobertson\\.com|syncthing\\.myrobertson\\.com|tautulli\\.myrobertson\\.com|trilium\\.myrobertson\\.com|whisparr\\.myrobertson\\.com)(:[0-9]+)?$",reporter=~"source|waypoint",response_code=~"4.."}[5m])) > 5
+          expr: sum(rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source",response_code=~"4.."}[5m])) > 5
           for: 10m
           labels:
             severity: warning
@@ -29,7 +29,7 @@ spec:
             description: Gateway 4xx rate is above the upper bound of 5 req/s for 10m.
 
         - alert: IstioGatewayHigh5xxRateWarning
-          expr: sum(rate(istio_requests_total{request_host=~"(myrobertson\\.com|auth\\.myrobertson\\.com|bitwarden\\.myrobertson\\.com|gotify\\.myrobertson\\.com|immich\\.myrobertson\\.com|jellyfin\\.myrobertson\\.com|kermit\\.myrobertson\\.com|lidarr\\.myrobertson\\.com|mealie\\.myrobertson\\.com|overseerr\\.myrobertson\\.com|plex\\.myrobertson\\.com|prowlarr\\.myrobertson\\.com|radarr\\.myrobertson\\.com|sonarr\\.myrobertson\\.com|syncthing\\.myrobertson\\.com|tautulli\\.myrobertson\\.com|trilium\\.myrobertson\\.com|whisparr\\.myrobertson\\.com)(:[0-9]+)?$",reporter=~"source|waypoint",response_code=~"5.."}[5m])) > 0.5
+          expr: sum(rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source",response_code=~"5.."}[5m])) > 0.5
           for: 5m
           labels:
             severity: warning
@@ -38,7 +38,7 @@ spec:
             description: Gateway 5xx rate is above the warning upper bound of 0.5 req/s for 5m.
 
         - alert: IstioGatewayHigh5xxRateCritical
-          expr: sum(rate(istio_requests_total{request_host=~"(myrobertson\\.com|auth\\.myrobertson\\.com|bitwarden\\.myrobertson\\.com|gotify\\.myrobertson\\.com|immich\\.myrobertson\\.com|jellyfin\\.myrobertson\\.com|kermit\\.myrobertson\\.com|lidarr\\.myrobertson\\.com|mealie\\.myrobertson\\.com|overseerr\\.myrobertson\\.com|plex\\.myrobertson\\.com|prowlarr\\.myrobertson\\.com|radarr\\.myrobertson\\.com|sonarr\\.myrobertson\\.com|syncthing\\.myrobertson\\.com|tautulli\\.myrobertson\\.com|trilium\\.myrobertson\\.com|whisparr\\.myrobertson\\.com)(:[0-9]+)?$",reporter=~"source|waypoint",response_code=~"5.."}[5m])) > 2
+          expr: sum(rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source",response_code=~"5.."}[5m])) > 2
           for: 5m
           labels:
             severity: critical
@@ -47,7 +47,7 @@ spec:
             description: Gateway 5xx rate is above the critical upper bound of 2 req/s for 5m.
 
         - alert: IstioGatewayHighP95LatencyWarning
-          expr: histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{request_host=~"(myrobertson\\.com|auth\\.myrobertson\\.com|bitwarden\\.myrobertson\\.com|gotify\\.myrobertson\\.com|immich\\.myrobertson\\.com|jellyfin\\.myrobertson\\.com|kermit\\.myrobertson\\.com|lidarr\\.myrobertson\\.com|mealie\\.myrobertson\\.com|overseerr\\.myrobertson\\.com|plex\\.myrobertson\\.com|prowlarr\\.myrobertson\\.com|radarr\\.myrobertson\\.com|sonarr\\.myrobertson\\.com|syncthing\\.myrobertson\\.com|tautulli\\.myrobertson\\.com|trilium\\.myrobertson\\.com|whisparr\\.myrobertson\\.com)(:[0-9]+)?$",reporter=~"source|waypoint"}[5m]))) > 400
+          expr: histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m]))) > 400
           for: 10m
           labels:
             severity: warning
@@ -56,7 +56,7 @@ spec:
             description: Gateway p95 latency is above the warning upper bound of 400ms for 10m.
 
         - alert: IstioGatewayHighP95LatencyCritical
-          expr: histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{request_host=~"(myrobertson\\.com|auth\\.myrobertson\\.com|bitwarden\\.myrobertson\\.com|gotify\\.myrobertson\\.com|immich\\.myrobertson\\.com|jellyfin\\.myrobertson\\.com|kermit\\.myrobertson\\.com|lidarr\\.myrobertson\\.com|mealie\\.myrobertson\\.com|overseerr\\.myrobertson\\.com|plex\\.myrobertson\\.com|prowlarr\\.myrobertson\\.com|radarr\\.myrobertson\\.com|sonarr\\.myrobertson\\.com|syncthing\\.myrobertson\\.com|tautulli\\.myrobertson\\.com|trilium\\.myrobertson\\.com|whisparr\\.myrobertson\\.com)(:[0-9]+)?$",reporter=~"source|waypoint"}[5m]))) > 1000
+          expr: histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m]))) > 1000
           for: 10m
           labels:
             severity: critical
@@ -65,19 +65,19 @@ spec:
             description: Gateway p95 latency is above the critical upper bound of 1000ms for 10m.
 
         - alert: IstioGatewayServiceHigh5xxRate
-          expr: sum by (request_host) (rate(istio_requests_total{request_host=~"(myrobertson\\.com|auth\\.myrobertson\\.com|bitwarden\\.myrobertson\\.com|gotify\\.myrobertson\\.com|immich\\.myrobertson\\.com|jellyfin\\.myrobertson\\.com|kermit\\.myrobertson\\.com|lidarr\\.myrobertson\\.com|mealie\\.myrobertson\\.com|overseerr\\.myrobertson\\.com|plex\\.myrobertson\\.com|prowlarr\\.myrobertson\\.com|radarr\\.myrobertson\\.com|sonarr\\.myrobertson\\.com|syncthing\\.myrobertson\\.com|tautulli\\.myrobertson\\.com|trilium\\.myrobertson\\.com|whisparr\\.myrobertson\\.com)(:[0-9]+)?$",reporter=~"source|waypoint",response_code=~"5.."}[5m])) > 1
+          expr: sum by (destination_service_name) (rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source",response_code=~"5.."}[5m])) > 1
           for: 5m
           labels:
             severity: warning
           annotations:
             summary: Service has high 5xx rate
-            description: Gateway service {{ $labels.request_host }} is above the upper bound of 1 req/s 5xx for 5m.
+            description: Gateway service {{ $labels.destination_service_name }} is above the upper bound of 1 req/s 5xx for 5m.
 
         - alert: IstioGatewayServiceHighP95Latency
-          expr: histogram_quantile(0.95, sum by (le, request_host) (rate(istio_request_duration_milliseconds_bucket{request_host=~"(myrobertson\\.com|auth\\.myrobertson\\.com|bitwarden\\.myrobertson\\.com|gotify\\.myrobertson\\.com|immich\\.myrobertson\\.com|jellyfin\\.myrobertson\\.com|kermit\\.myrobertson\\.com|lidarr\\.myrobertson\\.com|mealie\\.myrobertson\\.com|overseerr\\.myrobertson\\.com|plex\\.myrobertson\\.com|prowlarr\\.myrobertson\\.com|radarr\\.myrobertson\\.com|sonarr\\.myrobertson\\.com|syncthing\\.myrobertson\\.com|tautulli\\.myrobertson\\.com|trilium\\.myrobertson\\.com|whisparr\\.myrobertson\\.com)(:[0-9]+)?$",reporter=~"source|waypoint"}[5m]))) > 800
+          expr: histogram_quantile(0.95, sum by (le, destination_service_name) (rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m]))) > 800
           for: 10m
           labels:
             severity: warning
           annotations:
             summary: Service has high p95 latency
-            description: Gateway service {{ $labels.request_host }} is above the upper bound of 800ms p95 for 10m.
+            description: Gateway service {{ $labels.destination_service_name }} is above the upper bound of 800ms p95 for 10m.

@@ -11,19 +11,20 @@ spec:
     - istio-system
   selector:
     matchLabels:
-      app: prometheus
+      app.kubernetes.io/name: prometheus
   endpoints:
   - interval: 30s
     scrapeTimeout: 25s
     params:
       'match[]':
-      - '{__name__=~"workload:(.*)"}'
+      - '{__name__="istio_requests_total"}'
+      - '{__name__="istio_request_duration_milliseconds_bucket"}'
+      - '{__name__="istio_request_bytes_bucket"}'
+      - '{__name__="istio_request_bytes_sum"}'
+      - '{__name__="istio_response_bytes_bucket"}'
+      - '{__name__="istio_response_bytes_sum"}'
       - '{__name__=~"pilot(.*)"}'
     path: /federate
     targetPort: 9090
     honorLabels: true
-    metricRelabelings:
-    - sourceLabels: ["__name__"]
-      regex: 'workload:(.*)'
-      targetLabel: "__name__"
       action: replace
