@@ -29,6 +29,54 @@ Flux dependency chain is intentionally ordered:
 
 `infra-p0 -> infra-controllers -> infra-configs -> infra-gateway -> apps`
 
+## Quick Start
+
+### 1) Set cluster context
+
+Make sure your `kubectl` context targets the correct environment before any Flux command.
+
+```bash
+kubectl config get-contexts
+kubectl config use-context <staging-context>
+```
+
+### 2) Bootstrap Flux (first-time only)
+
+Use the matching cluster path for each environment:
+
+```bash
+# staging
+flux bootstrap github \
+  --owner=<github-user> \
+  --repository=homelab_flux \
+  --branch=main \
+  --path=clusters/staging
+
+# prod
+flux bootstrap github \
+  --owner=<github-user> \
+  --repository=homelab_flux \
+  --branch=main \
+  --path=clusters/prod
+```
+
+### 3) Reconcile after changes
+
+```bash
+flux reconcile source git flux-system -n flux-system
+flux reconcile kustomization infra-configs -n flux-system --with-source
+flux reconcile kustomization infra-gateway -n flux-system --with-source
+flux reconcile kustomization apps -n flux-system --with-source
+```
+
+### 4) Verify rollout
+
+```bash
+flux get kustomizations -A
+flux get helmreleases -A
+kubectl get pods -A
+```
+
 ## Repository layout
 
 ```text
