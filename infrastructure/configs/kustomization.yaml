@@ -27,4 +27,19 @@ configMapGenerator:
         app.kubernetes.io/part-of: flux
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled
-    
+  - name: istio-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/istio-mesh-dashboard.json
+      - dashboards/istio-service-dashboard.json
+      - dashboards/istio-workload-dashboard.json
+      - dashboards/istio-pilot-dashboard.json
+      - dashboards/istio-ztunnel-dashboard.json
+      - dashboards/istio-performance-dashboard.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: istio
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+

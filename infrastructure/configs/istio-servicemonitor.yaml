@@ -14,7 +14,7 @@ spec:
       app: prometheus
   endpoints:
   - interval: 30s
-    scrapeTimeout: 30s
+    scrapeTimeout: 25s
     params:
       'match[]':
       - '{__name__=~"workload:(.*)"}'

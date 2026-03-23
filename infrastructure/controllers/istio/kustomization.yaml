@@ -9,6 +9,6 @@ resources:
   - release-istio-istiod.yaml
   - release-istio-cni.yaml
   - release-istio-ztunnel.yaml
-  #- workload-metrics.yaml
+  - workload-metrics.yaml
   - prometheus.yaml
   - prometheus-operator.yaml
