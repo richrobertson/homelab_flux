@@ -38,7 +38,7 @@
         "name": "service",
         "type": "custom",
         "label": "service",
-        "query": "auth : authelia,bitwarden : bitwarden.myrobertson.net,gotify : gotify.myrobertson.net,immich : immich-server,kermit : kermit.myrobertson.net,lidarr : lidarr,mealie : mealie,overseerr : overseerr,plex : plex.myrobertson.net,prowlarr : prowlarr,radarr : radarr,sonarr : sonarr,syncthing : syncthing,tautulli : tautulli.myrobertson.net,trilium : trilium.myrobertson.net,whisparr : whisparr",
+        "query": "authelia,bitwarden.myrobertson.net,gotify.myrobertson.net,immich-server,kermit.myrobertson.net,lidarr,mealie,overseerr,plex.myrobertson.net,prowlarr,radarr,sonarr,syncthing,tautulli.myrobertson.net,trilium.myrobertson.net,whisparr",
         "multi": false,
         "includeAll": false,
         "sort": 0,
@@ -64,7 +64,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(istio_requests_total{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval]))"
+          "expr": "sum(rate(istio_requests_total{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval]))"
         }
       ],
       "fieldConfig": {
@@ -90,7 +90,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(istio_requests_total{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\",response_code=~\"4..\"}[$__rate_interval]))"
+          "expr": "sum(rate(istio_requests_total{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\",response_code=~\"4..\"}[$__rate_interval]))"
         }
       ],
       "fieldConfig": {
@@ -133,7 +133,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(istio_requests_total{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\",response_code=~\"5..\"}[$__rate_interval]))"
+          "expr": "sum(rate(istio_requests_total{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\",response_code=~\"5..\"}[$__rate_interval]))"
         }
       ],
       "fieldConfig": {
@@ -176,7 +176,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval])))"
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval])))"
         }
       ],
       "fieldConfig": {
@@ -219,7 +219,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (response_code) (rate(istio_requests_total{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval]))",
+          "expr": "sum by (response_code) (rate(istio_requests_total{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval]))",
           "legendFormat": "{{response_code}}"
         }
       ],
@@ -246,17 +246,17 @@
       "targets": [
         {
           "refId": "p50",
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(istio_request_duration_milliseconds_bucket{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval])))",
           "legendFormat": "p50"
         },
         {
           "refId": "p95",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval])))",
           "legendFormat": "p95"
         },
         {
           "refId": "p99",
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(istio_request_duration_milliseconds_bucket{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval])))",
           "legendFormat": "p99"
         }
       ],
@@ -300,12 +300,12 @@
       "targets": [
         {
           "refId": "req",
-          "expr": "sum(rate(istio_request_bytes_sum{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval]))",
+          "expr": "sum(rate(istio_request_bytes_sum{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval]))",
           "legendFormat": "request"
         },
         {
           "refId": "resp",
-          "expr": "sum(rate(istio_response_bytes_sum{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval]))",
+          "expr": "sum(rate(istio_response_bytes_sum{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval]))",
           "legendFormat": "response"
         }
       ],
@@ -332,7 +332,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(istio_requests_total{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\",response_code!~\"5..\"}[$__rate_interval])) / sum(rate(istio_requests_total{destination_service_name=~\"${service:regex}\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval]))",
+          "expr": "sum(rate(istio_requests_total{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\",response_code!~\"5..\"}[$__rate_interval])) / sum(rate(istio_requests_total{destination_service_name=\"$service\",reporter=\"source\", source_workload=\"myrobertson-com-gateway-istio\"}[$__rate_interval]))",
           "legendFormat": "success"
         }
       ],
