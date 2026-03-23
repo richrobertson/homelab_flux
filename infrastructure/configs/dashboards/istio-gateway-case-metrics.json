@@ -13,94 +13,116 @@
   ],
   "links": [
     {
-      "title": "drilldown: myrobertson.com",
-      "url": "/d/istio-gateway-service-drilldown?var-service=myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: auth",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=authelia&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: auth",
-      "url": "/d/istio-gateway-service-drilldown?var-service=auth.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: bitwarden",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=bitwarden.myrobertson.net&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: bitwarden",
-      "url": "/d/istio-gateway-service-drilldown?var-service=bitwarden.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: gotify",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=gotify.myrobertson.net&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: gotify",
-      "url": "/d/istio-gateway-service-drilldown?var-service=gotify.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: immich",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=immich-server&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: immich",
-      "url": "/d/istio-gateway-service-drilldown?var-service=immich.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: kermit",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=kermit.myrobertson.net&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: jellyfin",
-      "url": "/d/istio-gateway-service-drilldown?var-service=jellyfin.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: lidarr",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=lidarr&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: kermit",
-      "url": "/d/istio-gateway-service-drilldown?var-service=kermit.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: mealie",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=mealie&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: lidarr",
-      "url": "/d/istio-gateway-service-drilldown?var-service=lidarr.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: overseerr",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=overseerr&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: mealie",
-      "url": "/d/istio-gateway-service-drilldown?var-service=mealie.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: plex",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=plex.myrobertson.net&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: overseerr",
-      "url": "/d/istio-gateway-service-drilldown?var-service=overseerr.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: prowlarr",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=prowlarr&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: plex",
-      "url": "/d/istio-gateway-service-drilldown?var-service=plex.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: radarr",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=radarr&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: prowlarr",
-      "url": "/d/istio-gateway-service-drilldown?var-service=prowlarr.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: sonarr",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=sonarr&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: radarr",
-      "url": "/d/istio-gateway-service-drilldown?var-service=radarr.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: syncthing",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=syncthing&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: sonarr",
-      "url": "/d/istio-gateway-service-drilldown?var-service=sonarr.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: tautulli",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=tautulli.myrobertson.net&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: syncthing",
-      "url": "/d/istio-gateway-service-drilldown?var-service=syncthing.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: trilium",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=trilium.myrobertson.net&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     },
     {
-      "title": "drilldown: tautulli",
-      "url": "/d/istio-gateway-service-drilldown?var-service=tautulli.myrobertson.com",
-      "keepTime": true
-    },
-    {
-      "title": "drilldown: trilium",
-      "url": "/d/istio-gateway-service-drilldown?var-service=trilium.myrobertson.com",
-      "keepTime": true
-    },
-    {
-      "title": "drilldown: whisparr",
-      "url": "/d/istio-gateway-service-drilldown?var-service=whisparr.myrobertson.com",
-      "keepTime": true
+      "title": "Drilldown: whisparr",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=whisparr&${__url_time_range}",
+      "keepTime": true,
+      "targetBlank": false
     }
   ],
   "templating": {
@@ -335,7 +357,14 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "reqps"
+          "unit": "reqps",
+          "links": [
+            {
+              "title": "Drilldown: ${__series.name}",
+              "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=${__series.name}&${__url_time_range}",
+              "targetBlank": false
+            }
+          ]
         }
       }
     },
@@ -379,7 +408,14 @@
                 "value": 1
               }
             ]
-          }
+          },
+          "links": [
+            {
+              "title": "Drilldown: ${__series.name}",
+              "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=${__series.name}&${__url_time_range}",
+              "targetBlank": false
+            }
+          ]
         }
       }
     }
