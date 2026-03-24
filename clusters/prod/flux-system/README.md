@@ -1,4 +1,4 @@
-# Production Flux System
+# Prod Flux System
 
 `clusters/prod/flux-system/` contains Flux bootstrap manifests for the production cluster.
 
@@ -16,7 +16,7 @@
 
 ## See also
 
-- [Production cluster docs](../README.md)
+- [Prod cluster docs](../README.md)
 - [Clusters overview](../../README.md)
 - [Staging Flux bootstrap docs](../../staging/flux-system/README.md)
 - [Repository root](../../../README.md)
