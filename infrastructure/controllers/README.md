@@ -29,9 +29,9 @@
 
 - [Infrastructure overview](../README.md)
 - [Ceph CSI](ceph-csi/README.md)
-- [General controllers](general/README.md)
+- [General Controllers](general/README.md)
 - [Intel Device Plugin Operator](intel-device-plugin-operator/README.md)
-- [Istio controllers](istio/README.md)
+- [Istio](istio/README.md)
 - [Kube Prometheus Stack](kube-prometheus-stack/README.md)
 - [Rook Ceph](rook-ceph/README.md)
 - [Storage Classes](storage-classes/README.md)
