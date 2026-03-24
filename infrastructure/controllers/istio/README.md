@@ -29,5 +29,5 @@ Controller resources for service mesh control-plane components.
 
 ## Parent/Siblings
 
-- Parent: [Infrastructure Controllers](../README.md)
-- Siblings: [Ceph CSI](../ceph-csi/README.md), [General Controllers](../general/README.md), [Intel Device Plugin Operator](../intel-device-plugin-operator/README.md), [Kube Prometheus Stack](../kube-prometheus-stack/README.md), [Rook Ceph](../rook-ceph/README.md), [Storage Classes](../storage-classes/README.md), [Synology iSCSI CSI](../synology-iscsi-csi/README.md)
+- Parent: [Controllers](../README.md)
+- Siblings: [Ceph CSI](../ceph-csi/README.md); [General Controllers](../general/README.md); [Intel Device Plugin Operator](../intel-device-plugin-operator/README.md); [Kube Prometheus Stack](../kube-prometheus-stack/README.md); [Rook Ceph](../rook-ceph/README.md); [Storage Classes](../storage-classes/README.md); [Synology iSCSI CSI](../synology-iscsi-csi/README.md).
