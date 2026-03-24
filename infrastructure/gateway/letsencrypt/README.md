@@ -1,4 +1,4 @@
-# Gateway Let’s Encrypt
+# Gateway Let's Encrypt
 
 Certificate automation resources used by gateway-exposed services.
 
@@ -9,7 +9,7 @@ Certificate automation resources used by gateway-exposed services.
 
 ## In this folder
 
-- Let’s Encrypt issuer/challenge-related gateway integration manifests.
+- Let's Encrypt issuer/challenge-related gateway integration manifests.
 
 ## Notes
 

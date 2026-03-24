@@ -26,5 +26,5 @@
 - [Infrastructure overview](../README.md)
 - [CRDs](crds/README.md)
 - [Namespaces](namespaces/README.md)
-- [Node feature discovery](node-feature-discovery/README.md)
-- [Vault secrets operator](vault-secrets-operator/README.md)
+- [Node Feature Discovery](node-feature-discovery/README.md)
+- [Vault Secrets Operator](vault-secrets-operator/README.md)
