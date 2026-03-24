@@ -4,7 +4,7 @@
 
 ## Purpose
 
-- Version-controls dashboard layout and query logic as code.
+- Version controls dashboard layout and query logic as code.
 - Enables reproducible observability views across clusters.
 - Supports reviewable changes to SRE/operator UX.
 

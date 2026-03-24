@@ -34,5 +34,5 @@ The validation script is designed to:
 
 ## Parent/Siblings
 
-- Parent: [Homelab Flux](../README.md)
+- Parent: [homelab_flux](../README.md)
 - Siblings: [Apps](../apps/README.md); [Clusters](../clusters/README.md); [Infrastructure](../infrastructure/README.md).
