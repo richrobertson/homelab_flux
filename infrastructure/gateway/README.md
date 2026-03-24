@@ -23,6 +23,6 @@
 ## See also
 
 - [Infrastructure overview](../README.md)
-- [External services](externalServices/README.md)
+- [External Services](externalServices/README.md)
 - [Let's Encrypt integration](letsencrypt/README.md)
 - [myrobertson.com domain routing](myrobertson-com/README.md)
