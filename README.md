@@ -106,6 +106,20 @@ kubectl get pods -A
 └── README.md
 ```
 
+## Documentation map
+
+- [Apps overview](apps/README.md)
+- [Clusters overview](clusters/README.md)
+- [Infrastructure overview](infrastructure/README.md)
+- [Scripts overview](scripts/README.md)
+
+Environment and bootstrap docs:
+
+- [Staging cluster](clusters/staging/README.md)
+- [Prod cluster](clusters/prod/README.md)
+- [Staging Flux bootstrap](clusters/staging/flux-system/README.md)
+- [Prod Flux bootstrap](clusters/prod/flux-system/README.md)
+
 ## Tooling prerequisites
 
 Recommended local tooling:
