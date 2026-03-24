@@ -116,9 +116,9 @@ kubectl get pods -A
 Environment and bootstrap docs:
 
 - [Staging cluster](clusters/staging/README.md)
-- [Production cluster](clusters/prod/README.md)
+- [Prod cluster](clusters/prod/README.md)
 - [Staging Flux bootstrap](clusters/staging/flux-system/README.md)
-- [Production Flux bootstrap](clusters/prod/flux-system/README.md)
+- [Prod Flux bootstrap](clusters/prod/flux-system/README.md)
 
 ## Tooling prerequisites
 
