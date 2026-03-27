@@ -8,10 +8,20 @@ resources:
 patches:
   # Uncomment the following patch to perform the Ceph cutover in prod
   # after the Ceph seed/final-sync jobs complete.
-  # - path: ../../base/authelia/release-ceph-cutover.yaml
-  #   target:
-  #     kind: HelmRelease
-  #     name: authelia
+  - path: ../../base/authelia/release-ceph-cutover.yaml
+    target:
+      kind: HelmRelease
+      name: authelia
+  - patch: |
+      $patch: delete
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: cluster-authelia
+        namespace: default
+    target:
+      kind: Cluster
+      name: cluster-authelia
   - patch: |
       - op: replace
         path: /spec/path
