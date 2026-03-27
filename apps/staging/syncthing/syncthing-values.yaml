@@ -1,14 +1,9 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: sonarr
+  name: syncthing
 spec:
   values:
-
-    sonarr:
-      api:
-        general:
-          baseUrl: https://sonarr.staging.myrobertson.net
     workload:
       main:
         replicas: 0
