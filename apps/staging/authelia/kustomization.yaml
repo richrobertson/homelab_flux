@@ -6,6 +6,11 @@ resources:
   - gateway.yaml
   - auth-policy.yaml
 patches:
+  # Enable after the Ceph seed/final-sync jobs complete.
+  # - path: ../../base/authelia/release-ceph-cutover.yaml
+  #   target:
+  #     kind: HelmRelease
+  #     name: authelia
   # - path: authelia-values.yaml
   #   target:
   #     kind: HelmRelease

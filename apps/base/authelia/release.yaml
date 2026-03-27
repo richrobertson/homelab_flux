@@ -30,10 +30,6 @@ spec:
                               path: authentication.ldap.password.txt
                             - key: storage.encryption.key
                               path: storage.encryption.key
-                            - key: storage.postgres.password.txt
-                              path: storage.postgres.password.txt
-                            - key: identity_providers.oidc.hmac.key
-                              path: identity_providers.oidc.hmac.key
           - target:
               kind: Deployment
               name: authelia
@@ -58,8 +54,6 @@ spec:
                             value: /secrets/internal/authentication.ldap.password.txt
                           - name: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
                             value: /secrets/internal/storage.encryption.key
-                          - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
-                            value: /secrets/internal/storage.postgres.password.txt
                           - name: X_AUTHELIA_CONFIG
                             value: /configuration.yaml
                           - name: X_AUTHELIA_CONFIG_FILTERS
@@ -79,6 +73,12 @@ spec:
     pod:
       kind: Deployment
       replicas: 1
+      env:
+        - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: cluster-authelia-app
+              key: password
     secret:
       existingSecret: authelia-secret
     configMap:
@@ -115,6 +115,8 @@ spec:
           enabled: true
           username: 'authelia'
           address: 'tcp://cluster-authelia-rw.default.svc.cluster.local:5432'
+          password:
+            disabled: true
       
       notifier:
         filesystem:

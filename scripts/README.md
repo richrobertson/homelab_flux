@@ -11,6 +11,8 @@
 ## Current contents
 
 - `validate.sh`: end-to-end repo validation workflow.
+- `noenc-sc-test-20260325.yaml`: ad-hoc StorageClass manifest used for CephFS no-encryption provisioning diagnostics.
+- `noenc-pvc-ab-20260325.yaml`: ad-hoc PVC probes used with the no-encryption test StorageClass during CephFS diagnostics.
 
 ## Expected validation flow
 
