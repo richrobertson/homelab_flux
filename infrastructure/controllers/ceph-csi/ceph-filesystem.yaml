@@ -22,7 +22,6 @@ spec:
           - "192.168.10.3:6789"
         cephFS:
           radosNamespace: "cephfs-csi-standalone"
-        radosNamespace: "cephfs-csi-standalone"
 
     encryptionKMSConfig:
         encryptionKMSType: vault

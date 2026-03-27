@@ -46,7 +46,7 @@ data:
   data: pve3=192.168.10.3:6789
   externalMons: ""
   mapping: '{"node":{}}'
-  maxMonId: "2"
+  maxMonId: "0"
   outOfQuorum: ""
 kind: ConfigMap
 metadata:
