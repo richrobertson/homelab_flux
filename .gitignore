@@ -1,5 +1,6 @@
 .DS_Store
 pub-sealed-secrets.pem
+infrastructure/gateway/externalServices/whisparr.yaml
 infrastructure/gateway/externalServices/sonarr.yaml
 infrastructure/gateway/externalServices/radarr.yaml
 infrastructure/gateway/externalServices/prowlarr.yaml
