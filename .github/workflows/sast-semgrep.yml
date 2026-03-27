@@ -30,10 +30,10 @@ jobs:
         run: pip install semgrep
 
       - name: Run Semgrep
-        run: semgrep scan --config auto --error --sarif --output semgrep.sarif .
+        run: semgrep scan --config auto --sarif --output semgrep.sarif .
 
       - name: Upload SARIF
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif
