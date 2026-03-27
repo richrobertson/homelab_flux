@@ -40,6 +40,9 @@ spec:
                 exit 1
               fi
 
+              dump_file="$(mktemp)"
+              trap 'rm -f "$dump_file"' EXIT
+
               PGPASSWORD="$SOURCE_PASSWORD" pg_dump \
                 --clean \
                 --if-exists \
@@ -48,8 +51,11 @@ spec:
                 -h cluster-authelia-rw.default.svc.cluster.local \
                 -U authelia \
                 -d authelia \
-              | PGPASSWORD="$TARGET_PASSWORD" psql \
+                > "$dump_file"
+
+              PGPASSWORD="$TARGET_PASSWORD" psql \
                 -v ON_ERROR_STOP=1 \
                 -h cluster-authelia-ceph-rw.default.svc.cluster.local \
                 -U authelia \
-                -d authelia
+                -d authelia \
+                < "$dump_file"
