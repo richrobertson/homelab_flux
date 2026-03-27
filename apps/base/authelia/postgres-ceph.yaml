@@ -1,0 +1,21 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: cluster-authelia-ceph
+  namespace: default
+spec:
+  instances: 1
+  enableSuperuserAccess: true
+  storage:
+    size: 10Gi
+    storageClass: synology-iscsi-storage
+  managed:
+    roles:
+      - name: authelia
+        superuser: true
+        login: true
+  bootstrap:
+    initdb:
+      database: authelia
+      owner: authelia

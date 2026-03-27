@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: authelia-config-copy-to-ceph
+spec:
+  suspend: true
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: authelia-migration
+      restartPolicy: OnFailure
+      containers:
+        - name: copy
+          image: bitnami/kubectl:1.32.3
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              pod=""
+              for attempt in $(seq 1 60); do
+                pod="$(kubectl get pod -n default -l app.kubernetes.io/name=authelia,app.kubernetes.io/instance=authelia -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)"
+                if [ -n "$pod" ]; then
+                  break
+                fi
+                sleep 5
+              done
+
+              if [ -z "$pod" ]; then
+                echo "Authelia pod not found"
+                exit 1
+              fi
+
+              mkdir -p /ceph
+
+              for attempt in $(seq 1 60); do
+                if kubectl exec -n default -c authelia "$pod" -- cat /config/notification.txt > /ceph/notification.txt; then
+                  break
+                fi
+                sleep 5
+              done
+
+              if [ ! -s /ceph/notification.txt ]; then
+                echo "Failed to copy /config/notification.txt from the running Authelia pod"
+                exit 1
+              fi
+          volumeMounts:
+            - name: authelia-config-ceph
+              mountPath: /ceph
+      volumes:
+        - name: authelia-config-ceph
+          persistentVolumeClaim:
+            claimName: authelia-config-ceph
