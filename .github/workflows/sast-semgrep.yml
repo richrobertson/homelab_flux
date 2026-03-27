@@ -33,7 +33,7 @@ jobs:
         run: semgrep scan --config auto --sarif --output semgrep.sarif .
 
       - name: Upload SARIF
-        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: always() && github.event_name != 'pull_request'
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif
