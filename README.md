@@ -189,6 +189,18 @@ kubectl get events -A --sort-by=.lastTimestamp | tail -50
 4. Let Flux reconcile on interval, or force reconcile for faster rollout.
 5. Verify resources in-cluster and in Grafana/Prometheus as needed.
 
+## Security (SAST)
+
+This repository runs [Semgrep](https://semgrep.dev/) as a Static Application Security Testing (SAST) tool via GitHub Actions on every push and pull request to `main`/`master`, plus a weekly scheduled scan.
+
+Results are uploaded to **GitHub Security** in [SARIF](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning) format and can be viewed under:
+
+> **Repository → Security → Code scanning alerts**
+
+The workflow file: [.github/workflows/sast-semgrep.yml](.github/workflows/sast-semgrep.yml)
+
+> **Note:** Code scanning requires GitHub Advanced Security (enabled by default for public repositories; requires a license for private repositories).
+
 ## Safety and conventions
 
 - Keep environment-specific values in `apps/prod`, `apps/staging`, and cluster overlays.
