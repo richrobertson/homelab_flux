@@ -199,7 +199,7 @@ Results are uploaded to **GitHub Security** in [SARIF](https://docs.github.com/e
 
 The workflow file: [.github/workflows/sast-semgrep.yml](.github/workflows/sast-semgrep.yml)
 
-> **Note:** Code scanning requires GitHub Advanced Security (enabled by default for public repositories; requires a license for private repositories).
+> **Note:** Code scanning requires GitHub Advanced Security (available for public repositories; must be enabled in repository settings, and requires a license for private repositories).
 
 ## Safety and conventions
 

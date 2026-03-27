@@ -26,10 +26,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.11"
 
       - name: Install Semgrep
-        run: pip install semgrep
+        run: pip install semgrep==1.92.0
 
       - name: Run Semgrep
         run: semgrep scan --config auto --sarif --output semgrep.sarif .
@@ -46,10 +46,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.11"
 
       - name: Install Semgrep
-        run: pip install semgrep
+        run: pip install semgrep==1.92.0
 
       - name: Run Semgrep
         run: semgrep scan --config auto --sarif --output semgrep.sarif .
