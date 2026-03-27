@@ -9,15 +9,13 @@ on:
     - cron: "17 3 * * 1"
   workflow_dispatch:
 
-permissions:
-  contents: read
-  security-events: write
-
 jobs:
   semgrep-pr:
     name: Run Semgrep SAST (PR)
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
@@ -38,6 +36,9 @@ jobs:
     name: Run Semgrep SAST (Main/Scheduled)
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
 
     steps:
       - name: Checkout

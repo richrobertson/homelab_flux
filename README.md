@@ -193,7 +193,7 @@ kubectl get events -A --sort-by=.lastTimestamp | tail -50
 
 This repository runs [Semgrep](https://semgrep.dev/) as a Static Application Security Testing (SAST) tool via GitHub Actions on every push and pull request to `main`/`master`, plus a weekly scheduled scan.
 
-Results are uploaded to **GitHub Security** in [SARIF](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning) format and can be viewed under:
+SARIF results are uploaded to **GitHub Security** for push/scheduled/manual runs (PR runs still scan but do not upload SARIF) and can be viewed under:
 
 > **Repository → Security → Code scanning alerts**
 
