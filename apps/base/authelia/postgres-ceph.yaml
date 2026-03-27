@@ -6,14 +6,14 @@ metadata:
   namespace: default
 spec:
   instances: 1
-  enableSuperuserAccess: true
+  enableSuperuserAccess: false
   storage:
     size: 10Gi
     storageClass: synology-iscsi-storage
   managed:
     roles:
       - name: authelia
-        superuser: true
+        superuser: false
         login: true
   bootstrap:
     initdb:

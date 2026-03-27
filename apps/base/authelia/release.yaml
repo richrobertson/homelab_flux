@@ -54,16 +54,10 @@ spec:
                             value: /secrets/internal/authentication.ldap.password.txt
                           - name: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
                             value: /secrets/internal/storage.encryption.key
-                          - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD
-                            valueFrom:
-                              secretKeyRef:
-                                name: cluster-authelia-app
-                                key: password
                           - name: X_AUTHELIA_CONFIG
                             value: /configuration.yaml
                           - name: X_AUTHELIA_CONFIG_FILTERS
                             value: template
-                        $patch: replace
   chart:
     spec:
       chart: authelia

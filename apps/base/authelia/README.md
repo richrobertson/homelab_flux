@@ -12,28 +12,30 @@ Base manifests for the Authelia identity and access control service.
 
 - Repository and release definitions for Authelia.
 - Shared manifests that should not vary by environment unless explicitly patched.
-- Ceph migration resources for the PostgreSQL data volume and Authelia notifier filesystem.
+- Migration resources for the PostgreSQL data volume and Authelia notifier filesystem.
 
 ## Ceph Migration
 
-The Ceph migration in this folder is intentionally staged to avoid data loss.
+The migration in this folder is intentionally staged to avoid data loss.
+
+Note: despite the `*-ceph.yaml` filenames, the current target storage class in these manifests is `synology-iscsi-storage`.
 
 Included resources:
 
-- `postgres-ceph.yaml`: creates a new Ceph-backed CNPG cluster named `cluster-authelia-ceph`.
-- `authelia-config-ceph-pvc.yaml`: creates a CephFS PVC for Authelia runtime files under `/config`.
+- `postgres-ceph.yaml`: creates a new CNPG cluster named `cluster-authelia-ceph` using `synology-iscsi-storage`.
+- `authelia-config-ceph-pvc.yaml`: creates a PVC for Authelia runtime files under `/config`.
 - `authelia-db-seed-to-ceph.yaml`: one-time suspended job for the initial PostgreSQL seed.
 - `authelia-db-final-sync-to-ceph.yaml`: one-time suspended job for the final PostgreSQL sync during cutover.
-- `authelia-config-copy-to-ceph.yaml`: one-time suspended job that copies the filesystem notifier file into the new Ceph PVC.
-- `release-ceph-cutover.yaml`: a HelmRelease patch to enable the Ceph PVC and point Authelia at the Ceph-backed CNPG cluster.
+- `authelia-config-copy-to-ceph.yaml`: one-time suspended job that copies the filesystem notifier file into the new PVC.
+- `release-ceph-cutover.yaml`: a HelmRelease patch to enable the new PVC and point Authelia at `cluster-authelia-ceph`.
 
 Recommended cutover sequence:
 
 1. Reconcile the base manifests and wait for `cluster-authelia-ceph` to become ready and for `authelia-config-ceph` to bind.
 2. Unsuspend `authelia-db-seed-to-ceph` and let it complete while Authelia is still running against the current database.
-3. Scale the Authelia deployment to `0` replicas to stop new writes.
-4. Unsuspend `authelia-config-copy-to-ceph` and `authelia-db-final-sync-to-ceph`.
-5. Enable the `release-ceph-cutover.yaml` patch in the environment overlay, reconcile, and then scale Authelia back to `1`.
+3. Stop new writes by suspending the Authelia `HelmRelease` (or patching values to `replicas: 0`), reconcile, and confirm the deployment is at `0` replicas.
+4. Unsuspend `authelia-config-copy-to-ceph` and `authelia-db-final-sync-to-ceph`, then wait for completion.
+5. Enable `release-ceph-cutover.yaml` in the environment overlay, reconcile, then restore Authelia to its normal state (resume `HelmRelease` or set `replicas: 1`) and verify deployment is back at `1` replica.
 6. After verification, remove the old `cluster-authelia` resources.
 
 Notes:

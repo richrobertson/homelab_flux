@@ -30,6 +30,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: authelia-migration
+    namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
