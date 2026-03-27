@@ -13,6 +13,16 @@ patches:
       kind: HelmRelease
       name: authelia
   - patch: |
+      $patch: delete
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: cluster-authelia
+        namespace: default
+    target:
+      kind: Cluster
+      name: cluster-authelia
+  - patch: |
       - op: replace
         path: /spec/path
         value: authelia/prod
