@@ -18,15 +18,15 @@ Base manifests for the Authelia identity and access control service.
 
 The migration in this folder is intentionally staged to avoid data loss.
 
-Note: despite the `*-ceph.yaml` filenames, the current target storage class in these manifests is `synology-iscsi-storage`.
+Note: despite the `*-ceph.yaml` filenames, the current target storage class for the CNPG cluster in these manifests is `synology-iscsi-storage`, while the Authelia notifier PVC uses `ceph-filesystem`.
 
 Included resources:
 
 - `postgres-ceph.yaml`: creates a new CNPG cluster named `cluster-authelia-ceph` using `synology-iscsi-storage`.
-- `authelia-config-ceph-pvc.yaml`: creates a PVC for Authelia runtime files under `/config`.
+- `authelia-config-ceph-pvc.yaml`: creates a PVC for Authelia runtime/notifier files under `/config` using `ceph-filesystem`.
 - `authelia-db-seed-to-ceph.yaml`: one-time suspended job for the initial PostgreSQL seed.
 - `authelia-db-final-sync-to-ceph.yaml`: one-time suspended job for the final PostgreSQL sync during cutover.
-- `authelia-config-copy-to-ceph.yaml`: one-time suspended job that copies the filesystem notifier file into the new PVC.
+- `authelia-config-copy-to-ceph.yaml`: one-time suspended job that copies the filesystem notifier file into the new notifier PVC.
 - `release-ceph-cutover.yaml`: a HelmRelease patch to enable the new PVC and point Authelia at `cluster-authelia-ceph`.
 
 Recommended cutover sequence:
