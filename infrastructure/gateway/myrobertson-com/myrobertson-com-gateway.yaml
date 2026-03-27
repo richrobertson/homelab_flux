@@ -238,16 +238,3 @@ spec:
       certificateRefs:
       - name: trilium-myrobertson-com-cert
         kind: Secret 
-
-  - name: whisparr
-    hostname: whisparr.myrobertson.com
-    port: 443
-    protocol: HTTPS
-    allowedRoutes:
-      namespaces:
-        from: All
-    tls:
-      mode: Terminate
-      certificateRefs:
-      - name: whisparr-myrobertson-com-cert
-        kind: Secret 

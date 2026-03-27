@@ -46,4 +46,3 @@ Leaf docs:
 - [Shared Storage (Prod)](shared_storage/README.md)
 - [Sonarr production](sonarr/README.md)
 - [Syncthing production](syncthing/README.md)
-- [Whisparr production](whisparr/README.md)
