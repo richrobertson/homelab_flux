@@ -7,14 +7,36 @@ on:
     branches: ["main", "master"]
   schedule:
     - cron: "17 3 * * 1"
+  workflow_dispatch:
 
 permissions:
   contents: read
   security-events: write
 
 jobs:
-  semgrep:
-    name: Run Semgrep SAST
+  semgrep-pr:
+    name: Run Semgrep SAST (PR)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      - name: Run Semgrep
+        run: semgrep scan --config auto --sarif --output semgrep.sarif .
+
+  semgrep-main:
+    name: Run Semgrep SAST (Main/Scheduled)
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
 
     steps:
@@ -33,7 +55,7 @@ jobs:
         run: semgrep scan --config auto --sarif --output semgrep.sarif .
 
       - name: Upload SARIF
-        if: always() && github.event_name != 'pull_request'
+        if: always()
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif
