@@ -18,11 +18,11 @@ Base manifests for the Authelia identity and access control service.
 
 The migration in this folder is intentionally staged to avoid data loss.
 
-Note: despite the `*-ceph.yaml` filenames, the current target storage class for the CNPG cluster in these manifests is `synology-iscsi-storage`, while the Authelia notifier PVC uses `ceph-filesystem`.
+Note: the Ceph migration manifests use `ceph-filesystem` for both the CNPG database and the notifier PVC.
 
 Included resources:
 
-- `postgres-ceph.yaml`: creates a new CNPG cluster named `cluster-authelia-ceph` using `synology-iscsi-storage`.
+- `postgres-ceph.yaml`: creates a new CNPG cluster named `cluster-authelia-ceph` using `ceph-filesystem`.
 - `authelia-config-ceph-pvc.yaml`: creates a PVC for Authelia runtime/notifier files under `/config` using `ceph-filesystem`.
 - `authelia-db-seed-to-ceph.yaml`: one-time suspended job for the initial PostgreSQL seed.
 - `authelia-db-final-sync-to-ceph.yaml`: one-time suspended job for the final PostgreSQL sync during cutover.
@@ -51,4 +51,4 @@ Notes:
 ## Parent/Siblings
 
 - Parent: [Base](../README.md)
-- Siblings: [External DNS](../external-dns/README.md); [Immich](../immich/README.md); [Jellyfin](../jellyfin/README.md); [Lidarr](../lidarr/README.md); [Loki Stack](../loki-stack/README.md); [Mealie](../mealie/README.md); [Overseerr](../overseerr/README.md); [Prowlarr](../prowlarr/README.md); [Radarr](../radarr/README.md); [Shared Storage](../shared_storage/README.md); [Sonarr](../sonarr/README.md); [Syncthing](../syncthing/README.md); [VolSync](../volsync/README.md); [Whisparr](../whisparr/README.md).
+- Siblings: [External DNS](../external-dns/README.md); [Immich](../immich/README.md); [Jellyfin](../jellyfin/README.md); [Lidarr](../lidarr/README.md); [Loki Stack](../loki-stack/README.md); [Mealie](../mealie/README.md); [Overseerr](../overseerr/README.md); [Prowlarr](../prowlarr/README.md); [Radarr](../radarr/README.md); [Shared Storage](../shared_storage/README.md); [Sonarr](../sonarr/README.md); [Syncthing](../syncthing/README.md); [VolSync](../volsync/README.md).
