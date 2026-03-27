@@ -30,8 +30,6 @@ spec:
                               path: authentication.ldap.password.txt
                             - key: storage.encryption.key
                               path: storage.encryption.key
-                            - key: storage.postgres.password.txt
-                              path: storage.postgres.password.txt
           - target:
               kind: Deployment
               name: authelia
@@ -56,8 +54,6 @@ spec:
                             value: /secrets/internal/authentication.ldap.password.txt
                           - name: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
                             value: /secrets/internal/storage.encryption.key
-                          - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
-                            value: /secrets/internal/storage.postgres.password.txt
                           - name: X_AUTHELIA_CONFIG
                             value: /configuration.yaml
                           - name: X_AUTHELIA_CONFIG_FILTERS
@@ -112,7 +108,7 @@ spec:
         postgres:
           enabled: true
           username: 'authelia'
-          address: 'tcp://cluster-authelia-ceph-rw.default.svc.cluster.local:5432'
+          address: 'tcp://cluster-authelia-rw.default.svc.cluster.local:5432'
           password:
             disabled: true
       
