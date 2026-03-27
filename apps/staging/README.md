@@ -45,4 +45,3 @@ Leaf docs:
 - [Sonarr staging](sonarr/README.md)
 - [Syncthing staging](syncthing/README.md)
 - [VolSync staging](volsync/README.md)
-- [Whisparr staging](whisparr/README.md)

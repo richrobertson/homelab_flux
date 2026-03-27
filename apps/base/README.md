@@ -38,7 +38,6 @@
 - `sonarr`: TV show library management and automation.
 - `syncthing`: peer-to-peer file synchronization.
 - `volsync`: persistent volume replication/synchronization.
-- `whisparr`: adult media library management and automation.
 
 ## See also
 
@@ -62,4 +61,3 @@ Leaf docs:
 - [Sonarr base](sonarr/README.md)
 - [Syncthing base](syncthing/README.md)
 - [VolSync base](volsync/README.md)
-- [Whisparr base](whisparr/README.md)
