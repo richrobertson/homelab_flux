@@ -12,8 +12,8 @@ spec:
     persistence:
       config:
         enabled: true
-        storageClass: csi-cephfs-sc
-        existingClaim: lidarr-config-ceph
+        storageClass: synology-iscsi-storage
+        existingClaim: lidarr-config
         accessModes: ReadWriteMany
         targetSelector:
           main:

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: overseerr-config
+spec:
+  volumeName: pvc-63e57a7c-d983-4be5-99b0-d0aa2c749e42
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: synology-iscsi-storage

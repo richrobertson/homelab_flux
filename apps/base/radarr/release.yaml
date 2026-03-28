@@ -12,8 +12,8 @@ spec:
     persistence:
       config:
         enabled: true
-        storageClass: csi-cephfs-sc
-        existingClaim: radarr-config-ceph
+        storageClass: synology-iscsi-storage
+        existingClaim: radarr-config
         accessModes: ReadWriteMany
         targetSelector:
           main:

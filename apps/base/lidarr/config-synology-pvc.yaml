@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lidarr-config
+spec:
+  volumeName: pvc-c1035a9d-b8b2-4859-af33-2b9edb386d0c
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: synology-iscsi-storage

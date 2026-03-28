@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: radarr-config
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: synology-iscsi-storage
+  resources:
+    requests:
+      storage: 100Gi
+  volumeName: pvc-762faa11-7615-4840-8133-cee1b136520c
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sonarr-config
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: synology-iscsi-storage
+  resources:
+    requests:
+      storage: 100Gi
+  volumeName: pvc-db01042d-c355-4a3d-baac-a5f0693885dd
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lidarr-config
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: synology-iscsi-storage
+  resources:
+    requests:
+      storage: 100Gi
+  volumeName: pvc-c1035a9d-b8b2-4859-af33-2b9edb386d0c
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: overseerr-config
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: synology-iscsi-storage
+  resources:
+    requests:
+      storage: 100Gi
+  volumeName: pvc-63e57a7c-d983-4be5-99b0-d0aa2c749e42

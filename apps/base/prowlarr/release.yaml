@@ -12,8 +12,8 @@ spec:
     persistence:
       config:
         enabled: true
-        storageClass: csi-cephfs-sc
-        existingClaim: prowlarr-config-ceph
+        storageClass: synology-iscsi-storage
+        existingClaim: prowlarr-config
         accessModes: ReadWriteMany
         targetSelector:
           main:
