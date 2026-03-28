@@ -3,9 +3,6 @@ kind: Kustomization
 namespace: default
 resources:
   - authelia-config-ceph-pvc.yaml
-  - authelia-config-copy-to-ceph.yaml
-  - authelia-db-final-sync-to-ceph.yaml
-  - authelia-db-seed-to-ceph.yaml
   - migration-rbac.yaml
   - postgres.yaml
   - postgres-ceph.yaml
