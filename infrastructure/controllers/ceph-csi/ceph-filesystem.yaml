@@ -60,16 +60,6 @@ spec:
               kind: ConfigMap
               name: ceph-config
             patch: |
-              apiVersion: v1
-              kind: ConfigMap
-              metadata:
-                name: ceph-config
-              data:
-                ceph.conf: |
-                  [global]
-                    auth_cluster_required = cephx
-                    auth_service_required = cephx
-                    auth_client_required = cephx
-                    fuse_big_writes = true
-                    mon_op_timeout = 30
-                    osd_op_timeout = 30
+              - op: replace
+                path: /data/ceph.conf
+                value: "[global]\n  auth_cluster_required = cephx\n  auth_service_required = cephx\n  auth_client_required = cephx\n  fuse_big_writes = true\n  mon_op_timeout = 30\n  osd_op_timeout = 30\n"
