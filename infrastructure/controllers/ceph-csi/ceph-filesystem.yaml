@@ -20,6 +20,8 @@ spec:
       - clusterID: "1b5c261a-cdac-495a-b046-ea5ff229f33a"
         monitors:
           - "192.168.10.3:6789"
+          - "192.168.10.4:6789"
+          - "192.168.10.5:6789"
         cephFS:
           radosNamespace: "cephfs-csi-standalone"
 
@@ -35,6 +37,7 @@ spec:
     storageClass:
       create: true
       clusterID: 1b5c261a-cdac-495a-b046-ea5ff229f33a
+      mounter: fuse
       encrypted: false
       encryptionKMSID: kubernetes
       fsName: kubernetes-prod-cephfs
@@ -50,3 +53,25 @@ spec:
       create: false
       deletionPolicy: Delete
       clusterID: 1b5c261a-cdac-495a-b046-ea5ff229f33a
+
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: ConfigMap
+              name: ceph-config
+            patch: |
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: ceph-config
+              data:
+                ceph.conf: |
+                  [global]
+                    auth_cluster_required = cephx
+                    auth_service_required = cephx
+                    auth_client_required = cephx
+                    fuse_big_writes = true
+                    rados_mon_op_timeout = 30
+                    rados_osd_op_timeout = 30
+                    client_mount_timeout = 30
