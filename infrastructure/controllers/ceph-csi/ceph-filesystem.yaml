@@ -37,7 +37,6 @@ spec:
     storageClass:
       create: true
       clusterID: 1b5c261a-cdac-495a-b046-ea5ff229f33a
-      mounter: fuse
       encrypted: false
       encryptionKMSID: kubernetes
       fsName: kubernetes-prod-cephfs
