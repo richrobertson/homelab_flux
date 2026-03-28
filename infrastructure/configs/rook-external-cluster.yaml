@@ -120,7 +120,6 @@ spec:
     port: 8080
     externalRgwEndpoints:
       - ip: 192.168.10.3
-      - ip: 192.168.10.4
       - ip: 192.168.10.5
         # hostname: example.com
 ---
@@ -134,4 +133,20 @@ parameters:
   objectStoreNamespace: rook-ceph-external
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ceph-client-config
+  namespace: rook-ceph-external
+data:
+  ceph.conf: |
+    [global]
+    # RADOS operation timeouts to prevent indefinite hangs
+    # Mon op timeout: time in seconds to wait for mon operations before timing out
+    rados_mon_op_timeout = 30
+    # OSD op timeout: time in seconds to wait for OSD operations before timing out
+    rados_osd_op_timeout = 30
+    # Client config to ensure explicit timeout handling
+    client_mount_timeout = 30
 
