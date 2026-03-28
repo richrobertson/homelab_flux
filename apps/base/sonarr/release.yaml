@@ -12,8 +12,8 @@ spec:
     persistence:
       config:
         enabled: true
-        storageClass: synology-iscsi-storage
-        existingClaim: sonarr-config
+        storageClass: csi-cephfs-sc
+        existingClaim: sonarr-config-ceph
         accessModes: ReadWriteMany
         targetSelector:
           main:
