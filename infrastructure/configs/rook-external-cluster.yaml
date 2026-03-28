@@ -120,6 +120,7 @@ spec:
     port: 8080
     externalRgwEndpoints:
       - ip: 192.168.10.3
+      - ip: 192.168.10.4
       - ip: 192.168.10.5
         # hostname: example.com
 ---
