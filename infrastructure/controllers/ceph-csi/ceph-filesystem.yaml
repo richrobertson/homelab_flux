@@ -71,6 +71,5 @@ spec:
                     auth_service_required = cephx
                     auth_client_required = cephx
                     fuse_big_writes = true
-                    rados_mon_op_timeout = 30
-                    rados_osd_op_timeout = 30
-                    client_mount_timeout = 30
+                    mon_op_timeout = 30
+                    osd_op_timeout = 30
