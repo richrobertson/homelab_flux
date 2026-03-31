@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: migrate-syncthing-config
+  namespace: default
+spec:
+  restartPolicy: Never
+  containers:
+    - name: copy
+      image: alpine:3.20
+      command:
+        - sh
+        - -c
+        - |
+          set -euo pipefail
+          cd /src
+          tar cpf - . | tar xpf - -C /dst
+          sync
+          echo copied-syncthing
+      volumeMounts:
+        - name: src
+          mountPath: /src
+        - name: dst
+          mountPath: /dst
+  volumes:
+    - name: src
+      persistentVolumeClaim:
+        claimName: syncthing-config
+    - name: dst
+      persistentVolumeClaim:
+        claimName: syncthing-config-ceph

@@ -22,7 +22,8 @@ spec:
                 privileged: true
     persistence:
       config:
-        storageClass: synology-iscsi-storage
+        storageClass: csi-cephfs-sc
+        existingClaim: syncthing-config-ceph
       
       downloads:
         enabled: false
