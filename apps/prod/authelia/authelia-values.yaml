@@ -13,7 +13,7 @@ spec:
               algorithm: RS256
               use: sig
               key:
-                path: identity_providers.oidc.jwks.key
+                path: /secrets/internal/identity_providers.oidc.jwks.key
           clients:
             - client_id: mealie_prod
               client_name: Mealie
