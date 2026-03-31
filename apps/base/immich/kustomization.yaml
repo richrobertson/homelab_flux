@@ -4,9 +4,12 @@ namespace: default
 resources:
   - imageCatalog.yaml
   - postgres.yaml
+  - postgres-ceph.yaml
   - pvc.yaml
   - pvc-v2.yaml
   - pvc-ceph.yaml
   # - change-pvc-permissions.yaml
   - repository.yaml
   - release.yaml
+  - immich-db-seed-to-ceph.yaml
+  - immich-db-final-sync-to-ceph.yaml

@@ -9,7 +9,7 @@ spec:
   enableSuperuserAccess: false
   storage:
     size: 10Gi
-    storageClass: synology-iscsi-storage
+    storageClass: ceph-block
   managed:
     roles:
       - name: authelia

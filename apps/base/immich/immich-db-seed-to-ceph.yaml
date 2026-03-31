@@ -1,0 +1,61 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: immich-db-seed-to-ceph
+spec:
+  suspend: true
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: seed
+          image: ghcr.io/cloudnative-pg/postgresql:18.1-system-trixie
+          env:
+            - name: SOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cluster-immich-app
+                  key: password
+            - name: TARGET_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cluster-immich-ceph-app
+                  key: password
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              target_ready=0
+              for attempt in $(seq 1 60); do
+                if PGPASSWORD="$TARGET_PASSWORD" pg_isready -h cluster-immich-ceph-rw.default.svc.cluster.local -U immich -d immich; then
+                  target_ready=1
+                  break
+                fi
+                sleep 5
+              done
+
+              if [ "$target_ready" -ne 1 ]; then
+                echo "Target database cluster-immich-ceph-rw.default.svc.cluster.local did not become ready after 60 attempts; aborting seeding." >&2
+                exit 1
+              fi
+
+              dump_file="$(mktemp)"
+              trap 'rm -f "$dump_file"' EXIT
+
+              PGPASSWORD="$SOURCE_PASSWORD" pg_dump \
+                --clean \
+                --if-exists \
+                --no-owner \
+                --no-privileges \
+                -h cluster-immich-rw.default.svc.cluster.local \
+                -U immich \
+                -d immich \
+                > "$dump_file"
+
+              PGPASSWORD="$TARGET_PASSWORD" psql \
+                -v ON_ERROR_STOP=1 \
+                -h cluster-immich-ceph-rw.default.svc.cluster.local \
+                -U immich \
+                -d immich \
+                < "$dump_file"
