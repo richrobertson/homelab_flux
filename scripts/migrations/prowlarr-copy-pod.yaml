@@ -11,10 +11,11 @@ spec:
       command:
         - /bin/sh
         - -c
-        - cd /src && tar cpf - . | (cd /dst && tar xpf -) && sync && echo copied-prowlarr
+        - cd /src && tar cpf - . | (cd /dst && tar xpf -) && sync && echo copied-prowlarr-ceph
       volumeMounts:
         - name: src
           mountPath: /src
+          readOnly: true
         - name: dst
           mountPath: /dst
   volumes:

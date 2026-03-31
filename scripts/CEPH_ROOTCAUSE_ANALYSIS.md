@@ -12,7 +12,7 @@ The Ceph integration initially had **5 interconnected architectural failures**. 
 1. **CephFS FUSE Mount Lifecycle Leaks** (PRIMARY, OPEN) - unmount/mount lifecycle can still stall, blocking migrations and some provisions
 2. **Missing radosNamespace Parameters** (FIXED for active paths) - problematic test paths cleaned up
 3. **Dual CSI Provider Configuration** (OPEN) - operational complexity remains across rook and standalone controllers
-4. **Stale Monitor Endpoints** (FIXED) - stale endpoint 192.168.10.4 removed from active RGW endpoint config
+4. **Stale RGW Endpoints** (FIXED) - stale endpoint 192.168.10.4 removed from active RGW endpoint config
 5. **Insufficient Timeout Handling** (PARTIALLY FIXED) - explicit RADOS timeouts added via client config, but CSI lifecycle fallback behavior still missing
 
 ---
@@ -188,7 +188,7 @@ other provisioners     → radosNamespace: cephfs-<purpose>
 
 ---
 
-## Root Cause #3: Stale Monitor Endpoint - HIGH
+## Root Cause #3: Stale RGW Endpoint - HIGH
 
 ### Current Status (Updated)
 - **Status**: FIXED in active RGW endpoint configuration.
@@ -240,7 +240,7 @@ monitors: ["192.168.10.3:6789", "192.168.10.4:6789", "192.168.10.5:6789"]
 **Historical latency impact**: +5-10s per each failed mon attempt × number of retries
 
 **Current residual risk**:
-- If stale monitors are reintroduced through config drift, this latency pattern will return.
+- If stale RGW endpoints are reintroduced through config drift, this latency pattern will return.
 - Keep post-reconcile endpoint validation as a required guardrail.
 
 ---

@@ -15,6 +15,7 @@ spec:
       volumeMounts:
         - name: src
           mountPath: /src
+          readOnly: true
         - name: dst
           mountPath: /dst
   volumes:
