@@ -3,19 +3,4 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/shared_storage
-patches:
-  - patch: |
-      - op: replace
-        path: /spec/resources/requests/storage
-        value: 1Gi
-    target:
-      kind: PersistentVolumeClaim
-      name: downloads
-  - patch: |
-      - op: replace
-        path: /spec/resources/requests/storage
-        value: 1Gi
-    target:
-      kind: PersistentVolumeClaim
-      name: xxx
  
