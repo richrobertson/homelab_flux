@@ -1,0 +1,23 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: mealie-cnpg-main
+spec:
+  instances: 1
+  enableSuperuserAccess: true
+  storage:
+    size: 100Gi
+    storageClass: ceph-block
+  walStorage:
+    size: 100Gi
+    storageClass: ceph-block
+  managed:
+    roles:
+      - name: mealie
+        login: true
+        superuser: false
+  bootstrap:
+    initdb:
+      database: mealie
+      owner: mealie

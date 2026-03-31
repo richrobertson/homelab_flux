@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - data-ceph-pvc.yaml
+  - postgres-ceph.yaml
   - repository.yaml
   - release.yaml
   # - mealie-cnpg-main-1-permissions-fix.yaml
