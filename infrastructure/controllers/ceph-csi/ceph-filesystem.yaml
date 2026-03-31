@@ -16,6 +16,9 @@ spec:
   values:
     selinuxMount: false
 
+    provisioner:
+      replicaCount: 2
+
     csiConfig:
       - clusterID: "1b5c261a-cdac-495a-b046-ea5ff229f33a"
         monitors:
