@@ -30,8 +30,6 @@ spec:
                               path: authentication.ldap.password.txt
                             - key: storage.encryption.key
                               path: storage.encryption.key
-                            - key: storage.postgres.password.txt
-                              path: storage.postgres.password.txt
                             - key: identity_providers.oidc.hmac.key
                               path: identity_providers.oidc.hmac.key
                             - key: identity_providers.oidc.jwks.key
@@ -60,8 +58,6 @@ spec:
                             value: /secrets/internal/authentication.ldap.password.txt
                           - name: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
                             value: /secrets/internal/storage.encryption.key
-                          - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
-                            value: /secrets/internal/storage.postgres.password.txt
                           - name: X_AUTHELIA_CONFIG
                             value: /configuration.yaml
                           - name: X_AUTHELIA_CONFIG_FILTERS
