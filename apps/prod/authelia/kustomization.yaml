@@ -12,6 +12,10 @@ patches:
     target:
       kind: HelmRelease
       name: authelia
+  - path: authelia-values.yaml
+    target:
+      kind: HelmRelease
+      name: authelia
   - patch: |
       $patch: delete
       apiVersion: postgresql.cnpg.io/v1

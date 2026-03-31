@@ -10,6 +10,21 @@ spec:
           hmac_secret:
             path: /secrets/authelia-secret/identity_providers.oidc.hmac.key
             secret_name: authelia-secret
+          clients:
+            - client_id: mealie_prod
+              client_name: Mealie
+              client_secret: '$2b$12$G4e2wFGmXCHkQowZZZKOrecbdJik.gd7L5ORyoRVOL7uMZue8SpBW'
+              public: false
+              authorization_policy: one_factor
+              redirect_uris:
+                - https://mealie.myrobertson.com/login
+              scopes:
+                - openid
+                - profile
+                - email
+                - groups
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_post
     secret:
       additionalSecrets:
         authelia-secret: {}
