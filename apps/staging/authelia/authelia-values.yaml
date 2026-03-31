@@ -4,5 +4,31 @@ metadata:
   name: authelia
 spec:
   values:
-
+    configMap:
+      identity_providers:
+        oidc:
+          enabled: true
+          jwks:
+            - key_id: main
+              algorithm: RS256
+              use: sig
+              key:
+                path: /secrets/internal/identity_providers.oidc.jwks.key
+          clients:
+            - client_id: mealie_staging
+              client_name: Mealie Staging
+              client_secret: '$2b$12$G4e2wFGmXCHkQowZZZKOrecbdJik.gd7L5ORyoRVOL7uMZue8SpBW'
+              public: false
+              authorization_policy: one_factor
+              redirect_uris:
+                - https://mealie.staging.myrobertson.net/login
+              scopes:
+                - openid
+                - profile
+                - email
+                - groups
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_basic
+    secret:
+      additionalSecrets: {}
    
