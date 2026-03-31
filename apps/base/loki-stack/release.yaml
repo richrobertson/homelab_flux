@@ -107,6 +107,10 @@ spec:
         - configMapRef:
             name: loki-chunks
       replicas: 1
+      persistence:
+        enabled: true
+        storageClass: ceph-block
+        size: 10Gi
       initContainers:
       - name: change-volume-permissions
         image: docker.io/grafana/loki:3.5.5

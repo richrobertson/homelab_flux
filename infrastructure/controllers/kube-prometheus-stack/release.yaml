@@ -57,7 +57,7 @@ spec:
               resources:
                 requests:
                   storage: 100Gi
-              storageClassName: synology-iscsi-storage-delete
+              storageClassName: ceph-block
 
       
     
@@ -131,6 +131,6 @@ spec:
             resources:
               requests:
                 storage: 100Gi
-            storageClassName: synology-iscsi-storage-delete
+            storageClassName: ceph-block
         
    
