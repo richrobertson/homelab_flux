@@ -14,6 +14,8 @@ resources:
   - istio-servicemonitor.yaml
   - istio-gateway-alerts.yaml
   - backup-observability-alerts.yaml
+  - volsync/restic-repository-secrets.yaml
+  - volsync/replicationsources.yaml
 configMapGenerator:
   - name: flux-grafana-dashboards
     namespace: monitoring

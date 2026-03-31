@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ceph-csi/namespace.yaml
+  - ceph-csi/repository.yaml
+  - ceph-csi/secrets.yaml
+  - ceph-csi/ceph-filesystem.yaml
+  - general
+  - intel-device-plugin-operator
+  - istio
+  - kube-prometheus-stack
+  - rook-ceph/rook-ceph-external.yaml
+  - storage-classes/local.yaml
+  - storage-classes/nfs.yaml
+  - synology-iscsi-csi/namespace.yaml
+  - synology-iscsi-csi/repository.yaml
+  - synology-iscsi-csi/secrets.yaml
+  - synology-iscsi-csi/release.yaml
+  - volsync
