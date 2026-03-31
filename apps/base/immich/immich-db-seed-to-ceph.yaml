@@ -53,6 +53,31 @@ spec:
                 -d immich \
                 > "$dump_file"
 
+              # pg_dump from newer client versions can emit transaction_timeout,
+              # which is not recognized by PostgreSQL 16.
+              sed -i.bak '/^SET transaction_timeout = /d' "$dump_file"
+
+              # Source DB may contain legacy vectorchord extension statements.
+              # Target image does not ship vchord, so strip those DDL lines.
+              sed -i.bak '/EXTENSION.*vchord/d' "$dump_file"
+
+              # Source DB may also include multi-line index definitions using
+              # vchord access methods that are unavailable on the target image.
+              # Drop the whole CREATE INDEX block to avoid dangling options.
+              filtered_dump="$(mktemp)"
+              awk '
+                BEGIN { skip = 0 }
+                skip == 0 && /^CREATE INDEX/ && /USING vchord/ { skip = 1; next }
+                skip == 1 {
+                  if (/;[[:space:]]*$/) {
+                    skip = 0
+                  }
+                  next
+                }
+                { print }
+              ' "$dump_file" > "$filtered_dump"
+              mv "$filtered_dump" "$dump_file"
+
               PGPASSWORD="$TARGET_PASSWORD" psql \
                 -v ON_ERROR_STOP=1 \
                 -h cluster-immich-ceph-rw.default.svc.cluster.local \

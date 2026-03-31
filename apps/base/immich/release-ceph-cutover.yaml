@@ -10,4 +10,19 @@ spec:
           containers:
             main:
               env:
+                DB_USERNAME:
+                  valueFrom:
+                    secretKeyRef:
+                      name: cluster-immich-ceph-app
+                      key: username
+                DB_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      name: cluster-immich-ceph-app
+                      key: password
+                DB_DATABASE_NAME:
+                  valueFrom:
+                    secretKeyRef:
+                      name: cluster-immich-ceph-app
+                      key: dbname
                 DB_HOSTNAME: "cluster-immich-ceph-rw"
