@@ -11,5 +11,3 @@ resources:
   # - change-pvc-permissions.yaml
   - repository.yaml
   - release.yaml
-  - immich-db-seed-to-ceph.yaml
-  - immich-db-final-sync-to-ceph.yaml

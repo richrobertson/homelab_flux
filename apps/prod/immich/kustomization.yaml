@@ -8,6 +8,7 @@ patches:
   - path: immich-cluster.yaml
     target:
       kind: Cluster
+      name: cluster-immich
   - path: ../../base/immich/release-ceph-cutover.yaml
     target:
       kind: HelmRelease
