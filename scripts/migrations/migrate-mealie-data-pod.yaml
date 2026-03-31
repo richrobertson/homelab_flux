@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: migrate-mealie-data
+  namespace: default
+spec:
+  restartPolicy: Never
+  containers:
+    - name: migrator
+      image: alpine:3.20
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          set -e
+          apk add --no-cache rsync >/dev/null
+          rsync -aHAX --numeric-ids --info=progress2 /source/ /target/
+          echo copied-mealie
+      volumeMounts:
+        - name: source
+          mountPath: /source
+          readOnly: true
+        - name: target
+          mountPath: /target
+  volumes:
+    - name: source
+      persistentVolumeClaim:
+        claimName: mealie-data-synology-recovery
+    - name: target
+      persistentVolumeClaim:
+        claimName: mealie-data-ceph

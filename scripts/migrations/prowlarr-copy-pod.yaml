@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: migrate-prowlarr-config
+  namespace: default
+spec:
+  restartPolicy: Never
+  containers:
+    - name: copier
+      image: alpine:3.20
+      command:
+        - /bin/sh
+        - -c
+        - cd /src && tar cpf - . | (cd /dst && tar xpf -) && sync && echo copied-prowlarr-ceph
+      volumeMounts:
+        - name: src
+          mountPath: /src
+          readOnly: true
+        - name: dst
+          mountPath: /dst
+  volumes:
+    - name: src
+      persistentVolumeClaim:
+        claimName: prowlarr-config
+    - name: dst
+      persistentVolumeClaim:
+        claimName: prowlarr-config-ceph
