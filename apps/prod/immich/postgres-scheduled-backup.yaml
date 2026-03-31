@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: cluster-immich-ceph-daily
+  namespace: default
+spec:
+  schedule: "10 3 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: cluster-immich-ceph

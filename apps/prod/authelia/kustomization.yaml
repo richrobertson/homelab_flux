@@ -4,6 +4,7 @@ namespace: default
 resources:
   #- change-pvc-permissions.yaml
   - httpRoute.yaml
+  - postgres-scheduled-backup.yaml
   - ../../base/authelia
 patches:
   # Uncomment the following patch to perform the Ceph cutover in prod
@@ -26,6 +27,30 @@ patches:
     target:
       kind: Cluster
       name: cluster-authelia
+  - patch: |
+      - op: add
+        path: /spec/backup
+        value:
+          barmanObjectStore:
+            destinationPath: s3://homelab-prod-backups/cnpg/cluster-authelia-ceph
+            endpointURL: https://s3.us-west-2.amazonaws.com
+            wal:
+              compression: gzip
+              encryption: AES256
+            data:
+              compression: gzip
+              encryption: AES256
+            s3Credentials:
+              accessKeyId:
+                name: cnpg-backup-s3
+                key: AWS_ACCESS_KEY_ID
+              secretAccessKey:
+                name: cnpg-backup-s3
+                key: AWS_SECRET_ACCESS_KEY
+          retentionPolicy: 30d
+    target:
+      kind: Cluster
+      name: cluster-authelia-ceph
   - patch: |
       - op: replace
         path: /spec/path
