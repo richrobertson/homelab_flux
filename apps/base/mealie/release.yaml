@@ -16,7 +16,7 @@ spec:
     persistence:
       data:
         enabled: true
-        storageClass: synology-iscsi-storage
+        existingClaim: mealie-data-ceph
         targetSelector:
           main:
             main:
@@ -26,7 +26,7 @@ spec:
         cluster:
           instances: 1
           storage:
-            storageClass: synology-iscsi-storage
+            storageClass: ceph-block
           walStorage:
-            storageClass: synology-iscsi-storage
+            storageClass: ceph-block
         
