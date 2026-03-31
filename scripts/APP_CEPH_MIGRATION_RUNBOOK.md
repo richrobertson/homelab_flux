@@ -71,6 +71,17 @@ As of 2026-03-30:
 |---|---|---|---|---|---|
 | Sonarr | Ready=True, upgrade succeeded (`sonarr.v54`) | `sonarr-7fd9dd897f-78j2b` | `sonarr-config-ceph` | Completed (`copied-sonarr`) | `dcd29e1` |
 | Radarr | Ready=True, upgrade succeeded (`radarr.v66`) | `radarr-6677f99c78-cwwgc` | `radarr-config-ceph` | Completed (`copied-radarr`) | `6e38835` |
+| Lidarr | Ready=True, upgrade succeeded (`lidarr.v51`) | `lidarr-79c965dd46-dxv25` | `lidarr-config-ceph` | Completed (`copied-lidarr`) | `982acb1` |
+| Overseerr | Ready=True, upgrade succeeded (`overseerr.v38`) | `overseerr-cc6bc56d-stzrh` | `overseerr-config-ceph` | Completed (`copied-overseerr`) | `982acb1` |
+| Prowlarr | Ready=True, upgrade succeeded (`prowlarr.v47`) | `prowlarr-7f58b458d4-xrd48` | `prowlarr-config-ceph` | Completed (`copied-prowlarr`) | `982acb1` |
+
+## Immich status (rollback/repair)
+
+Immich is not on a Ceph cutover path in this runbook. Current status is recorded here because storage remediation happened during the same migration window.
+
+| App | HelmRelease state | Running pod | Mounted data claim | Storage action | Git commit |
+|---|---|---|---|---|---|
+| Immich | Ready=True, upgrade succeeded (`immich.v15`) | `immich-server-558db78b6c-bd467` | `immich-data-files-pvc` | Rolled back from `immich-data-files-pvc-v2` to original PVC and repaired filesystem errors (`e2fsck -fy`) | `b9b501b` |
 
 PVC status snapshot:
 
@@ -78,6 +89,14 @@ PVC status snapshot:
 - `sonarr-config-ceph`: Bound (`csi-cephfs-sc`)
 - `radarr-config`: Bound (`synology-iscsi-storage`)
 - `radarr-config-ceph`: Bound (`csi-cephfs-sc`)
+- `lidarr-config`: Bound (`synology-iscsi-storage`)
+- `lidarr-config-ceph`: Bound (`csi-cephfs-sc`)
+- `overseerr-config`: Bound (`synology-iscsi-storage`)
+- `overseerr-config-ceph`: Bound (`csi-cephfs-sc`)
+- `prowlarr-config`: Bound (`synology-iscsi-storage`)
+- `prowlarr-config-ceph`: Bound (`csi-cephfs-sc`)
+- `immich-data-files-pvc`: Bound (`synology-iscsi-storage`)
+- `immich-data-files-pvc-v2`: Bound (`synology-iscsi-storage`) (kept for now; not mounted by current server pod)
 
 ## Post-cutover notes
 
