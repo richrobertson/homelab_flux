@@ -8,6 +8,10 @@ spec:
   chartRef:
     kind: OCIRepository
     name: mealie
+  install:
+    disableWait: true
+  upgrade:
+    disableWait: true
   values:
     mealie:
       api:
