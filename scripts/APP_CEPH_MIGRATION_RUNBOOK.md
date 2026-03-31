@@ -75,13 +75,7 @@ As of 2026-03-30:
 | Overseerr | Ready=True, upgrade succeeded (`overseerr.v38`) | `overseerr-cc6bc56d-stzrh` | `overseerr-config-ceph` | Completed (`copied-overseerr`) | `982acb1` |
 | Prowlarr | Ready=True, upgrade succeeded (`prowlarr.v47`) | `prowlarr-7f58b458d4-xrd48` | `prowlarr-config-ceph` | Completed (`copied-prowlarr`) | `982acb1` |
 
-## Immich status (rollback/repair)
-
-Immich is not on a Ceph cutover path in this runbook. Current status is recorded here because storage remediation happened during the same migration window.
-
-| App | HelmRelease state | Running pod | Mounted data claim | Storage action | Git commit |
-|---|---|---|---|---|---|
-| Immich | Ready=True, upgrade succeeded (`immich.v15`) | `immich-server-558db78b6c-bd467` | `immich-data-files-pvc` | Rolled back from `immich-data-files-pvc-v2` to original PVC and repaired filesystem errors (`e2fsck -fy`) | `b9b501b` |
+| Immich | Ready=True, upgrade succeeded (`immich.v16`) | `immich-server-6dff8f56fd-88k42` | `immich-data-files-pvc-ceph` | Completed (`copied-immich-data`) | `337bbf3` |
 
 PVC status snapshot:
 
@@ -95,8 +89,9 @@ PVC status snapshot:
 - `overseerr-config-ceph`: Bound (`csi-cephfs-sc`)
 - `prowlarr-config`: Bound (`synology-iscsi-storage`)
 - `prowlarr-config-ceph`: Bound (`csi-cephfs-sc`)
-- `immich-data-files-pvc`: Bound (`synology-iscsi-storage`)
-- `immich-data-files-pvc-v2`: Bound (`synology-iscsi-storage`) (kept for now; not mounted by current server pod)
+- `immich-data-files-pvc`: Bound (`synology-iscsi-storage`) (kept for now; not mounted by current server pod)
+- `immich-data-files-pvc-v2`: Bound (`synology-iscsi-storage`) (legacy intermediate claim; not mounted by current server pod)
+- `immich-data-files-pvc-ceph`: Bound (`csi-cephfs-sc`) (active mounted claim)
 
 ## Post-cutover notes
 
