@@ -1,0 +1,61 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: backup-observability-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/part-of: backups
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: backup-observability
+      rules:
+        - alert: VolSyncReplicationSourceNotReady
+          expr: count(homelab_resource_info{customresource_group="volsync.backube",customresource_kind="ReplicationSource",exported_namespace="default",ready!="True"}) > 0
+          for: 20m
+          labels:
+            domain: backups
+            severity: warning
+          annotations:
+            summary: VolSync replication source not ready
+            description: One or more VolSync ReplicationSource objects are not synchronizing in the default namespace.
+
+        - alert: CNPGClusterNotReady
+          expr: count(homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Cluster",exported_namespace="default",ready!="True"}) > 0
+          for: 15m
+          labels:
+            domain: backups
+            severity: critical
+          annotations:
+            summary: CNPG cluster not ready
+            description: One or more CloudNativePG Cluster resources are not ready in the default namespace.
+
+        - alert: CNPGScheduledBackupSuspended
+          expr: count(homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="ScheduledBackup",exported_namespace="default",suspended="true"}) > 0
+          for: 10m
+          labels:
+            domain: backups
+            severity: warning
+          annotations:
+            summary: CNPG scheduled backup suspended
+            description: A CloudNativePG ScheduledBackup resource is suspended in the default namespace.
+
+        - alert: CNPGBackupFailedRecently
+          expr: count(max_over_time(homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Backup",exported_namespace="default",phase=~"failed|error"}[6h])) > 0
+          for: 5m
+          labels:
+            domain: backups
+            severity: critical
+          annotations:
+            summary: CNPG backup failed recently
+            description: A CloudNativePG Backup resource entered a failed or error phase within the last 6 hours.
+
+        - alert: BackupJobsFailing
+          expr: max_over_time(kube_job_status_failed{namespace="default",job_name=~".*(backup|volsync).*"}[30m]) > 0
+          for: 10m
+          labels:
+            domain: backups
+            severity: warning
+          annotations:
+            summary: Backup job failures detected
+            description: Kubernetes Jobs related to backups or VolSync have failures in the last 30 minutes.

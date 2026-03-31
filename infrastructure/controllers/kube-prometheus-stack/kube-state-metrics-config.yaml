@@ -13,6 +13,8 @@ kube-state-metrics:
           - helm.toolkit.fluxcd.io
           - notification.toolkit.fluxcd.io
           - image.toolkit.fluxcd.io
+          - volsync.backube
+          - postgresql.cnpg.io
         resources:
           - gitrepositories
           - buckets
@@ -27,6 +29,10 @@ kube-state-metrics:
           - imagerepositories
           - imagepolicies
           - imageupdateautomations
+          - replicationsources
+          - clusters
+          - backups
+          - scheduledbackups
         verbs: [ "list", "watch" ]
   customResourceState:
     enabled: true
@@ -275,3 +281,73 @@ kube-state-metrics:
                   ready: [ status, conditions, "[type=Ready]", status ]
                   suspended: [ spec, suspend ]
                   source_name: [ spec, sourceRef, name ]
+          - groupVersionKind:
+              group: volsync.backube
+              version: v1alpha1
+              kind: ReplicationSource
+            metricNamePrefix: homelab
+            metrics:
+              - name: "resource_info"
+                help: "The current state of a VolSync ReplicationSource resource."
+                each:
+                  type: Info
+                  info:
+                    labelsFromPath:
+                      name: [ metadata, name ]
+                labelsFromPath:
+                  exported_namespace: [ metadata, namespace ]
+                  ready: [ status, conditions, "[type=Synchronizing]", status ]
+                  source_pvc: [ spec, sourcePVC ]
+                  last_sync_time: [ status, lastSyncTime ]
+          - groupVersionKind:
+              group: postgresql.cnpg.io
+              version: v1
+              kind: Cluster
+            metricNamePrefix: homelab
+            metrics:
+              - name: "resource_info"
+                help: "The current state of a CNPG Cluster resource."
+                each:
+                  type: Info
+                  info:
+                    labelsFromPath:
+                      name: [ metadata, name ]
+                labelsFromPath:
+                  exported_namespace: [ metadata, namespace ]
+                  ready: [ status, conditions, "[type=Ready]", status ]
+                  phase: [ status, phase ]
+          - groupVersionKind:
+              group: postgresql.cnpg.io
+              version: v1
+              kind: ScheduledBackup
+            metricNamePrefix: homelab
+            metrics:
+              - name: "resource_info"
+                help: "The current state of a CNPG ScheduledBackup resource."
+                each:
+                  type: Info
+                  info:
+                    labelsFromPath:
+                      name: [ metadata, name ]
+                labelsFromPath:
+                  exported_namespace: [ metadata, namespace ]
+                  suspended: [ spec, suspend ]
+                  cluster: [ spec, cluster, name ]
+                  schedule: [ spec, schedule ]
+          - groupVersionKind:
+              group: postgresql.cnpg.io
+              version: v1
+              kind: Backup
+            metricNamePrefix: homelab
+            metrics:
+              - name: "resource_info"
+                help: "The current state of a CNPG Backup resource."
+                each:
+                  type: Info
+                  info:
+                    labelsFromPath:
+                      name: [ metadata, name ]
+                labelsFromPath:
+                  exported_namespace: [ metadata, namespace ]
+                  cluster: [ spec, cluster, name ]
+                  phase: [ status, phase ]

@@ -1,0 +1,324 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: authelia-config-ceph-backup
+spec:
+  sourcePVC: authelia-config-ceph
+  trigger:
+    schedule: "0 */6 * * *"
+  restic:
+    repository: restic-config-authelia
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: cluster-authelia-ceph-1-backup
+spec:
+  sourcePVC: cluster-authelia-ceph-1
+  trigger:
+    schedule: "32 */6 * * *"
+  restic:
+    repository: restic-config-authelia-cnpg-data
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: immich-data-files-pvc-ceph-backup
+spec:
+  sourcePVC: immich-data-files-pvc-ceph
+  trigger:
+    schedule: "10 */6 * * *"
+  restic:
+    repository: restic-config-immich
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: cluster-immich-ceph-1-backup
+spec:
+  sourcePVC: cluster-immich-ceph-1
+  trigger:
+    schedule: "12 */6 * * *"
+  restic:
+    repository: restic-config-immich-cnpg-data
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: lidarr-config-ceph-backup
+spec:
+  sourcePVC: lidarr-config-ceph
+  trigger:
+    schedule: "20 */6 * * *"
+  restic:
+    repository: restic-config-lidarr
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: lidarr-data-files-pvc-backup
+spec:
+  sourcePVC: lidarr-data-files-pvc
+  trigger:
+    schedule: "22 */6 * * *"
+  restic:
+    repository: restic-config-lidarr-data
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mealie-data-ceph-backup
+spec:
+  sourcePVC: mealie-data-ceph
+  trigger:
+    schedule: "30 */6 * * *"
+  restic:
+    repository: restic-config-mealie
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mealie-cnpg-main-1-backup
+spec:
+  sourcePVC: mealie-cnpg-main-1
+  trigger:
+    schedule: "34 */6 * * *"
+  restic:
+    repository: restic-config-mealie-cnpg-data
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mealie-cnpg-main-1-wal-backup
+spec:
+  sourcePVC: mealie-cnpg-main-1-wal
+  trigger:
+    schedule: "44 */6 * * *"
+  restic:
+    repository: restic-config-mealie-cnpg-wal
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: overseerr-config-ceph-backup
+spec:
+  sourcePVC: overseerr-config-ceph
+  trigger:
+    schedule: "40 */6 * * *"
+  restic:
+    repository: restic-config-overseerr
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: overseerr-data-files-pvc-backup
+spec:
+  sourcePVC: overseerr-data-files-pvc
+  trigger:
+    schedule: "42 */6 * * *"
+  restic:
+    repository: restic-config-overseerr-data
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: prowlarr-config-ceph-backup
+spec:
+  sourcePVC: prowlarr-config-ceph
+  trigger:
+    schedule: "50 */6 * * *"
+  restic:
+    repository: restic-config-prowlarr
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: prowlarr-data-files-pvc-backup
+spec:
+  sourcePVC: prowlarr-data-files-pvc
+  trigger:
+    schedule: "52 */6 * * *"
+  restic:
+    repository: restic-config-prowlarr-data
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: radarr-config-ceph-backup
+spec:
+  sourcePVC: radarr-config-ceph
+  trigger:
+    schedule: "5 */6 * * *"
+  restic:
+    repository: restic-config-radarr
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: radarr-data-files-pvc-backup
+spec:
+  sourcePVC: radarr-data-files-pvc
+  trigger:
+    schedule: "7 */6 * * *"
+  restic:
+    repository: restic-config-radarr-data
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: sonarr-config-ceph-backup
+spec:
+  sourcePVC: sonarr-config-ceph
+  trigger:
+    schedule: "15 */6 * * *"
+  restic:
+    repository: restic-config-sonarr
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: sonarr-data-files-pvc-backup
+spec:
+  sourcePVC: sonarr-data-files-pvc
+  trigger:
+    schedule: "17 */6 * * *"
+  restic:
+    repository: restic-config-sonarr-data
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: syncthing-config-ceph-backup
+spec:
+  sourcePVC: syncthing-config-ceph
+  trigger:
+    schedule: "25 */6 * * *"
+  restic:
+    repository: restic-config-syncthing
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone

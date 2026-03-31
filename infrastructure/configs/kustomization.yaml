@@ -13,8 +13,7 @@ resources:
   - toolbox.yaml
   - istio-servicemonitor.yaml
   - istio-gateway-alerts.yaml
-spec:
-  wait: true
+  - backup-observability-alerts.yaml
 configMapGenerator:
   - name: flux-grafana-dashboards
     namespace: monitoring
@@ -43,6 +42,16 @@ configMapGenerator:
       labels:
         grafana_dashboard: "1"
         app.kubernetes.io/part-of: istio
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: backup-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/backup-observability.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: backups
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled
 

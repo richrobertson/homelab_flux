@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: mealie-cnpg-main-daily
+  namespace: default
+spec:
+  schedule: "20 3 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: mealie-cnpg-main
