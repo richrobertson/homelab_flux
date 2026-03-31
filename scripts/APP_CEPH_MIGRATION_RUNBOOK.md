@@ -1,0 +1,86 @@
+# App Config PVC Migration to CephFS
+
+Last updated: 2026-03-30
+
+This document captures the repeatable migration process used to move app config PVCs from Synology (`synology-iscsi-storage`) to CephFS (`csi-cephfs-sc`) with minimal risk.
+
+## Scope
+
+- Source PVC: `<app>-config` (Synology RWX)
+- Target PVC: `<app>-config-ceph` (CephFS RWX)
+- Workload type: app deployed via Flux HelmRelease in `apps/base/<app>/release.yaml`
+
+## Standard migration sequence
+
+Use this exact order for each app.
+
+1. Verify source and target PVC state.
+2. If target Ceph PVC does not exist, create it from `apps/base/<app>/config-ceph-pvc.yaml`.
+3. Scale app deployment to `0` replicas to stop writes.
+4. Run one-shot copy pod from `scripts/migrate-<app>-config-pod.yaml`.
+5. Wait for copy pod status `Succeeded` and confirm logs show `copied-<app>`.
+6. Update `apps/base/<app>/release.yaml`:
+	- `persistence.config.storageClass: csi-cephfs-sc`
+	- `persistence.config.existingClaim: <app>-config-ceph`
+7. Commit and push the manifest change.
+8. Reconcile Flux:
+	- `flux reconcile source git flux-system -n flux-system`
+	- `flux reconcile kustomization apps -n flux-system`
+9. Verify new pod is running and mounts `config=<app>-config-ceph`.
+10. Delete completed copy pod.
+
+## Command template
+
+Replace `<app>` with the app name (for example `sonarr`, `radarr`).
+
+```bash
+# 1) Ensure target PVC exists
+kubectl -n default apply -f apps/base/<app>/config-ceph-pvc.yaml
+kubectl -n default wait --for=jsonpath='{.status.phase}'=Bound pvc/<app>-config-ceph --timeout=300s
+
+# 2) Stop app
+kubectl -n default scale deployment/<app> --replicas=0
+kubectl -n default rollout status deployment/<app> --timeout=240s
+
+# 3) Copy latest data
+kubectl -n default delete pod migrate-<app>-config --ignore-not-found
+kubectl -n default apply -f scripts/migrate-<app>-config-pod.yaml
+kubectl -n default wait --for=jsonpath='{.status.phase}'=Succeeded pod/migrate-<app>-config --timeout=1200s
+kubectl -n default logs migrate-<app>-config --tail=50
+
+# 4) Push HelmRelease claim switch in Git
+git add apps/base/<app>/release.yaml
+git commit -m "feat(<app>): migrate config persistence to cephfs"
+git push origin main
+
+# 5) Reconcile and verify
+flux reconcile source git flux-system -n flux-system
+flux reconcile kustomization apps -n flux-system
+kubectl -n default get pods -l app.kubernetes.io/name=<app>
+kubectl -n default get pod <new-pod-name> -o jsonpath='{range .spec.volumes[*]}{.name}{"="}{.persistentVolumeClaim.claimName}{"\n"}{end}'
+
+# 6) Cleanup
+kubectl -n default delete pod migrate-<app>-config
+```
+
+## Current migration status
+
+As of 2026-03-30:
+
+| App | HelmRelease state | Running pod | Mounted config claim | Copy status | Git commit |
+|---|---|---|---|---|---|
+| Sonarr | Ready=True, upgrade succeeded (`sonarr.v54`) | `sonarr-7fd9dd897f-78j2b` | `sonarr-config-ceph` | Completed (`copied-sonarr`) | `dcd29e1` |
+| Radarr | Ready=True, upgrade succeeded (`radarr.v66`) | `radarr-6677f99c78-cwwgc` | `radarr-config-ceph` | Completed (`copied-radarr`) | `6e38835` |
+
+PVC status snapshot:
+
+- `sonarr-config`: Bound (`synology-iscsi-storage`)
+- `sonarr-config-ceph`: Bound (`csi-cephfs-sc`)
+- `radarr-config`: Bound (`synology-iscsi-storage`)
+- `radarr-config-ceph`: Bound (`csi-cephfs-sc`)
+
+## Post-cutover notes
+
+- Keep legacy Synology PVCs until app behavior is validated for an agreed soak period.
+- If rollback is needed, revert `existingClaim` in `apps/base/<app>/release.yaml` back to `<app>-config`, commit, push, and reconcile apps.
+- Avoid deleting source PVCs during the same maintenance window as cutover.
