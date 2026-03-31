@@ -21,6 +21,15 @@ spec:
                 API_PORT: "10018"
                 BASE_URL: https://mealie.myrobertson.com
                 DB_ENGINE: postgres
+                POSTGRES_USER: mealie
+                POSTGRES_SERVER: mealie-cnpg-main-rw
+                POSTGRES_DB: mealie
+                POSTGRES_PORT: "5432"
+                POSTGRES_PASSWORD:
+                  secretKeyRef:
+                    name: mealie-cnpg-main-app
+                    key: password
+                    expandObjectName: false
               envFrom:
                 - secretRef:
                     name: mealie-oidc
