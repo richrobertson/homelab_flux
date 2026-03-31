@@ -1,0 +1,10 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: volsync
+spec:
+  values:
+    volsync:
+      api:
+        general:
+          baseUrl: https://volsync.myrobertson.net

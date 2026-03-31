@@ -14,4 +14,3 @@ resources:
   - shared_storage
   - sonarr
   - syncthing
-  - volsync
