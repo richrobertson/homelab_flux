@@ -21,6 +21,13 @@ patches:
       kind: PersistentVolumeClaim
       name: immich-data-files-pvc-ceph
   - patch: |
+      - op: replace
+        path: /spec/storageClassName
+        value: csi-cephfs-sc
+    target:
+      kind: PersistentVolumeClaim
+      name: immich-data-files-pvc-ceph
+  - patch: |
       - op: add
         path: /spec/backup
         value:
