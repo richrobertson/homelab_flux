@@ -42,8 +42,8 @@ spec:
 ---
 apiVersion: v1
 data:
-  csi-cluster-config-json: '[{"clusterID":"rook-ceph-external","monitors":["192.168.10.3:6789","192.168.10.5:6789"],"cephFS":{"netNamespaceFilePath":"","subvolumeGroup":"","radosNamespace":"cephfs-csi","kernelMountOptions":"","fuseMountOptions":""},"rbd":{"netNamespaceFilePath":"","radosNamespace":"","mirrorDaemonCount":0},"nfs":{"netNamespaceFilePath":""},"readAffinity":{"enabled":false,"crushLocationLabels":null},"namespace":""}]'
-  data: pve3=192.168.10.3:6789,pve5=192.168.10.5:6789
+  csi-cluster-config-json: '[{"clusterID":"rook-ceph-external","monitors":["192.168.10.3:6789"],"cephFS":{"netNamespaceFilePath":"","subvolumeGroup":"","radosNamespace":"cephfs-csi","kernelMountOptions":"","fuseMountOptions":""},"rbd":{"netNamespaceFilePath":"","radosNamespace":"","mirrorDaemonCount":0},"nfs":{"netNamespaceFilePath":""},"readAffinity":{"enabled":false,"crushLocationLabels":null},"namespace":""}]'
+  data: pve3=192.168.10.3:6789
   externalMons: ""
   mapping: '{"node":{}}'
   maxMonId: "1"
@@ -120,8 +120,6 @@ spec:
     port: 8080
     externalRgwEndpoints:
       - ip: 192.168.10.3
-      - ip: 192.168.10.4
-      - ip: 192.168.10.5
         # hostname: example.com
 ---
 apiVersion: storage.k8s.io/v1
