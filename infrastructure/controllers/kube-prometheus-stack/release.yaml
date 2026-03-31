@@ -53,7 +53,7 @@ spec:
         storage:
           volumeClaimTemplate:
             spec:
-              accessModes: ["ReadWriteMany"]
+              accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
                   storage: 100Gi
@@ -127,7 +127,7 @@ spec:
       storageSpec:
         volumeClaimTemplate:
           spec:
-            accessModes: ["ReadWriteMany"]
+            accessModes: ["ReadWriteOnce"]
             resources:
               requests:
                 storage: 100Gi
