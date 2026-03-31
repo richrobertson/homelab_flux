@@ -30,6 +30,10 @@ spec:
                               path: authentication.ldap.password.txt
                             - key: storage.encryption.key
                               path: storage.encryption.key
+                            - key: identity_providers.oidc.hmac.key
+                              path: identity_providers.oidc.hmac.key
+                            - key: identity_providers.oidc.jwks.key
+                              path: identity_providers.oidc.jwks.key
           - target:
               kind: Deployment
               name: authelia
