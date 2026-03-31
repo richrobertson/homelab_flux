@@ -35,7 +35,7 @@ spec:
 
       immich-data-files-pvc:
         enabled: true
-        existingClaim: immich-data-files-pvc
+        existingClaim: immich-data-files-pvc-ceph
         mountPath: /var/immich-data
         readOnly: true
     service:

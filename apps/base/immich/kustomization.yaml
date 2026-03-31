@@ -5,8 +5,6 @@ resources:
   - imageCatalog.yaml
   - postgres.yaml
   - postgres-ceph.yaml
-  - pvc.yaml
-  - pvc-v2.yaml
   - pvc-ceph.yaml
   # - change-pvc-permissions.yaml
   - repository.yaml

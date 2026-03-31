@@ -17,4 +17,4 @@ patches:
         value: 2Gi
     target:
       kind: PersistentVolumeClaim
-      name: immich-data-files-pvc
+      name: immich-data-files-pvc-ceph
