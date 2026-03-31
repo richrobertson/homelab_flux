@@ -12,8 +12,8 @@ spec:
     persistence:
       config:
         enabled: true
-        storageClass: synology-iscsi-storage
-        existingClaim: overseerr-config
+        storageClass: csi-cephfs-sc
+        existingClaim: overseerr-config-ceph
         accessModes: ReadWriteMany
         targetSelector:
           main:
