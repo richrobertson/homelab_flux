@@ -11,9 +11,10 @@ patches:
   #   target:
   #     kind: HelmRelease
   #     name: authelia
-  # - path: authelia-values.yaml
-  #   target:
-  #     kind: HelmRelease
+  - path: authelia-values.yaml
+    target:
+      kind: HelmRelease
+      name: authelia
   - patch: |
       - op: replace
         path: /metadata/annotations/cert-manager.io~1common-name
