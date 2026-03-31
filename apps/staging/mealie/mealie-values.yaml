@@ -29,30 +29,25 @@ spec:
                 LOG_LEVEL: debug
                 DB_ENGINE: postgres
                 POSTGRES_SERVER:
-                  valueFrom:
-                    secretKeyRef:
-                      name: mealie-cnpg-main-app
-                      key: host
+                  secretKeyRef:
+                    name: mealie-cnpg-main-app
+                    key: host
                 POSTGRES_PORT:
-                  valueFrom:
-                    secretKeyRef:
-                      name: mealie-cnpg-main-app
-                      key: port
+                  secretKeyRef:
+                    name: mealie-cnpg-main-app
+                    key: port
                 POSTGRES_DB:
-                  valueFrom:
-                    secretKeyRef:
-                      name: mealie-cnpg-main-app
-                      key: dbname
+                  secretKeyRef:
+                    name: mealie-cnpg-main-app
+                    key: dbname
                 POSTGRES_USER:
-                  valueFrom:
-                    secretKeyRef:
-                      name: mealie-cnpg-main-app
-                      key: username
+                  secretKeyRef:
+                    name: mealie-cnpg-main-app
+                    key: username
                 POSTGRES_PASSWORD:
-                  valueFrom:
-                    secretKeyRef:
-                      name: mealie-cnpg-main-app
-                      key: password
+                  secretKeyRef:
+                    name: mealie-cnpg-main-app
+                    key: password
               envFrom:
                 - secretRef:
                     name: mealie-oidc
