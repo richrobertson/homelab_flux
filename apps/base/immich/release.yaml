@@ -52,7 +52,7 @@ spec:
         library:
           # Automatically creating the library volume is not supported by this chart
           # You have to specify an existing PVC to use
-          existingClaim: immich-data-files-pvc
+          existingClaim: immich-data-files-pvc-ceph
 
     valkey:
       enabled: true

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: migrate-immich-data
+  namespace: default
+spec:
+  restartPolicy: Never
+  containers:
+    - name: copier
+      image: alpine:3.20
+      command: ["/bin/sh", "-c"]
+      args:
+        - cd /src && tar cpf - . | (cd /dst && tar xpf -) && sync && echo copied-immich-data
+      volumeMounts:
+        - name: src
+          mountPath: /src
+        - name: dst
+          mountPath: /dst
+  volumes:
+    - name: src
+      persistentVolumeClaim:
+        claimName: immich-data-files-pvc
+    - name: dst
+      persistentVolumeClaim:
+        claimName: immich-data-files-pvc-ceph
