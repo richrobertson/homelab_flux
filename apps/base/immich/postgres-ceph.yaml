@@ -26,3 +26,4 @@ spec:
         - CREATE EXTENSION IF NOT EXISTS "vectors";
         - CREATE EXTENSION IF NOT EXISTS "cube" CASCADE;
         - CREATE EXTENSION IF NOT EXISTS "earthdistance" CASCADE;
+        - ALTER ROLE immich IN DATABASE immich SET search_path TO '"$user"', public, vectors;
