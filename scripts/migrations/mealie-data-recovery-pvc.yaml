@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mealie-data-synology-recovery
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: synology-iscsi-storage
+  volumeName: pvc-425a362f-7e7f-4700-9da4-adbff973f6db
