@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: default
 resources:
   - imageCatalog.yaml
-  - postgres.yaml
   - postgres-ceph.yaml
   - pvc-ceph.yaml
   # - change-pvc-permissions.yaml
