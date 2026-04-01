@@ -15,7 +15,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: SOURCE_MODE
-              value: rsync-daemon
+              value: smb
             - name: SOURCE_HOST
               valueFrom:
                 secretKeyRef:
@@ -41,6 +41,12 @@ spec:
                 secretKeyRef:
                   name: bitwarden-synology-migration
                   key: sourcePath
+            - name: SOURCE_SHARE
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-synology-migration
+                  key: sourceShare
+                  optional: true
             - name: DRY_RUN
               value: "true"
             - name: ALLOW_NON_EMPTY_TARGET
@@ -49,7 +55,7 @@ spec:
             - /bin/sh
             - -ec
             - |
-              apk add --no-cache openssh-client rsync
+              apk add --no-cache openssh-client rsync samba-client
 
               if [ -z "${SOURCE_PATH}" ]; then
                 echo "SOURCE_PATH is empty; aborting." >&2
@@ -84,11 +90,27 @@ spec:
                   "${SOURCE_USER}@${SOURCE_HOST}:${SOURCE_PATH%/}/" \
                   /data/
               else
-                export RSYNC_PASSWORD="${SOURCE_PASSWORD}"
-                SRC_PATH="${SOURCE_PATH#/}"
-                rsync ${RSYNC_FLAGS} \
-                  "rsync://${SOURCE_USER}@${SOURCE_HOST}/${SRC_PATH%/}/" \
-                  /data/
+                if [ "${SOURCE_MODE}" = "rsync-daemon" ]; then
+                  export RSYNC_PASSWORD="${SOURCE_PASSWORD}"
+                  SRC_PATH="${SOURCE_PATH#/}"
+                  rsync ${RSYNC_FLAGS} \
+                    "rsync://${SOURCE_USER}@${SOURCE_HOST}/${SRC_PATH%/}/" \
+                    /data/
+                else
+                  SRC_PATH="${SOURCE_PATH#/}"
+                  SHARE="${SOURCE_SHARE}"
+                  if [ -z "${SHARE}" ]; then
+                    SHARE="${SRC_PATH%%/*}"
+                  fi
+                  SUBPATH="${SRC_PATH#*/}"
+
+                  mkdir -p /tmp/source
+                  smbclient "//${SOURCE_HOST}/${SHARE}" \
+                    -U "${SOURCE_USER}%${SOURCE_PASSWORD}" \
+                    -c "recurse ON;prompt OFF;lcd /tmp/source;cd ${SUBPATH};mget *"
+
+                  rsync ${RSYNC_FLAGS} /tmp/source/ /data/
+                fi
               fi
 
               if [ "${DRY_RUN}" = "false" ]; then
