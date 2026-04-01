@@ -12,9 +12,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -30,9 +31,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -48,9 +50,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -66,9 +69,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -84,9 +88,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -102,9 +107,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -120,9 +126,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -138,9 +145,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -156,9 +164,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -174,9 +183,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -192,9 +202,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -210,9 +221,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -228,9 +240,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -246,9 +259,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -264,9 +278,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -282,9 +297,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -300,9 +316,10 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
@@ -318,7 +335,8 @@ spec:
     pruneIntervalDays: 7
     retain:
       hourly: 0
-      daily: 14
-      weekly: 8
-      monthly: 12
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
     copyMethod: Clone
