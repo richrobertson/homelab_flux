@@ -6,16 +6,16 @@ metadata:
 spec:
   sourcePVC: authelia-config-ceph
   trigger:
-    schedule: "0 */6 * * *"
+    schedule: "0 * * * *"
   restic:
     repository: restic-config-authelia
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
 ---
@@ -26,16 +26,16 @@ metadata:
 spec:
   sourcePVC: bitwarden-data-ceph
   trigger:
-    schedule: "55 */6 * * *"
+    schedule: "55 * * * *"
   restic:
     repository: restic-config-bitwarden
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
 ---
@@ -46,16 +46,16 @@ metadata:
 spec:
   sourcePVC: gotify-data-ceph
   trigger:
-    schedule: "35 */6 * * *"
+    schedule: "35 * * * *"
   restic:
     repository: restic-config-gotify
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
 ---
@@ -66,16 +66,16 @@ metadata:
 spec:
   sourcePVC: netbootxyz-config-ceph
   trigger:
-    schedule: "27 */6 * * *"
+    schedule: "27 * * * *"
   restic:
     repository: restic-config-netbootxyz-config
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
 ---
@@ -86,16 +86,16 @@ metadata:
 spec:
   sourcePVC: netbootxyz-assets-ceph
   trigger:
-    schedule: "28 */6 * * *"
+    schedule: "28 * * * *"
   restic:
     repository: restic-config-netbootxyz-assets
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
 ---
@@ -106,16 +106,16 @@ metadata:
 spec:
   sourcePVC: cluster-authelia-ceph-1
   trigger:
-    schedule: "32 */6 * * *"
+    schedule: "32 * * * *"
   restic:
     repository: restic-config-authelia-cnpg-data
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
@@ -130,16 +130,16 @@ metadata:
 spec:
   sourcePVC: immich-data-files-pvc-ceph
   trigger:
-    schedule: "10 */6 * * *"
+    schedule: "10 * * * *"
   restic:
     repository: restic-config-immich
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
 ---
@@ -150,16 +150,16 @@ metadata:
 spec:
   sourcePVC: cluster-immich-ceph-1
   trigger:
-    schedule: "12 */6 * * *"
+    schedule: "12 * * * *"
   restic:
     repository: restic-config-immich-cnpg-data
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
@@ -174,16 +174,16 @@ metadata:
 spec:
   sourcePVC: lidarr-config-ceph
   trigger:
-    schedule: "20 */6 * * *"
+    schedule: "20 * * * *"
   restic:
     repository: restic-config-lidarr
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
@@ -198,16 +198,16 @@ metadata:
 spec:
   sourcePVC: mealie-data-ceph
   trigger:
-    schedule: "30 */6 * * *"
+    schedule: "30 * * * *"
   restic:
     repository: restic-config-mealie
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
 ---
@@ -218,16 +218,16 @@ metadata:
 spec:
   sourcePVC: mealie-cnpg-main-1
   trigger:
-    schedule: "34 */6 * * *"
+    schedule: "34 * * * *"
   restic:
     repository: restic-config-mealie-cnpg-data
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
@@ -242,16 +242,16 @@ metadata:
 spec:
   sourcePVC: mealie-cnpg-main-1-wal
   trigger:
-    schedule: "44 */6 * * *"
+    schedule: "44 * * * *"
   restic:
     repository: restic-config-mealie-cnpg-wal
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
@@ -266,16 +266,16 @@ metadata:
 spec:
   sourcePVC: overseerr-config-ceph
   trigger:
-    schedule: "40 */6 * * *"
+    schedule: "40 * * * *"
   restic:
     repository: restic-config-overseerr
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
 ---
@@ -286,16 +286,16 @@ metadata:
 spec:
   sourcePVC: prowlarr-config-ceph
   trigger:
-    schedule: "50 */6 * * *"
+    schedule: "50 * * * *"
   restic:
     repository: restic-config-prowlarr
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
@@ -310,16 +310,16 @@ metadata:
 spec:
   sourcePVC: radarr-config-ceph
   trigger:
-    schedule: "5 */6 * * *"
+    schedule: "5 * * * *"
   restic:
     repository: restic-config-radarr
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
@@ -334,16 +334,16 @@ metadata:
 spec:
   sourcePVC: sonarr-config-ceph
   trigger:
-    schedule: "15 */6 * * *"
+    schedule: "15 * * * *"
   restic:
     repository: restic-config-sonarr
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
@@ -358,16 +358,16 @@ metadata:
 spec:
   sourcePVC: tautulli-config-ceph
   trigger:
-    schedule: "45 */6 * * *"
+    schedule: "45 * * * *"
   restic:
     repository: restic-config-tautulli
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
 ---
@@ -378,16 +378,16 @@ metadata:
 spec:
   sourcePVC: syncthing-config-ceph
   trigger:
-    schedule: "25 */6 * * *"
+    schedule: "25 * * * *"
   restic:
     repository: restic-config-syncthing
-    pruneIntervalDays: 7
+    pruneIntervalDays: 1
     retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
     moverSecurityContext:

@@ -15,6 +15,23 @@ Staging overlay for VolSync replication workflows.
 
 - Test destinations, relaxed intervals, and non-production secret references.
 
+## Current backup policy
+
+Staging VolSync ReplicationSource policy is defined in [infrastructure/configs/volsync/replicationsources.yaml](/Users/rich/Documents/GitHub/homelab_flux/infrastructure/configs/volsync/replicationsources.yaml):
+
+- schedule: every hour at the source's assigned minute offset
+- hourly: 4
+- daily: 0
+- weekly: 0
+- monthly: 0
+- pruneIntervalDays: 1
+
+Policy intent:
+
+- Run each protected PVC backup once per hour.
+- Keep only the latest 4 hourly snapshots per repository.
+- Prune daily so expired hourly snapshots are reclaimed promptly.
+
 
 ## Parent/Siblings
 
