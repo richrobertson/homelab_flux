@@ -45,7 +45,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: gc
-              image: rancher/kubectl:v1.32.3
+              image: lachlanevenson/k8s-kubectl:v1.32.3
               imagePullPolicy: IfNotPresent
               command:
                 - /bin/sh
@@ -90,7 +90,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: gc
-          image: rancher/kubectl:v1.32.3
+          image: lachlanevenson/k8s-kubectl:v1.32.3
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
