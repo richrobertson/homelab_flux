@@ -7,10 +7,10 @@ spec:
   instances: 1
   enableSuperuserAccess: true
   storage:
-    size: 100Gi
+    size: 2Gi
     storageClass: ceph-block
   walStorage:
-    size: 100Gi
+    size: 2Gi
     storageClass: ceph-block
   managed:
     roles:
