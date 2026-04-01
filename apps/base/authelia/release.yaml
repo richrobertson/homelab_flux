@@ -11,41 +11,35 @@ spec:
               kind: Deployment
               name: authelia
             patch: |
-              apiVersion: apps/v1
-              kind: Deployment
-              metadata:
-                name: authelia
-              spec:
-                template:
-                  spec:
-                    volumes:
-                      - name: secrets
-                        $patch: replace
-                        projected:
-                          sources:
-                            - secret:
-                                name: authelia-secret
-                                items:
-                                  - key: identity_validation.reset_password.jwt.hmac.key
-                                    path: identity_validation.reset_password.jwt.hmac.key
-                                  - key: session.encryption.key
-                                    path: session.encryption.key
-                                  - key: authentication.ldap.password.txt
-                                    path: authentication.ldap.password.txt
-                                  - key: storage.encryption.key
-                                    path: storage.encryption.key
-                                  - key: storage.postgres.password.txt
-                                    path: storage.postgres.password.txt
-                                  - key: identity_providers.oidc.hmac.key
-                                    path: identity_providers.oidc.hmac.key
-                                  - key: identity_providers.oidc.jwks.key
-                                    path: identity_providers.oidc.jwks.key
-                            - secret:
-                                name: cluster-authelia-ceph-app
-                                optional: true
-                                items:
-                                  - key: password
-                                    path: storage.postgres.password.txt
+            - op: remove
+              path: /spec/template/spec/volumes/0/secret
+            - op: add
+              path: /spec/template/spec/volumes/0/projected
+              value:
+                sources:
+                  - secret:
+                      name: authelia-secret
+                      items:
+                        - key: identity_validation.reset_password.jwt.hmac.key
+                          path: identity_validation.reset_password.jwt.hmac.key
+                        - key: session.encryption.key
+                          path: session.encryption.key
+                        - key: authentication.ldap.password.txt
+                          path: authentication.ldap.password.txt
+                        - key: storage.encryption.key
+                          path: storage.encryption.key
+                        - key: storage.postgres.password.txt
+                          path: storage.postgres.password.txt
+                        - key: identity_providers.oidc.hmac.key
+                          path: identity_providers.oidc.hmac.key
+                        - key: identity_providers.oidc.jwks.key
+                          path: identity_providers.oidc.jwks.key
+                  - secret:
+                      name: cluster-authelia-ceph-app
+                      optional: true
+                      items:
+                        - key: password
+                          path: storage.postgres.password.txt
           - target:
               kind: Deployment
               name: authelia
