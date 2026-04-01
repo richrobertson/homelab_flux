@@ -210,17 +210,25 @@ Optional stricter settings:
 - Require conversation resolution before merging.
 - Restrict direct pushes to `main`.
 
-## Security (SAST)
+## Security scanning
 
-This repository runs [Semgrep](https://semgrep.dev/) as a Static Application Security Testing (SAST) tool via GitHub Actions on every push and pull request to `main`/`master`, plus a weekly scheduled scan.
+This repository currently uses the following GitHub Actions checks on pushes and pull requests to `main`:
 
-SARIF results are uploaded to **GitHub Security** for push/scheduled/manual runs (PR runs still scan but do not upload SARIF) and can be viewed under:
+- `Static Analysis` for Ruff and Bandit when Python sources are present.
+- `CodeQL` for GitHub Actions workflow analysis and code scanning alerts.
+- `Secret Scan` for gitleaks-based secret detection.
+
+Code scanning alerts can be viewed under:
 
 > **Repository → Security → Code scanning alerts**
 
-The workflow file: [.github/workflows/sast-semgrep.yml](.github/workflows/sast-semgrep.yml)
+Relevant workflow files:
 
-> **Note:** Code scanning requires GitHub Advanced Security (available for public repositories; must be enabled in repository settings, and requires a license for private repositories).
+- [.github/workflows/static-analysis.yml](.github/workflows/static-analysis.yml)
+- [.github/workflows/codeql.yml](.github/workflows/codeql.yml)
+- [.github/workflows/secret-scan.yml](.github/workflows/secret-scan.yml)
+
+> **Note:** Code scanning availability depends on GitHub Advanced Security/repository settings.
 
 ## Safety and conventions
 
