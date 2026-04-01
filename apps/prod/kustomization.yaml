@@ -13,7 +13,6 @@ resources:
   - overseerr
   - prowlarr
   - radarr
-  - shared_storage
   - sonarr
   - syncthing
   - tautulli
