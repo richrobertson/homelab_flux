@@ -7,13 +7,6 @@ spec:
     persistence:
       enabled: true
       existingClaim: authelia-config-ceph
-    pod:
-      env:
-        - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: cluster-authelia-ceph-app
-              key: password
     configMap:
       storage:
         postgres:
