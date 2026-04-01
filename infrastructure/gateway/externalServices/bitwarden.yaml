@@ -1,4 +1,3 @@
-
 apiVersion: networking.istio.io/v1
 kind: ServiceEntry
 metadata:
@@ -26,9 +25,9 @@ metadata:
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
 spec:
   parentRefs:
-    - name:  myrobertson-com-gateway # Reference your Gateway resource
+    - name: myrobertson-com-gateway
   hostnames:
-    - "bitwarden.myrobertson.com" # Hostname for which this route applies
+    - "bitwarden.myrobertson.com"
   rules:
     - matches:
         - path:

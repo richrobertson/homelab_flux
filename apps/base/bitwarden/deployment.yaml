@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bitwarden
+  namespace: default
+  labels:
+    app.kubernetes.io/name: bitwarden
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: bitwarden
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: bitwarden
+    spec:
+      containers:
+        - name: vaultwarden
+          image: vaultwarden/server:1.33.2
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DOMAIN
+              value: https://bitwarden.myrobertson.com
+            - name: SIGNUPS_ALLOWED
+              value: "false"
+            - name: WEBSOCKET_ENABLED
+              value: "true"
+            - name: ROCKET_PORT
+              value: "8080"
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /alive
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /alive
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: bitwarden-data-ceph
