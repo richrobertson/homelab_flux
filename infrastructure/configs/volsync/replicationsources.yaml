@@ -59,6 +59,44 @@ spec:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
+  name: netbootxyz-config-ceph-backup
+spec:
+  sourcePVC: netbootxyz-config-ceph
+  trigger:
+    schedule: "27 */6 * * *"
+  restic:
+    repository: restic-config-netbootxyz-config
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: netbootxyz-assets-ceph-backup
+spec:
+  sourcePVC: netbootxyz-assets-ceph
+  trigger:
+    schedule: "28 */6 * * *"
+  restic:
+    repository: restic-config-netbootxyz-assets
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
   name: cluster-authelia-ceph-1-backup
 spec:
   sourcePVC: cluster-authelia-ceph-1

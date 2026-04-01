@@ -55,6 +55,8 @@ RESTIC_REPOSITORY format:
 - secret/volsync/prod/cluster-authelia-ceph-1
 - secret/volsync/prod/bitwarden-data-ceph
 - secret/volsync/prod/gotify-data-ceph
+- secret/volsync/prod/netbootxyz-config-ceph
+- secret/volsync/prod/netbootxyz-assets-ceph
 - secret/volsync/prod/immich-data-files-pvc-ceph
 - secret/volsync/prod/cluster-immich-ceph-1
 - secret/volsync/prod/lidarr-config-ceph
