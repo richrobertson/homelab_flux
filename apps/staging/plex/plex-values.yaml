@@ -1,0 +1,17 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: plex
+spec:
+  values:
+    plex:
+      disableGDM: false
+      requireHTTPS: false
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                ALLOWED_NETWORKS: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"

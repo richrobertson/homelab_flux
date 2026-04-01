@@ -32,6 +32,7 @@
 - `loki-stack`: log aggregation and collection components.
 - `mealie`: recipe management application.
 - `overseerr`: media request management interface.
+- `plex`: media streaming server with hardware transcoding support.
 - `prowlarr`: indexer management for media automation tools.
 - `radarr`: movie library management and automation.
 - `shared_storage`: storage objects consumed by multiple apps.
@@ -55,6 +56,7 @@ Leaf docs:
 - [Loki Stack (Base)](loki-stack/README.md)
 - [Mealie base](mealie/README.md)
 - [Overseerr base](overseerr/README.md)
+- [Plex base](plex/README.md)
 - [Prowlarr base](prowlarr/README.md)
 - [Radarr base](radarr/README.md)
 - [Shared Storage (Base)](shared_storage/README.md)

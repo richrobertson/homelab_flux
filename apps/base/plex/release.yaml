@@ -1,0 +1,49 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: plex
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: plex
+  values:
+    persistence:
+      config:
+        enabled: true
+        storageClass: csi-cephfs-sc
+        existingClaim: plex-config-ceph
+        accessModes: ReadWriteMany
+        targetSelectAll: true
+
+      media4k:
+        enabled: true
+        type: nfs
+        mountPath: /media/4k
+        path: /volume1/plex
+        subPath: 4k
+        server: scooter.myrobertson.net
+        targetSelectAll: true
+
+      transcode:
+        enabled: true
+        type: emptyDir
+        medium: Memory
+        targetSelectAll: true
+
+      dri:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/dri
+        hostPathType: Directory
+        mountPath: /dev/dri
+        targetSelectAll: true
+
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: 4000m
+        memory: 8Gi
