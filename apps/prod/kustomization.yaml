@@ -5,6 +5,7 @@ resources:
   - cnpg-backup-secret.yaml
   - authelia
   - external-dns
+  - gotify
   - immich
   - lidarr
   - loki-stack
@@ -15,3 +16,4 @@ resources:
   - shared_storage
   - sonarr
   - syncthing
+  - tautulli

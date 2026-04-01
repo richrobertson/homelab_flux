@@ -40,6 +40,25 @@ spec:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
+  name: gotify-data-ceph-backup
+spec:
+  sourcePVC: gotify-data-ceph
+  trigger:
+    schedule: "35 */6 * * *"
+  restic:
+    repository: restic-config-gotify
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
   name: cluster-authelia-ceph-1-backup
 spec:
   sourcePVC: cluster-authelia-ceph-1
@@ -277,6 +296,25 @@ spec:
       runAsUser: 568
       runAsGroup: 568
       fsGroup: 568
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: tautulli-config-ceph-backup
+spec:
+  sourcePVC: tautulli-config-ceph
+  trigger:
+    schedule: "45 */6 * * *"
+  restic:
+    repository: restic-config-tautulli
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 7
+      weekly: 4
+      monthly: 3
+      yearly: 100
+    copyMethod: Clone
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource

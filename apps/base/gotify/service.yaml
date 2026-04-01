@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gotify
+  namespace: default
+  labels:
+    app.kubernetes.io/name: gotify
+spec:
+  selector:
+    app.kubernetes.io/name: gotify
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

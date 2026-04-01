@@ -1,0 +1,133 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gotify-data-seed-from-synology
+  namespace: default
+spec:
+  suspend: true
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: seed
+          image: alpine:3.20
+          env:
+            - name: SOURCE_MODE
+              value: smb
+            - name: SOURCE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-synology-migration
+                  key: host
+            - name: SOURCE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-synology-migration
+                  key: port
+                  optional: true
+            - name: SOURCE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-synology-migration
+                  key: username
+            - name: SOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-synology-migration
+                  key: sourcePassword
+                  optional: true
+            - name: SOURCE_SHARE
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-synology-migration
+                  key: sourceShare
+            - name: SOURCE_PATH
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-synology-migration
+                  key: sourcePath
+            - name: SSH_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-synology-migration
+                  key: sshPrivateKey
+                  optional: true
+            - name: KNOWN_HOSTS
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-synology-migration
+                  key: knownHosts
+                  optional: true
+            - name: DRY_RUN
+              value: "true"
+            - name: ALLOW_NON_EMPTY_TARGET
+              value: "false"
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              apk add --no-cache bash rsync openssh-client cifs-utils coreutils
+
+              TARGET_DIR="/data"
+              mkdir -p "$TARGET_DIR"
+              if [ "${ALLOW_NON_EMPTY_TARGET}" != "true" ] && [ -n "$(ls -A "$TARGET_DIR" 2>/dev/null)" ]; then
+                echo "Target $TARGET_DIR is not empty. Set ALLOW_NON_EMPTY_TARGET=true only when intentional."
+                exit 1
+              fi
+
+              RSYNC_FLAGS="-aH --numeric-ids --delete"
+              [ "${DRY_RUN}" = "true" ] && RSYNC_FLAGS="$RSYNC_FLAGS --dry-run"
+
+              case "${SOURCE_MODE}" in
+                ssh)
+                  mkdir -p /root/.ssh
+                  if [ -n "${SSH_PRIVATE_KEY}" ]; then
+                    printf '%s\n' "${SSH_PRIVATE_KEY}" >/root/.ssh/id_ed25519
+                    chmod 600 /root/.ssh/id_ed25519
+                  fi
+                  if [ -n "${KNOWN_HOSTS}" ]; then
+                    printf '%s\n' "${KNOWN_HOSTS}" >/root/.ssh/known_hosts
+                    chmod 644 /root/.ssh/known_hosts
+                    SSH_OPTS="-o UserKnownHostsFile=/root/.ssh/known_hosts -o StrictHostKeyChecking=yes"
+                  else
+                    SSH_OPTS="-o StrictHostKeyChecking=accept-new"
+                  fi
+                  REMOTE="${SOURCE_USER}@${SOURCE_HOST}:${SOURCE_PATH%/}/"
+                  rsync ${RSYNC_FLAGS} -e "ssh -p ${SOURCE_PORT:-22} ${SSH_OPTS}" "$REMOTE" "$TARGET_DIR/"
+                  ;;
+                rsync-daemon)
+                  SRC="rsync://${SOURCE_USER}@${SOURCE_HOST}:${SOURCE_PORT:-873}${SOURCE_PATH%/}/"
+                  rsync ${RSYNC_FLAGS} "$SRC" "$TARGET_DIR/"
+                  ;;
+                smb)
+                  MNT="/mnt/source"
+                  mkdir -p "$MNT"
+                  opts="username=${SOURCE_USER},password=${SOURCE_PASSWORD},vers=3.0,ro"
+                  mount -t cifs "//${SOURCE_HOST}/${SOURCE_SHARE}" "$MNT" -o "$opts"
+                  SRC="$MNT"
+                  if [ -n "${SOURCE_PATH}" ] && [ "${SOURCE_PATH}" != "/" ] && [ "${SOURCE_PATH}" != "." ]; then
+                    p="${SOURCE_PATH#/}"
+                    SRC="$MNT/$p"
+                  fi
+                  test -d "$SRC"
+                  rsync ${RSYNC_FLAGS} "$SRC/" "$TARGET_DIR/"
+                  umount "$MNT"
+                  ;;
+                *)
+                  echo "Unsupported SOURCE_MODE=${SOURCE_MODE}"
+                  exit 1
+                  ;;
+              esac
+
+              if [ "${DRY_RUN}" != "true" ]; then
+                date -u +"%Y-%m-%dT%H:%M:%SZ" >"$TARGET_DIR/.migration-from-synology-complete"
+              fi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: gotify-data-ceph
