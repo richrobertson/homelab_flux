@@ -6,3 +6,4 @@ resources:
   - assets-ceph-pvc.yaml
   - deployment.yaml
   - service.yaml
+  - service-lan.yaml
