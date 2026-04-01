@@ -21,7 +21,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -69,7 +69,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "count(homelab_resource_info{customresource_group=\"volsync.backube\",customresource_kind=\"ReplicationSource\",exported_namespace=~\"$namespace\",ready!=\"True\"})",
+          "expr": "count(homelab_resource_info{customresource_group=\"volsync.backube\",customresource_kind=\"ReplicationSource\",exported_namespace=~\"$namespace\",ready!=\"True\"}) or on() vector(0)",
           "instant": true,
           "legendFormat": "",
           "range": false,
@@ -82,7 +82,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -130,7 +130,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "count(homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"Cluster\",exported_namespace=~\"$namespace\",ready!=\"True\"})",
+          "expr": "count(homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"Cluster\",exported_namespace=~\"$namespace\",ready!=\"True\"}) or on() vector(0)",
           "instant": true,
           "range": false,
           "refId": "A"
@@ -142,7 +142,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -190,7 +190,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "count(homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"ScheduledBackup\",exported_namespace=~\"$namespace\",suspended=\"true\"})",
+          "expr": "count(homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"ScheduledBackup\",exported_namespace=~\"$namespace\",suspended=\"true\"}) or on() vector(0)",
           "instant": true,
           "range": false,
           "refId": "A"
@@ -202,7 +202,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -250,7 +250,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "count(max_over_time(homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"Backup\",exported_namespace=~\"$namespace\",phase=~\"failed|error\"}[24h]))",
+          "expr": "count(max_over_time(homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"Backup\",exported_namespace=~\"$namespace\",phase=~\"failed|error\"}[24h])) or on() vector(0)",
           "instant": true,
           "range": false,
           "refId": "A"
@@ -262,7 +262,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -309,7 +309,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
