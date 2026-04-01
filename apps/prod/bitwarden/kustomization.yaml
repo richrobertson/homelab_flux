@@ -3,3 +3,6 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/bitwarden
+  - httpRoute.yaml
+patches:
+  - path: deployment-replicas-patch.yaml
