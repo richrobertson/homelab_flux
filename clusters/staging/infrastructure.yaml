@@ -87,6 +87,38 @@ spec:
   prune: true
   patches:
     - patch: |
+        $patch: delete
+        apiVersion: monitoring.coreos.com/v1
+        kind: PrometheusRule
+        metadata:
+          name: backup-observability-alerts
+      target:
+        group: monitoring.coreos.com
+        version: v1
+        kind: PrometheusRule
+        name: backup-observability-alerts
+    - patch: |
+        $patch: delete
+        apiVersion: volsync.backube/v1alpha1
+        kind: ReplicationSource
+        metadata:
+          name: placeholder
+      target:
+        group: volsync.backube
+        version: v1alpha1
+        kind: ReplicationSource
+    - patch: |
+        $patch: delete
+        apiVersion: secrets.hashicorp.com/v1beta1
+        kind: VaultStaticSecret
+        metadata:
+          name: restic-config-placeholder
+      target:
+        group: secrets.hashicorp.com
+        version: v1beta1
+        kind: VaultStaticSecret
+        name: restic-config-.*
+    - patch: |
         - op: replace
           path: /spec/addresses/0
           value: 10.21.0.64/26
