@@ -187,6 +187,19 @@ spec:
       - name: radarr-myrobertson-com-cert
         kind: Secret 
 
+  - name: netboot
+    hostname: netboot.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: netboot-myrobertson-com-cert
+        kind: Secret 
+
   - name: sonarr
     hostname: sonarr.myrobertson.com
     port: 443
