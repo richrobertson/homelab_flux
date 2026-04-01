@@ -417,8 +417,8 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "count by (phase) (homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"Backup\",exported_namespace=~\"$namespace\"})",
-          "legendFormat": "phase={{phase}}",
+          "expr": "count by (phase) (homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"Backup\",exported_namespace=~\"$namespace\",phase!=\"\"})",
+          "legendFormat": "{{phase}}",
           "range": true,
           "refId": "A"
         }
