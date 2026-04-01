@@ -65,7 +65,7 @@ kubectl -n default delete pod migrate-<app>-config
 
 ## Current migration status
 
-As of 2026-03-30:
+As of 2026-03-31:
 
 | App | HelmRelease state | Running pod | Mounted config claim | Copy status | Git commit |
 |---|---|---|---|---|---|

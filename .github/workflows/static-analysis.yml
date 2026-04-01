@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Discover Python targets
-        id: py-targets
+        id: py_targets
         shell: bash
         run: |
           set -euo pipefail
@@ -55,25 +55,25 @@ jobs:
           echo "dirs=${joined% }" >> "$GITHUB_OUTPUT"
 
       - name: Setup Python
-        if: steps.py-targets.outputs.has_targets == 'true'
+        if: steps.py_targets.outputs.has_targets == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install dependencies
-        if: steps.py-targets.outputs.has_targets == 'true'
+        if: steps.py_targets.outputs.has_targets == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install "ruff==0.6.5" "bandit==1.7.9"
 
       - name: Ruff lint
-        if: steps.py-targets.outputs.has_targets == 'true'
-        run: ruff check ${{ steps.py-targets.outputs.dirs }}
+        if: steps.py_targets.outputs.has_targets == 'true'
+        run: ruff check ${{ steps.py_targets.outputs.dirs }}
 
       - name: Bandit security scan
-        if: steps.py-targets.outputs.has_targets == 'true'
-        run: bandit -r ${{ steps.py-targets.outputs.dirs }} -ll
+        if: steps.py_targets.outputs.has_targets == 'true'
+        run: bandit -r ${{ steps.py_targets.outputs.dirs }} -ll
 
       - name: Skip when no Python files exist
-        if: steps.py-targets.outputs.has_targets != 'true'
+        if: steps.py_targets.outputs.has_targets != 'true'
         run: echo "No Python sources detected; skipping Ruff and Bandit."

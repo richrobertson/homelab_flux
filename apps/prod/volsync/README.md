@@ -82,7 +82,7 @@ Check current retain settings in-cluster:
 
 ```bash
 kubectl --context admin@prod get replicationsource -n default \
-	-o custom-columns=NAME:.metadata.name,DAILY:.spec.restic.retain.daily,WEEKLY:.spec.restic.retain.weekly,MONTHLY:.spec.restic.retain.monthly,YEARLY:.spec.restic.retain.yearly
+  -o custom-columns=NAME:.metadata.name,DAILY:.spec.restic.retain.daily,WEEKLY:.spec.restic.retain.weekly,MONTHLY:.spec.restic.retain.monthly,YEARLY:.spec.restic.retain.yearly
 ```
 
 Check recent sync status:

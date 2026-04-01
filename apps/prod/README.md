@@ -34,7 +34,7 @@
 
 Operational docs:
 
-- [VolSync production backups and retention](volsync/README.md)
+- [VolSync production verification commands](volsync/README.md#operational-verification)
 - [App Ceph migration runbook](../../scripts/APP_CEPH_MIGRATION_RUNBOOK.md)
 
 Leaf docs:
