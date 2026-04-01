@@ -4,14 +4,14 @@
 
 This runbook migrates Vaultwarden data from the Synology-hosted container (`192.168.1.215`) into the Kubernetes PVC `bitwarden-data-ceph`, then performs a controlled traffic cutover.
 
-## Current staged state
+## Current state
 
-- External route to Synology is still active (`infrastructure/gateway/externalServices/bitwarden.yaml`).
-- In-cluster Bitwarden deployment is present but scaled to 0 replicas (`apps/base/bitwarden/deployment.yaml`).
-- Backup jobs are present:
-  - `bitwarden-files-backup`
-- One-time migration Job is present and suspended:
-  - `bitwarden-data-seed-from-synology`
+- Migration and cutover are complete.
+- Bitwarden serves in-cluster via `apps/prod/bitwarden/httpRoute.yaml`.
+- External Synology route and migration-only manifests have been removed from active GitOps resources.
+- `bitwarden-files-backup` remains active for app-level file backups.
+
+Use this document as a historical execution reference; use `APP_SYNOLOGYNAS_CONTAINER_MIGRATION_PLAYBOOK.md` for future app migrations.
 
 ## Prerequisites
 
