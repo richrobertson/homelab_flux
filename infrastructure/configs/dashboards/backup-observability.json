@@ -46,12 +46,12 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 6,
+        "h": 4,
+        "w": 4,
         "x": 0,
         "y": 0
       },
-      "id": 1,
+      "id": 8,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -69,14 +69,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "count(homelab_resource_info{customresource_group=\"volsync.backube\",customresource_kind=\"ReplicationSource\",exported_namespace=~\"$namespace\",mover_result=\"Failed\"}) or on() vector(0)",
+          "expr": "count(ALERTS{alertstate=\"firing\",alertname=~\"VolSyncReplicationSourceNotReady|CNPGClusterNotReady|CNPGScheduledBackupSuspended|CNPGBackupFailedRecently|BackupJobsFailing\"}) or on() vector(0)",
           "instant": true,
-          "legendFormat": "",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "VolSync Sources Not Ready",
+      "title": "Firing Backup Alerts",
       "type": "stat"
     },
     {
@@ -107,9 +106,70 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 6,
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "count(homelab_resource_info{customresource_group=\"volsync.backube\",customresource_kind=\"ReplicationSource\",exported_namespace=~\"$namespace\",mover_result=\"Failed\"}) or on() vector(0)",
+          "instant": true,
+          "legendFormat": "",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "VolSync Failed Sources",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
         "y": 0
       },
       "id": 2,
@@ -136,7 +196,7 @@
           "refId": "A"
         }
       ],
-      "title": "CNPG Clusters Not Ready",
+      "title": "CNPG Clusters Unhealthy",
       "type": "stat"
     },
     {
@@ -167,8 +227,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 6,
+        "h": 4,
+        "w": 4,
         "x": 12,
         "y": 0
       },
@@ -227,9 +287,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 18,
+        "h": 4,
+        "w": 4,
+        "x": 16,
         "y": 0
       },
       "id": 4,
@@ -256,7 +316,67 @@
           "refId": "A"
         }
       ],
-      "title": "CNPG Failures (24h)",
+      "title": "CNPG Backup Failures (24h)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "id": 9,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "count(max_over_time(kube_job_status_failed{namespace=~\"$namespace\",job_name=~\".*(backup|volsync).*\"}[30m])) or on() vector(0)",
+          "instant": true,
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Backup Jobs Failed (30m)",
       "type": "stat"
     },
     {
@@ -274,10 +394,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 6,
         "w": 12,
         "x": 0,
-        "y": 5
+        "y": 4
       },
       "id": 5,
       "options": {
@@ -321,37 +441,37 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 6,
         "w": 12,
         "x": 12,
-        "y": 5
+        "y": 4
       },
       "id": 6,
       "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
           ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
+          "show": false
         },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
+        "showHeader": true
       },
       "targets": [
         {
           "editorMode": "code",
-          "expr": "count by (ready, source_pvc) (homelab_resource_info{customresource_group=\"volsync.backube\",customresource_kind=\"ReplicationSource\",exported_namespace=~\"$namespace\"})",
-          "legendFormat": "{{source_pvc}} ready={{ready}}",
-          "range": true,
+          "expr": "count by (source_pvc, mover_result, ready) (homelab_resource_info{customresource_group=\"volsync.backube\",customresource_kind=\"ReplicationSource\",exported_namespace=~\"$namespace\"})",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "",
+          "range": false,
           "refId": "A"
         }
       ],
-      "title": "VolSync Replication Sources",
-      "type": "timeseries"
+      "title": "VolSync Source Health (Current)",
+      "type": "table"
     },
     {
       "datasource": {
@@ -374,7 +494,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 10
       },
       "id": 7,
       "options": {
@@ -439,6 +559,6 @@
   "timezone": "",
   "title": "Backup Observability",
   "uid": "backup-observability",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
