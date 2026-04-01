@@ -34,6 +34,7 @@ The validation script is designed to:
 
 - [Repository root](../README.md)
 - [App Ceph migration runbook](./APP_CEPH_MIGRATION_RUNBOOK.md)
+- [Prod VolSync backups and retention](../apps/prod/volsync/README.md)
 
 
 ## Parent/Siblings

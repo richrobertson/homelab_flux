@@ -113,6 +113,11 @@ kubectl get pods -A
 - [Infrastructure overview](infrastructure/README.md)
 - [Scripts overview](scripts/README.md)
 
+Backup and migration docs:
+
+- [Prod VolSync backups and retention](apps/prod/volsync/README.md)
+- [App Ceph migration runbook](scripts/APP_CEPH_MIGRATION_RUNBOOK.md)
+
 Environment and bootstrap docs:
 
 - [Staging cluster](clusters/staging/README.md)
