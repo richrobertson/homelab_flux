@@ -18,6 +18,13 @@ patches:
       name: mealie-data-files-pvc
   - patch: |
       - op: replace
+        path: /spec/resources/requests/storage
+        value: 100Gi
+    target:
+      kind: PersistentVolumeClaim
+      name: mealie-data-ceph
+  - patch: |
+      - op: replace
         path: /spec/path
         value: oidc/prod
     target:
