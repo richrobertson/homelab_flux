@@ -5,7 +5,6 @@ resources:
   - letsencrypt/secrets.yaml
   - myrobertson-com/myrobertson-com-gateway.yaml
   - myrobertson-com/myrobertson-com-redirect.yaml
-  - externalServices/bitwarden.yaml
   - externalServices/gotify.yaml
   - externalServices/kermit.yaml
   - externalServices/plex.yaml
