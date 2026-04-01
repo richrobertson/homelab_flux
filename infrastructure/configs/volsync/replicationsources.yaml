@@ -20,6 +20,24 @@ spec:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
+  name: bitwarden-data-ceph-backup
+spec:
+  sourcePVC: bitwarden-data-ceph
+  trigger:
+    schedule: "55 */6 * * *"
+  restic:
+    repository: restic-config-bitwarden
+    pruneIntervalDays: 7
+    retain:
+      hourly: 0
+      daily: 14
+      weekly: 8
+      monthly: 12
+    copyMethod: Clone
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
   name: cluster-authelia-ceph-1-backup
 spec:
   sourcePVC: cluster-authelia-ceph-1
