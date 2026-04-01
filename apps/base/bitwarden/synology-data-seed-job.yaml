@@ -1,0 +1,94 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bitwarden-data-seed-from-synology
+  namespace: default
+spec:
+  suspend: true
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: seed
+          image: alpine:3.20
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SOURCE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-synology-migration
+                  key: host
+            - name: SOURCE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-synology-migration
+                  key: port
+            - name: SOURCE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-synology-migration
+                  key: username
+            - name: SOURCE_PATH
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-synology-migration
+                  key: sourcePath
+            - name: DRY_RUN
+              value: "true"
+            - name: ALLOW_NON_EMPTY_TARGET
+              value: "false"
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              apk add --no-cache openssh-client rsync
+
+              mkdir -p /root/.ssh
+              cp /migration-secrets/sshPrivateKey /root/.ssh/id_ed25519
+              chmod 600 /root/.ssh/id_ed25519
+
+              if [ -s /migration-secrets/knownHosts ]; then
+                cp /migration-secrets/knownHosts /root/.ssh/known_hosts
+                chmod 600 /root/.ssh/known_hosts
+                SSH_OPTS="-o UserKnownHostsFile=/root/.ssh/known_hosts -o StrictHostKeyChecking=yes"
+              else
+                SSH_OPTS="-o StrictHostKeyChecking=accept-new"
+              fi
+
+              if [ -z "${SOURCE_PATH}" ]; then
+                echo "SOURCE_PATH is empty; aborting." >&2
+                exit 1
+              fi
+
+              if [ "${ALLOW_NON_EMPTY_TARGET}" != "true" ] && [ "$(find /data -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')" != "0" ]; then
+                echo "Target /data is not empty. Set ALLOW_NON_EMPTY_TARGET=true only when intentional." >&2
+                exit 1
+              fi
+
+              RSYNC_FLAGS="-aHAX --numeric-ids --delete"
+              if [ "${DRY_RUN}" = "true" ]; then
+                RSYNC_FLAGS="${RSYNC_FLAGS} --dry-run"
+              fi
+
+              rsync ${RSYNC_FLAGS} \
+                -e "ssh -p ${SOURCE_PORT} ${SSH_OPTS}" \
+                "${SOURCE_USER}@${SOURCE_HOST}:${SOURCE_PATH%/}/" \
+                /data/
+
+              if [ "${DRY_RUN}" = "false" ]; then
+                date -u +%Y-%m-%dT%H:%M:%SZ > /data/.migration-from-synology-complete
+              fi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: migration-secrets
+              mountPath: /migration-secrets
+              readOnly: true
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: bitwarden-data-ceph
+        - name: migration-secrets
+          secret:
+            secretName: bitwarden-synology-migration
