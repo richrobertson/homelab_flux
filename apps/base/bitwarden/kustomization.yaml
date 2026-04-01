@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: default
 resources:
   - data-ceph-pvc.yaml
-  - db-backup-cronjob.yaml
   - deployment.yaml
   - files-backup-cronjob.yaml
   - migration-secret.yaml

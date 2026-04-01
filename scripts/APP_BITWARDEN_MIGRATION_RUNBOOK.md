@@ -9,7 +9,6 @@ This runbook migrates Vaultwarden data from the Synology-hosted container (`192.
 - External route to Synology is still active (`infrastructure/gateway/externalServices/bitwarden.yaml`).
 - In-cluster Bitwarden deployment is present but scaled to 0 replicas (`apps/base/bitwarden/deployment.yaml`).
 - Backup jobs are present:
-  - `bitwarden-db-backup`
   - `bitwarden-files-backup`
 - One-time migration Job is present and suspended:
   - `bitwarden-data-seed-from-synology`
@@ -139,9 +138,8 @@ Validate application login and encrypted item access.
 Trigger each backup job once:
 
 ```bash
-kubectl --context admin@prod create job --from=cronjob/bitwarden-db-backup -n default bitwarden-db-backup-manual-$(date +%s)
 kubectl --context admin@prod create job --from=cronjob/bitwarden-files-backup -n default bitwarden-files-backup-manual-$(date +%s)
-kubectl --context admin@prod get jobs -n default | egrep 'bitwarden-(db|files)-backup'
+kubectl --context admin@prod get jobs -n default | egrep 'bitwarden-files-backup'
 ```
 
 Check logs and artifacts under `/data/backups`.
