@@ -76,3 +76,48 @@ spec:
                   done
 
                   echo "Ceph PV garbage collection run completed."
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ceph-pv-gc-manual
+  namespace: flux-system
+spec:
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      serviceAccountName: ceph-pv-gc
+      restartPolicy: OnFailure
+      containers:
+        - name: gc
+          image: bitnami/kubectl:1.32
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              echo "Scanning for Released+Retain Ceph PVs..."
+
+              CANDIDATES="$(kubectl get pv --no-headers | awk '
+                $5=="Released" && $4=="Retain" && ($7 ~ /ceph/ || $7 ~ /rook-ceph/) {
+                  print $1
+                }
+              ')"
+
+              if [ -z "${CANDIDATES}" ]; then
+                echo "No orphaned Ceph PVs found."
+                exit 0
+              fi
+
+              echo "Found orphaned Ceph PVs:"
+              echo "${CANDIDATES}"
+
+              for PV in ${CANDIDATES}; do
+                echo "Patching ${PV} reclaimPolicy=Delete"
+                kubectl patch pv "${PV}" --type merge -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
+
+                echo "Deleting ${PV}"
+                kubectl delete pv "${PV}" --wait=false
+              done
+
+              echo "Ceph PV garbage collection run completed."
