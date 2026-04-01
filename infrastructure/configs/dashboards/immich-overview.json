@@ -25,7 +25,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -85,7 +85,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -128,7 +128,7 @@
       "pluginVersion": "10.4.2",
       "targets": [
         {
-          "expr": "sum(rate(http_server_duration_count{namespace=\"default\",service=\"immich-server\"}[5m]))",
+          "expr": "sum(rate(http_server_duration_count{job=\"immich-server\"}[5m]))",
           "legendFormat": "req/s",
           "refId": "A"
         }
@@ -139,7 +139,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -190,12 +190,12 @@
       "pluginVersion": "10.4.2",
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_duration_bucket{namespace=\"default\",service=\"immich-server\"}[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_duration_bucket{job=\"immich-server\"}[5m])))",
           "legendFormat": "p95",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(http_server_duration_bucket{namespace=\"default\",service=\"immich-server\"}[5m])))",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(http_server_duration_bucket{job=\"immich-server\"}[5m])))",
           "legendFormat": "p99",
           "refId": "B"
         }
@@ -206,7 +206,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -260,7 +260,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -314,7 +314,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
