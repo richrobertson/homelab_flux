@@ -30,7 +30,9 @@ spec:
         cluster:
           instances: 1
           storage:
+            size: 2Gi
             storageClass: ceph-block
           walStorage:
+            size: 2Gi
             storageClass: ceph-block
         
