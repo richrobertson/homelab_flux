@@ -111,13 +111,19 @@ After each app cutover to Ceph-backed PVCs, confirm backups are still healthy fo
 Suggested commands:
 
 ```bash
-flux --context=admin@prod reconcile source git flux-system -n flux-system
-flux --context=admin@prod reconcile kustomization apps -n flux-system
+CTX="admin@prod"
 
-kubectl --context admin@prod get replicationsource -n default \
-	-o custom-columns=NAME:.metadata.name,LASTSYNC:.status.lastSyncTime,MSG:.status.conditions[0].message
+flux --context="$CTX" reconcile source git flux-system -n flux-system
+flux --context="$CTX" reconcile kustomization apps -n flux-system
 
-kubectl --context admin@prod get backups.postgresql.cnpg.io -n default -o wide
+kubectl --context "$CTX" get replicationsource -n default \
+  -o custom-columns=NAME:.metadata.name,LASTSYNC:.status.lastSyncTime,CONDITIONS:.status.conditions
+
+kubectl --context "$CTX" get backups.postgresql.cnpg.io -n default -o wide
+
+# Optional object-store verification (example paths)
+aws s3 ls s3://<backup-bucket>/volsync/ --recursive | tail -20
+aws s3 ls s3://<backup-bucket>/cnpg/ --recursive | tail -20
 ```
 
 Retention reference:

@@ -89,7 +89,7 @@ Check recent sync status:
 
 ```bash
 kubectl --context admin@prod get replicationsource -n default \
-	-o custom-columns=NAME:.metadata.name,LASTSYNC:.status.lastSyncTime,MSG:.status.conditions[0].message
+ -o custom-columns=NAME:.metadata.name,LASTSYNC:.status.lastSyncTime,CONDITIONS:.status.conditions
 ```
 
 ## Parent/Siblings
