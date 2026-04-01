@@ -42,7 +42,7 @@ spec:
       encryptionKMSID: kubernetes
       fsName: kubernetes-prod-cephfs
       pool: kubernetes-prod-cephfs_data
-      reclaimPolicy: Retain
+      reclaimPolicy: Delete
       allowVolumeExpansion: true
       provisionerSecretNamespace: ceph-csi
       controllerExpandSecretNamespace: ceph-csi
