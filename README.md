@@ -194,6 +194,22 @@ kubectl get events -A --sort-by=.lastTimestamp | tail -50
 4. Let Flux reconcile on interval, or force reconcile for faster rollout.
 5. Verify resources in-cluster and in Grafana/Prometheus as needed.
 
+### Branch protection (recommended)
+
+For `main`, enable branch protection and require pull requests to pass status checks before merge.
+
+Recommended required checks:
+
+- `Static Analysis / python-lint-and-security`
+- `CodeQL / Analyze (actions)`
+- `Secret Scan / gitleaks`
+
+Optional stricter settings:
+
+- Require branches to be up to date before merging.
+- Require conversation resolution before merging.
+- Restrict direct pushes to `main`.
+
 ## Security (SAST)
 
 This repository runs [Semgrep](https://semgrep.dev/) as a Static Application Security Testing (SAST) tool via GitHub Actions on every push and pull request to `main`/`master`, plus a weekly scheduled scan.
