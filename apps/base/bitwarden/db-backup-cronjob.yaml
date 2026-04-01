@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: bitwarden-db-backup
+  namespace: default
+spec:
+  schedule: "0 */6 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 600
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: python:3.12-alpine
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  export DB_PATH="/data/db.sqlite3"
+                  export OUT_DIR="/data/backups/db"
+                  export TS="$(date -u +%Y%m%dT%H%M%SZ)"
+                  python3 - <<'PY'
+                  import glob
+                  import os
+                  import sqlite3
+
+                  db_path = os.environ["DB_PATH"]
+                  out_dir = os.environ["OUT_DIR"]
+                  ts = os.environ["TS"]
+
+                  os.makedirs(out_dir, exist_ok=True)
+                  if not os.path.exists(db_path):
+                      raise SystemExit(f"Database not found: {db_path}")
+
+                  dst = os.path.join(out_dir, f"vaultwarden-{ts}.sqlite3")
+                  src = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+                  dst_conn = sqlite3.connect(dst)
+                  with dst_conn:
+                      src.backup(dst_conn)
+                  src.close()
+                  dst_conn.close()
+
+                  backups = sorted(glob.glob(os.path.join(out_dir, "vaultwarden-*.sqlite3")))
+                  for old in backups[:-14]:
+                      os.remove(old)
+                  print(f"Created {dst}")
+                  PY
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: bitwarden-data-ceph
