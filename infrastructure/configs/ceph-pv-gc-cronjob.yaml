@@ -45,15 +45,19 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: gc
-              image: lachlanevenson/k8s-kubectl:v1.32.3
+              image: docker.io/nginxinc/nginx-unprivileged:1.29-alpine
               imagePullPolicy: IfNotPresent
               command:
                 - /bin/sh
                 - -ec
                 - |
+                  KUBECTL_BIN=/tmp/kubectl
+                  wget -qO "${KUBECTL_BIN}" https://dl.k8s.io/release/v1.32.3/bin/linux/amd64/kubectl
+                  chmod +x "${KUBECTL_BIN}"
+
                   echo "Scanning for Released+Retain Ceph PVs..."
 
-                  CANDIDATES="$(kubectl get pv --no-headers | awk '
+                  CANDIDATES="$(${KUBECTL_BIN} get pv --no-headers | awk '
                     $5=="Released" && $4=="Retain" && ($7 ~ /ceph/ || $7 ~ /rook-ceph/) {
                       print $1
                     }
@@ -69,10 +73,10 @@ spec:
 
                   for PV in ${CANDIDATES}; do
                     echo "Patching ${PV} reclaimPolicy=Delete"
-                    kubectl patch pv "${PV}" --type merge -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
+                    ${KUBECTL_BIN} patch pv "${PV}" --type merge -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
 
                     echo "Deleting ${PV}"
-                    kubectl delete pv "${PV}" --wait=false
+                    ${KUBECTL_BIN} delete pv "${PV}" --wait=false
                   done
 
                   echo "Ceph PV garbage collection run completed."
@@ -90,15 +94,19 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: gc
-          image: lachlanevenson/k8s-kubectl:v1.32.3
+          image: docker.io/nginxinc/nginx-unprivileged:1.29-alpine
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
             - -ec
             - |
+              KUBECTL_BIN=/tmp/kubectl
+              wget -qO "${KUBECTL_BIN}" https://dl.k8s.io/release/v1.32.3/bin/linux/amd64/kubectl
+              chmod +x "${KUBECTL_BIN}"
+
               echo "Scanning for Released+Retain Ceph PVs..."
 
-              CANDIDATES="$(kubectl get pv --no-headers | awk '
+              CANDIDATES="$(${KUBECTL_BIN} get pv --no-headers | awk '
                 $5=="Released" && $4=="Retain" && ($7 ~ /ceph/ || $7 ~ /rook-ceph/) {
                   print $1
                 }
@@ -114,10 +122,10 @@ spec:
 
               for PV in ${CANDIDATES}; do
                 echo "Patching ${PV} reclaimPolicy=Delete"
-                kubectl patch pv "${PV}" --type merge -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
+                ${KUBECTL_BIN} patch pv "${PV}" --type merge -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
 
                 echo "Deleting ${PV}"
-                kubectl delete pv "${PV}" --wait=false
+                ${KUBECTL_BIN} delete pv "${PV}" --wait=false
               done
 
               echo "Ceph PV garbage collection run completed."
