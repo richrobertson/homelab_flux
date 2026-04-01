@@ -51,12 +51,12 @@ Seed reference:
 
 ## Bucket structure
 
-- CNPG backups: s3://myrobertson-homelab-terraform/cnpg/<cluster-name>
-- VolSync backups: s3://myrobertson-homelab-terraform/volsync/default/<pvc-name>
+- CNPG backups: s3://homelab-prod-backups/cnpg/<cluster-name>
+- VolSync backups: s3://homelab-prod-backups/volsync/default/<pvc-name>
 
 For VolSync restic secrets, set RESTIC_REPOSITORY with the S3 endpoint and path-style URL format, for example:
 
-- s3:s3.us-west-2.amazonaws.com/myrobertson-homelab-terraform/volsync/default/immich-data-files-pvc-ceph
+- s3:s3.us-west-2.amazonaws.com/homelab-prod-backups/volsync/default/immich-data-files-pvc-ceph
 
 ## Parent/Siblings
 

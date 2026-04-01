@@ -5,7 +5,7 @@ This template documents the Vault KV paths and keys required by the production C
 ## Assumptions
 
 - Vault KV mount: secret
-- Bucket: myrobertson-homelab-terraform
+- Bucket: homelab-prod-backups
 
 ## Region variable
 
@@ -14,7 +14,7 @@ Set this once and reuse it in all commands:
 ```bash
 AWS_REGION='us-west-2'
 AWS_S3_ENDPOINT="s3.${AWS_REGION}.amazonaws.com"
-BACKUP_BUCKET='myrobertson-homelab-terraform'
+BACKUP_BUCKET='homelab-prod-backups'
 ```
 
 ## CNPG shared credentials
@@ -76,7 +76,7 @@ RESTIC_REPOSITORY format:
 PVC_NAME='immich-data-files-pvc-ceph'
 AWS_REGION='us-west-2'
 AWS_S3_ENDPOINT="s3.${AWS_REGION}.amazonaws.com"
-BACKUP_BUCKET='myrobertson-homelab-terraform'
+BACKUP_BUCKET='homelab-prod-backups'
 
 vault kv put "secret/volsync/prod/${PVC_NAME}" \
   RESTIC_REPOSITORY="s3:${AWS_S3_ENDPOINT}/${BACKUP_BUCKET}/volsync/default/${PVC_NAME}" \
