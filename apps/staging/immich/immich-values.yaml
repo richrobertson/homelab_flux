@@ -4,6 +4,10 @@ metadata:
   name: immich
 spec:
   values:
+    valkey:
+      persistence:
+        data:
+          storageClass: ceph-block
     controllers:
       main:
         replicas: 1

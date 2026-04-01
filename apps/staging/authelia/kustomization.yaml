@@ -6,6 +6,12 @@ resources:
   - gateway.yaml
   - auth-policy.yaml
 patches:
+  - path: remove-legacy-postgres-cluster.yaml
+    target:
+      group: postgresql.cnpg.io
+      version: v1
+      kind: Cluster
+      name: cluster-authelia
   # Enable after the Ceph seed/final-sync jobs complete.
   # - path: ../../base/authelia/release-ceph-cutover.yaml
   #   target:
