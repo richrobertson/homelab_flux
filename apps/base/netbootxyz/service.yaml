@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: netbootxyz
+  namespace: default
+  labels:
+    app.kubernetes.io/name: netbootxyz
+spec:
+  selector:
+    app.kubernetes.io/name: netbootxyz
+  ports:
+    - name: web
+      port: 3000
+      targetPort: web
+      protocol: TCP
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: tftp
+      port: 69
+      targetPort: tftp
+      protocol: UDP

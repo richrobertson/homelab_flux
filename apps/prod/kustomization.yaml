@@ -10,6 +10,7 @@ resources:
   - lidarr
   - loki-stack
   - mealie
+  - netbootxyz
   - overseerr
   - prowlarr
   - radarr

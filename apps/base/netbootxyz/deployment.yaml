@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbootxyz
+  namespace: default
+  labels:
+    app.kubernetes.io/name: netbootxyz
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: netbootxyz
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: netbootxyz
+    spec:
+      containers:
+        - name: netbootxyz
+          image: netbootxyz/netbootxyz:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Etc/UTC"
+            - name: NGINX_PORT
+              value: "80"
+            - name: WEB_APP_PORT
+              value: "3000"
+            - name: TFTP_OPTS
+              value: "--tftp-single-port"
+          ports:
+            - name: web
+              containerPort: 3000
+              protocol: TCP
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: tftp
+              containerPort: 69
+              protocol: UDP
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: assets
+              mountPath: /assets
+          readinessProbe:
+            httpGet:
+              path: /
+              port: web
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: web
+            initialDelaySeconds: 45
+            periodSeconds: 20
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: netbootxyz-config-ceph
+        - name: assets
+          persistentVolumeClaim:
+            claimName: netbootxyz-assets-ceph
