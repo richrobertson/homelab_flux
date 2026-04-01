@@ -14,6 +14,8 @@ spec:
           image: alpine:3.20
           imagePullPolicy: IfNotPresent
           env:
+            - name: SOURCE_MODE
+              value: rsync-daemon
             - name: SOURCE_HOST
               valueFrom:
                 secretKeyRef:
@@ -29,6 +31,11 @@ spec:
                 secretKeyRef:
                   name: bitwarden-synology-migration
                   key: username
+            - name: SOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-synology-migration
+                  key: sourcePassword
             - name: SOURCE_PATH
               valueFrom:
                 secretKeyRef:
@@ -43,18 +50,6 @@ spec:
             - -ec
             - |
               apk add --no-cache openssh-client rsync
-
-              mkdir -p /root/.ssh
-              cp /migration-secrets/sshPrivateKey /root/.ssh/id_ed25519
-              chmod 600 /root/.ssh/id_ed25519
-
-              if [ -s /migration-secrets/knownHosts ]; then
-                cp /migration-secrets/knownHosts /root/.ssh/known_hosts
-                chmod 600 /root/.ssh/known_hosts
-                SSH_OPTS="-o UserKnownHostsFile=/root/.ssh/known_hosts -o StrictHostKeyChecking=yes"
-              else
-                SSH_OPTS="-o StrictHostKeyChecking=accept-new"
-              fi
 
               if [ -z "${SOURCE_PATH}" ]; then
                 echo "SOURCE_PATH is empty; aborting." >&2
@@ -71,10 +66,30 @@ spec:
                 RSYNC_FLAGS="${RSYNC_FLAGS} --dry-run"
               fi
 
-              rsync ${RSYNC_FLAGS} \
-                -e "ssh -p ${SOURCE_PORT} ${SSH_OPTS}" \
-                "${SOURCE_USER}@${SOURCE_HOST}:${SOURCE_PATH%/}/" \
-                /data/
+              if [ "${SOURCE_MODE}" = "ssh" ]; then
+                mkdir -p /root/.ssh
+                cp /migration-secrets/sshPrivateKey /root/.ssh/id_ed25519
+                chmod 600 /root/.ssh/id_ed25519
+
+                if [ -s /migration-secrets/knownHosts ]; then
+                  cp /migration-secrets/knownHosts /root/.ssh/known_hosts
+                  chmod 600 /root/.ssh/known_hosts
+                  SSH_OPTS="-o UserKnownHostsFile=/root/.ssh/known_hosts -o StrictHostKeyChecking=yes"
+                else
+                  SSH_OPTS="-o StrictHostKeyChecking=accept-new"
+                fi
+
+                rsync ${RSYNC_FLAGS} \
+                  -e "ssh -p ${SOURCE_PORT} ${SSH_OPTS}" \
+                  "${SOURCE_USER}@${SOURCE_HOST}:${SOURCE_PATH%/}/" \
+                  /data/
+              else
+                export RSYNC_PASSWORD="${SOURCE_PASSWORD}"
+                SRC_PATH="${SOURCE_PATH#/}"
+                rsync ${RSYNC_FLAGS} \
+                  "rsync://${SOURCE_USER}@${SOURCE_HOST}/${SRC_PATH%/}/" \
+                  /data/
+              fi
 
               if [ "${DRY_RUN}" = "false" ]; then
                 date -u +%Y-%m-%dT%H:%M:%SZ > /data/.migration-from-synology-complete
