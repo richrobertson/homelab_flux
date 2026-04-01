@@ -69,7 +69,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "count(homelab_resource_info{customresource_group=\"volsync.backube\",customresource_kind=\"ReplicationSource\",exported_namespace=~\"$namespace\",ready!=\"True\"}) or on() vector(0)",
+          "expr": "count(homelab_resource_info{customresource_group=\"volsync.backube\",customresource_kind=\"ReplicationSource\",exported_namespace=~\"$namespace\",ready=\"False\",sync_message!=\"Waiting for next scheduled synchronization\"}) or on() vector(0)",
           "instant": true,
           "legendFormat": "",
           "range": false,
