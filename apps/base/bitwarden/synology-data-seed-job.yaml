@@ -101,8 +101,10 @@ spec:
                   SHARE="${SOURCE_SHARE}"
                   if [ -z "${SHARE}" ]; then
                     SHARE="${SRC_PATH%%/*}"
+                    SUBPATH="${SRC_PATH#*/}"
+                  else
+                    SUBPATH="${SRC_PATH}"
                   fi
-                  SUBPATH="${SRC_PATH#*/}"
 
                   mkdir -p /tmp/source
                   smbclient "//${SOURCE_HOST}/${SHARE}" \
