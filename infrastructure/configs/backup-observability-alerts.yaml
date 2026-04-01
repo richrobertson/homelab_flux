@@ -11,14 +11,14 @@ spec:
     - name: backup-observability
       rules:
         - alert: VolSyncReplicationSourceNotReady
-          expr: count(homelab_resource_info{customresource_group="volsync.backube",customresource_kind="ReplicationSource",exported_namespace="default",ready="False",sync_message!="Waiting for next scheduled synchronization"}) > 0
+          expr: count(homelab_resource_info{customresource_group="volsync.backube",customresource_kind="ReplicationSource",exported_namespace="default",mover_result="Failed"}) > 0
           for: 20m
           labels:
             domain: backups
             severity: warning
           annotations:
             summary: VolSync replication source not ready
-            description: One or more VolSync ReplicationSource objects are failing to synchronize in the default namespace.
+            description: One or more VolSync ReplicationSource objects have failed mover runs in the default namespace.
 
         - alert: CNPGClusterNotReady
           expr: count(homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Cluster",exported_namespace="default",ready!="True"}) > 0

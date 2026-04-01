@@ -297,7 +297,7 @@ kube-state-metrics:
                 labelsFromPath:
                   exported_namespace: [ metadata, namespace ]
                   ready: [ status, conditions, "[type=Synchronizing]", status ]
-                  sync_message: [ status, conditions, "[type=Synchronizing]", message ]
+                  mover_result: [ status, latestMoverStatus, result ]
                   source_pvc: [ spec, sourcePVC ]
                   last_sync_time: [ status, lastSyncTime ]
           - groupVersionKind:
