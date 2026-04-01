@@ -64,3 +64,13 @@ patches:
     target:
       kind: Cluster
       name: mealie-cnpg-main
+  - patch: |
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: mealie-cnpg-main
+        annotations:
+          cnpg.io/skipEmptyWalArchiveCheck: enabled
+    target:
+      kind: Cluster
+      name: mealie-cnpg-main

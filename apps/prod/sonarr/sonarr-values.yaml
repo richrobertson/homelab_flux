@@ -3,6 +3,16 @@ kind: HelmRelease
 metadata:
   name: sonarr
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: ServiceMonitor
+              name: sonarr
+            patch: |
+              - op: add
+                path: /spec/endpoints/0/scrapeTimeout
+                value: "60s"
   values:
 
     sonarr:
@@ -17,4 +27,3 @@ spec:
         enabled: true
       downloads:
         enabled: true
-   
