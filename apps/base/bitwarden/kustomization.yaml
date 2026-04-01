@@ -6,4 +6,6 @@ resources:
   - db-backup-cronjob.yaml
   - deployment.yaml
   - files-backup-cronjob.yaml
+  - migration-secret.yaml
   - service.yaml
+  - synology-data-seed-job.yaml
