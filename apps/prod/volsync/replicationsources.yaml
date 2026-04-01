@@ -36,6 +36,10 @@ spec:
       monthly: 3
       yearly: 100
     copyMethod: Clone
+    moverSecurityContext:
+      runAsUser: 26
+      runAsGroup: 26
+      fsGroup: 26
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -74,6 +78,10 @@ spec:
       monthly: 3
       yearly: 100
     copyMethod: Clone
+    moverSecurityContext:
+      runAsUser: 26
+      runAsGroup: 26
+      fsGroup: 26
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -93,25 +101,10 @@ spec:
       monthly: 3
       yearly: 100
     copyMethod: Clone
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
-  name: lidarr-data-files-pvc-backup
-spec:
-  sourcePVC: lidarr-data-files-pvc
-  trigger:
-    schedule: "22 */6 * * *"
-  restic:
-    repository: restic-config-lidarr-data
-    pruneIntervalDays: 7
-    retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
-    copyMethod: Clone
+    moverSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -150,6 +143,10 @@ spec:
       monthly: 3
       yearly: 100
     copyMethod: Clone
+    moverSecurityContext:
+      runAsUser: 26
+      runAsGroup: 26
+      fsGroup: 26
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -169,6 +166,10 @@ spec:
       monthly: 3
       yearly: 100
     copyMethod: Clone
+    moverSecurityContext:
+      runAsUser: 26
+      runAsGroup: 26
+      fsGroup: 26
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -180,25 +181,6 @@ spec:
     schedule: "40 */6 * * *"
   restic:
     repository: restic-config-overseerr
-    pruneIntervalDays: 7
-    retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
-    copyMethod: Clone
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
-  name: overseerr-data-files-pvc-backup
-spec:
-  sourcePVC: overseerr-data-files-pvc
-  trigger:
-    schedule: "42 */6 * * *"
-  restic:
-    repository: restic-config-overseerr-data
     pruneIntervalDays: 7
     retain:
       hourly: 0
@@ -226,25 +208,10 @@ spec:
       monthly: 3
       yearly: 100
     copyMethod: Clone
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
-  name: prowlarr-data-files-pvc-backup
-spec:
-  sourcePVC: prowlarr-data-files-pvc
-  trigger:
-    schedule: "52 */6 * * *"
-  restic:
-    repository: restic-config-prowlarr-data
-    pruneIntervalDays: 7
-    retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
-    copyMethod: Clone
+    moverSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -264,25 +231,10 @@ spec:
       monthly: 3
       yearly: 100
     copyMethod: Clone
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
-  name: radarr-data-files-pvc-backup
-spec:
-  sourcePVC: radarr-data-files-pvc
-  trigger:
-    schedule: "7 */6 * * *"
-  restic:
-    repository: restic-config-radarr-data
-    pruneIntervalDays: 7
-    retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
-    copyMethod: Clone
+    moverSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -302,25 +254,10 @@ spec:
       monthly: 3
       yearly: 100
     copyMethod: Clone
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
-  name: sonarr-data-files-pvc-backup
-spec:
-  sourcePVC: sonarr-data-files-pvc
-  trigger:
-    schedule: "17 */6 * * *"
-  restic:
-    repository: restic-config-sonarr-data
-    pruneIntervalDays: 7
-    retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 3
-      yearly: 100
-    copyMethod: Clone
+    moverSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -340,3 +277,7 @@ spec:
       monthly: 3
       yearly: 100
     copyMethod: Clone
+    moverSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
