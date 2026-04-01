@@ -28,7 +28,7 @@ patches:
         path: /spec/backup
         value:
           barmanObjectStore:
-            destinationPath: s3://homelab-prod-backups/cnpg/mealie-cnpg-main
+            destinationPath: s3://myrobertson-homelab-terraform/cnpg/mealie-cnpg-main
             endpointURL: https://s3.us-west-2.amazonaws.com
             wal:
               compression: gzip

@@ -32,7 +32,7 @@ patches:
         path: /spec/backup
         value:
           barmanObjectStore:
-            destinationPath: s3://homelab-prod-backups/cnpg/cluster-immich-ceph
+            destinationPath: s3://myrobertson-homelab-terraform/cnpg/cluster-immich-ceph
             endpointURL: https://s3.us-west-2.amazonaws.com
             wal:
               compression: gzip
