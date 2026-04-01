@@ -17,9 +17,9 @@ spec:
     storageClasses: 
       synology-iscsi-storage:
         # One of true or false (default):
-        disabled: false
+        disabled: true
         # One of true or false (default):
-        isDefault: true
+        isDefault: false
         # One of "Retain" or "Delete" (default):
         reclaimPolicy: Retain
         # One of "WaitForFirstConsumer" or "Immediate" (default):
@@ -35,7 +35,7 @@ spec:
 
       synology-iscsi-storage-btrfs:
         # One of true or false (default):
-        disabled: false
+        disabled: true
         # One of true or false (default):
         isDefault: false
         # One of "Retain" or "Delete" (default):
@@ -52,6 +52,7 @@ spec:
           mountPermissions: '0777'
 
       synology-iscsi-storage-delete:
+        disabled: true
         reclaimPolicy: Delete
         isDefault: false
         parameters:

@@ -9,6 +9,13 @@ patches:
   - path: syncthing-values.yaml
     target:
       kind: HelmRelease
+  - patch: |
+      - op: replace
+        path: /spec/resources/requests/storage
+        value: 100Gi
+    target:
+      kind: PersistentVolumeClaim
+      name: syncthing-config-ceph
   - path: syncthing-config-pvc-storageclass-patch.yaml
     target:
       kind: PersistentVolumeClaim

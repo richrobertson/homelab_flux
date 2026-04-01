@@ -16,6 +16,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -34,6 +35,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -52,6 +54,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -70,6 +73,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
@@ -92,6 +96,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -110,6 +115,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
@@ -132,6 +138,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
@@ -154,6 +161,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -172,6 +180,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
@@ -194,6 +203,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
@@ -216,6 +226,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -234,6 +245,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
@@ -256,6 +268,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
@@ -278,6 +291,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
@@ -300,6 +314,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -318,6 +333,7 @@ spec:
       weekly: 8
       monthly: 12
     copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
