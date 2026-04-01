@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - cluster-issuers.yaml
   - rook-external-cluster.yaml
+  - ceph-pv-gc-cronjob.yaml
   - gotify-bridge.yml
   - bgp-config.yaml
   - flux-alertmanager.yaml
