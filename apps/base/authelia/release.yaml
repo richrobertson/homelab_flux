@@ -11,35 +11,38 @@ spec:
               kind: Deployment
               name: authelia
             patch: |
-              - op: remove
-                path: /spec/template/spec/volumes/0/secret
-              - op: add
-                path: /spec/template/spec/volumes/0/projected
-                value:
-                  sources:
-                    - secret:
-                        name: authelia-secret
-                        items:
-                          - key: identity_validation.reset_password.jwt.hmac.key
-                            path: identity_validation.reset_password.jwt.hmac.key
-                          - key: session.encryption.key
-                            path: session.encryption.key
-                          - key: authentication.ldap.password.txt
-                            path: authentication.ldap.password.txt
-                          - key: storage.encryption.key
-                            path: storage.encryption.key
-                          - key: storage.postgres.password.txt
-                            path: storage.postgres.password.txt
-                          - key: identity_providers.oidc.hmac.key
-                            path: identity_providers.oidc.hmac.key
-                          - key: identity_providers.oidc.jwks.key
-                            path: identity_providers.oidc.jwks.key
-                    - secret:
-                        name: cluster-authelia-ceph-app
-                        optional: true
-                        items:
-                          - key: password
-                            path: storage.postgres.password.txt
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: authelia
+              spec:
+                template:
+                  spec:
+                    volumes:
+                      - name: secrets
+                        secret:
+                          items:
+                            - key: identity_validation.reset_password.jwt.hmac.key
+                              path: identity_validation.reset_password.jwt.hmac.key
+                            - key: session.encryption.key
+                              path: session.encryption.key
+                            - key: authentication.ldap.password.txt
+                              path: authentication.ldap.password.txt
+                            - key: storage.encryption.key
+                              path: storage.encryption.key
+                            - key: storage.postgres.password.txt
+                              path: storage.postgres.password.txt
+                            - key: identity_providers.oidc.hmac.key
+                              path: identity_providers.oidc.hmac.key
+                            - key: identity_providers.oidc.jwks.key
+                              path: identity_providers.oidc.jwks.key
+                      - name: db-secret
+                        secret:
+                          secretName: cluster-authelia-ceph-app
+                          optional: true
+                          items:
+                            - key: password
+                              path: storage.postgres.password.txt
           - target:
               kind: Deployment
               name: authelia
@@ -65,11 +68,15 @@ spec:
                           - name: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
                             value: /secrets/internal/storage.encryption.key
                           - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
-                            value: /secrets/internal/storage.postgres.password.txt
+                            value: /secrets/db/storage.postgres.password.txt
                           - name: X_AUTHELIA_CONFIG
                             value: /configuration.yaml
                           - name: X_AUTHELIA_CONFIG_FILTERS
                             value: template
+                        volumeMounts:
+                          - name: db-secret
+                            mountPath: /secrets/db
+                            readOnly: true
   chart:
     spec:
       chart: authelia
