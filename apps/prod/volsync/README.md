@@ -58,6 +58,40 @@ For VolSync restic secrets, set RESTIC_REPOSITORY with the S3 endpoint and path-
 
 - s3:s3.us-west-2.amazonaws.com/homelab-prod-backups/volsync/default/immich-data-files-pvc-ceph
 
+## Retention policy (prod)
+
+VolSync retain settings are defined per ReplicationSource in `replicationsources.yaml`:
+
+- hourly: 0
+- daily: 7
+- weekly: 4
+- monthly: 3
+- yearly: 100
+- pruneIntervalDays: 7
+
+Policy intent:
+
+- Keep one backup per day for 7 days.
+- Keep one backup per week for 4 weeks.
+- Keep one backup per month for 3 months.
+- Keep long-term yearly backups for historical recovery.
+
+## Operational verification
+
+Check current retain settings in-cluster:
+
+```bash
+kubectl --context admin@prod get replicationsource -n default \
+  -o custom-columns=NAME:.metadata.name,DAILY:.spec.restic.retain.daily,WEEKLY:.spec.restic.retain.weekly,MONTHLY:.spec.restic.retain.monthly,YEARLY:.spec.restic.retain.yearly
+```
+
+Check recent sync status:
+
+```bash
+kubectl --context admin@prod get replicationsource -n default \
+ -o custom-columns=NAME:.metadata.name,LASTSYNC:.status.lastSyncTime,CONDITIONS:.status.conditions
+```
+
 ## Parent/Siblings
 
 - Parent: [Prod](../README.md)

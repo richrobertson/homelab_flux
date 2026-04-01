@@ -32,6 +32,11 @@
 - [Shared base layer](../base/README.md)
 - [Staging overlays](../staging/README.md)
 
+Operational docs:
+
+- [VolSync production verification commands](volsync/README.md#operational-verification)
+- [App Ceph migration runbook](../../scripts/APP_CEPH_MIGRATION_RUNBOOK.md)
+
 Leaf docs:
 
 - [Authelia production](authelia/README.md)

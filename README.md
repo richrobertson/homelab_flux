@@ -113,6 +113,11 @@ kubectl get pods -A
 - [Infrastructure overview](infrastructure/README.md)
 - [Scripts overview](scripts/README.md)
 
+Backup and migration docs:
+
+- [Prod VolSync backups and retention](apps/prod/volsync/README.md)
+- [App Ceph migration runbook](scripts/APP_CEPH_MIGRATION_RUNBOOK.md)
+
 Environment and bootstrap docs:
 
 - [Staging cluster](clusters/staging/README.md)
@@ -189,17 +194,41 @@ kubectl get events -A --sort-by=.lastTimestamp | tail -50
 4. Let Flux reconcile on interval, or force reconcile for faster rollout.
 5. Verify resources in-cluster and in Grafana/Prometheus as needed.
 
-## Security (SAST)
+### Branch protection (recommended)
 
-This repository runs [Semgrep](https://semgrep.dev/) as a Static Application Security Testing (SAST) tool via GitHub Actions on every push and pull request to `main`/`master`, plus a weekly scheduled scan.
+For `main`, enable branch protection and require pull requests to pass status checks before merge.
 
-SARIF results are uploaded to **GitHub Security** for push/scheduled/manual runs (PR runs still scan but do not upload SARIF) and can be viewed under:
+Recommended required checks:
+
+- `Static Analysis / python-lint-and-security`
+- `CodeQL / Analyze (actions)`
+- `Secret Scan / gitleaks`
+
+Optional stricter settings:
+
+- Require branches to be up to date before merging.
+- Require conversation resolution before merging.
+- Restrict direct pushes to `main`.
+
+## Security scanning
+
+This repository currently uses the following GitHub Actions checks on pushes and pull requests to `main`:
+
+- `Static Analysis` for Ruff and Bandit when Python sources are present.
+- `CodeQL` for GitHub Actions workflow analysis and code scanning alerts.
+- `Secret Scan` for gitleaks-based secret detection.
+
+Code scanning alerts can be viewed under:
 
 > **Repository → Security → Code scanning alerts**
 
-The workflow file: [.github/workflows/sast-semgrep.yml](.github/workflows/sast-semgrep.yml)
+Relevant workflow files:
 
-> **Note:** Code scanning requires GitHub Advanced Security (available for public repositories; must be enabled in repository settings, and requires a license for private repositories).
+- [.github/workflows/static-analysis.yml](.github/workflows/static-analysis.yml)
+- [.github/workflows/codeql.yml](.github/workflows/codeql.yml)
+- [.github/workflows/secret-scan.yml](.github/workflows/secret-scan.yml)
+
+> **Note:** Code scanning availability depends on GitHub Advanced Security/repository settings.
 
 ## Safety and conventions
 

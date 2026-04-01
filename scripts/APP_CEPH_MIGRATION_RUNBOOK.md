@@ -1,6 +1,6 @@
 # App Config PVC Migration to CephFS
 
-Last updated: 2026-03-30
+Last updated: 2026-03-31
 
 This document captures the repeatable migration process used to move app config PVCs from Synology (`synology-iscsi-storage`) to CephFS (`csi-cephfs-sc`) with minimal risk.
 
@@ -65,7 +65,7 @@ kubectl -n default delete pod migrate-<app>-config
 
 ## Current migration status
 
-As of 2026-03-30:
+As of 2026-03-31:
 
 | App | HelmRelease state | Running pod | Mounted config claim | Copy status | Git commit |
 |---|---|---|---|---|---|
@@ -98,3 +98,34 @@ PVC status snapshot:
 - Keep legacy Synology PVCs until app behavior is validated for an agreed soak period.
 - If rollback is needed, revert `existingClaim` in `apps/base/<app>/release.yaml` back to `<app>-config`, commit, push, and reconcile apps.
 - Avoid deleting source PVCs during the same maintenance window as cutover.
+
+## Backup verification after migration
+
+After each app cutover to Ceph-backed PVCs, confirm backups are still healthy for both CNPG and VolSync.
+
+1. Reconcile source and apps kustomization.
+2. Confirm ReplicationSource objects report recent successful sync times.
+3. Confirm CNPG Backup resources are still completing.
+4. Confirm backup objects are present under the expected S3 prefixes.
+
+Suggested commands:
+
+```bash
+CTX="admin@prod"
+
+flux --context="$CTX" reconcile source git flux-system -n flux-system
+flux --context="$CTX" reconcile kustomization apps -n flux-system
+
+kubectl --context "$CTX" get replicationsource -n default \
+  -o custom-columns=NAME:.metadata.name,LASTSYNC:.status.lastSyncTime,CONDITIONS:.status.conditions
+
+kubectl --context "$CTX" get backups.postgresql.cnpg.io -n default -o wide
+
+# Optional object-store verification (example paths)
+aws s3 ls s3://<backup-bucket>/volsync/ --recursive | tail -20
+aws s3 ls s3://<backup-bucket>/cnpg/ --recursive | tail -20
+```
+
+Retention reference:
+
+- VolSync retention for prod is documented in `apps/prod/volsync/README.md` and implemented in `apps/prod/volsync/replicationsources.yaml` as daily 7, weekly 4, monthly 3, yearly 100.
