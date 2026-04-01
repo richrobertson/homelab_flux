@@ -12,7 +12,7 @@ spec:
             patch: |
               - op: add
                 path: /spec/endpoints/0/scrapeTimeout
-                value: "60s"
+                value: "30s"
   values:
 
     sonarr:
