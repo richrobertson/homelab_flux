@@ -4,16 +4,26 @@ metadata:
   name: immich
 spec:
   values:
-    controllers:
-      main:
-        replicas: 3
-        containers:
-          main:
-            image:
-              tag: v2.2.3
     server:
       controllers:
         main:
           replicas: 3
-          strategy: Recreate
+          containers:
+            main:
+              image:
+                tag: v2.6.3
+              env:
+                IMMICH_TELEMETRY_INCLUDE: all
+    machine-learning:
+      controllers:
+        main:
+          replicas: 3
+          containers:
+            main:
+              image:
+                tag: v2.6.3
+    valkey:
+      controllers:
+        main:
+          replicas: 1
    

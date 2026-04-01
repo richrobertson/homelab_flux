@@ -56,4 +56,14 @@ configMapGenerator:
         app.kubernetes.io/part-of: backups
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: immich-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/immich-overview.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: immich
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
 
