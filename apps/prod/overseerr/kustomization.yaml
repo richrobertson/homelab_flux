@@ -10,6 +10,15 @@ patches:
     target:
       kind: HelmRelease
   - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: overseerr-config-ceph
+    target:
+      kind: PersistentVolumeClaim
+      name: overseerr-config-ceph
+  - patch: |
       - op: replace
         path: /spec/resources/requests/storage
         value: 2Gi

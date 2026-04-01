@@ -10,6 +10,15 @@ patches:
     target:
       kind: HelmRelease
   - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: prowlarr-config-ceph
+    target:
+      kind: PersistentVolumeClaim
+      name: prowlarr-config-ceph
+  - patch: |
       - op: replace
         path: /spec/resources/requests/storage
         value: 2Gi

@@ -10,6 +10,15 @@ patches:
     target:
       kind: HelmRelease
   - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: radarr-config-ceph
+    target:
+      kind: PersistentVolumeClaim
+      name: radarr-config-ceph
+  - patch: |
       - op: replace
         path: /spec/resources/requests/storage
         value: 2Gi
