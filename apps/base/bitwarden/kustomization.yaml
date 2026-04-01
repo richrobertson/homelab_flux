@@ -4,5 +4,4 @@ namespace: default
 resources:
   - data-ceph-pvc.yaml
   - deployment.yaml
-  - files-backup-cronjob.yaml
   - service.yaml

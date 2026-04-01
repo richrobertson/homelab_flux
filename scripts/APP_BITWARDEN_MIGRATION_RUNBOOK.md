@@ -9,7 +9,7 @@ This runbook migrates Vaultwarden data from the Synology-hosted container (`192.
 - Migration and cutover are complete.
 - Bitwarden serves in-cluster via `apps/prod/bitwarden/httpRoute.yaml`.
 - External Synology route and migration-only manifests have been removed from active GitOps resources.
-- `bitwarden-files-backup` remains active for app-level file backups.
+- VolSync backs up the full `bitwarden-data-ceph` PVC; the old in-PVC `bitwarden-files-backup` CronJob has been removed.
 
 Use this document as a historical execution reference; use `APP_SYNOLOGYNAS_CONTAINER_MIGRATION_PLAYBOOK.md` for future app migrations.
 
@@ -135,11 +135,10 @@ Validate application login and encrypted item access.
 
 ## Backup validation
 
-Trigger each backup job once:
+Bitwarden backup validation is now done through VolSync for the full PVC:
 
 ```bash
-kubectl --context admin@prod create job --from=cronjob/bitwarden-files-backup -n default bitwarden-files-backup-manual-$(date +%s)
-kubectl --context admin@prod get jobs -n default | egrep 'bitwarden-files-backup'
+kubectl --context admin@prod get replicationsource -n default bitwarden-data-ceph-backup -o wide
+kubectl --context admin@prod patch replicationsource bitwarden-data-ceph-backup -n default --type merge -p '{"spec":{"trigger":{"manual":"manual-verify"}}}'
+kubectl --context admin@prod get replicationsource -n default bitwarden-data-ceph-backup -o jsonpath='{.status.lastSyncTime}{"\n"}'
 ```
-
-Check logs and artifacts under `/data/backups`.
