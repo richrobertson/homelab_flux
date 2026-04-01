@@ -140,7 +140,7 @@ spec:
       weekly: 0
       monthly: 0
       yearly: 0
-    copyMethod: Clone
+    copyMethod: Direct
     cacheStorageClassName: ceph-filesystem
 ---
 apiVersion: volsync.backube/v1alpha1
