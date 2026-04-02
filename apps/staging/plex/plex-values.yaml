@@ -8,13 +8,19 @@ spec:
       disableGDM: false
       requireHTTPS: false
 
+    resources:
+      limits:
+        cpu: 4000m
+        memory: 8Gi
+        gpu.intel.com/i915: "1"
+
     workload:
       main:
         podSpec:
           containers:
             main:
               securityContext:
-                # Staging-only POC override: allow access to DRM char devices for hardware transcode validation.
-                privileged: true
+                privileged: false
+                allowPrivilegeEscalation: false
               env:
                 ALLOWED_NETWORKS: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
