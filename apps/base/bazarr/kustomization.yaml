@@ -4,3 +4,5 @@ namespace: default
 resources:
   - repository.yaml
   - release.yaml
+  - config-ceph-pvc.yaml
+
