@@ -34,31 +34,41 @@ metadata:
 spec:
   schedule: "20 */6 * * *"
   concurrencyPolicy: Forbid
-  successfulJobsHistoryLimit: 2
-  failedJobsHistoryLimit: 2
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 1800
   jobTemplate:
     spec:
-      ttlSecondsAfterFinished: 600
+      ttlSecondsAfterFinished: 86400
+      activeDeadlineSeconds: 1800
       template:
         spec:
           serviceAccountName: ceph-pv-gc
           restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
           containers:
             - name: gc
-              image: docker.io/nginxinc/nginx-unprivileged:1.29-alpine
+              image: docker.io/bitnami/kubectl:latest
               imagePullPolicy: IfNotPresent
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
               command:
                 - /bin/sh
                 - -ec
                 - |
-                  KUBECTL_BIN=/tmp/kubectl
-                  wget -qO "${KUBECTL_BIN}" https://dl.k8s.io/release/v1.32.3/bin/linux/amd64/kubectl
-                  chmod +x "${KUBECTL_BIN}"
+                  KUBECTL_BIN=kubectl
 
                   echo "Scanning for Released+Retain Ceph PVs..."
 
-                  CANDIDATES="$(${KUBECTL_BIN} get pv --no-headers | awk '
-                    $5=="Released" && $4=="Retain" && ($7 ~ /ceph/ || $7 ~ /rook-ceph/) {
+                  CANDIDATES="$(${KUBECTL_BIN} get pv -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.persistentVolumeReclaimPolicy}{"\t"}{.status.phase}{"\t"}{.spec.storageClassName}{"\n"}{end}' | awk '
+                    $3=="Released" && $2=="Retain" && ($4 ~ /ceph/ || $4 ~ /rook-ceph/) {
                       print $1
                     }
                   ')"
@@ -71,12 +81,25 @@ spec:
                   echo "Found orphaned Ceph PVs:"
                   echo "${CANDIDATES}"
 
+                  FAILURES=0
                   for PV in ${CANDIDATES}; do
                     echo "Patching ${PV} reclaimPolicy=Delete"
-                    ${KUBECTL_BIN} patch pv "${PV}" --type merge -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
+                    if ! ${KUBECTL_BIN} patch pv "${PV}" --type merge -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'; then
+                      echo "Failed to patch ${PV}; continuing"
+                      FAILURES=$((FAILURES + 1))
+                      continue
+                    fi
 
                     echo "Deleting ${PV}"
-                    ${KUBECTL_BIN} delete pv "${PV}" --wait=false
+                    if ! ${KUBECTL_BIN} delete pv "${PV}" --wait=false; then
+                      echo "Failed to delete ${PV}; continuing"
+                      FAILURES=$((FAILURES + 1))
+                    fi
                   done
+
+                  if [ "${FAILURES}" -gt 0 ]; then
+                    echo "Ceph PV garbage collection completed with ${FAILURES} failure(s)."
+                    exit 1
+                  fi
 
                   echo "Ceph PV garbage collection run completed."
