@@ -12,7 +12,7 @@ spec:
   - client/config/crd
 
 ---
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: kubernetes-csi-extrernal-snapshotter
@@ -24,6 +24,5 @@ spec:
     name: kubernetes-csi-extrernal-snapshotter
   path: client/config/crd 
   prune: true
-  validation: client 
 
 
