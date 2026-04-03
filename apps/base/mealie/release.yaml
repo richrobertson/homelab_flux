@@ -28,6 +28,7 @@ spec:
     cnpg:
       main:
         cluster:
+          imageName: ghcr.io/cloudnative-pg/postgresql:18.1-system-trixie
           instances: 1
           storage:
             size: 2Gi
