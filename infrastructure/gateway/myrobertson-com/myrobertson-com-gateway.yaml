@@ -57,8 +57,8 @@ spec:
       - name: bitwarden-myrobertson-com-cert
         kind: Secret 
 
-  - name: bazarr
-    hostname: bazarr.myrobertson.com
+  - name: readarr
+    hostname: readarr.myrobertson.com
     port: 443
     protocol: HTTPS
     allowedRoutes:
@@ -67,7 +67,7 @@ spec:
     tls:
       mode: Terminate
       certificateRefs:
-      - name: bazarr-myrobertson-com-cert
+      - name: readarr-myrobertson-com-cert
         kind: Secret
 
   - name: kermit
