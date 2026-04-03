@@ -9,10 +9,3 @@ patches:
   - path: bazarr-values.yaml
     target:
       kind: HelmRelease
-  - patch: |
-      - op: replace
-        path: /spec/resources/requests/storage
-        value: 2Gi
-    target:
-      kind: PersistentVolumeClaim
-      name: bazarr-data-files-pvc
