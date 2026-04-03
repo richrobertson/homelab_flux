@@ -33,6 +33,7 @@ Includes overlays for core homelab services such as auth, DNS, observability, me
 Leaf docs:
 
 - [Authelia staging](authelia/README.md)
+- [Bazarr staging](bazarr/README.md)
 - [External DNS staging](external-dns/README.md)
 - [Immich staging](immich/README.md)
 - [Lidarr staging](lidarr/README.md)
