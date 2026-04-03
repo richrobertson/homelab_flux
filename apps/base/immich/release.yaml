@@ -35,13 +35,12 @@ spec:
           replicas: 0
           affinity:
             podAntiAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    labelSelector:
-                      matchLabels:
-                        app.kubernetes.io/name: server
-                    topologyKey: "kubernetes.io/hostname"
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: server
+                      app.kubernetes.io/instance: immich
+                  topologyKey: "kubernetes.io/hostname"
 
     immich:
       metrics:
