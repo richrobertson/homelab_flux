@@ -40,6 +40,7 @@ Operational docs:
 Leaf docs:
 
 - [Authelia production](authelia/README.md)
+- [Bazarr production](bazarr/README.md)
 - [External DNS production](external-dns/README.md)
 - [Immich production](immich/README.md)
 - [Lidarr production](lidarr/README.md)

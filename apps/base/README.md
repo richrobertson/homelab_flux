@@ -25,6 +25,7 @@
 ## App catalog
 
 - `authelia`: identity and authentication gateway for protected services.
+- `bazarr`: subtitle management and automation for media libraries.
 - `external-dns`: DNS record automation from Kubernetes resources.
 - `immich`: self-hosted photo/video management stack.
 - `jellyfin`: media server for local streaming.
@@ -49,6 +50,7 @@
 Leaf docs:
 
 - [Authelia base](authelia/README.md)
+- [Bazarr base](bazarr/README.md)
 - [External DNS base](external-dns/README.md)
 - [Immich base](immich/README.md)
 - [Jellyfin base](jellyfin/README.md)
