@@ -15,6 +15,14 @@ spec:
       controllers:
         main:
           replicas: 3
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: server
+                      app.kubernetes.io/instance: immich
+                  topologyKey: kubernetes.io/hostname
           containers:
             main:
               image:
