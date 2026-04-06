@@ -51,3 +51,13 @@ patches:
     target:
       kind: Cluster
       name: cluster-immich-ceph
+  - patch: |
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: cluster-immich-ceph
+        annotations:
+          cnpg.io/skipEmptyWalArchiveCheck: enabled
+    target:
+      kind: Cluster
+      name: cluster-immich-ceph

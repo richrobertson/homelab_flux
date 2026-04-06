@@ -52,6 +52,16 @@ patches:
       kind: Cluster
       name: cluster-authelia-ceph
   - patch: |
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: cluster-authelia-ceph
+        annotations:
+          cnpg.io/skipEmptyWalArchiveCheck: enabled
+    target:
+      kind: Cluster
+      name: cluster-authelia-ceph
+  - patch: |
       - op: replace
         path: /spec/path
         value: authelia/prod
