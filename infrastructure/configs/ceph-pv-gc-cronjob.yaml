@@ -51,7 +51,7 @@ spec:
               type: RuntimeDefault
           containers:
             - name: gc
-              image: docker.io/bitnami/kubectl:latest
+              image: docker.io/rancher/kubectl:v1.32.3
               imagePullPolicy: IfNotPresent
               securityContext:
                 allowPrivilegeEscalation: false
@@ -67,11 +67,25 @@ spec:
 
                   echo "Scanning for Released+Retain Ceph PVs..."
 
-                  CANDIDATES="$(${KUBECTL_BIN} get pv -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.persistentVolumeReclaimPolicy}{"\t"}{.status.phase}{"\t"}{.spec.storageClassName}{"\n"}{end}' | awk '
-                    $3=="Released" && $2=="Retain" && ($4 ~ /ceph/ || $4 ~ /rook-ceph/) {
-                      print $1
-                    }
-                  ')"
+                  CANDIDATES=""
+                  for ROW in $(${KUBECTL_BIN} get pv -o jsonpath='{range .items[*]}{.metadata.name}{"|"}{.spec.persistentVolumeReclaimPolicy}{"|"}{.status.phase}{"|"}{.spec.storageClassName}{"\n"}{end}'); do
+                    PV="${ROW%%|*}"
+                    REST="${ROW#*|}"
+                    RECLAIM_POLICY="${REST%%|*}"
+                    REST="${REST#*|}"
+                    PHASE="${REST%%|*}"
+                    STORAGE_CLASS="${REST#*|}"
+
+                    [ -z "${PV}" ] && continue
+                    [ "${PHASE}" = "Released" ] || continue
+                    [ "${RECLAIM_POLICY}" = "Retain" ] || continue
+
+                    case "${STORAGE_CLASS}" in
+                      *ceph*|*rook-ceph*)
+                        CANDIDATES="${CANDIDATES} ${PV}"
+                        ;;
+                    esac
+                  done
 
                   if [ -z "${CANDIDATES}" ]; then
                     echo "No orphaned Ceph PVs found."
