@@ -18,18 +18,12 @@ spec:
                   topologyKey: kubernetes.io/hostname
           containers:
             main:
-              image:
-                tag: v2.6.3
               env:
                 IMMICH_TELEMETRY_INCLUDE: all
     machine-learning:
       controllers:
         main:
           replicas: 3
-          containers:
-            main:
-              image:
-                tag: v2.6.3
     valkey:
       controllers:
         main:
