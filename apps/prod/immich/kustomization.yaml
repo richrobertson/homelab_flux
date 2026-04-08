@@ -4,6 +4,7 @@ namespace: default
 resources:
   - ../../base/immich
   - httpRoute.yaml
+  - httpRoute-redirect.yaml
   - postgres-scheduled-backup.yaml
 patches:
   - path: ../../base/immich/release-ceph-cutover.yaml
