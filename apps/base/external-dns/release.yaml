@@ -32,7 +32,7 @@ spec:
       # -- Additional rules to add to the `ClusterRole`.
       additionalPermissions:
         - apiGroups: [""]
-          resources: ["services", "pods", "nodes", "endpoints", "namesaces"]
+          resources: ["services", "pods", "nodes", "endpoints", "namespaces"]
           verbs: ["get", "watch", "list"]
         - apiGroups: ["networking.k8s.io"]
           resources: ["ingresses", "ingressclasses", "httproutes"]
