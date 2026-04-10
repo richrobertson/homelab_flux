@@ -21,8 +21,8 @@ spec:
         containers:
           main:
             image:
-              repository: triliumnext/notes
-              tag: latest
+              repository: ghcr.io/triliumnext/trilium
+              tag: v0.102.2
     configini:
       network:
         trustedReverseProxy: true
