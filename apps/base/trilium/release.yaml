@@ -18,6 +18,10 @@ spec:
     controllers:
       main:
         replicas: 1
+        containers:
+          main:
+            image:
+              tag: latest
     configini:
       network:
         trustedReverseProxy: true
