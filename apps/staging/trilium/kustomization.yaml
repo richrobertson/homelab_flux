@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/trilium
+  - httpRoute.yaml
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/values/controllers/main/replicas
+        value: 1
+    target:
+      kind: HelmRelease
+      name: trilium
+  - patch: |
+      - op: replace
+        path: /spec/hostnames/0
+        value: trilium.staging.myrobertson.com
+    target:
+      kind: HTTPRoute
+      name: trilium

@@ -12,6 +12,7 @@ resources:
   - mealie
   - netbootxyz
   - overseerr
+  - trilium
   - prowlarr
   - radarr
   - sonarr
