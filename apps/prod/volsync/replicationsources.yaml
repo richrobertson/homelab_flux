@@ -394,3 +394,23 @@ spec:
       runAsUser: 568
       runAsGroup: 568
       fsGroup: 568
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: trilium-data-ceph-backup
+spec:
+  sourcePVC: trilium-data-ceph
+  trigger:
+    schedule: "42 * * * *"
+  restic:
+    repository: restic-config-trilium
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
