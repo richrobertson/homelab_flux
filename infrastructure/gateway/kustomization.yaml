@@ -7,4 +7,3 @@ resources:
   - myrobertson-com/myrobertson-com-redirect.yaml
   - externalServices/kermit.yaml
   - externalServices/plex.yaml
-  - externalServices/trilium.yaml
