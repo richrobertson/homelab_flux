@@ -414,3 +414,7 @@ spec:
       yearly: 0
     copyMethod: Clone
     cacheStorageClassName: ceph-filesystem
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
