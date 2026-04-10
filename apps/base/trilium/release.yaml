@@ -17,7 +17,7 @@ spec:
   values:
     controllers:
       main:
-        replicas: 0
+        replicas: 1
     configini:
       network:
         trustedReverseProxy: true
