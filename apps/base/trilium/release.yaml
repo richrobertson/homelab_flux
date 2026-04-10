@@ -21,6 +21,7 @@ spec:
         containers:
           main:
             image:
+              repository: triliumnext/notes
               tag: latest
     configini:
       network:
