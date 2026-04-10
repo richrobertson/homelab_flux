@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/trilium
-  - httpRoute.yaml
+  - gateway.yaml
 patches:
   - patch: |
       - op: replace
@@ -14,8 +14,21 @@ patches:
       name: trilium
   - patch: |
       - op: replace
+        path: /metadata/annotations/cert-manager.io~1common-name
+        value: trilium.staging.myrobertson.net
+      - op: replace
+        path: /spec/listeners/0/hostname
+        value: trilium.staging.myrobertson.net
+      - op: replace
+        path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
+        value: trilium.staging.myrobertson.net
+    target:
+      kind: Gateway
+      name: trilium
+  - patch: |
+      - op: replace
         path: /spec/hostnames/0
-        value: trilium.staging.myrobertson.com
+        value: trilium.staging.myrobertson.net
     target:
       kind: HTTPRoute
       name: trilium
