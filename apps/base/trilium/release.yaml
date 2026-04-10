@@ -19,7 +19,7 @@ spec:
       main:
         replicas: 1
         containers:
-          main:
+            trilium:
             image:
               repository: ghcr.io/triliumnext/trilium
               tag: v0.102.2
