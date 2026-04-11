@@ -418,3 +418,27 @@ spec:
       runAsUser: 1000
       runAsGroup: 1000
       fsGroup: 1000
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: plex-config-ceph-backup
+spec:
+  sourcePVC: plex-config-ceph
+  trigger:
+    schedule: "52 * * * *"
+  restic:
+    repository: restic-config-plex
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Clone
+    cacheStorageClassName: ceph-filesystem
+    moverSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568

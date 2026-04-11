@@ -32,7 +32,18 @@ spec:
         nfs:
           server: scooter.myrobertson.net
           path: /volume1/plex
+      - name: radarr-media
+        nfs:
+          server: scooter.myrobertson.net
+          path: /volume1/radarr/radarr
+      - name: sonarr-media
+        nfs:
+          server: scooter.myrobertson.net
+          path: /volume1/radarr/sonarr
     extraVolumeMounts:
       - name: media4k
-        mountPath: /media/4k
-        subPath: 4k
+        mountPath: /plex
+      - name: radarr-media
+        mountPath: /radarr
+      - name: sonarr-media
+        mountPath: /sonarr

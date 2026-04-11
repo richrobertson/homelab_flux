@@ -34,6 +34,7 @@ Production overlay for VolSync backups to S3-compatible object storage.
 - sonarr-config-ceph
 - sonarr-data-files-pvc
 - syncthing-config-ceph
+- plex-config-ceph
 
 ## Vault secret requirements
 

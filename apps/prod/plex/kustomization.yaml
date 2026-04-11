@@ -3,8 +3,6 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/plex
-  - migration-secret.yaml
-  - lxc-config-seed-job.yaml
   - httpRoute.yaml
 patches:
   - path: plex-values.yaml

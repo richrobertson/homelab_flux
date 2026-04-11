@@ -4,21 +4,17 @@ Production overlay for Plex.
 
 ## Purpose
 
-- Stages Plex in the production Kubernetes cluster while migration from the legacy Proxmox LXC is prepared.
-- Leaves public traffic on the legacy Proxmox LXC route until final cutover.
-- Keeps the existing scooter NFS media mapping at `/volume1/plex/4k -> /media/4k`.
+- Runs Plex in the production Kubernetes cluster after migration from the legacy Proxmox LXC.
+- Mirrors the legacy Plex media mounts at `/plex`, `/radarr`, and `/sonarr`.
 - Keeps `/dev/dri` disabled because production rollout is not using hardware transcoding.
 
 ## In this folder
 
-- Prod-specific HelmRelease patching for Plex before cutover.
-- A suspended config migration job and Vault-backed migration secret.
+- Prod-specific HelmRelease patching for Plex.
+- Historical migration manifests retained in this folder but not included in steady-state kustomization.
 
 ## Operational notes
 
-- Keep replicas at `0` until the Plex config data has been copied into `plex-config-ceph` and validated.
-- Do not change the gateway or `HTTPRoute` until the in-cluster deployment has been validated.
-- Add the in-cluster `HTTPRoute` and remove the legacy Proxmox/LXC external route in the same final cutover commit.
 - Verified from a working prod media pod that writes to the scooter-backed Plex share succeed, but new files are created as uid/gid `568:568`.
 - If scooter-side consumers still expect Synology ownership such as `99:100`, fix that on scooter with an ACL or ownership policy before final cutover.
 
