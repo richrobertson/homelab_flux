@@ -3,57 +3,19 @@ kind: HelmRelease
 metadata:
   name: plex
 spec:
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              group: apps
-              version: v1
-              kind: Deployment
-              name: plex
-            patch: |
-              - op: replace
-                path: /spec/template/spec/affinity
-                value: {}
-              - op: add
-                path: /spec/template/spec/nodeSelector/kubernetes.io~1hostname
-                value: k8s-stg-worker-0
-              - op: add
-                path: /spec/template/spec/imagePullSecrets
-                value:
-                  - name: ghcr-pull
-              - op: remove
-                path: /spec/template/spec/containers/0/volumeMounts/2
-              - op: remove
-                path: /spec/template/spec/volumes/6
   values:
-    image:
-      repository: ghcr.io/richrobertson/plex-vaapi
-      tag: v1.43.0.10492-compatfix1
-
-    plex:
-      disableGDM: false
-      requireHTTPS: false
+    persistence:
+      dri:
+        enabled: false
 
     resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
       limits:
         cpu: 4000m
         memory: 8Gi
-        gpu.intel.com/i915: "1"
 
     workload:
       main:
         replicas: 1
-        podSpec:
-          containers:
-            main:
-              securityContext:
-                privileged: false
-                allowPrivilegeEscalation: true
-                capabilities:
-                  add:
-                    - CHOWN
-                    - SETGID
-                    - SETUID
-              env:
-                ALLOWED_NETWORKS: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
