@@ -3,6 +3,21 @@ kind: HelmRelease
 metadata:
   name: plex
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              name: plex
+            patch: |
+              - op: replace
+                path: /spec/template/spec/affinity
+                value: {}
+              - op: add
+                path: /spec/template/spec/nodeSelector/kubernetes.io~1hostname
+                value: k8s-stg-worker-0
   values:
     plex:
       disableGDM: false
