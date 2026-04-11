@@ -28,6 +28,12 @@ COPY --from=ffmpeg_drivers /usr/local/lib/x86_64-linux-gnu/dri/i965_drv_video.so
 COPY --from=ffmpeg_drivers /usr/local/lib/libigdgmm.so /usr/local/lib/libigdgmm.so
 COPY --from=ffmpeg_drivers /usr/local/lib/libigdgmm.so.12 /usr/local/lib/libigdgmm.so.12
 COPY --from=ffmpeg_drivers /usr/local/lib/libigdgmm.so.12.9.0 /usr/local/lib/libigdgmm.so.12.9.0
+COPY --from=ffmpeg_drivers /usr/local/lib/libva.so /usr/local/lib/libva.so
+COPY --from=ffmpeg_drivers /usr/local/lib/libva.so.2 /usr/local/lib/libva.so.2
+COPY --from=ffmpeg_drivers /usr/local/lib/libva.so.2.2300.0 /usr/local/lib/libva.so.2.2300.0
+COPY --from=ffmpeg_drivers /usr/local/lib/libva-drm.so /usr/local/lib/libva-drm.so
+COPY --from=ffmpeg_drivers /usr/local/lib/libva-drm.so.2 /usr/local/lib/libva-drm.so.2
+COPY --from=ffmpeg_drivers /usr/local/lib/libva-drm.so.2.2300.0 /usr/local/lib/libva-drm.so.2.2300.0
 
 RUN set -eux; \
   ldconfig; \
@@ -47,6 +53,7 @@ RUN set -eux; \
 # Prefer distro driver directory for explicit probes and debugging.
 ENV LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
 ENV LIBVA_DRIVER_NAME=iHD
+ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu
 
 # Keep a record of runtime and bundled libraries for troubleshooting.
 RUN ldd --version > /image-libc.txt 2>&1 || true && \
