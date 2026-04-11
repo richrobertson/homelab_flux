@@ -1,10 +1,10 @@
-# Custom Plex image built from the official Plex Ubuntu image so the Plex runtime,
-# libc, and Intel VAAPI userspace all come from the same glibc world.
+# Custom Plex image that preserves Plex's bundled runtime ABI.
+# Previous builds replaced bundled libdrm/libva and caused loader relocation errors
+# (for example: __isoc23_* symbols not found). Keep bundled libs intact.
 
-ARG PLEX_BASE_IMAGE=plexinc/pms-docker:1.43.1.10611-1e34174b1
-FROM ${PLEX_BASE_IMAGE}
+FROM lscr.io/linuxserver/plex:latest as base
 
-# Install Intel VAAPI userspace from the same Ubuntu base as the official image.
+# Install only diagnostic tools and avoid replacing bundled Plex shared libraries.
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   vainfo \
   clinfo \
@@ -15,10 +15,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   intel-media-va-driver \
   && rm -rf /var/lib/apt/lists/*
 
-# Capture runtime facts used during staged validation.
+# Keep a record of runtime and bundled libraries for troubleshooting.
 RUN ldd --version > /image-libc.txt 2>&1 || true && \
-  find /usr/lib/plexmediaserver -maxdepth 2 -type f \( -name "Plex Transcoder" -o -name "*.so*" \) | sort > /plex-runtime-libs.txt && \
-  find /usr/lib -path "*/dri/*drv_video.so" | sort > /vaapi-driver-paths.txt
+  find /usr/lib/plexmediaserver/lib -maxdepth 1 -type f -name "*.so*" | sort > /plex-bundled-libs.txt
 
-LABEL org.opencontainers.image.description="Plex Media Server image derived from the official glibc-based Plex image with Intel VAAPI tooling"
+LABEL org.opencontainers.image.description="Plex Media Server image preserving bundled ABI with VAAPI tooling"
 LABEL com.example.built-for="staging-kubernetes-vaapi"

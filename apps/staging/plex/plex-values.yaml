@@ -29,7 +29,7 @@ spec:
   values:
     image:
       repository: ghcr.io/richrobertson/plex-vaapi
-      tag: v1.43.1.10611-officialglibc1
+      tag: v1.43.0.10492-compatfix1
 
     plex:
       disableGDM: false

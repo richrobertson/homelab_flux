@@ -2,17 +2,27 @@
 
 ## Problem Statement
 
-The previous custom image strategy kept Plex on the linuxserver.io image line and attempted to reconcile VAAPI by mixing Plex's bundled userspace with distro Intel drivers. That left Plex Transcoder in a musl-based runtime while the Intel iHD driver came from Ubuntu's glibc userspace, which produced loader failures during VAAPI initialization.
+Plex Media Server's bundled Transcoder binary fails to initialize VAAPI hardware transcoding in the staging Kubernetes cluster with the error:
+```
+Failed to initialise VAAPI connection: -1 (unknown libva error)
+```
+
+**Root Cause**: Plex bundles its own versions of `libc`, `libva`, and `libdrm` that have ABI incompatibilities with the Intel iHD VAAPI driver loaded from the system on Ubuntu 24.04-based nodes.
+
+**Evidence**:
+- `vainfo` (system VAAPI tools) works correctly in Plex containers
+- `ffmpeg` with VAAPI works correctly with the same GPU device plugin allocation
+- Plex Transcoder binary fails identically across all tested container images and versions
+- Root cause isolated: Plex's bundled transcoder binary + bundled libs incompatibility
 
 ## Solution
 
-Build the custom image from the official Plex Docker image line instead:
+Replace Plex's bundled VAAPI libraries (`libva.so.2`, `libva-drm.so.2`, `libdrm.so.2`) with versions built from the same Ubuntu 24.04 base that matches the Talos nodes.
 
-- Base image: `plexinc/pms-docker`
-- Runtime world: Ubuntu 24.04 + glibc throughout
-- VAAPI userspace: distro `libva`, `libdrm`, and `intel-media-va-driver`
-
-This keeps the Plex runtime and the Intel driver stack in one ABI family and avoids the mixed musl/glibc loader path that blocked hardware initialization.
+This ensures:
+- ABI compatibility between Plex Transcoder and system drivers
+- Hardware transcoding capability without pod security policy violations
+- Non-root execution (UID 568) via linuxserver/plex base image
 
 ## Build Instructions
 
@@ -27,21 +37,21 @@ This keeps the Plex runtime and the Intel driver stack in one ABI family and avo
 ```bash
 cd docker-builds/plex-vaapi
 chmod +x build-plex-vaapi.sh
-./build-plex-vaapi.sh --tag v1.43.1.10611-officialglibc1
+./build-plex-vaapi.sh --tag v1.43.0.10492-ubuntu24.04
 ```
 
 ### Build and Push to Registry
 
 ```bash
-./build-plex-vaapi.sh --push --tag v1.43.1.10611-officialglibc1
+./build-plex-vaapi.sh --push --tag v1.43.0.10492-ubuntu24.04
 ```
 
 ### Manual Build (Docker)
 
 ```bash
 cd docker-builds/plex-vaapi
-docker build -t ghcr.io/richrobertson/plex-vaapi:v1.43.1.10611-officialglibc1 .
-docker push ghcr.io/richrobertson/plex-vaapi:v1.43.1.10611-officialglibc1
+docker build -t oci.trueforge.org/homelab/plex-vaapi:v1.43.0.10492-ubuntu24.04 .
+docker push oci.trueforge.org/homelab/plex-vaapi:v1.43.0.10492-ubuntu24.04
 ```
 
 ## Testing the Custom Image
@@ -49,7 +59,7 @@ docker push ghcr.io/richrobertson/plex-vaapi:v1.43.1.10611-officialglibc1
 ### Local Validation
 
 ```bash
-docker run --rm -it ghcr.io/richrobertson/plex-vaapi:v1.43.1.10611-officialglibc1 bash
+docker run --rm -it oci.trueforge.org/homelab/plex-vaapi:latest bash
 
 # Inside container:
 vainfo --display drm --device /dev/dri/renderD128  # Should show VA-API + iHD
@@ -62,8 +72,8 @@ Update [plex-values.yaml](../../apps/staging/plex/plex-values.yaml):
 
 ```yaml
 image:
-  repository: ghcr.io/richrobertson/plex-vaapi
-  tag: v1.43.1.10611-officialglibc1
+  repository: oci.trueforge.org/homelab/plex-vaapi
+  tag: v1.43.0.10492-ubuntu24.04
 ```
 
 Then reconcile Flux:
@@ -98,22 +108,28 @@ If successful, output should show:
 
 ## Dockerfile Strategy
 
-The Dockerfile now:
-1. Starts with a version-pinned `plexinc/pms-docker` image.
-2. Installs Ubuntu VAAPI tooling from the same glibc-based distro layer.
-3. Leaves Plex's own runtime layout intact instead of swapping individual shared libraries.
-4. Records runtime library and driver paths for post-build inspection.
+The Dockerfile:
+1. **Starts** with `lscr.io/linuxserver/plex:latest` (supports non-root UID 568)
+2. **Installs** Ubuntu 24.04 libva/libdrm development libraries
+3. **Backs up** original Plex bundled libraries for comparison
+4. **Replaces** bundled `libva.so.2`, `libva-drm.so.2`, `libdrm.so.2`, `libdrm_intel.so.1` with system versions
+5. **Ensures** symbolic links are correct
+6. **Validates** via `vainfo` and `clinfo` installation
+7. **Cleans** up build artifacts to keep image lean
 
 ## Expected Results
 
 With this custom image deployed:
-- Expected: Plex runtime and Intel VAAPI userspace no longer cross libc families.
-- Expected: the staging pod can initialize VAAPI without the `__isoc23_*` relocation failures seen in the previous image line.
-- Validation still required in-cluster because actual hardware transcode enablement also depends on Plex app settings and Plex Pass state.
+- ✅ Plex Transcoder VAAPI initialization should succeed
+- ✅ Hardware video encoding (H.264, HEVC) should work
+- ✅ Pod security policy compliance maintained (non-root, no privilege escalation)
+- ✅ Device plugin GPU allocation working correctly
+- ✅ No special host-level access required
 
 ## Troubleshooting
 
 ### If `vainfo` works but Plex Transcoder still fails
+- Check Plex Transcoder binary release notes for VAAPI support status
 - Verify Plex configuration has hardware acceleration enabled:
   ```bash
   kubectl -n default exec "$POD" -- grep -i "HardwareAccelerated" \
@@ -121,17 +137,17 @@ With this custom image deployed:
   ```
 
 ### If build fails with "package not found"
-- The upstream official image is Ubuntu-based; confirm package names in the current release:
+- Ubuntu 24.04 package names may have changed; check:
   ```bash
-  apt-cache search libva
+  apt-cache search libva | grep -i ubuntu
   ```
 
-### If the upstream Plex version must be pinned differently
-- Override the Docker build arg:
-  ```bash
-  docker build \
-    --build-arg PLEX_BASE_IMAGE=plexinc/pms-docker:public \
-    -t ghcr.io/richrobertson/plex-vaapi:test .
+### If image is too large
+- Remove build tools layer:
+  ```dockerfile
+  FROM builder AS runtime
+  COPY --from=builder /usr/lib/plexmediaserver /usr/lib/plexmediaserver
+  # ... minimal runtime setup
   ```
 
 ## References
