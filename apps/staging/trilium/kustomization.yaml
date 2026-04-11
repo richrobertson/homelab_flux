@@ -35,7 +35,7 @@ patches:
   - patch: |
       - op: replace
         path: /spec/resources/requests/storage
-        value: 1Gi
+        value: 5Gi
     target:
       kind: PersistentVolumeClaim
       name: trilium-data-ceph
