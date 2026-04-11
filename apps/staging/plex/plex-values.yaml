@@ -20,33 +20,7 @@ spec:
                 value: k8s-stg-worker-0
               - op: replace
                 path: /spec/template/spec/containers/0/image
-                value: lscr.io/linuxserver/plex:latest
-              - op: replace
-                path: /spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation
-                value: true
-              - op: replace
-                path: /spec/template/spec/containers/0/securityContext/runAsUser
-                value: 0
-              - op: replace
-                path: /spec/template/spec/containers/0/securityContext/runAsGroup
-                value: 0
-              - op: replace
-                path: /spec/template/spec/containers/0/securityContext/runAsNonRoot
-                value: false
-              - op: replace
-                path: /spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem
-                value: false
-              - op: replace
-                path: /spec/template/spec/containers/0/securityContext/seccompProfile/type
-                value: Unconfined
-              - op: replace
-                path: /spec/template/spec/containers/0/securityContext/capabilities/drop
-                value: []
-              - op: add
-                path: /spec/template/spec/containers/0/securityContext/capabilities/add
-                value:
-                  - SETGID
-                  - SETUID
+                value: plexinc/pms-docker:latest
   values:
     plex:
       disableGDM: false
