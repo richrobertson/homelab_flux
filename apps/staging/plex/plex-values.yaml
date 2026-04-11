@@ -29,7 +29,7 @@ spec:
   values:
     image:
       repository: ghcr.io/richrobertson/plex-vaapi
-      tag: v1.43.0.10492-ubuntu24.04
+      tag: v1.43.0.10492-compatfix1
 
     plex:
       disableGDM: false
