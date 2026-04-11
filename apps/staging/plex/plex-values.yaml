@@ -22,18 +22,6 @@ spec:
                 path: /spec/template/spec/imagePullSecrets
                 value:
                   - name: ghcr-pull
-              - op: replace
-                path: /spec/template/spec/containers/0/securityContext/runAsUser
-                value: 0
-              - op: replace
-                path: /spec/template/spec/containers/0/securityContext/runAsGroup
-                value: 0
-              - op: replace
-                path: /spec/template/spec/containers/0/securityContext/runAsNonRoot
-                value: false
-              - op: replace
-                path: /spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem
-                value: false
               - op: remove
                 path: /spec/template/spec/containers/0/volumeMounts/2
               - op: remove
@@ -69,6 +57,3 @@ spec:
                     - SETUID
               env:
                 ALLOWED_NETWORKS: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
-                CHANGE_CONFIG_DIR_OWNERSHIP: "false"
-                PLEX_UID: "568"
-                PLEX_GID: "568"
