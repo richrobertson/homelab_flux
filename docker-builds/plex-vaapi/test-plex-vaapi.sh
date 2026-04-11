@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test VAAPI functionality in custom Plex image
+# Test VAAPI functionality in the glibc-based custom Plex image
 # Usage: ./test-plex-vaapi.sh [--local|--k8s] [--image <image>]
 
 set -euo pipefail
@@ -48,7 +48,8 @@ echo
 # VAAPI test command - minimal transcoding that exercises libva
 TEST_CMD='
 echo "=== Checking VAAPI libraries ==="
-ls -la /usr/lib/plexmediaserver/lib/libva* /usr/lib/plexmediaserver/lib/libdrm* 2>&1 | head -20
+find /usr/lib -path "*/dri/*drv_video.so" 2>&1 | head -20
+ls -la /usr/lib/plexmediaserver 2>&1 | head -20
 echo
 echo "=== Checking system VAAPI support ==="
 vainfo --display drm --device /dev/dri/renderD128 2>&1 | head -30 || echo "vainfo failed"
@@ -116,11 +117,7 @@ spec:
         requests:
           gpu.intel.com/i915: "1"
       securityContext:
-        runAsUser: 568
-        runAsGroup: 568
-        runAsNonRoot: true
-        allowPrivilegeEscalation: false
-        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: true
       volumeMounts:
         - name: tmp
           mountPath: /tmp

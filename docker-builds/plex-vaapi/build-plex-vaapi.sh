@@ -1,12 +1,13 @@
 #!/bin/bash
-# Build and push custom Plex image with Ubuntu 24.04 VAAPI libraries
-# Usage: ./build-plex-vaapi.sh [--push] [--tag <tag>]
+# Build and push a custom Plex image derived from the official Plex Ubuntu image.
+# Usage: ./build-plex-vaapi.sh [--push] [--tag <tag>] [--base-image <image>]
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-IMAGE_NAME="${IMAGE_NAME:-oci.trueforge.org/homelab/plex-vaapi}"
+IMAGE_NAME="${IMAGE_NAME:-ghcr.io/richrobertson/plex-vaapi}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
+PLEX_BASE_IMAGE="${PLEX_BASE_IMAGE:-plexinc/pms-docker:1.43.1.10611-1e34174b1}"
 PUSH_IMAGE=false
 
 # Parse arguments
@@ -20,6 +21,10 @@ while [[ $# -gt 0 ]]; do
       IMAGE_TAG="$2"
       shift 2
       ;;
+    --base-image)
+      PLEX_BASE_IMAGE="$2"
+      shift 2
+      ;;
     *)
       echo "Unknown option: $1"
       exit 1
@@ -29,8 +34,9 @@ done
 
 FULL_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
 
-echo "=== Building Custom Plex Image with Ubuntu 24.04 VAAPI Libraries ==="
+echo "=== Building Custom Plex Image from Official Plex Ubuntu Base ==="
 echo "Target: ${FULL_IMAGE}"
+echo "Base:   ${PLEX_BASE_IMAGE}"
 echo
 
 # Check if Docker/podman is available
@@ -49,7 +55,11 @@ echo
 
 # Build image
 echo "Building image..."
-"${DOCKER_CMD}" build -t "${FULL_IMAGE}" -f "${SCRIPT_DIR}/Dockerfile" "${SCRIPT_DIR}"
+"${DOCKER_CMD}" build \
+  --build-arg "PLEX_BASE_IMAGE=${PLEX_BASE_IMAGE}" \
+  -t "${FULL_IMAGE}" \
+  -f "${SCRIPT_DIR}/Dockerfile" \
+  "${SCRIPT_DIR}"
 
 if [ $? -ne 0 ]; then
   echo "Error: Build failed"
