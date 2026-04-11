@@ -2,7 +2,7 @@
 # Previous builds replaced bundled libdrm/libva and caused loader relocation errors
 # (for example: __isoc23_* symbols not found). Keep bundled libs intact.
 
-FROM alpine:edge AS musl_drivers
+FROM alpine:3.21 AS musl_drivers
 
 # Pull a coherent musl Intel VAAPI stack used only for driver artifacts.
 RUN apk add --no-cache \
