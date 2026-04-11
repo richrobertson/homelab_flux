@@ -6,6 +6,7 @@ FROM alpine:3.21 AS musl_drivers
 
 # Pull a coherent musl Intel VAAPI stack used only for driver artifacts.
 RUN apk add --no-cache \
+  musl \
   intel-media-driver \
   libva-intel-driver \
   intel-gmmlib \
@@ -33,8 +34,11 @@ RUN mkdir -p /usr/lib/plexmediaserver/lib/vaapi-musl
 COPY --from=musl_drivers /usr/lib/libstdc++.so.6 /usr/lib/plexmediaserver/lib/vaapi-musl/
 COPY --from=musl_drivers /usr/lib/libgcc_s.so.1 /usr/lib/plexmediaserver/lib/vaapi-musl/
 COPY --from=musl_drivers /usr/lib/libigdgmm.so.12 /usr/lib/plexmediaserver/lib/vaapi-musl/
+COPY --from=musl_drivers /usr/lib/libigfxcmrt.so.7 /usr/lib/plexmediaserver/lib/vaapi-musl/
 COPY --from=musl_drivers /usr/lib/libdrm.so.2 /usr/lib/plexmediaserver/lib/vaapi-musl/
 COPY --from=musl_drivers /usr/lib/libdrm_intel.so.1 /usr/lib/plexmediaserver/lib/vaapi-musl/
+COPY --from=musl_drivers /lib/ld-musl-x86_64.so.1 /usr/lib/plexmediaserver/lib/vaapi-musl/
+COPY --from=musl_drivers /lib/libc.musl-x86_64.so.1 /usr/lib/plexmediaserver/lib/vaapi-musl/
 
 # Bake drivers into the same Conan-style locations referenced in Plex build metadata.
 RUN mkdir -p \
