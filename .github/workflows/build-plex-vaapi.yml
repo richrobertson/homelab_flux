@@ -20,8 +20,8 @@ on:
       - main
 
 env:
-  REGISTRY: oci.trueforge.org
-  IMAGE_NAME: homelab/plex-vaapi
+  REGISTRY: docker.io
+  IMAGE_NAME: richrobertson/plex-vaapi
 
 jobs:
   build:
