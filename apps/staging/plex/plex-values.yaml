@@ -52,6 +52,7 @@ spec:
                 allowPrivilegeEscalation: true
                 capabilities:
                   add:
+                    - CHOWN
                     - SETGID
                     - SETUID
               env:
