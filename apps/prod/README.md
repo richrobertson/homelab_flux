@@ -47,6 +47,7 @@ Leaf docs:
 - [Loki Stack (Prod)](loki-stack/README.md)
 - [Mealie production](mealie/README.md)
 - [Overseerr production](overseerr/README.md)
+- [Plex production](plex/README.md)
 - [Prowlarr production](prowlarr/README.md)
 - [Radarr production](radarr/README.md)
 - [Shared Storage (Prod)](shared_storage/README.md)

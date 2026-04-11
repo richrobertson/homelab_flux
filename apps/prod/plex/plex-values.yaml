@@ -3,6 +3,7 @@ kind: HelmRelease
 metadata:
   name: plex
 spec:
+  interval: 1h
   values:
     pms:
       resources:

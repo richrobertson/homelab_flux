@@ -4,46 +4,35 @@ kind: HelmRelease
 metadata:
   name: plex
 spec:
+  releaseName: plex
   interval: 1h
-  chartRef:
-    kind: OCIRepository
-    name: plex
+  chart:
+    spec:
+      chart: plex-media-server
+      sourceRef:
+        kind: HelmRepository
+        name: plex
+      version: ">=1.5.0 <2.0.0"
   values:
-    persistence:
-      config:
-        enabled: true
-        storageClass: csi-cephfs-sc
-        existingClaim: plex-config-ceph
-        accessModes: ReadWriteMany
-        targetSelectAll: true
-
-      media4k:
-        enabled: true
-        type: nfs
+    fullnameOverride: plex
+    pms:
+      configExistingClaim: plex-config-ceph
+      resources:
+        requests:
+          cpu: 500m
+          memory: 1Gi
+        limits:
+          cpu: 4000m
+          memory: 8Gi
+    extraEnv:
+      PLEX_UID: "568"
+      PLEX_GID: "568"
+    extraVolumes:
+      - name: media4k
+        nfs:
+          server: scooter.myrobertson.net
+          path: /volume1/plex
+    extraVolumeMounts:
+      - name: media4k
         mountPath: /media/4k
-        path: /volume1/plex
         subPath: 4k
-        server: scooter.myrobertson.net
-        targetSelectAll: true
-
-      transcode:
-        enabled: true
-        type: emptyDir
-        medium: Memory
-        targetSelectAll: true
-
-      dri:
-        enabled: true
-        type: hostPath
-        hostPath: /dev/dri
-        hostPathType: Directory
-        mountPath: /dev/dri
-        targetSelectAll: true
-
-    resources:
-      requests:
-        cpu: 500m
-        memory: 1Gi
-      limits:
-        cpu: 4000m
-        memory: 8Gi

@@ -49,6 +49,24 @@ Seed reference:
 - [Vault seed template](VAULT_SEED_TEMPLATE.md)
 - Region is centralized in the template via AWS_REGION for one-line changes.
 
+## Known Issues & Remediation
+
+### Stale Restic Locks
+
+**Problem:** When a volsync pod crashes without releasing its lock, the lock persists in the S3 backend indefinitely, blocking all subsequent backups.
+
+**Evidence:** [Incident post-mortem (2026-04-11)](INCIDENT_POSTMORTEM_2026-04-11.md)
+
+**Automation:** A CronJob `volsync-stale-lock-cleanup` runs every 2 hours to detect and remove stale locks across all repositories.
+
+**Manual Recovery (if needed):** See the post-mortem appendix for quick recovery commands.
+
+---
+
+## References
+
+- [Incident Post-Mortem: Stale Lock Contention (2026-04-11)](INCIDENT_POSTMORTEM_2026-04-11.md)
+
 ## Bucket structure
 
 - CNPG backups: s3://homelab-prod-backups/cnpg/<cluster-name>

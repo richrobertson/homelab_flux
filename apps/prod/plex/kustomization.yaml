@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/plex
+  - migration-secret.yaml
+  - lxc-config-seed-job.yaml
+  - httpRoute.yaml
+patches:
+  - path: plex-values.yaml
+    target:
+      kind: HelmRelease
+  - path: plex-config-ceph-pvc-patch.yaml
+    target:
+      kind: PersistentVolumeClaim
+      name: plex-config-ceph

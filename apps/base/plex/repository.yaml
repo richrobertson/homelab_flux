@@ -1,12 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: OCIRepository
+kind: HelmRepository
 metadata:
   name: plex
 spec:
-  interval: 1h
-  url: oci://oci.trueforge.org/truecharts/plex
-  ref:
-    semver: ">=22.x"
-  layerSelector:
-    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
-    operation: copy
+  interval: 5m
+  url: https://raw.githubusercontent.com/plexinc/pms-docker/gh-pages
