@@ -23,8 +23,8 @@ RUN mkdir -p \
   /home/runner/_work/plex-conan/plex-conan/.conan/data/libva/2.22.0-0/plex/main/build/f0f4893209b867ce448a96e25ef4d6b158311557/install/lib/dri
 
 # Import known-good VAAPI drivers from linuxserver/ffmpeg image.
-COPY --from=ffmpeg_drivers /usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so /tmp/ffmpeg-dri/iHD_drv_video.so
-COPY --from=ffmpeg_drivers /usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so /tmp/ffmpeg-dri/i965_drv_video.so
+COPY --from=ffmpeg_drivers /usr/local/lib/x86_64-linux-gnu/dri/iHD_drv_video.so /tmp/ffmpeg-dri/iHD_drv_video.so
+COPY --from=ffmpeg_drivers /usr/local/lib/x86_64-linux-gnu/dri/i965_drv_video.so /tmp/ffmpeg-dri/i965_drv_video.so
 
 RUN set -eux; \
   cp -f /tmp/ffmpeg-dri/iHD_drv_video.so \
@@ -37,7 +37,7 @@ RUN set -eux; \
     /home/runner/_work/plex-conan/plex-conan/.conan/data/libva/2.22.0-0/plex/main/build/f0f4893209b867ce448a96e25ef4d6b158311557/install/lib/dri/
 
 # Prefer distro driver directory for explicit probes and debugging.
-ENV LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
+ENV LIBVA_DRIVERS_PATH=/usr/local/lib/x86_64-linux-gnu/dri
 
 # Keep a record of runtime and bundled libraries for troubleshooting.
 RUN ldd --version > /image-libc.txt 2>&1 || true && \
