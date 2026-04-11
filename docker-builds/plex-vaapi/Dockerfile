@@ -12,7 +12,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   ffmpeg \
   libdrm2 \
   libdrm-intel1 \
-  libigdgmm12 \
   libva2 \
   libva-drm2 \
   && rm -rf /var/lib/apt/lists/*
@@ -26,8 +25,12 @@ RUN mkdir -p \
 # Import known-good VAAPI drivers from linuxserver/ffmpeg image.
 COPY --from=ffmpeg_drivers /usr/local/lib/x86_64-linux-gnu/dri/iHD_drv_video.so /tmp/ffmpeg-dri/iHD_drv_video.so
 COPY --from=ffmpeg_drivers /usr/local/lib/x86_64-linux-gnu/dri/i965_drv_video.so /tmp/ffmpeg-dri/i965_drv_video.so
+COPY --from=ffmpeg_drivers /usr/local/lib/libigdgmm.so /usr/local/lib/libigdgmm.so
+COPY --from=ffmpeg_drivers /usr/local/lib/libigdgmm.so.12 /usr/local/lib/libigdgmm.so.12
+COPY --from=ffmpeg_drivers /usr/local/lib/libigdgmm.so.12.9.0 /usr/local/lib/libigdgmm.so.12.9.0
 
 RUN set -eux; \
+  ldconfig; \
   cp -f /tmp/ffmpeg-dri/iHD_drv_video.so \
     /usr/lib/x86_64-linux-gnu/dri/; \
   cp -f /tmp/ffmpeg-dri/i965_drv_video.so \
