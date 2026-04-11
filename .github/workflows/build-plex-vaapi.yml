@@ -1,0 +1,98 @@
+name: Build Custom Plex VAAPI Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag (e.g., v1.43.0.10492-ubuntu24.04)"
+        required: true
+        type: string
+      push:
+        description: "Push to registry"
+        required: false
+        type: boolean
+        default: true
+  push:
+    paths:
+      - "docker-builds/plex-vaapi/**"
+      - ".github/workflows/build-plex-vaapi.yml"
+    branches:
+      - main
+
+env:
+  REGISTRY: oci.trueforge.org
+  IMAGE_NAME: homelab/plex-vaapi
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to registry
+        if: github.event_name == 'push' || github.event.inputs.push == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Determine image tag
+        id: meta
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="$(date +%Y%m%d-%H%M%S)"
+          fi
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "full-image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${TAG}" >> $GITHUB_OUTPUT
+          echo "latest-image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_OUTPUT
+
+      - name: Build and push (if requested)
+        uses: docker/build-push-action@v5
+        with:
+          context: docker-builds/plex-vaapi
+          push: ${{ github.event_name == 'push' || github.event.inputs.push == 'true' }}
+          tags: |
+            ${{ steps.meta.outputs.full-image }}
+            ${{ steps.meta.outputs.latest-image }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+
+      - name: Build only (dry-run)
+        if: github.event_name != 'push' && github.event.inputs.push != 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: docker-builds/plex-vaapi
+          push: false
+          tags: |
+            ${{ steps.meta.outputs.full-image }}
+          cache-from: type=gha
+
+      - name: Image summary
+        run: |
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image**: \`${{ steps.meta.outputs.full-image }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Push**: ${{ github.event_name == 'push' || github.event.inputs.push == 'true' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" = "push" ] || [ "${{ github.event.inputs.push }}" = "true" ]; then
+            echo "To deploy in staging:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+            echo "# Update apps/staging/plex/plex-values.yaml" >> $GITHUB_STEP_SUMMARY
+            echo "image:" >> $GITHUB_STEP_SUMMARY
+            echo "  repository: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
+            echo "  tag: ${{ steps.meta.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
