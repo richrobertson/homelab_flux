@@ -28,6 +28,7 @@ Production overlay for Plex.
 - Required keys: `host`, `username`, `sourcePath`, `sshPrivateKey`
 - Optional keys: `port`, `knownHosts`
 - Expected source path: the Plex LXC config directory, for example `/var/lib/plexmediaserver/Library/Application Support/Plex Media Server`
+- The migration job writes to `/data/Library/Application Support/Plex Media Server` in the target PVC (the path expected by the container image).
 
 Example Vault write:
 
