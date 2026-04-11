@@ -18,6 +18,9 @@ spec:
               - op: add
                 path: /spec/template/spec/nodeSelector/kubernetes.io~1hostname
                 value: k8s-stg-worker-0
+              - op: replace
+                path: /spec/template/spec/containers/0/image
+                value: lscr.io/linuxserver/plex:latest
   values:
     plex:
       disableGDM: false
