@@ -21,6 +21,7 @@ FROM lscr.io/linuxserver/plex:latest as base
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   vainfo \
   clinfo \
+  patchelf \
   libdrm2 \
   libdrm-intel1 \
   libva2 \
@@ -52,6 +53,17 @@ COPY --from=musl_drivers /usr/lib/dri/iHD_drv_video.so /home/runner/_work/plex-c
 COPY --from=musl_drivers /usr/lib/dri/i965_drv_video.so /home/runner/_work/plex-conan/plex-conan/.conan/data/intel-vaapi-driver/2.4.1-48/plex/main/package/54d41cda82931ea2b2be37156bad83b30007f4c5/lib/dri/
 COPY --from=musl_drivers /usr/lib/dri/iHD_drv_video.so /home/runner/_work/plex-conan/plex-conan/.conan/data/libva/2.22.0-0/plex/main/build/f0f4893209b867ce448a96e25ef4d6b158311557/install/lib/dri/
 COPY --from=musl_drivers /usr/lib/dri/i965_drv_video.so /home/runner/_work/plex-conan/plex-conan/.conan/data/libva/2.22.0-0/plex/main/build/f0f4893209b867ce448a96e25ef4d6b158311557/install/lib/dri/
+
+# Force VAAPI drivers to resolve C++/drm deps from the musl runtime bundle.
+RUN set -eux; \
+  DRIVER_RPATH='/usr/lib/plexmediaserver/lib/vaapi-musl:/usr/lib/plexmediaserver/lib'; \
+  for drv in \
+    /home/runner/_work/plex-conan/plex-conan/.conan/data/intel-media-driver/25.2.6-1/plex/main/package/bb11b771bdd2e73dbca3ba3fa4e91df6e323972a/lib/dri/iHD_drv_video.so \
+    /home/runner/_work/plex-conan/plex-conan/.conan/data/intel-vaapi-driver/2.4.1-48/plex/main/package/54d41cda82931ea2b2be37156bad83b30007f4c5/lib/dri/i965_drv_video.so \
+    /home/runner/_work/plex-conan/plex-conan/.conan/data/libva/2.22.0-0/plex/main/build/f0f4893209b867ce448a96e25ef4d6b158311557/install/lib/dri/iHD_drv_video.so \
+    /home/runner/_work/plex-conan/plex-conan/.conan/data/libva/2.22.0-0/plex/main/build/f0f4893209b867ce448a96e25ef4d6b158311557/install/lib/dri/i965_drv_video.so; do \
+    patchelf --set-rpath "$DRIVER_RPATH" "$drv"; \
+  done
 
 # Keep bundled Plex libraries first while making musl driver deps available.
 ENV LD_LIBRARY_PATH=/usr/lib/plexmediaserver/lib:/usr/lib/plexmediaserver/lib/vaapi-musl
