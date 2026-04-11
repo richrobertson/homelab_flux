@@ -40,17 +40,6 @@ spec:
             main:
               securityContext:
                 privileged: false
-                allowPrivilegeEscalation: true
-                runAsUser: 0
-                runAsGroup: 0
-                runAsNonRoot: false
-                readOnlyRootFilesystem: false
-                seccompProfile:
-                  type: Unconfined
-                capabilities:
-                  drop: []
-                  add:
-                    - SETGID
-                    - SETUID
+                allowPrivilegeEscalation: false
               env:
                 ALLOWED_NETWORKS: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
