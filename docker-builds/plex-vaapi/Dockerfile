@@ -12,6 +12,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   ffmpeg \
   libdrm2 \
   libdrm-intel1 \
+  libigdgmm12 \
   libva2 \
   libva-drm2 \
   && rm -rf /var/lib/apt/lists/*
@@ -42,6 +43,7 @@ RUN set -eux; \
 
 # Prefer distro driver directory for explicit probes and debugging.
 ENV LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
+ENV LIBVA_DRIVER_NAME=iHD
 
 # Keep a record of runtime and bundled libraries for troubleshooting.
 RUN ldd --version > /image-libc.txt 2>&1 || true && \
