@@ -8,16 +8,15 @@ spec:
       disableGDM: false
       requireHTTPS: false
 
-    workload:
-      main:
-        replicas: 1
-
     resources:
       limits:
         cpu: 4000m
         memory: 8Gi
         gpu.intel.com/i915: "1"
 
+    workload:
+      main:
+        replicas: 1
         podSpec:
           containers:
             main:
