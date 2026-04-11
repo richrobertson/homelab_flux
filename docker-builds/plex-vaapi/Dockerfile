@@ -39,10 +39,13 @@ COPY --from=musl_drivers /usr/lib/libdrm_intel.so.1 /usr/lib/plexmediaserver/lib
 # Bake drivers into the same Conan-style locations referenced in Plex build metadata.
 RUN mkdir -p \
   /home/runner/_work/plex-conan/plex-conan/.conan/data/intel-media-driver/25.2.6-1/plex/main/package/bb11b771bdd2e73dbca3ba3fa4e91df6e323972a/lib/dri \
-  /home/runner/_work/plex-conan/plex-conan/.conan/data/intel-vaapi-driver/2.4.1-48/plex/main/package/54d41cda82931ea2b2be37156bad83b30007f4c5/lib/dri
+  /home/runner/_work/plex-conan/plex-conan/.conan/data/intel-vaapi-driver/2.4.1-48/plex/main/package/54d41cda82931ea2b2be37156bad83b30007f4c5/lib/dri \
+  /home/runner/_work/plex-conan/plex-conan/.conan/data/libva/2.22.0-0/plex/main/build/f0f4893209b867ce448a96e25ef4d6b158311557/install/lib/dri
 
 COPY --from=musl_drivers /usr/lib/dri/iHD_drv_video.so /home/runner/_work/plex-conan/plex-conan/.conan/data/intel-media-driver/25.2.6-1/plex/main/package/bb11b771bdd2e73dbca3ba3fa4e91df6e323972a/lib/dri/
 COPY --from=musl_drivers /usr/lib/dri/i965_drv_video.so /home/runner/_work/plex-conan/plex-conan/.conan/data/intel-vaapi-driver/2.4.1-48/plex/main/package/54d41cda82931ea2b2be37156bad83b30007f4c5/lib/dri/
+COPY --from=musl_drivers /usr/lib/dri/iHD_drv_video.so /home/runner/_work/plex-conan/plex-conan/.conan/data/libva/2.22.0-0/plex/main/build/f0f4893209b867ce448a96e25ef4d6b158311557/install/lib/dri/
+COPY --from=musl_drivers /usr/lib/dri/i965_drv_video.so /home/runner/_work/plex-conan/plex-conan/.conan/data/libva/2.22.0-0/plex/main/build/f0f4893209b867ce448a96e25ef4d6b158311557/install/lib/dri/
 
 # Keep bundled Plex libraries first while making musl driver deps available.
 ENV LD_LIBRARY_PATH=/usr/lib/plexmediaserver/lib:/usr/lib/plexmediaserver/lib/vaapi-musl
