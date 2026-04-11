@@ -37,8 +37,10 @@ COPY --from=musl_drivers /usr/lib/libigdgmm.so.12 /usr/lib/plexmediaserver/lib/v
 COPY --from=musl_drivers /usr/lib/libigfxcmrt.so.7 /usr/lib/plexmediaserver/lib/vaapi-musl/
 COPY --from=musl_drivers /usr/lib/libdrm.so.2 /usr/lib/plexmediaserver/lib/vaapi-musl/
 COPY --from=musl_drivers /usr/lib/libdrm_intel.so.1 /usr/lib/plexmediaserver/lib/vaapi-musl/
-COPY --from=musl_drivers /lib/ld-musl-x86_64.so.1 /usr/lib/plexmediaserver/lib/vaapi-musl/
-COPY --from=musl_drivers /lib/libc.musl-x86_64.so.1 /usr/lib/plexmediaserver/lib/vaapi-musl/
+# Alias the standard Alpine musl SONAME to Plex's own musl libc (SONAME = libc.so).
+# Without this, dlopen-ing the Alpine-built iHD driver would load a SECOND musl libc
+# alongside Plex's, causing both constructors to race and segfault.
+RUN ln -sf libc.so /usr/lib/plexmediaserver/lib/libc.musl-x86_64.so.1
 
 # Bake drivers into the same Conan-style locations referenced in Plex build metadata.
 RUN mkdir -p \
