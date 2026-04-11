@@ -53,7 +53,6 @@ RUN set -eux; \
 # Prefer distro driver directory for explicit probes and debugging.
 ENV LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
 ENV LIBVA_DRIVER_NAME=iHD
-ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu
 
 # Keep a record of runtime and bundled libraries for troubleshooting.
 RUN ldd --version > /image-libc.txt 2>&1 || true && \
