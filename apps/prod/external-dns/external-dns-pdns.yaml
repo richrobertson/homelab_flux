@@ -15,10 +15,26 @@ spec:
       interval: 10m
   values:
     logLevel: debug
+    sources:
+      - gateway-httproute
     provider:
       name: pdns
+    rbac:
+      create: true
+      additionalPermissions:
+        - apiGroups: [""]
+          resources: ["services", "pods", "nodes", "endpoints", "namespaces"]
+          verbs: ["get", "watch", "list"]
+        - apiGroups: ["networking.k8s.io"]
+          resources: ["ingresses", "ingressclasses", "httproutes"]
+          verbs: ["get", "watch", "list"]
+        - apiGroups: ["gateway.networking.k8s.io"]
+          resources: ["gateways", "httproutes"]
+          verbs: ["get", "watch", "list"]
+        - apiGroups: ["discovery.k8s.io"]
+          resources: ["endpointslices"]
+          verbs: ["get", "watch", "list"]
     extraArgs:
-      - --source=gateway-httproute
       - --pdns-server=http://192.168.7.201:8001
       - --pdns-server-id=localhost
       - --pdns-api-key=$(PDNS_API_KEY)
