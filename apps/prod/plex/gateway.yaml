@@ -1,0 +1,79 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: plex
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: vault-issuer
+    cert-manager.io/common-name: plex.prod.myrobertson.net
+    cert-manager.io/private-key-algorithm: "ECDSA"
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: plex
+    hostname: plex.prod.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: plex-cert
+  infrastructure:
+    labels:
+      istio-injection: enabled
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: plex.prod.myrobertson.net
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: plex
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: plex-istio
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: plex
+  namespace: default
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      gateway.networking.k8s.io/gateway-name: plex
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: plex-local
+  namespace: default
+spec:
+  parentRefs:
+  - name: plex
+    namespace: default
+  hostnames: ["plex.prod.myrobertson.net"]
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: plex
+      port: 32400
