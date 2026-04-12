@@ -1,0 +1,14 @@
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: external-dns-pdns-apikey
+  namespace: external-dns
+spec:
+  type: kv-v2
+  mount: secret
+  path: powerdns/external-dns
+  refreshAfter: 60s
+  destination:
+    create: true
+    name: external-dns-pdns-apikey

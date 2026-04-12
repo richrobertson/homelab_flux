@@ -1,0 +1,33 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: external-dns-pdns
+  namespace: external-dns
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: './charts/external-dns'
+      sourceRef:
+        kind: GitRepository
+        name: external-dns
+        namespace: external-dns
+      interval: 10m
+  values:
+    logLevel: debug
+    provider:
+      name: pdns
+    extraArgs:
+      - --source=gateway-httproute
+      - --pdns-server=http://192.168.7.201:8001
+      - --pdns-server-id=localhost
+      - --pdns-api-key=$(PDNS_API_KEY)
+    txtOwnerId: prod.myrobertson.net
+    domainFilters:
+      - prod.myrobertson.net
+    env:
+      - name: PDNS_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: external-dns-pdns-apikey
+            key: pdns-api-key

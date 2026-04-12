@@ -3,8 +3,11 @@ kind: Kustomization
 namespace: external-dns
 resources:
   - cloudflare-api-key.yaml
+  - powerdns-api-key.yaml
+  - external-dns-pdns.yaml
   - ../../base/external-dns
 patches:
   - path: external-dns-values.yaml
     target:
       kind: HelmRelease
+      name: external-dns
