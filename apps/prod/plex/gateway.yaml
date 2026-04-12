@@ -25,6 +25,8 @@ spec:
   infrastructure:
     labels:
       istio-injection: enabled
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: plex.prod.myrobertson.net
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
