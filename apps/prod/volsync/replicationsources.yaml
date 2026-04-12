@@ -5,7 +5,6 @@ metadata:
   name: authelia-config-ceph-backup
 spec:
   sourcePVC: authelia-config-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "0 * * * *"
   restic:
@@ -33,7 +32,6 @@ metadata:
   name: bitwarden-data-ceph-backup
 spec:
   sourcePVC: bitwarden-data-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "55 * * * *"
   restic:
@@ -61,7 +59,6 @@ metadata:
   name: gotify-data-ceph-backup
 spec:
   sourcePVC: gotify-data-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "35 * * * *"
   restic:
@@ -89,7 +86,6 @@ metadata:
   name: netbootxyz-config-ceph-backup
 spec:
   sourcePVC: netbootxyz-config-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "27 * * * *"
   restic:
@@ -117,7 +113,6 @@ metadata:
   name: netbootxyz-assets-ceph-backup
 spec:
   sourcePVC: netbootxyz-assets-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "28 * * * *"
   restic:
@@ -145,7 +140,6 @@ metadata:
   name: cluster-authelia-ceph-1-backup
 spec:
   sourcePVC: cluster-authelia-ceph-1
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "32 * * * *"
   restic:
@@ -177,7 +171,6 @@ metadata:
   name: immich-data-files-pvc-ceph-backup
 spec:
   sourcePVC: immich-data-files-pvc-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "10 * * * *"
   restic:
@@ -205,7 +198,6 @@ metadata:
   name: cluster-immich-ceph-1-backup
 spec:
   sourcePVC: cluster-immich-ceph-1
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "12 * * * *"
   restic:
@@ -237,7 +229,6 @@ metadata:
   name: lidarr-config-ceph-backup
 spec:
   sourcePVC: lidarr-config-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "20 * * * *"
   restic:
@@ -269,7 +260,6 @@ metadata:
   name: mealie-data-ceph-backup
 spec:
   sourcePVC: mealie-data-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "30 * * * *"
   restic:
@@ -297,7 +287,6 @@ metadata:
   name: mealie-cnpg-main-1-backup
 spec:
   sourcePVC: mealie-cnpg-main-1
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "34 * * * *"
   restic:
@@ -329,7 +318,6 @@ metadata:
   name: mealie-cnpg-main-1-wal-backup
 spec:
   sourcePVC: mealie-cnpg-main-1-wal
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "44 * * * *"
   restic:
@@ -361,7 +349,6 @@ metadata:
   name: overseerr-config-ceph-backup
 spec:
   sourcePVC: overseerr-config-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "40 * * * *"
   restic:
@@ -389,7 +376,6 @@ metadata:
   name: prowlarr-config-ceph-backup
 spec:
   sourcePVC: prowlarr-config-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "50 * * * *"
   restic:
@@ -421,7 +407,6 @@ metadata:
   name: radarr-config-ceph-backup
 spec:
   sourcePVC: radarr-config-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "5 * * * *"
   restic:
@@ -453,7 +438,6 @@ metadata:
   name: sonarr-config-ceph-backup
 spec:
   sourcePVC: sonarr-config-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "15 * * * *"
   restic:
@@ -485,7 +469,6 @@ metadata:
   name: tautulli-config-ceph-backup
 spec:
   sourcePVC: tautulli-config-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "45 * * * *"
   restic:
@@ -513,7 +496,6 @@ metadata:
   name: syncthing-config-ceph-backup
 spec:
   sourcePVC: syncthing-config-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "25 * * * *"
   restic:
@@ -545,7 +527,6 @@ metadata:
   name: trilium-data-ceph-backup
 spec:
   sourcePVC: trilium-data-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "42 * * * *"
   restic:
@@ -577,7 +558,6 @@ metadata:
   name: plex-config-ceph-backup
 spec:
   sourcePVC: plex-config-ceph
-  activeDeadlineSeconds: 14400
   trigger:
     schedule: "52 * * * *"
   restic:
