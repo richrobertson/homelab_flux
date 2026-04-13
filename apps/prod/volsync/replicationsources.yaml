@@ -5,7 +5,7 @@ metadata:
   name: authelia-config-ceph-backup
 spec:
   sourcePVC: authelia-config-ceph-v2
-  paused: false
+  paused: true
   trigger:
     schedule: "0 * * * *"
   restic:
@@ -177,7 +177,7 @@ metadata:
   name: immich-data-files-pvc-ceph-backup
 spec:
   sourcePVC: immich-data-files-pvc-ceph
-  paused: false
+  paused: true
   trigger:
     schedule: "10 * * * *"
   restic:
@@ -297,7 +297,7 @@ metadata:
   name: mealie-cnpg-main-1-backup
 spec:
   sourcePVC: mealie-cnpg-main-1
-  paused: false
+  paused: true
   trigger:
     schedule: "34 * * * *"
   restic:
@@ -361,7 +361,7 @@ metadata:
   name: overseerr-config-ceph-backup
 spec:
   sourcePVC: overseerr-config-ceph
-  paused: false
+  paused: true
   trigger:
     schedule: "40 * * * *"
   restic:
@@ -389,7 +389,7 @@ metadata:
   name: prowlarr-config-ceph-backup
 spec:
   sourcePVC: prowlarr-config-ceph
-  paused: false
+  paused: true
   trigger:
     schedule: "50 * * * *"
   restic:
@@ -421,7 +421,7 @@ metadata:
   name: radarr-config-ceph-backup
 spec:
   sourcePVC: radarr-config-ceph
-  paused: false
+  paused: true
   trigger:
     schedule: "5 * * * *"
   restic:
@@ -453,7 +453,7 @@ metadata:
   name: sonarr-config-ceph-backup
 spec:
   sourcePVC: sonarr-config-ceph
-  paused: false
+  paused: true
   trigger:
     schedule: "15 * * * *"
   restic:
