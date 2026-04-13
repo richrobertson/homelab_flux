@@ -60,7 +60,7 @@ kind: ReplicationSource
 metadata:
   name: gotify-data-ceph-backup
 spec:
-  sourcePVC: gotify-data-ceph-v2
+  sourcePVC: gotify-data-ceph-v3
   paused: true
   trigger:
     schedule: "35 * * * *"
