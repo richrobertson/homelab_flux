@@ -15,3 +15,13 @@ patches:
     target:
       kind: HelmRelease
       name: trilium
+  - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: trilium-data-ceph
+        namespace: default
+    target:
+      kind: PersistentVolumeClaim
+      name: trilium-data-ceph

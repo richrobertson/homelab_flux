@@ -17,4 +17,24 @@ patches:
     target:
       kind: Deployment
       name: netbootxyz
+  - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: netbootxyz-config-ceph
+        namespace: default
+    target:
+      kind: PersistentVolumeClaim
+      name: netbootxyz-config-ceph
+  - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: netbootxyz-assets-ceph
+        namespace: default
+    target:
+      kind: PersistentVolumeClaim
+      name: netbootxyz-assets-ceph
 

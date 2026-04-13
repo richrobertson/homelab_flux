@@ -13,3 +13,13 @@ patches:
     target:
       kind: Deployment
       name: gotify
+  - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: gotify-data-ceph
+        namespace: default
+    target:
+      kind: PersistentVolumeClaim
+      name: gotify-data-ceph

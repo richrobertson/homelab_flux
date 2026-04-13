@@ -21,6 +21,16 @@ patches:
     target:
       kind: HelmRelease
       name: authelia
+  - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: authelia-config-ceph
+        namespace: default
+    target:
+      kind: PersistentVolumeClaim
+      name: authelia-config-ceph
   - path: authelia-values.yaml
     target:
       kind: HelmRelease

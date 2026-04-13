@@ -13,4 +13,14 @@ patches:
     target:
       kind: Deployment
       name: tautulli
+  - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: tautulli-config-ceph
+        namespace: default
+    target:
+      kind: PersistentVolumeClaim
+      name: tautulli-config-ceph
 
