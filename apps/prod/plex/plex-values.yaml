@@ -13,7 +13,4 @@ spec:
         limits:
           cpu: 4000m
           memory: 8Gi
-    # Temporary incident mitigation: keep Plex up without external NFS media mounts.
-    # Re-enable in this file after scooter NFS exports are healthy.
-    extraVolumes: []
-    extraVolumeMounts: []
+
