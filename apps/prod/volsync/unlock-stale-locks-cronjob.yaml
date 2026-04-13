@@ -16,9 +16,9 @@ data:
     apk add --no-cache restic > /dev/null 2>&1
 
     # Detect and clean stuck volsync mover pods.
-    # A pod is considered stuck if it is Pending/ContainerCreating/Running for >= 30 minutes.
-    # This is more aggressive than before (was 2h) to catch hangs earlier.
-    MAX_STUCK_MINUTES="${STUCK_POD_MAX_AGE_MINUTES:-30}"
+    # A pod is considered stuck if it is not making progress for >= 5 minutes.
+    # Include Error so failed movers that leave repository locks are cleaned quickly.
+    MAX_STUCK_MINUTES="${STUCK_POD_MAX_AGE_MINUTES:-5}"
     STUCK_FOUND=0
     STUCK_CLEANED=0
 
@@ -35,7 +35,7 @@ data:
       esac
     }
 
-    echo "=== Checking for stuck volsync backup pods (>= ${MAX_STUCK_MINUTES}m) ==="
+    echo "=== Checking for stuck/failed volsync backup pods (>= ${MAX_STUCK_MINUTES}m) ==="
     POD_LINES=$(kubectl get pods -n default --no-headers 2>/dev/null | awk '/^volsync-src-/ {print $1" "$3" "$5}')
     if [ -n "$POD_LINES" ]; then
       echo "$POD_LINES" >/tmp/volsync_pods.txt
@@ -43,12 +43,13 @@ data:
         [ -z "$POD" ] && continue
         AGE_MIN=$(age_to_minutes "$AGE")
         case "$STATUS" in
-          Pending|ContainerCreating|Running)
+          Pending|ContainerCreating|Running|Error)
             if [ "$AGE_MIN" -ge "$MAX_STUCK_MINUTES" ]; then
               STUCK_FOUND=$((STUCK_FOUND + 1))
               BASE=$(echo "$POD" | sed -E 's/^volsync-src-(.*)-[a-z0-9]{5}$/\1/')
               echo "Stuck mover pod detected: $POD status=$STATUS age=$AGE"
               kubectl delete pod -n default "$POD" --ignore-not-found >/dev/null 2>&1 || true
+              kubectl delete job -n default "volsync-src-${BASE}" --ignore-not-found >/dev/null 2>&1 || true
               kubectl delete pvc -n default "volsync-${BASE}-src" --ignore-not-found >/dev/null 2>&1 || true
               kubectl delete pvc -n default "volsync-src-${BASE}-cache" --ignore-not-found >/dev/null 2>&1 || true
               echo "Cleaned stuck resources for base=$BASE"
@@ -164,8 +165,8 @@ metadata:
   name: volsync-stale-lock-cleanup
   namespace: default
 spec:
-  # Run every 30 minutes to catch stale locks more aggressively
-  schedule: "*/30 * * * *"
+  # Run every 10 minutes so stale restic locks are cleared promptly.
+  schedule: "*/10 * * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
