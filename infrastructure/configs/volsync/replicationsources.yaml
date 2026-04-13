@@ -4,7 +4,7 @@ kind: ReplicationSource
 metadata:
   name: authelia-config-ceph-backup
 spec:
-  sourcePVC: authelia-config-ceph-v2
+  sourcePVC: authelia-config-ceph-v3
   paused: false
   trigger:
     schedule: "0 * * * *"
@@ -63,7 +63,7 @@ kind: ReplicationSource
 metadata:
   name: netbootxyz-config-ceph-backup
 spec:
-  sourcePVC: netbootxyz-config-ceph-v2
+  sourcePVC: netbootxyz-config-ceph-v3
   paused: false
   trigger:
     schedule: "27 * * * *"
@@ -83,7 +83,7 @@ kind: ReplicationSource
 metadata:
   name: netbootxyz-assets-ceph-backup
 spec:
-  sourcePVC: netbootxyz-assets-ceph-v2
+  sourcePVC: netbootxyz-assets-ceph-v3
   paused: false
   trigger:
     schedule: "28 * * * *"
@@ -350,7 +350,7 @@ kind: ReplicationSource
 metadata:
   name: tautulli-config-ceph-backup
 spec:
-  sourcePVC: tautulli-config-ceph-v2
+  sourcePVC: tautulli-config-ceph-v3
   paused: false
   trigger:
     schedule: "45 * * * *"

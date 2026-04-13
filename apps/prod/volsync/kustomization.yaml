@@ -4,6 +4,7 @@ namespace: default
 resources:
   - ../../base/volsync
   - restic-repository-secrets.yaml
+  - backup-source-pvcs-v3.yaml
   - replicationsources.yaml
   - unlock-stale-locks-cronjob.yaml
   - released-backup-src-pv-cleanup-cronjob.yaml

@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: authelia-config-ceph-v3
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: csi-cephfs-sc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: netbootxyz-config-ceph-v3
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: csi-cephfs-sc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: netbootxyz-assets-ceph-v3
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: csi-cephfs-sc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tautulli-config-ceph-v3
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: csi-cephfs-sc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: trilium-data-ceph-v3
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: csi-cephfs-sc
