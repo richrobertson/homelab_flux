@@ -5,6 +5,7 @@ resources:
   - ../../base/plex
   - httpRoute.yaml
   - gateway.yaml
+  - lan-service.yaml
 patches:
   - path: plex-values.yaml
     target:
