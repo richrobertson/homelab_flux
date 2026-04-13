@@ -4,5 +4,14 @@ namespace: default
 resources:
   - ../../base/trilium
   - httpRoute.yaml
+  - data-ceph-pvc-v2.yaml
   - ../../base/trilium/migration-secret.yaml
   - ../../base/trilium/pve3-data-seed-job.yaml
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/values/persistence/data/existingClaim
+        value: trilium-data-ceph-v2
+    target:
+      kind: HelmRelease
+      name: trilium

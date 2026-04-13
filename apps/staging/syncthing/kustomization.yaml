@@ -4,10 +4,18 @@ namespace: default
 resources:
   - ../../base/syncthing
   - gateway.yaml
+  - config-ceph-pvc-v2.yaml
 patches:
   - path: syncthing-values.yaml
     target:
       kind: HelmRelease
+  - patch: |
+      - op: replace
+        path: /spec/values/persistence/config/existingClaim
+        value: syncthing-config-ceph-v2
+    target:
+      kind: HelmRelease
+      name: syncthing
   - patch: |
       - op: replace
         path: /metadata/annotations/cert-manager.io~1common-name

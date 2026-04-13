@@ -4,3 +4,12 @@ namespace: default
 resources:
   - ../../base/gotify
   - httpRoute.yaml
+  - data-ceph-pvc-v2.yaml
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
+        value: gotify-data-ceph-v2
+    target:
+      kind: Deployment
+      name: gotify

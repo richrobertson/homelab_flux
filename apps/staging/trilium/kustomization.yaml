@@ -4,6 +4,7 @@ namespace: default
 resources:
   - ../../base/trilium
   - gateway.yaml
+  - data-ceph-pvc-v2.yaml
 patches:
   - patch: |
       - op: replace
@@ -39,3 +40,10 @@ patches:
     target:
       kind: PersistentVolumeClaim
       name: trilium-data-ceph
+  - patch: |
+      - op: replace
+        path: /spec/values/persistence/data/existingClaim
+        value: trilium-data-ceph-v2
+    target:
+      kind: HelmRelease
+      name: trilium

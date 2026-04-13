@@ -4,7 +4,7 @@ kind: ReplicationSource
 metadata:
   name: authelia-config-ceph-backup
 spec:
-  sourcePVC: authelia-config-ceph
+  sourcePVC: authelia-config-ceph-v2
   trigger:
     schedule: "0 * * * *"
   restic:
@@ -17,7 +17,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverResources:
       requests:
         cpu: "500m"
@@ -44,7 +44,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverResources:
       requests:
         cpu: "500m"
@@ -58,7 +58,7 @@ kind: ReplicationSource
 metadata:
   name: gotify-data-ceph-backup
 spec:
-  sourcePVC: gotify-data-ceph
+  sourcePVC: gotify-data-ceph-v2
   trigger:
     schedule: "35 * * * *"
   restic:
@@ -71,7 +71,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverResources:
       requests:
         cpu: "500m"
@@ -85,7 +85,7 @@ kind: ReplicationSource
 metadata:
   name: netbootxyz-config-ceph-backup
 spec:
-  sourcePVC: netbootxyz-config-ceph
+  sourcePVC: netbootxyz-config-ceph-v2
   trigger:
     schedule: "27 * * * *"
   restic:
@@ -98,7 +98,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverResources:
       requests:
         cpu: "500m"
@@ -112,7 +112,7 @@ kind: ReplicationSource
 metadata:
   name: netbootxyz-assets-ceph-backup
 spec:
-  sourcePVC: netbootxyz-assets-ceph
+  sourcePVC: netbootxyz-assets-ceph-v2
   trigger:
     schedule: "28 * * * *"
   restic:
@@ -125,7 +125,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverResources:
       requests:
         cpu: "500m"
@@ -152,7 +152,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
@@ -183,7 +183,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Direct
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverResources:
       requests:
         cpu: "500m"
@@ -210,7 +210,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
@@ -241,7 +241,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
@@ -272,7 +272,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverResources:
       requests:
         cpu: "500m"
@@ -299,7 +299,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
@@ -330,7 +330,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
@@ -361,7 +361,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverResources:
       requests:
         cpu: "500m"
@@ -388,7 +388,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
@@ -419,7 +419,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
@@ -450,7 +450,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
@@ -468,7 +468,7 @@ kind: ReplicationSource
 metadata:
   name: tautulli-config-ceph-backup
 spec:
-  sourcePVC: tautulli-config-ceph
+  sourcePVC: tautulli-config-ceph-v2
   trigger:
     schedule: "45 * * * *"
   restic:
@@ -481,7 +481,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverResources:
       requests:
         cpu: "500m"
@@ -508,7 +508,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
@@ -526,7 +526,7 @@ kind: ReplicationSource
 metadata:
   name: trilium-data-ceph-backup
 spec:
-  sourcePVC: trilium-data-ceph
+  sourcePVC: trilium-data-ceph-v2
   trigger:
     schedule: "42 * * * *"
   restic:
@@ -539,7 +539,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 1000
       runAsGroup: 1000
@@ -570,7 +570,7 @@ spec:
       monthly: 0
       yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568

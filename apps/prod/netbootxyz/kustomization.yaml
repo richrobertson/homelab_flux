@@ -4,3 +4,17 @@ namespace: default
 resources:
   - ../../base/netbootxyz
   - httpRoute.yaml
+  - config-ceph-pvc-v2.yaml
+  - assets-ceph-pvc-v2.yaml
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
+        value: netbootxyz-config-ceph-v2
+      - op: replace
+        path: /spec/template/spec/volumes/1/persistentVolumeClaim/claimName
+        value: netbootxyz-assets-ceph-v2
+    target:
+      kind: Deployment
+      name: netbootxyz
+
