@@ -47,7 +47,14 @@ spec:
             description: Gateway 5xx rate is above the critical upper bound of 2 req/s for 5m.
 
         - alert: IstioGatewayHighP95LatencyWarning
-          expr: histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m]))) > 400
+          expr: |
+            histogram_quantile(0.95,
+              sum by (le) (
+                rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])
+              )
+            ) > 400
+            and
+            sum(rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])) > 1
           for: 10m
           labels:
             severity: warning
@@ -56,7 +63,14 @@ spec:
             description: Gateway p95 latency is above the warning upper bound of 400ms for 10m.
 
         - alert: IstioGatewayHighP95LatencyCritical
-          expr: histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m]))) > 1000
+          expr: |
+            histogram_quantile(0.95,
+              sum by (le) (
+                rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])
+              )
+            ) > 1000
+            and
+            sum(rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])) > 1
           for: 10m
           labels:
             severity: critical
@@ -74,7 +88,16 @@ spec:
             description: Gateway service {{ $labels.destination_service_name }} is above the upper bound of 1 req/s 5xx for 5m.
 
         - alert: IstioGatewayServiceHighP95Latency
-          expr: histogram_quantile(0.95, sum by (le, destination_service_name) (rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m]))) > 800
+          expr: |
+            histogram_quantile(0.95,
+              sum by (le, destination_service_name) (
+                rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])
+              )
+            ) > 800
+            and
+            sum by (destination_service_name) (
+              rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])
+            ) > 0.2
           for: 10m
           labels:
             severity: warning
