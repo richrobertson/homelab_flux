@@ -89,7 +89,7 @@ metadata:
   name: netbootxyz-config-ceph-backup
 spec:
   sourcePVC: netbootxyz-config-ceph-v2
-  paused: false
+  paused: true
   trigger:
     schedule: "27 * * * *"
   restic:
@@ -117,7 +117,7 @@ metadata:
   name: netbootxyz-assets-ceph-backup
 spec:
   sourcePVC: netbootxyz-assets-ceph-v2
-  paused: false
+  paused: true
   trigger:
     schedule: "28 * * * *"
   restic:
@@ -485,7 +485,7 @@ metadata:
   name: tautulli-config-ceph-backup
 spec:
   sourcePVC: tautulli-config-ceph-v2
-  paused: false
+  paused: true
   trigger:
     schedule: "45 * * * *"
   restic:
@@ -545,7 +545,7 @@ metadata:
   name: trilium-data-ceph-backup
 spec:
   sourcePVC: trilium-data-ceph-v2
-  paused: false
+  paused: true
   trigger:
     schedule: "42 * * * *"
   restic:
