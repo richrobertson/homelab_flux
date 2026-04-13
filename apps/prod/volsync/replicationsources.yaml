@@ -577,7 +577,7 @@ metadata:
   name: plex-config-ceph-backup
 spec:
   sourcePVC: plex-config-ceph
-    paused: true
+  paused: true
   trigger:
     schedule: "52 * * * *"
   restic:
