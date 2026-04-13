@@ -1,0 +1,100 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: volsync-released-pv-cleanup-script
+  namespace: default
+data:
+  cleanup.sh: |
+    #!/bin/sh
+    set -eu
+
+    echo "=== Starting VolSync Released PV cleanup ==="
+    echo "Time: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+
+    TARGETS="$(kubectl get pv --no-headers | awk '$5=="Released" && $6 ~ /^default\/volsync-.*-backup-src$/ {print $1}')"
+
+    if [ -z "${TARGETS}" ]; then
+      echo "No released volsync backup-source PVs found"
+      exit 0
+    fi
+
+    COUNT=0
+    for PV in $TARGETS; do
+      echo "Processing $PV"
+      kubectl patch pv "$PV" --type=merge -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}' >/dev/null 2>&1 || true
+      kubectl delete pv "$PV" --wait=false >/dev/null 2>&1 || true
+      COUNT=$((COUNT + 1))
+    done
+
+    echo "Deleted/queued PVs: $COUNT"
+    echo "Completed at: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: volsync-released-pv-cleanup
+  namespace: default
+spec:
+  schedule: "*/20 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: volsync-released-pv-cleanup
+        spec:
+          serviceAccountName: volsync-released-pv-cleanup
+          restartPolicy: Never
+          containers:
+            - name: cleanup
+              image: alpine:3.20
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  apk add --no-cache kubectl > /dev/null 2>&1
+                  exec /cleanup.sh
+              volumeMounts:
+                - name: script
+                  mountPath: /cleanup.sh
+                  subPath: cleanup.sh
+                  readOnly: true
+          volumes:
+            - name: script
+              configMap:
+                name: volsync-released-pv-cleanup-script
+                defaultMode: 0555
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: volsync-released-pv-cleanup
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: volsync-released-pv-cleanup
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: volsync-released-pv-cleanup
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: volsync-released-pv-cleanup
+subjects:
+  - kind: ServiceAccount
+    name: volsync-released-pv-cleanup
+    namespace: default

@@ -6,6 +6,7 @@ resources:
   - restic-repository-secrets.yaml
   - replicationsources.yaml
   - unlock-stale-locks-cronjob.yaml
+  - released-backup-src-pv-cleanup-cronjob.yaml
 patches:
   - path: volsync-values.yaml
     target:

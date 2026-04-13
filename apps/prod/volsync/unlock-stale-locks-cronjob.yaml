@@ -73,9 +73,28 @@ data:
     TOTAL=0
     CLEANED=0
     FAILED=0
+    SKIPPED_UNREFERENCED=0
+    SKIPPED_UNINITIALIZED=0
+
+    # Build an allowlist of repositories currently referenced by active VolSync objects.
+    # This avoids noisy warnings from operator-managed secrets that are no longer in use.
+    REFERENCED_REPOS_FILE="/tmp/referenced-restic-repos.txt"
+    {
+      kubectl get replicationsources.volsync.backube -n default -o jsonpath='{range .items[*]}{.spec.restic.repository}{"\n"}{end}' 2>/dev/null || true
+      kubectl get replicationdestinations.volsync.backube -n default -o jsonpath='{range .items[*]}{.spec.restic.repository}{"\n"}{end}' 2>/dev/null || true
+    } | sed '/^$/d' | sort -u > "$REFERENCED_REPOS_FILE"
     
     for SECRET_REF in $SECRETS; do
       SECRET_NAME=$(echo "$SECRET_REF" | cut -d'/' -f2)
+
+      if [ -s "$REFERENCED_REPOS_FILE" ] && ! grep -Fxq "$SECRET_NAME" "$REFERENCED_REPOS_FILE"; then
+        echo ""
+        echo "--- Skipping $SECRET_NAME ---"
+        echo "ℹ️  Not referenced by active VolSync objects"
+        SKIPPED_UNREFERENCED=$((SKIPPED_UNREFERENCED + 1))
+        continue
+      fi
+
       TOTAL=$((TOTAL + 1))
       
       echo ""
@@ -111,8 +130,13 @@ data:
           CLEANED=$((CLEANED + 1))
         fi
       else
-        echo "⚠️  Could not list locks for $SECRET_NAME (repository may not exist yet), skipping..."
-        FAILED=$((FAILED + 1))
+        if echo "$OUTPUT" | grep -Eqi 'is there a repository at the following location|unable to open config file'; then
+          echo "ℹ️  Repository for $SECRET_NAME is not initialized yet, skipping..."
+          SKIPPED_UNINITIALIZED=$((SKIPPED_UNINITIALIZED + 1))
+        else
+          echo "⚠️  Could not list locks for $SECRET_NAME, skipping..."
+          FAILED=$((FAILED + 1))
+        fi
       fi
       
       # Clear env vars for next iteration
@@ -123,13 +147,16 @@ data:
     echo "=== Cleanup Summary ==="
     echo "Total repositories checked: $TOTAL"
     echo "Successfully processed:     $CLEANED"
-    echo "Failures/Skipped:           $FAILED"
+    echo "Skipped (unreferenced):     $SKIPPED_UNREFERENCED"
+    echo "Skipped (uninitialized):    $SKIPPED_UNINITIALIZED"
+    echo "Failures:                   $FAILED"
     
     if [ "$FAILED" -gt 0 ]; then
       echo "⚠️  Some repositories had issues, but continuing..."
     fi
     
     echo "Completed at: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+    rm -f "$REFERENCED_REPOS_FILE"
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -191,6 +218,9 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
+    verbs: ["get", "list"]
+  - apiGroups: ["volsync.backube"]
+    resources: ["replicationsources", "replicationdestinations"]
     verbs: ["get", "list"]
   - apiGroups: [""]
     resources: ["pods", "persistentvolumeclaims"]
