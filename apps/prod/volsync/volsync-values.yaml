@@ -4,6 +4,9 @@ metadata:
   name: volsync
 spec:
   values:
+    workload:
+      main:
+        replicas: 0
     volsync:
       api:
         general:
