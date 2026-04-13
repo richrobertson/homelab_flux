@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - gateway.yaml
+  - pvc-ceph-v2.yaml
   - ../../base/immich
 patches:
   - path: immich-values.yaml
@@ -10,8 +11,25 @@ patches:
       kind: HelmRelease
   - patch: |
       - op: replace
+        path: /spec/values/immich/persistence/library/existingClaim
+        value: immich-data-files-pvc-ceph-v2
+    target:
+      kind: HelmRelease
+      name: immich
+  - patch: |
+      - op: replace
         path: /spec/resources/requests/storage
         value: 2Gi
+    target:
+      kind: PersistentVolumeClaim
+      name: immich-data-files-pvc-ceph-v2
+  - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: immich-data-files-pvc-ceph
+        namespace: default
     target:
       kind: PersistentVolumeClaim
       name: immich-data-files-pvc-ceph

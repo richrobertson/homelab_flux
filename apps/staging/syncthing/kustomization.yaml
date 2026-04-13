@@ -17,6 +17,16 @@ patches:
       kind: HelmRelease
       name: syncthing
   - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: syncthing-config-ceph
+        namespace: default
+    target:
+      kind: PersistentVolumeClaim
+      name: syncthing-config-ceph
+  - patch: |
       - op: replace
         path: /metadata/annotations/cert-manager.io~1common-name
         value: syncthing.staging.myrobertson.net
