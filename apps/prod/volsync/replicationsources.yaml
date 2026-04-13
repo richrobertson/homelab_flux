@@ -5,7 +5,7 @@ metadata:
   name: authelia-config-ceph-backup
 spec:
   sourcePVC: authelia-config-ceph-v2
-  paused: true
+  paused: false
   trigger:
     schedule: "0 * * * *"
   restic:
@@ -89,7 +89,7 @@ metadata:
   name: netbootxyz-config-ceph-backup
 spec:
   sourcePVC: netbootxyz-config-ceph-v2
-  paused: true
+  paused: false
   trigger:
     schedule: "27 * * * *"
   restic:
@@ -117,7 +117,7 @@ metadata:
   name: netbootxyz-assets-ceph-backup
 spec:
   sourcePVC: netbootxyz-assets-ceph-v2
-  paused: true
+  paused: false
   trigger:
     schedule: "28 * * * *"
   restic:
@@ -177,7 +177,7 @@ metadata:
   name: immich-data-files-pvc-ceph-backup
 spec:
   sourcePVC: immich-data-files-pvc-ceph
-  paused: true
+  paused: false
   trigger:
     schedule: "10 * * * *"
   restic:
@@ -297,7 +297,7 @@ metadata:
   name: mealie-cnpg-main-1-backup
 spec:
   sourcePVC: mealie-cnpg-main-1
-  paused: true
+  paused: false
   trigger:
     schedule: "34 * * * *"
   restic:
@@ -361,7 +361,7 @@ metadata:
   name: overseerr-config-ceph-backup
 spec:
   sourcePVC: overseerr-config-ceph
-  paused: true
+  paused: false
   trigger:
     schedule: "40 * * * *"
   restic:
@@ -389,7 +389,7 @@ metadata:
   name: prowlarr-config-ceph-backup
 spec:
   sourcePVC: prowlarr-config-ceph
-  paused: true
+  paused: false
   trigger:
     schedule: "50 * * * *"
   restic:
@@ -421,7 +421,7 @@ metadata:
   name: radarr-config-ceph-backup
 spec:
   sourcePVC: radarr-config-ceph
-  paused: true
+  paused: false
   trigger:
     schedule: "5 * * * *"
   restic:
@@ -453,7 +453,7 @@ metadata:
   name: sonarr-config-ceph-backup
 spec:
   sourcePVC: sonarr-config-ceph
-  paused: true
+  paused: false
   trigger:
     schedule: "15 * * * *"
   restic:
@@ -485,7 +485,7 @@ metadata:
   name: tautulli-config-ceph-backup
 spec:
   sourcePVC: tautulli-config-ceph-v2
-  paused: true
+  paused: false
   trigger:
     schedule: "45 * * * *"
   restic:
@@ -545,7 +545,7 @@ metadata:
   name: trilium-data-ceph-backup
 spec:
   sourcePVC: trilium-data-ceph-v2
-  paused: true
+  paused: false
   trigger:
     schedule: "42 * * * *"
   restic:
@@ -577,7 +577,7 @@ metadata:
   name: plex-config-ceph-backup
 spec:
   sourcePVC: plex-config-ceph
-  paused: true
+  paused: false
   trigger:
     schedule: "52 * * * *"
   restic:
