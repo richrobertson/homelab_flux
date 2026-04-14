@@ -32,6 +32,20 @@ spec:
                 - groups
               userinfo_signed_response_alg: none
               token_endpoint_auth_method: client_secret_basic
+            - client_id: grafana_staging
+              client_name: Grafana Staging
+              client_secret: '$2b$12$G4e2wFGmXCHkQowZZZKOrecbdJik.gd7L5ORyoRVOL7uMZue8SpBW'
+              public: false
+              authorization_policy: one_factor
+              redirect_uris:
+                - https://grafana.staging.myrobertson.net/login/generic_oauth
+              scopes:
+                - openid
+                - profile
+                - email
+                - groups
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_basic
     secret:
       additionalSecrets: {}
    
