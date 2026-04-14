@@ -12,17 +12,5 @@ spec:
         limits:
           cpu: 4000m
           memory: 8Gi
-    extraVolumes:
-      - name: media4k
-        nfs:
-          server: scooter.myrobertson.net
-          path: /volume1/plex
-      - name: radarr-media
-        nfs:
-          server: scooter.myrobertson.net
-          path: /volume1/radarr/radarr
-    extraVolumeMounts:
-      - name: media4k
-        mountPath: /plex
-      - name: radarr-media
-        mountPath: /radarr
+    extraVolumes: []
+    extraVolumeMounts: []
