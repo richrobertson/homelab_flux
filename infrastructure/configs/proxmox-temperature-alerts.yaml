@@ -1,0 +1,82 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: proxmox-temperature-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/part-of: proxmox
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: proxmox-temperature-alerts
+      rules:
+        - alert: ProxmoxHostCPUTemperatureHighWarning
+          expr: |
+            max by (instance) (
+              node_hwmon_temp_celsius{sensor=~"Package id 0|Tctl|Tdie", instance=~"pve[3-5].*"}
+            ) >= 80
+          for: 10m
+          labels:
+            domain: proxmox
+            severity: warning
+          annotations:
+            summary: Proxmox host CPU temperature is high
+            description: Host {{ $labels.instance }} CPU package temperature has been >= 80C for 10m.
+
+        - alert: ProxmoxHostCPUTemperatureHighCritical
+          expr: |
+            max by (instance) (
+              node_hwmon_temp_celsius{sensor=~"Package id 0|Tctl|Tdie", instance=~"pve[3-5].*"}
+            ) >= 90
+          for: 5m
+          labels:
+            domain: proxmox
+            severity: critical
+          annotations:
+            summary: Proxmox host CPU temperature is critical
+            description: Host {{ $labels.instance }} CPU package temperature has been >= 90C for 5m and may throttle.
+
+        - alert: ProxmoxHostNVMeTemperatureHighWarning
+          expr: |
+            max by (instance) (
+              node_hwmon_temp_celsius{sensor="Composite", instance=~"pve[3-5].*"}
+              or
+              smartctl_device_temperature{instance=~"pve[3-5].*"}
+            ) >= 65
+          for: 15m
+          labels:
+            domain: proxmox
+            severity: warning
+          annotations:
+            summary: Proxmox host NVMe temperature is high
+            description: Host {{ $labels.instance }} NVMe temperature has been >= 65C for 15m.
+
+        - alert: ProxmoxHostNVMeTemperatureHighCritical
+          expr: |
+            max by (instance) (
+              node_hwmon_temp_celsius{sensor="Composite", instance=~"pve[3-5].*"}
+              or
+              smartctl_device_temperature{instance=~"pve[3-5].*"}
+            ) >= 75
+          for: 10m
+          labels:
+            domain: proxmox
+            severity: critical
+          annotations:
+            summary: Proxmox host NVMe temperature is critical
+            description: Host {{ $labels.instance }} NVMe temperature has been >= 75C for 10m and may throttle.
+
+        - alert: ProxmoxTemperatureMetricsMissing
+          expr: |
+            (
+              count(node_hwmon_temp_celsius{instance=~"pve[3-5].*"})
+              +
+              count(smartctl_device_temperature{instance=~"pve[3-5].*"})
+            ) == 0
+          for: 30m
+          labels:
+            domain: proxmox
+            severity: warning
+          annotations:
+            summary: Proxmox temperature metrics are missing
+            description: No temperature metrics were found for pve3-pve5 for 30m. High-temperature alerting is blind.

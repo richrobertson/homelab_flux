@@ -15,6 +15,7 @@ resources:
   - istio-servicemonitor.yaml
   - istio-gateway-alerts.yaml
   - backup-observability-alerts.yaml
+  - proxmox-temperature-alerts.yaml
   - volsync
 configMapGenerator:
   - name: flux-grafana-dashboards
@@ -23,6 +24,7 @@ configMapGenerator:
       - dashboards/control-plane.json
       - dashboards/cluster.json
       - dashboards/logs.json
+      - dashboards/proxmox-host-temperatures.json
     options:
       labels:
         grafana_dashboard: "1"
