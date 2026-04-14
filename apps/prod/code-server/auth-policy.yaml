@@ -15,4 +15,4 @@ spec:
     - to:
         - operation:
             hosts:
-              - code.prod.myrobertson.com
+              - code.myrobertson.com
