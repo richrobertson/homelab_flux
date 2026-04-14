@@ -99,7 +99,7 @@ spec:
           login_attribute_path: preferred_username
           email_attribute_path: email
           name_attribute_path: name
-          role_attribute_path: "(contains(join(' ', groups[*]), 'Domain Admins') || contains(join(' ', groups[*]), 'domain admins') || contains(join(' ', groups[*]), 'proxAdmins')) && 'Admin' || 'Viewer'"
+          role_attribute_path: "(contains(join(' ', groups[*]), 'Domain Admins') || contains(join(' ', groups[*]), 'domain admins') || contains(join(' ', groups[*]), 'CN=Domain Admins') || contains(join(' ', groups[*]), 'domain_admins') || contains(join(' ', groups[*]), 'domain-admins') || contains(join(' ', groups[*]), 'proxAdmins')) && 'Admin' || 'Viewer'"
     kubeScheduler:
       serviceMonitor:
         ## Skip TLS certificate validation when scraping
