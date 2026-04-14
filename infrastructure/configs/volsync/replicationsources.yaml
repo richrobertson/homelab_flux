@@ -22,6 +22,26 @@ spec:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
+  name: code-server-data-ceph-backup
+spec:
+  sourcePVC: code-server-data-ceph
+  paused: false
+  trigger:
+    schedule: "18 * * * *"
+  restic:
+    repository: restic-config-code-server
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+    copyMethod: Direct
+    cacheStorageClassName: ceph-filesystem
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
   name: bitwarden-data-ceph-backup
 spec:
   sourcePVC: bitwarden-data-ceph
