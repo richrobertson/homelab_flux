@@ -4,4 +4,4 @@ metadata:
   name: code-server
 spec:
   interval: 5m
-  url: https://coder.com/helm
+  url: https://helm.coder.com
