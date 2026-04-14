@@ -5,3 +5,4 @@ resources:
   - ../../base/code-server
   - gateway.yaml
   - httpRoute.yaml
+  - auth-policy.yaml
