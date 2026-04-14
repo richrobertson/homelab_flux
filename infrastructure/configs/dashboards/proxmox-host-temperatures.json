@@ -120,8 +120,8 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (instance, sensor) (node_hwmon_temp_celsius{instance=~\"$instance\", sensor=~\"Package id 0|Tctl|Tdie|temp1\"})",
-          "legendFormat": "{{instance}} {{sensor}}",
+          "expr": "max by (instance) (node_thermal_zone_temp{job=\"proxmox-node-exporter\", type=\"x86_pkg_temp\", instance=~\"$instance\"})",
+          "legendFormat": "{{instance}} cpu-package",
           "range": true,
           "refId": "A"
         }
@@ -221,17 +221,10 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (instance, device) (smartctl_device_temperature{instance=~\"$instance\"})",
-          "legendFormat": "{{instance}} {{device}}",
+          "expr": "max by (instance, chip) (node_hwmon_temp_celsius{job=\"proxmox-node-exporter\", chip=~\"nvme_.*\", sensor=\"temp1\", instance=~\"$instance\"})",
+          "legendFormat": "{{instance}} {{chip}}",
           "range": true,
           "refId": "A"
-        },
-        {
-          "editorMode": "code",
-          "expr": "max by (instance) (node_hwmon_temp_celsius{instance=~\"$instance\", sensor=\"Composite\"})",
-          "legendFormat": "{{instance}} nvme-composite",
-          "range": true,
-          "refId": "B"
         }
       ],
       "title": "NVMe Temperatures",
@@ -288,7 +281,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "(count(node_hwmon_temp_celsius) > bool 0) or (count(smartctl_device_temperature) > bool 0)",
+          "expr": "count(node_hwmon_temp_celsius{job=\"proxmox-node-exporter\"}) > bool 0",
           "instant": true,
           "legendFormat": "temperature_metrics_available",
           "range": false,
@@ -338,7 +331,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(node_exporter_build_info, instance)",
+        "definition": "label_values(up{job=\"proxmox-node-exporter\"}, instance)",
         "hide": 0,
         "includeAll": true,
         "label": "instance",
@@ -346,7 +339,7 @@
         "name": "instance",
         "options": [],
         "query": {
-          "query": "label_values(node_exporter_build_info, instance)",
+          "query": "label_values(up{job=\"proxmox-node-exporter\"}, instance)",
           "refId": "Prometheus-instance-Variable-Query"
         },
         "refresh": 2,
@@ -365,6 +358,6 @@
   "timezone": "",
   "title": "Proxmox Host Temperatures",
   "uid": "proxmox-host-temps",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }

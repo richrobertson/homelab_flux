@@ -13,7 +13,7 @@ spec:
         - alert: ProxmoxHostCPUTemperatureHighWarning
           expr: |
             max by (instance) (
-              node_hwmon_temp_celsius{sensor=~"Package id 0|Tctl|Tdie", instance=~"pve[3-5].*"}
+              node_thermal_zone_temp{job="proxmox-node-exporter", type="x86_pkg_temp", instance=~"pve[3-5].*"}
             ) >= 80
           for: 10m
           labels:
@@ -26,7 +26,7 @@ spec:
         - alert: ProxmoxHostCPUTemperatureHighCritical
           expr: |
             max by (instance) (
-              node_hwmon_temp_celsius{sensor=~"Package id 0|Tctl|Tdie", instance=~"pve[3-5].*"}
+              node_thermal_zone_temp{job="proxmox-node-exporter", type="x86_pkg_temp", instance=~"pve[3-5].*"}
             ) >= 90
           for: 5m
           labels:
@@ -39,9 +39,7 @@ spec:
         - alert: ProxmoxHostNVMeTemperatureHighWarning
           expr: |
             max by (instance) (
-              node_hwmon_temp_celsius{sensor="Composite", instance=~"pve[3-5].*"}
-              or
-              smartctl_device_temperature{instance=~"pve[3-5].*"}
+              node_hwmon_temp_celsius{job="proxmox-node-exporter", chip=~"nvme_.*", sensor="temp1", instance=~"pve[3-5].*"}
             ) >= 65
           for: 15m
           labels:
@@ -54,9 +52,7 @@ spec:
         - alert: ProxmoxHostNVMeTemperatureHighCritical
           expr: |
             max by (instance) (
-              node_hwmon_temp_celsius{sensor="Composite", instance=~"pve[3-5].*"}
-              or
-              smartctl_device_temperature{instance=~"pve[3-5].*"}
+              node_hwmon_temp_celsius{job="proxmox-node-exporter", chip=~"nvme_.*", sensor="temp1", instance=~"pve[3-5].*"}
             ) >= 75
           for: 10m
           labels:
@@ -68,11 +64,7 @@ spec:
 
         - alert: ProxmoxTemperatureMetricsMissing
           expr: |
-            (
-              count(node_hwmon_temp_celsius{instance=~"pve[3-5].*"})
-              +
-              count(smartctl_device_temperature{instance=~"pve[3-5].*"})
-            ) == 0
+            count(node_hwmon_temp_celsius{job="proxmox-node-exporter", instance=~"pve[3-5].*"}) == 0
           for: 30m
           labels:
             domain: proxmox
