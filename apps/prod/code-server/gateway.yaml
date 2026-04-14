@@ -6,13 +6,13 @@ metadata:
   namespace: default
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
-    cert-manager.io/common-name: code.prod.myrobertson.net
+    cert-manager.io/common-name: code.prod.myrobertson.com
     cert-manager.io/private-key-algorithm: "ECDSA"
 spec:
   gatewayClassName: istio
   listeners:
   - name: code-server
-    hostname: code.prod.myrobertson.net
+    hostname: code.prod.myrobertson.com
     port: 443
     protocol: HTTPS
     allowedRoutes:
@@ -26,4 +26,4 @@ spec:
     labels:
       istio-injection: enabled
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: code.prod.myrobertson.net
+      external-dns.alpha.kubernetes.io/hostname: code.prod.myrobertson.com
