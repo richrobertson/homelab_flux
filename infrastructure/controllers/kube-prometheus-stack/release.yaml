@@ -160,15 +160,6 @@ spec:
                   - pve5.myrobertson.net:9100
                 labels:
                   domain: proxmox
-          - job_name: proxmox-smartctl-exporter
-            scrape_interval: 60s
-            static_configs:
-              - targets:
-                  - pve3.myrobertson.net:9633
-                  - pve4.myrobertson.net:9633
-                  - pve5.myrobertson.net:9633
-                labels:
-                  domain: proxmox
         retention: 14d
         retentionSize: 50GB
         resources:
