@@ -1,0 +1,29 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: code-server
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: vault-issuer
+    cert-manager.io/common-name: code.prod.myrobertson.net
+    cert-manager.io/private-key-algorithm: "ECDSA"
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: code-server
+    hostname: code.prod.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: code-server-cert
+  infrastructure:
+    labels:
+      istio-injection: enabled
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: code.prod.myrobertson.net

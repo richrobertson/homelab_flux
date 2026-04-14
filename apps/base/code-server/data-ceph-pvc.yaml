@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: code-server-data-ceph
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ceph-rook-ssd
+  resources:
+    requests:
+      storage: 20Gi
