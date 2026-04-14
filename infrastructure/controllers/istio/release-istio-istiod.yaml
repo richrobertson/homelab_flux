@@ -41,4 +41,24 @@ spec:
               - 'set-cookie'
             headersToDownstreamOnAllow:
               - 'set-cookie'
+        - name: authelia-net
+          envoyExtAuthzHttp:
+            service: 'authelia.default.svc.cluster.local'
+            port: 80
+            pathPrefix: '/api/authz/ext-authz/'
+            includeRequestHeadersInCheck:
+              - 'accept'
+              - 'cookie'
+              - 'authorization'
+              - 'proxy-authorization'
+            headersToUpstreamOnAllow:
+              - 'remote-*'
+              - 'authelia-*'
+            includeAdditionalHeadersInCheck:
+              X-Forwarded-Proto: '%REQ(:SCHEME)%'
+              X-Authelia-URL: 'https://auth.staging.myrobertson.net'
+            headersToDownstreamOnDeny:
+              - 'set-cookie'
+            headersToDownstreamOnAllow:
+              - 'set-cookie'
   
