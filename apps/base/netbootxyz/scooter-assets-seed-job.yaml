@@ -1,0 +1,97 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: netbootxyz-assets-seed-from-scooter
+  namespace: default
+spec:
+  suspend: true
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: seed
+          image: alpine:3.20
+          env:
+            - name: SOURCE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: netbootxyz-scooter-migration
+                  key: host
+            - name: SOURCE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: netbootxyz-scooter-migration
+                  key: port
+                  optional: true
+            - name: SOURCE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: netbootxyz-scooter-migration
+                  key: username
+            - name: SOURCE_PATH
+              valueFrom:
+                secretKeyRef:
+                  name: netbootxyz-scooter-migration
+                  key: sourcePath
+            - name: SSH_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: netbootxyz-scooter-migration
+                  key: sshPrivateKey
+            - name: KNOWN_HOSTS
+              valueFrom:
+                secretKeyRef:
+                  name: netbootxyz-scooter-migration
+                  key: knownHosts
+                  optional: true
+            - name: DRY_RUN
+              value: "true"
+            - name: ALLOW_NON_EMPTY_TARGET
+              value: "false"
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              apk add --no-cache rsync openssh-client
+
+              TARGET_DIR="/assets"
+              mkdir -p "$TARGET_DIR"
+              if [ "${ALLOW_NON_EMPTY_TARGET}" != "true" ] && [ -n "$(ls -A "$TARGET_DIR" 2>/dev/null)" ]; then
+                echo "Target $TARGET_DIR is not empty. Set ALLOW_NON_EMPTY_TARGET=true only when intentional."
+                exit 1
+              fi
+
+              mkdir -p /root/.ssh
+              printf '%s\n' "${SSH_PRIVATE_KEY}" >/root/.ssh/id_ed25519
+              chmod 600 /root/.ssh/id_ed25519
+
+              if [ -n "${KNOWN_HOSTS}" ]; then
+                printf '%s\n' "${KNOWN_HOSTS}" >/root/.ssh/known_hosts
+                chmod 644 /root/.ssh/known_hosts
+                SSH_OPTS="-o UserKnownHostsFile=/root/.ssh/known_hosts -o StrictHostKeyChecking=yes"
+              else
+                SSH_OPTS="-o StrictHostKeyChecking=accept-new"
+              fi
+
+              RSYNC_FLAGS="-aH --numeric-ids --delete"
+              [ "${DRY_RUN}" = "true" ] && RSYNC_FLAGS="$RSYNC_FLAGS --dry-run"
+
+              REMOTE="${SOURCE_USER}@${SOURCE_HOST}:${SOURCE_PATH%/}/"
+              echo "Syncing ${REMOTE} -> ${TARGET_DIR}/"
+              rsync ${RSYNC_FLAGS} -e "ssh -p ${SOURCE_PORT:-22} ${SSH_OPTS}" "$REMOTE" "$TARGET_DIR/"
+
+              if [ "${DRY_RUN}" != "true" ]; then
+                date -u +"%Y-%m-%dT%H:%M:%SZ" >"$TARGET_DIR/.seed-from-scooter-complete"
+                echo "Seed complete."
+              else
+                echo "Dry-run complete. Re-run with DRY_RUN=false to copy data."
+              fi
+          volumeMounts:
+            - name: assets
+              mountPath: /assets
+      volumes:
+        - name: assets
+          persistentVolumeClaim:
+            claimName: netbootxyz-assets-ceph

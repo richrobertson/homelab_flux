@@ -6,6 +6,8 @@ resources:
   - httpRoute.yaml
   - config-ceph-pvc-v2.yaml
   - assets-ceph-pvc-v2.yaml
+  - ../../base/netbootxyz/scooter-migration-secret.yaml
+  - ../../base/netbootxyz/scooter-assets-seed-job.yaml
 patches:
   - patch: |
       - op: replace
@@ -37,4 +39,11 @@ patches:
     target:
       kind: PersistentVolumeClaim
       name: netbootxyz-assets-ceph
+  - patch: |
+      - op: replace
+        path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
+        value: netbootxyz-assets-ceph-v3
+    target:
+      kind: Job
+      name: netbootxyz-assets-seed-from-scooter
 
