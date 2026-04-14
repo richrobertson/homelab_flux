@@ -1,0 +1,9 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: code-server
+spec:
+  interval: 5m
+  url: https://github.com/coder/code-server.git
+  ref:
+    branch: main

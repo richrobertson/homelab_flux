@@ -8,11 +8,11 @@ spec:
   interval: 1h
   chart:
     spec:
-      chart: code-server
+      chart: ./ci/helm-chart
       sourceRef:
-        kind: HelmRepository
+        kind: GitRepository
         name: code-server
-      version: ">=5.0.0"
+      version: "*"
   values:
     replicaCount: 1
     image:
