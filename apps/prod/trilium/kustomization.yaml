@@ -11,7 +11,7 @@ patches:
   - patch: |
       - op: replace
         path: /spec/values/persistence/data/existingClaim
-        value: trilium-data-ceph-v2
+        value: trilium-data-ceph-v3
     target:
       kind: HelmRelease
       name: trilium
