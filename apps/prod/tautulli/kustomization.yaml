@@ -9,7 +9,7 @@ patches:
   - patch: |
       - op: replace
         path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
-        value: tautulli-config-ceph-v2
+        value: tautulli-config-ceph-v3
     target:
       kind: Deployment
       name: tautulli

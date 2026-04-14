@@ -10,10 +10,10 @@ patches:
   - patch: |
       - op: replace
         path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
-        value: netbootxyz-config-ceph-v2
+        value: netbootxyz-config-ceph-v3
       - op: replace
         path: /spec/template/spec/volumes/1/persistentVolumeClaim/claimName
-        value: netbootxyz-assets-ceph-v2
+        value: netbootxyz-assets-ceph-v3
     target:
       kind: Deployment
       name: netbootxyz

@@ -17,7 +17,7 @@ patches:
   - patch: |
       - op: replace
         path: /spec/values/persistence/existingClaim
-        value: authelia-config-ceph-v2
+        value: authelia-config-ceph-v3
     target:
       kind: HelmRelease
       name: authelia
