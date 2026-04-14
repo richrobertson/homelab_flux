@@ -14,7 +14,7 @@ spec:
     server:
       controllers:
         main:
-          replicas: 3
+          replicas: 2
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
