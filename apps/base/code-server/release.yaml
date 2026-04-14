@@ -24,7 +24,7 @@ spec:
       port: 8080
     persistence:
       enabled: true
-      storageClass: ceph-rook-ssd
+      storageClass: csi-cephfs-sc
       accessMode: ReadWriteOnce
       size: 20Gi
       existingClaim: code-server-data-ceph
