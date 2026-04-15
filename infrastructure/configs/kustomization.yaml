@@ -19,6 +19,7 @@ resources:
   - backup-observability-alerts.yaml
   - proxmox-temperature-alerts.yaml
   - volsync
+  - talos-etcd-backup
 configMapGenerator:
   - name: flux-grafana-dashboards
     namespace: monitoring

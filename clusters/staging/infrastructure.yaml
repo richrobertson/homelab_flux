@@ -132,6 +132,13 @@ spec:
         name: restic-config-.*
     - patch: |
         - op: replace
+          path: /spec/path
+          value: talos/backup/stage
+      target:
+        kind: VaultStaticSecret
+        name: talos-etcd-backup-credentials
+    - patch: |
+        - op: replace
           path: /spec/addresses/0
           value: 10.21.0.64/26
       target:
