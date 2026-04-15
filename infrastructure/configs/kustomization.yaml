@@ -68,4 +68,17 @@ configMapGenerator:
         app.kubernetes.io/part-of: immich
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: ceph-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/ceph-cluster.json
+      - dashboards/ceph-osd.json
+      - dashboards/ceph-pools.json
+      - dashboards/ceph-rgw-overview.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: ceph
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
 
