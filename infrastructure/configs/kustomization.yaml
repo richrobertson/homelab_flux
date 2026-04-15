@@ -13,6 +13,7 @@ resources:
   - monitoring-grafana-gateway.yaml
   - toolbox.yaml
   - ceph-servicemonitor.yaml
+  - ceph-prometheus-rules.yaml
   - istio-servicemonitor.yaml
   - istio-gateway-alerts.yaml
   - backup-observability-alerts.yaml

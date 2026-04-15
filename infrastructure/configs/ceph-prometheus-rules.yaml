@@ -1,0 +1,165 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ceph-health-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: ceph-health-alerts
+    app.kubernetes.io/part-of: ceph
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: ceph.health
+      interval: 1m
+      rules:
+        - alert: CephHealthError
+          expr: ceph_health_status == 2
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Ceph cluster is in HEALTH_ERR state"
+            description: "Ceph cluster health has been in ERROR state for more than 5 minutes. Immediate action required."
+
+        - alert: CephHealthWarning
+          expr: ceph_health_status == 1
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Ceph cluster is in HEALTH_WARN state"
+            description: "Ceph cluster health has been in WARNING state for more than 15 minutes."
+
+    - name: ceph.osd
+      interval: 1m
+      rules:
+        - alert: CephOSDDown
+          expr: ceph_osd_up == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Ceph OSD {{ $labels.ceph_daemon }} is down"
+            description: "OSD {{ $labels.ceph_daemon }} has been down for more than 5 minutes."
+
+        - alert: CephOSDNearFull
+          expr: >
+            (ceph_cluster_total_used_bytes / ceph_cluster_total_bytes) > 0.80
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Ceph cluster is nearing full capacity"
+            description: "Ceph cluster is {{ $value | humanizePercentage }} full (threshold: 80%)."
+
+        - alert: CephOSDFull
+          expr: >
+            (ceph_cluster_total_used_bytes / ceph_cluster_total_bytes) > 0.90
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Ceph cluster is critically full"
+            description: "Ceph cluster is {{ $value | humanizePercentage }} full (threshold: 90%). OSDs may become read-only."
+
+        - alert: CephOSDSlowOps
+          expr: ceph_healthcheck_slow_ops > 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Ceph has slow OSD operations"
+            description: "Ceph is reporting {{ $value }} slow operations. Check OSD and disk health."
+
+        - alert: CephOSDHighLatency
+          expr: >
+            avg(ceph_osd_apply_latency_ms) > 500
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Ceph OSD apply latency is high"
+            description: "Average OSD apply latency is {{ $value }}ms (threshold: 500ms)."
+
+    - name: ceph.mon
+      interval: 1m
+      rules:
+        - alert: CephMonQuorumAtRisk
+          expr: sum(ceph_mon_quorum_status) < 3
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Ceph monitor quorum is at risk"
+            description: "Only {{ $value }} monitors are in quorum. Cluster requires a majority to function."
+
+        - alert: CephMonDown
+          expr: ceph_mon_quorum_status == 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Ceph monitor {{ $labels.ceph_daemon }} is not in quorum"
+            description: "Monitor {{ $labels.ceph_daemon }} has been out of quorum for more than 5 minutes."
+
+    - name: ceph.pools
+      interval: 1m
+      rules:
+        - alert: CephPoolNearFull
+          expr: >
+            (ceph_pool_stored / (ceph_pool_stored + ceph_pool_max_avail)) > 0.80
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Ceph pool {{ $labels.pool_id }} is near full"
+            description: "Ceph pool {{ $labels.pool_id }} is {{ $value | humanizePercentage }} full (threshold: 80%)."
+
+        - alert: CephPoolFull
+          expr: >
+            (ceph_pool_stored / (ceph_pool_stored + ceph_pool_max_avail)) > 0.90
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Ceph pool {{ $labels.pool_id }} is critically full"
+            description: "Ceph pool {{ $labels.pool_id }} is {{ $value | humanizePercentage }} full (threshold: 90%)."
+
+    - name: ceph.pgs
+      interval: 2m
+      rules:
+        - alert: CephPGsDegraded
+          expr: ceph_pg_degraded > 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Ceph has degraded PGs"
+            description: "{{ $value }} placement groups are degraded. Data redundancy is reduced."
+
+        - alert: CephPGsStale
+          expr: ceph_pg_stale > 0
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Ceph has stale PGs"
+            description: "{{ $value }} placement groups are stale. OSDs hosting them may be down."
+
+        - alert: CephPGsDown
+          expr: ceph_pg_down > 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Ceph has down PGs"
+            description: "{{ $value }} placement groups are in 'down' state. Data may be unavailable."
+
+        - alert: CephPGsUnclean
+          expr: (ceph_pg_total - ceph_pg_clean) > 0
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Ceph has unclean PGs"
+            description: "{{ $value }} placement groups have been unclean for more than 30 minutes."
