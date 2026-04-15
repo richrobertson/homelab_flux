@@ -12,6 +12,7 @@ resources:
   - monitoring-alertmanager-gateway.yaml
   - monitoring-grafana-gateway.yaml
   - toolbox.yaml
+  - ceph-servicemonitor.yaml
   - istio-servicemonitor.yaml
   - istio-gateway-alerts.yaml
   - backup-observability-alerts.yaml

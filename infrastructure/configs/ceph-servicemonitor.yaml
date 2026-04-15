@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ceph-external-mgr-metrics
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: ceph-external-mgr-metrics
+    app.kubernetes.io/part-of: ceph
+    app.kubernetes.io/component: monitoring
+spec:
+  ports:
+    - name: http-metrics
+      port: 9283
+      protocol: TCP
+      targetPort: 9283
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: ceph-external-mgr-metrics
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: ceph-external-mgr-metrics
+    app.kubernetes.io/part-of: ceph
+    app.kubernetes.io/component: monitoring
+subsets:
+  - addresses:
+      - ip: 192.168.10.3
+      - ip: 192.168.10.4
+      - ip: 192.168.10.5
+    ports:
+      - name: http-metrics
+        port: 9283
+        protocol: TCP
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ceph-external-mgr-metrics
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: ceph-external-mgr-metrics
+    app.kubernetes.io/part-of: ceph
+    app.kubernetes.io/component: monitoring
+spec:
+  namespaceSelector:
+    matchNames:
+      - monitoring
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ceph-external-mgr-metrics
+  endpoints:
+    - port: http-metrics
+      path: /metrics
+      scheme: http
+      interval: 30s
