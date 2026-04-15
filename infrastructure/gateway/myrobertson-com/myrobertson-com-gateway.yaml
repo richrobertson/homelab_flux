@@ -44,6 +44,19 @@ spec:
       - name: auth-myrobertson-com-cert
         kind: Secret 
 
+  - name: code
+    hostname: code.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: code-myrobertson-com-cert
+        kind: Secret
+
   - name: bitwarden
     hostname: bitwarden.myrobertson.com
     port: 443
