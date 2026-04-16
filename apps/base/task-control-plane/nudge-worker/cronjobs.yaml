@@ -19,7 +19,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: nudge-worker
-              image: ghcr.io/richrobertson/nudge-worker:0.1.1
+              image: ghcr.io/richrobertson/nudge-worker:0.1.2
               imagePullPolicy: IfNotPresent
               args: ["--mode", "job", "--job", "morning-planning"]
               envFrom:
@@ -66,7 +66,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: nudge-worker
-              image: ghcr.io/richrobertson/nudge-worker:0.1.1
+              image: ghcr.io/richrobertson/nudge-worker:0.1.2
               imagePullPolicy: IfNotPresent
               args: ["--mode", "job", "--job", "daily-summary"]
               envFrom:
@@ -113,7 +113,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: nudge-worker
-              image: ghcr.io/richrobertson/nudge-worker:0.1.1
+              image: ghcr.io/richrobertson/nudge-worker:0.1.2
               imagePullPolicy: IfNotPresent
               args: ["--mode", "job", "--job", "end-of-day-reflection"]
               envFrom:

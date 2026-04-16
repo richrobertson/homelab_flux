@@ -38,7 +38,7 @@ class VikunjaClient:
         return response.json()
 
     async def list_open_tasks(self, limit: int = 50) -> list[TaskSnapshot]:
-        tasks = await self._request("GET", "/tasks/all")
+        tasks = await self._request("GET", "/tasks")
         if not isinstance(tasks, list):
             return []
 

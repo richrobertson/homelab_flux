@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: nudge-worker
-          image: ghcr.io/richrobertson/nudge-worker:0.1.1
+          image: ghcr.io/richrobertson/nudge-worker:0.1.2
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
