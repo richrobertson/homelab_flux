@@ -28,16 +28,6 @@ spec:
             secretKeyRef:
               name: task-control-plane-cnpg-app
               key: password
-        VIKUNJA_SERVICE_JWTSECRET:
-          valueFrom:
-            secretKeyRef:
-              name: task-control-plane-vikunja
-              key: jwtSecret
-        VIKUNJA_SERVICE_ENCRYPTIONKEY:
-          valueFrom:
-            secretKeyRef:
-              name: task-control-plane-vikunja
-              key: encryptionKey
       configMaps:
         config:
           enabled: true
