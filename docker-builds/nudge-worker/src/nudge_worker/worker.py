@@ -36,10 +36,17 @@ class NudgeWorker:
 
     async def run_forever(self) -> None:
         while True:
-            await self.run_once()
+            try:
+                await self.run_once()
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("nudge_scan_failed", extra={"error": str(exc)})
             await asyncio.sleep(self._settings.scan_interval_seconds)
 
     async def run_once(self) -> list[NudgeDecision]:
+        if not self._settings.has_vikunja_credentials:
+            logger.warning("vikunja_credentials_missing")
+            return []
+
         now = datetime.now(timezone.utc)
         tasks = await self._vikunja.list_open_tasks(limit=self._settings.max_tasks_per_scan)
         decisions = self._engine.decide(tasks, now=now)
@@ -51,6 +58,10 @@ class NudgeWorker:
         return decisions
 
     async def run_job(self, job_name: str) -> list[str]:
+        if not self._settings.has_vikunja_credentials:
+            logger.warning("vikunja_credentials_missing", extra={"job": job_name})
+            return []
+
         tasks = await self._vikunja.list_open_tasks(limit=self._settings.max_tasks_per_scan)
         messages: list[str] = []
 

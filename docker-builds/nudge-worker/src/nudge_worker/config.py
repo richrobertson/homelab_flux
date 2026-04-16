@@ -37,6 +37,11 @@ class Settings(BaseSettings):
     agent_service_base_url: str = "http://agent-service.default.svc.cluster.local:8080"
     nudge_session_prefix: str = "coach"
 
+    @property
+    def has_vikunja_credentials(self) -> bool:
+        token = self.vikunja_api_token.strip()
+        return bool(token and token.lower() != "set-me")
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
