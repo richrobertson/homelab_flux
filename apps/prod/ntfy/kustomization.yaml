@@ -4,3 +4,4 @@ namespace: default
 resources:
   - ../../base/ntfy
   - httpRoute.yaml
+  - auth-policy.yaml
