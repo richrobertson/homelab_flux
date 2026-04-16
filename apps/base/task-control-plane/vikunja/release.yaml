@@ -11,7 +11,7 @@ spec:
     vikunja:
       env:
         VIKUNJA_DATABASE_TYPE: postgres
-        VIKUNJA_DATABASE_HOST: task-control-plane-cnpg-rw.task-control-plane.svc.cluster.local
+        VIKUNJA_DATABASE_HOST: task-control-plane-cnpg-rw.default.svc.cluster.local
         VIKUNJA_DATABASE_PORT: "5432"
         VIKUNJA_DATABASE_DATABASE:
           valueFrom:
