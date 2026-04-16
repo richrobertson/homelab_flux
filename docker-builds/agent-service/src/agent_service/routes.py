@@ -55,7 +55,17 @@ async def _safe_answer_callback(bot_token: str, callback_query_id: str, text: st
     url = f"https://api.telegram.org/bot{bot_token}/answerCallbackQuery"
     async with httpx.AsyncClient(timeout=15) as client:
         response = await client.post(url, json={"callback_query_id": callback_query_id, "text": text[:180]})
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError:
+            logger.warning(
+                "telegram_answer_callback_failed",
+                extra={
+                    "callback_query_id": callback_query_id,
+                    "status_code": response.status_code,
+                    "response_body": response.text,
+                },
+            )
 
 
 async def _safe_edit_telegram_message(
@@ -75,7 +85,18 @@ async def _safe_edit_telegram_message(
         payload["reply_markup"] = reply_markup
     async with httpx.AsyncClient(timeout=15) as client:
         response = await client.post(url, json=payload)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError:
+            logger.warning(
+                "telegram_edit_message_failed",
+                extra={
+                    "chat_id": chat_id,
+                    "message_id": message_id,
+                    "status_code": response.status_code,
+                    "response_body": response.text,
+                },
+            )
 
 
 def _telegram_safe_text(text: str) -> str:
