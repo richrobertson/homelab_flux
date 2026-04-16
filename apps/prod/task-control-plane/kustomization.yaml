@@ -1,0 +1,76 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: task-control-plane
+resources:
+  - ../../base/task-control-plane
+  - postgres-scheduled-backup.yaml
+  - backup-volsync.yaml
+patches:
+  - patch: |
+      - op: replace
+        path: /data/environment
+        value: prod
+      - op: replace
+        path: /data/ingressHost
+        value: tasks.myrobertson.com
+      - op: replace
+        path: /data/ingressGatewayRef
+        value: myrobertson-com-gateway
+    target:
+      kind: ConfigMap
+      name: task-control-plane-settings
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: task-control-plane/prod/openai
+    target:
+      kind: VaultStaticSecret
+      name: task-control-plane-openai
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: task-control-plane/prod/app
+    target:
+      kind: VaultStaticSecret
+      name: task-control-plane-app
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: task-control-plane/prod/vikunja
+    target:
+      kind: VaultStaticSecret
+      name: task-control-plane-vikunja
+  - patch: |
+      - op: add
+        path: /spec/backup
+        value:
+          barmanObjectStore:
+            destinationPath: s3://homelab-prod-backups/cnpg/task-control-plane-cnpg
+            endpointURL: https://s3.us-west-2.amazonaws.com
+            wal:
+              compression: gzip
+              encryption: AES256
+            data:
+              compression: gzip
+              encryption: AES256
+            s3Credentials:
+              accessKeyId:
+                name: cnpg-backup-s3
+                key: AWS_ACCESS_KEY_ID
+              secretAccessKey:
+                name: cnpg-backup-s3
+                key: AWS_SECRET_ACCESS_KEY
+          retentionPolicy: 30d
+    target:
+      kind: Cluster
+      name: task-control-plane-cnpg
+  - patch: |
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: task-control-plane-cnpg
+        annotations:
+          cnpg.io/skipEmptyWalArchiveCheck: enabled
+    target:
+      kind: Cluster
+      name: task-control-plane-cnpg

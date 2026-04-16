@@ -19,5 +19,6 @@ resources:
   - radarr
   - sonarr
   - syncthing
+  - task-control-plane
   - tautulli
   - volsync

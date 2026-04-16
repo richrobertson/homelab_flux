@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: vikunja
+spec:
+  interval: 1h
+  url: oci://ghcr.io/go-vikunja/helm-chart/vikunja
+  ref:
+    semver: ">=2.x"
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy

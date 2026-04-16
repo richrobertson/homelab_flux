@@ -1,0 +1,23 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: task-control-plane-cnpg
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: task-control-plane
+spec:
+  instances: 1
+  enableSuperuserAccess: false
+  storage:
+    size: 10Gi
+    storageClass: ceph-block
+  managed:
+    roles:
+      - name: vikunja
+        login: true
+        superuser: false
+  bootstrap:
+    initdb:
+      database: vikunja
+      owner: vikunja

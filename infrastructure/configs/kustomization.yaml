@@ -71,6 +71,16 @@ configMapGenerator:
         app.kubernetes.io/part-of: immich
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: task-control-plane-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/task-control-plane-overview.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: task-control-plane
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
   - name: ceph-grafana-dashboards
     namespace: monitoring
     files:

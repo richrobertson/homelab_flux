@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: task-control-plane
+resources:
+  - ../../base/task-control-plane
+patches:
+  - patch: |
+      - op: replace
+        path: /data/environment
+        value: staging
+      - op: replace
+        path: /data/ingressHost
+        value: tasks.staging.myrobertson.net
+      - op: replace
+        path: /data/ingressGatewayRef
+        value: myrobertson-com-gateway
+    target:
+      kind: ConfigMap
+      name: task-control-plane-settings
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: task-control-plane/staging/openai
+    target:
+      kind: VaultStaticSecret
+      name: task-control-plane-openai
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: task-control-plane/staging/app
+    target:
+      kind: VaultStaticSecret
+      name: task-control-plane-app
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: task-control-plane/staging/vikunja
+    target:
+      kind: VaultStaticSecret
+      name: task-control-plane-vikunja

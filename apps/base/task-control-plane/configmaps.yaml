@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-control-plane-metadata
+data:
+  owner: "homelab"
+  managed-by: "flux"
+  repo: "homelab_flux"
+  namespace: "task-control-plane"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-control-plane-settings
+data:
+  environment: "base"
+  ingressHost: "tasks.myrobertson.com"
+  ingressGatewayRef: "myrobertson-com-gateway"
+  openAIProvider: "openai"
+  openAIBaseUrl: "https://api.openai.com/v1"
