@@ -12,6 +12,7 @@ resources:
   - plex
   - prowlarr
   - radarr
+  - redis-operator
   - sonarr
   - syncthing
   - task-control-plane
