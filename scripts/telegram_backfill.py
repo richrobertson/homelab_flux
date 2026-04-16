@@ -83,11 +83,16 @@ def _load_rows(export_file: Path, user_id: str) -> tuple[list[BackfillRow], str 
     rows: list[BackfillRow] = []
     first_name: str | None = None
     newest_ts: datetime | None = None
+    normalized_user_id = user_id.removeprefix("user")
+    accepted_from_ids = {user_id, normalized_user_id, f"user{normalized_user_id}"}
 
     for msg in messages:
         if not isinstance(msg, dict):
             continue
         if msg.get("type") != "message":
+            continue
+        from_id = msg.get("from_id")
+        if isinstance(from_id, str) and from_id not in accepted_from_ids:
             continue
         text = _normalize_text(msg.get("text"))
         if not text:
