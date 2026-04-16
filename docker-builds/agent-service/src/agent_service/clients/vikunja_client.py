@@ -10,7 +10,8 @@ from agent_service.config import Settings
 
 class VikunjaClient:
     def __init__(self, settings: Settings) -> None:
-        self._base_url = settings.vikunja_base_url.rstrip("/") + "/api/v1"
+        self._web_base_url = settings.vikunja_base_url.rstrip("/")
+        self._base_url = self._web_base_url + "/api/v1"
         self._project_id = settings.vikunja_project_id
         self._client = httpx.AsyncClient(
             timeout=settings.vikunja_timeout_seconds,
@@ -19,6 +20,20 @@ class VikunjaClient:
                 "Content-Type": "application/json",
             },
         )
+
+    def _with_task_url(self, task: dict[str, Any]) -> dict[str, Any]:
+        task_id = task.get("id")
+        if task_id is None:
+            return task
+
+        try:
+            task_id = int(task_id)
+        except (TypeError, ValueError):
+            return task
+
+        result = dict(task)
+        result["task_url"] = f"{self._web_base_url}/tasks/{task_id}"
+        return result
 
     async def _request(self, method: str, path: str, **kwargs: Any) -> Any:
         response = await self._client.request(method, f"{self._base_url}{path}", **kwargs)
@@ -52,10 +67,14 @@ class VikunjaClient:
             normalized = filtered
 
         normalized.sort(key=lambda t: (t.get("due_date") or "9999", -(t.get("priority") or 0)))
-        return normalized[: max(1, limit)]
+        sliced = normalized[: max(1, limit)]
+        return [self._with_task_url(task) for task in sliced]
 
     async def get_task(self, task_id: int) -> dict[str, Any]:
-        return await self._request("GET", f"/tasks/{task_id}")
+        task = await self._request("GET", f"/tasks/{task_id}")
+        if isinstance(task, dict):
+            return self._with_task_url(task)
+        return {}
 
     async def create_task(
         self,
@@ -71,7 +90,10 @@ class VikunjaClient:
             payload["due_date"] = due_date
 
         target_project = project_id or self._project_id
-        return await self._request("PUT", f"/projects/{target_project}/tasks", json=payload)
+        created = await self._request("PUT", f"/projects/{target_project}/tasks", json=payload)
+        if isinstance(created, dict):
+            return self._with_task_url(created)
+        return {}
 
     async def update_task(
         self,
@@ -81,7 +103,9 @@ class VikunjaClient:
         due_date: str | None = None,
         done: bool | None = None,
     ) -> dict[str, Any]:
-        current = await self.get_task(task_id)
+        current = await self._request("GET", f"/tasks/{task_id}")
+        if not isinstance(current, dict):
+            current = {}
         payload = dict(current)
         if title is not None:
             payload["title"] = title
@@ -91,7 +115,10 @@ class VikunjaClient:
             payload["due_date"] = due_date
         if done is not None:
             payload["done"] = done
-        return await self._request("POST", f"/tasks/{task_id}", json=payload)
+        updated = await self._request("POST", f"/tasks/{task_id}", json=payload)
+        if isinstance(updated, dict):
+            return self._with_task_url(updated)
+        return {}
 
     async def complete_task(self, task_id: int) -> dict[str, Any]:
         return await self.update_task(task_id=task_id, done=True)
