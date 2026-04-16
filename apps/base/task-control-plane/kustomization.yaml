@@ -6,4 +6,4 @@ resources:
   - secret-stubs.yaml
   - postgres
   - vikunja
-  # - ingress-skeleton.yaml
+  - ingress-skeleton.yaml
