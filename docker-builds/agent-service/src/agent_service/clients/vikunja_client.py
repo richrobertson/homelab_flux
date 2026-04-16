@@ -148,5 +148,9 @@ class VikunjaClient:
     async def complete_task(self, task_id: int) -> dict[str, Any]:
         return await self.update_task(task_id=task_id, done=True)
 
+    async def delete_task(self, task_id: int) -> dict[str, Any]:
+        await self._request("DELETE", f"/tasks/{task_id}")
+        return {"id": int(task_id), "deleted": True, "task_url": f"{self._web_base_url}/tasks/{int(task_id)}"}
+
     async def close(self) -> None:
         await self._client.aclose()

@@ -98,6 +98,20 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
     {
         "type": "function",
         "function": {
+            "name": "delete_task",
+            "description": "Delete a task permanently.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "task_id": {"type": "integer"},
+                },
+                "required": ["task_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "suggest_next_task",
             "description": "Suggest the best next task from open tasks.",
             "parameters": {
@@ -136,6 +150,7 @@ class ToolExecutor:
             "create_subtask": self._create_subtask,
             "update_task": self._update_task,
             "complete_task": self._complete_task,
+            "delete_task": self._delete_task,
             "suggest_next_task": self._suggest_next_task,
             "break_down_task": self._break_down_task,
         }
@@ -186,6 +201,10 @@ class ToolExecutor:
     async def _complete_task(self, args: dict[str, Any]) -> dict[str, Any]:
         task = await self._vikunja.complete_task(task_id=int(args["task_id"]))
         return {"ok": True, "task": task}
+
+    async def _delete_task(self, args: dict[str, Any]) -> dict[str, Any]:
+        result = await self._vikunja.delete_task(task_id=int(args["task_id"]))
+        return {"ok": True, "task": result}
 
     async def _suggest_next_task(self, args: dict[str, Any]) -> dict[str, Any]:
         tasks = await self._vikunja.list_tasks(limit=int(args.get("limit", 20)))

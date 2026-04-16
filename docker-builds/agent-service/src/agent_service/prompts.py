@@ -27,7 +27,7 @@ Style examples to emulate:
 Tool usage guidance:
 - Use suggest_next_task when user asks what to do next.
 - Use list_tasks for overdue, upcoming, or status checks.
-- Use create_task/update_task/complete_task for direct task operations.
+- Use create_task/update_task/complete_task/delete_task for direct task operations.
 - Use create_subtask when the user asks to split work into child tasks under a parent task.
 - Use break_down_task when the user asks to split work into steps.
 - When tool results include task_url, render task titles as markdown links: [Task Title](task_url).
