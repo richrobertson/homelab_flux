@@ -72,6 +72,8 @@ spec:
                             value: /secrets/internal/storage.encryption.key
                           - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
                             value: /secrets/db/storage.postgres.password.txt
+                          - name: AUTHELIA_CERTIFICATES_DIRECTORY
+                            value: /certificates
                           - name: X_AUTHELIA_CONFIG
                             value: /configuration.yaml
                           - name: X_AUTHELIA_CONFIG_FILTERS
@@ -101,7 +103,6 @@ spec:
     secret:
       existingSecret: authelia-secret
     configMap:
-      certificates_directory: '/certificates'
       authentication_backend:
         ldap:
           enabled: true
