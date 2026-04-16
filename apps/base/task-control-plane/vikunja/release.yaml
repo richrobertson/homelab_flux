@@ -9,9 +9,6 @@ spec:
     name: vikunja
   values:
     vikunja:
-      envFrom:
-        - secretRef:
-            name: task-control-plane-vikunja
       env:
         VIKUNJA_DATABASE_TYPE: postgres
         VIKUNJA_DATABASE_HOST: task-control-plane-cnpg-rw.task-control-plane.svc.cluster.local
@@ -31,6 +28,16 @@ spec:
             secretKeyRef:
               name: task-control-plane-cnpg-app
               key: password
+        VIKUNJA_SERVICE_JWTSECRET:
+          valueFrom:
+            secretKeyRef:
+              name: task-control-plane-vikunja
+              key: jwtSecret
+        VIKUNJA_SERVICE_ENCRYPTIONKEY:
+          valueFrom:
+            secretKeyRef:
+              name: task-control-plane-vikunja
+              key: encryptionKey
       configMaps:
         config:
           enabled: true
@@ -43,6 +50,11 @@ spec:
               log:
                 level: INFO
       persistence:
+        database:
+          enabled: true
+          storageClass: csi-cephfs-sc
+          accessMode: ReadWriteMany
+          size: 5Gi
         data:
           enabled: true
           existingClaim: vikunja-data
