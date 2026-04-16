@@ -4,6 +4,8 @@ import asyncio
 import logging
 from datetime import date, datetime, timezone
 
+import httpx
+
 from nudge_worker.clients.agent_service_client import AgentServiceClient
 from nudge_worker.clients.ntfy_client import NtfyClient
 from nudge_worker.clients.telegram_client import TelegramClient
@@ -168,7 +170,22 @@ class NudgeWorker:
             chat_ids = [self._settings.telegram_primary_chat_id]
 
         for chat_id in dict.fromkeys(chat_ids):
-            await self._telegram.send_message(chat_id=chat_id, text=text)
+            try:
+                await self._telegram.send_message(chat_id=chat_id, text=text)
+            except httpx.HTTPStatusError as exc:
+                body = ""
+                try:
+                    body = exc.response.text
+                except Exception:
+                    body = "<unavailable>"
+                logger.warning(
+                    "telegram_primary_send_failed",
+                    extra={
+                        "chat_id": chat_id,
+                        "status_code": exc.response.status_code,
+                        "response_body": body,
+                    },
+                )
 
     async def _deliver(self, decision: NudgeDecision, now: datetime) -> None:
         body = await self._coach.compose(decision)
