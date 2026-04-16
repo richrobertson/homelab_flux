@@ -6,7 +6,8 @@ data:
   owner: "homelab"
   managed-by: "flux"
   repo: "homelab_flux"
-  namespace: "task-control-plane"
+  namespace: "default"
+  component: "task-control-plane"
 ---
 apiVersion: v1
 kind: ConfigMap

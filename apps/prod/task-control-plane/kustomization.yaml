@@ -21,6 +21,26 @@ patches:
       name: task-control-plane-settings
   - patch: |
       - op: replace
+        path: /data/ENVIRONMENT
+        value: prod
+      - op: replace
+        path: /data/VIKUNJA_BASE_URL
+        value: https://tasks.myrobertson.com
+    target:
+      kind: ConfigMap
+      name: agent-service-config
+  - patch: |
+      - op: replace
+        path: /data/ENVIRONMENT
+        value: prod
+      - op: replace
+        path: /data/VIKUNJA_BASE_URL
+        value: https://tasks.myrobertson.com
+    target:
+      kind: ConfigMap
+      name: nudge-worker-config
+  - patch: |
+      - op: replace
         path: /spec/path
         value: task-control-plane/prod/openai
     target:

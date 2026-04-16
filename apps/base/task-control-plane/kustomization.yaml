@@ -6,4 +6,6 @@ resources:
   - secret-stubs.yaml
   - postgres
   - vikunja
+  - agent-service
+  - nudge-worker
   - ingress-skeleton.yaml

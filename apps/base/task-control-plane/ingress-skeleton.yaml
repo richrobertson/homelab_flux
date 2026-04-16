@@ -14,6 +14,20 @@ spec:
     - matches:
         - path:
             type: PathPrefix
+            value: /chat
+      backendRefs:
+        - name: agent-service
+          port: 8080
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /webhooks/telegram
+      backendRefs:
+        - name: agent-service
+          port: 8080
+    - matches:
+        - path:
+            type: PathPrefix
             value: /
       backendRefs:
         - name: vikunja

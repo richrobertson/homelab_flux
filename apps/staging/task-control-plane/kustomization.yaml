@@ -19,6 +19,26 @@ patches:
       name: task-control-plane-settings
   - patch: |
       - op: replace
+        path: /data/ENVIRONMENT
+        value: staging
+      - op: replace
+        path: /data/VIKUNJA_BASE_URL
+        value: https://tasks.staging.myrobertson.net
+    target:
+      kind: ConfigMap
+      name: agent-service-config
+  - patch: |
+      - op: replace
+        path: /data/ENVIRONMENT
+        value: staging
+      - op: replace
+        path: /data/VIKUNJA_BASE_URL
+        value: https://tasks.staging.myrobertson.net
+    target:
+      kind: ConfigMap
+      name: nudge-worker-config
+  - patch: |
+      - op: replace
         path: /spec/path
         value: task-control-plane/staging/openai
     target:
