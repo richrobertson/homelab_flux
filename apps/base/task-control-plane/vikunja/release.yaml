@@ -54,6 +54,8 @@ spec:
                 enableregistration: false
                 timezone: UTC
               auth:
+                local:
+                  enabled: false
                 openid:
                   enabled: true
                   providers:
