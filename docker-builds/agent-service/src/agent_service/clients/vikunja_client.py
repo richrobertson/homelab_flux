@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 from datetime import datetime, timezone
 from typing import Any
 
@@ -17,7 +16,6 @@ class VikunjaClient:
             timeout=settings.vikunja_timeout_seconds,
             headers={
                 "Authorization": f"Bearer {settings.vikunja_api_token}",
-                "Content-Type": "application/json",
             },
         )
 
@@ -151,6 +149,27 @@ class VikunjaClient:
     async def delete_task(self, task_id: int) -> dict[str, Any]:
         await self._request("DELETE", f"/tasks/{task_id}")
         return {"id": int(task_id), "deleted": True, "task_url": f"{self._web_base_url}/tasks/{int(task_id)}"}
+
+    async def list_task_attachments(self, task_id: int) -> list[dict[str, Any]]:
+        payload = await self._request("GET", f"/tasks/{int(task_id)}/attachments")
+        if isinstance(payload, list):
+            return [item for item in payload if isinstance(item, dict)]
+        return []
+
+    async def upload_task_attachment(
+        self,
+        task_id: int,
+        filename: str,
+        content_bytes: bytes,
+        mime_type: str | None = None,
+    ) -> list[dict[str, Any]]:
+        files = [("files", (filename, content_bytes, mime_type or "application/octet-stream"))]
+        payload = await self._request("PUT", f"/tasks/{int(task_id)}/attachments", files=files)
+        if isinstance(payload, list):
+            return [item for item in payload if isinstance(item, dict)]
+        if isinstance(payload, dict):
+            return [payload]
+        return []
 
     async def close(self) -> None:
         await self._client.aclose()

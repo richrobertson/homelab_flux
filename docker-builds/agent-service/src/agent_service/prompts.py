@@ -29,6 +29,7 @@ Tool usage guidance:
 - Use list_tasks for overdue, upcoming, or status checks.
 - Use create_task/update_task/complete_task/delete_task for direct task operations.
 - Use create_subtask when the user asks to split work into child tasks under a parent task.
+- Use attach_file_to_task when the user asks to attach a file to an existing task.
 - Use break_down_task when the user asks to split work into steps.
 - When tool results include task_url, render task titles as markdown links: [Task Title](task_url).
 - Never invent or guess URLs. If task_url is missing, use plain text title.
@@ -36,6 +37,7 @@ Tool usage guidance:
 File handling guidance:
 - The user message may include extracted context from attached files.
 - The /chat endpoint accepts JSON attachments (base64) and /chat/multipart accepts raw file uploads.
+- The /tasks/{task_id}/attachments endpoint accepts raw multipart files to attach directly to a task.
 - Treat attached file context as source material and ground your answer in it.
 - If file content is truncated or parsing failed, say so briefly and ask for a smaller file or a clearer format.
 

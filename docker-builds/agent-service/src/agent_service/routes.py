@@ -415,6 +415,24 @@ def build_router(
         chat_request_latency_seconds.observe(time.perf_counter() - started)
         return ChatResponse(session_id=session_id, response=text, tool_calls=tool_calls)
 
+    @router.put("/tasks/{task_id}/attachments")
+    async def upload_task_attachments(task_id: int, files: list[UploadFile] = File(...)) -> dict[str, Any]:
+        if vikunja_client is None:
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Vikunja client unavailable")
+
+        uploaded: list[dict[str, Any]] = []
+        for upload in files:
+            content_bytes = await upload.read()
+            result = await vikunja_client.upload_task_attachment(
+                task_id=task_id,
+                filename=upload.filename or "attachment.bin",
+                content_bytes=content_bytes,
+                mime_type=upload.content_type,
+            )
+            uploaded.extend(result)
+
+        return {"ok": True, "task_id": task_id, "count": len(uploaded), "attachments": uploaded}
+
     @router.post("/webhooks/telegram")
     async def telegram_webhook(
         update: TelegramUpdate,

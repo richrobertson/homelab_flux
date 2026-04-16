@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import binascii
 from typing import Any
 
 from agent_service.clients.vikunja_client import VikunjaClient
@@ -112,6 +114,23 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
     {
         "type": "function",
         "function": {
+            "name": "attach_file_to_task",
+            "description": "Attach a file to an existing task using base64-encoded file content.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "task_id": {"type": "integer"},
+                    "filename": {"type": "string"},
+                    "content_base64": {"type": "string"},
+                    "mime_type": {"type": "string"},
+                },
+                "required": ["task_id", "filename", "content_base64"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "suggest_next_task",
             "description": "Suggest the best next task from open tasks.",
             "parameters": {
@@ -151,6 +170,7 @@ class ToolExecutor:
             "update_task": self._update_task,
             "complete_task": self._complete_task,
             "delete_task": self._delete_task,
+            "attach_file_to_task": self._attach_file_to_task,
             "suggest_next_task": self._suggest_next_task,
             "break_down_task": self._break_down_task,
         }
@@ -205,6 +225,20 @@ class ToolExecutor:
     async def _delete_task(self, args: dict[str, Any]) -> dict[str, Any]:
         result = await self._vikunja.delete_task(task_id=int(args["task_id"]))
         return {"ok": True, "task": result}
+
+    async def _attach_file_to_task(self, args: dict[str, Any]) -> dict[str, Any]:
+        try:
+            content_bytes = base64.b64decode(str(args["content_base64"]), validate=True)
+        except (binascii.Error, ValueError) as exc:
+            return {"ok": False, "error": f"Invalid base64 file content: {exc}"}
+
+        attachments = await self._vikunja.upload_task_attachment(
+            task_id=int(args["task_id"]),
+            filename=str(args["filename"]),
+            content_bytes=content_bytes,
+            mime_type=args.get("mime_type"),
+        )
+        return {"ok": True, "task_id": int(args["task_id"]), "attachments": attachments}
 
     async def _suggest_next_task(self, args: dict[str, Any]) -> dict[str, Any]:
         tasks = await self._vikunja.list_tasks(limit=int(args.get("limit", 20)))
