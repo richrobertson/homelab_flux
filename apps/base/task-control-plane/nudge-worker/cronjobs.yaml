@@ -19,7 +19,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: nudge-worker
-              image: ghcr.io/richrobertson/nudge-worker:0.2.1
+              image: ghcr.io/richrobertson/nudge-worker:0.2.2
               imagePullPolicy: IfNotPresent
               command: ["python", "-m", "nudge_worker.main"]
               args: ["--mode", "job", "--job", "morning-planning"]
@@ -97,7 +97,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: nudge-worker
-              image: ghcr.io/richrobertson/nudge-worker:0.2.1
+              image: ghcr.io/richrobertson/nudge-worker:0.2.2
               imagePullPolicy: IfNotPresent
               command: ["python", "-m", "nudge_worker.main"]
               args: ["--mode", "job", "--job", "daily-summary"]
@@ -175,7 +175,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: nudge-worker
-              image: ghcr.io/richrobertson/nudge-worker:0.2.1
+              image: ghcr.io/richrobertson/nudge-worker:0.2.2
               imagePullPolicy: IfNotPresent
               command: ["python", "-m", "nudge_worker.main"]
               args: ["--mode", "job", "--job", "end-of-day-reflection"]
@@ -253,7 +253,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: nudge-worker
-              image: ghcr.io/richrobertson/nudge-worker:0.2.1
+              image: ghcr.io/richrobertson/nudge-worker:0.2.2
               imagePullPolicy: IfNotPresent
               command: ["python", "-m", "nudge_worker.main"]
               args: ["--mode", "job", "--job", "weekly-review"]

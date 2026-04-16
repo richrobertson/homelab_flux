@@ -18,7 +18,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: richrobertson/nudge-worker
-  IMAGE_TAG: 0.2.1
+  IMAGE_TAG: 0.2.2
 
 jobs:
   build:
