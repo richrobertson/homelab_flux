@@ -99,7 +99,7 @@ spec:
         ldap:
           enabled: true
           implementation: 'activedirectory'
-          address: 'ldap://rhonda.myrobertson.net'
+          address: 'ldaps://rhonda.myrobertson.net'
           base_dn: 'cn=Users,dc=myrobertson,dc=net'
           user: 'ldap@myrobertson.net'
 
