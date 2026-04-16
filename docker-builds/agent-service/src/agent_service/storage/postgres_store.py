@@ -222,7 +222,7 @@ class PostgresStore:
                 """
                 SELECT chat_id
                 FROM telegram_chat_state
-                WHERE last_seen_at >= NOW() - ($1::text || ' minutes')::interval
+                WHERE last_seen_at >= NOW() - make_interval(mins => $1)
                 ORDER BY last_seen_at DESC
                 """,
                 minutes,
