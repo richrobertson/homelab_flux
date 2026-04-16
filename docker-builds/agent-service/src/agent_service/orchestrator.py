@@ -27,11 +27,25 @@ class AgentOrchestrator:
         self._tools = tool_executor
         self._store = session_store
 
-    async def handle_chat(self, session_id: str, user_message: str) -> tuple[str, list[ToolCallRecord]]:
+    async def handle_chat(
+        self,
+        session_id: str,
+        user_message: str,
+        attachments_context: str | None = None,
+    ) -> tuple[str, list[ToolCallRecord]]:
         history = await self._store.get_messages(session_id)
         base_prompt = self._settings.agent_system_prompt or DEFAULT_SYSTEM_PROMPT
         system_prompt = build_system_prompt_with_context(base_prompt)
         behavior = assess_behavior(user_message)
+
+        rendered_user_message = user_message
+        if attachments_context:
+            rendered_user_message = (
+                f"{user_message}\n\n"
+                "Attached file context:\n"
+                "Use this extracted file content when answering.\n\n"
+                f"{attachments_context}"
+            )
 
         messages: list[dict[str, Any]] = [
             {"role": "system", "content": system_prompt},
@@ -42,7 +56,7 @@ class AgentOrchestrator:
 
         messages.extend([
             *history,
-            {"role": "user", "content": user_message},
+            {"role": "user", "content": rendered_user_message},
         ])
 
         tool_records: list[ToolCallRecord] = []

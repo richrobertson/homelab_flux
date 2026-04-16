@@ -4,9 +4,16 @@ from typing import Any, Optional
 from pydantic import BaseModel, Field
 
 
+class ChatAttachment(BaseModel):
+    filename: str = Field(..., min_length=1)
+    content_base64: str = Field(..., min_length=1)
+    mime_type: Optional[str] = None
+
+
 class ChatRequest(BaseModel):
     session_id: str = Field(..., min_length=1)
     message: str = Field(..., min_length=1)
+    attachments: list[ChatAttachment] = Field(default_factory=list)
 
 
 class ToolCallRecord(BaseModel):

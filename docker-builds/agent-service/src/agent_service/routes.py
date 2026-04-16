@@ -11,6 +11,7 @@ from fastapi.responses import PlainTextResponse
 
 from agent_service.behavior import assess_behavior, extract_task_id
 from agent_service.config import Settings
+from agent_service.file_ingest import build_attachments_context
 from agent_service.metrics import (
     chat_request_latency_seconds,
     postgres_event_writes_total,
@@ -375,9 +376,11 @@ def build_router(
     @router.post("/chat", response_model=ChatResponse)
     async def chat(payload: ChatRequest) -> ChatResponse:
         started = time.perf_counter()
+        attachments_context = build_attachments_context(payload.attachments)
         text, tool_calls = await orchestrator.handle_chat(
             session_id=payload.session_id,
             user_message=payload.message,
+            attachments_context=attachments_context,
         )
         chat_request_latency_seconds.observe(time.perf_counter() - started)
         return ChatResponse(session_id=payload.session_id, response=text, tool_calls=tool_calls)
