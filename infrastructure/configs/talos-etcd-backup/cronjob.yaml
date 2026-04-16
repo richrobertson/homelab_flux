@@ -19,6 +19,10 @@ spec:
         spec:
           restartPolicy: OnFailure
           securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            fsGroup: 65532
             seccompProfile:
               type: RuntimeDefault
           volumes:
@@ -32,6 +36,7 @@ spec:
               image: ghcr.io/siderolabs/talosctl:v1.12.6
               imagePullPolicy: IfNotPresent
               securityContext:
+                runAsNonRoot: true
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop: ["ALL"]
@@ -63,6 +68,7 @@ spec:
               image: amazon/aws-cli:latest
               imagePullPolicy: IfNotPresent
               securityContext:
+                runAsNonRoot: true
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop: ["ALL"]
