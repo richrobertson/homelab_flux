@@ -52,7 +52,7 @@ spec:
               public: false
               authorization_policy: one_factor
               redirect_uris:
-                - https://tasks.staging.myrobertson.net/auth/openidCallback
+                - https://tasks.staging.myrobertson.net/auth/openid/
               scopes:
                 - openid
                 - profile

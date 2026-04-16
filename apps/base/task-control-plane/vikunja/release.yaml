@@ -28,21 +28,22 @@ spec:
             secretKeyRef:
               name: task-control-plane-cnpg-app
               key: password
-        # OIDC Configuration (Authelia)
+        # OIDC configuration (Authelia)
         VIKUNJA_AUTH_OPENID_ENABLED: "true"
-        VIKUNJA_AUTH_OPENID_PROVIDER: https://auth.myrobertson.com
-        VIKUNJA_AUTH_OPENID_CLIENTID:
+        VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_NAME: Authelia
+        VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_AUTHURL: https://auth.myrobertson.com
+        VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_LOGOUTURL: https://auth.myrobertson.com/logout
+        VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_CLIENTID:
           valueFrom:
             secretKeyRef:
               name: vikunja-oidc-secret
               key: client_id
-        VIKUNJA_AUTH_OPENID_CLIENTSECRET:
+        VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_CLIENTSECRET:
           valueFrom:
             secretKeyRef:
               name: vikunja-oidc-secret
               key: client_secret
-        VIKUNJA_AUTH_OPENID_SCOPES: "openid profile email groups"
-        VIKUNJA_AUTH_OPENID_LOGOUTURL: https://auth.myrobertson.com/logout
+        VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_SCOPE: "openid profile email groups"
       configMaps:
         config:
           enabled: true
@@ -52,6 +53,11 @@ spec:
                 publicurl: https://tasks.myrobertson.com/
                 enableregistration: false
                 timezone: UTC
+              auth:
+                openid:
+                  enabled: true
+                  providers:
+                    authelia: {}
               log:
                 level: INFO
       persistence:
