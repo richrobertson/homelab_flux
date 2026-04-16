@@ -27,12 +27,47 @@ spec:
                 secretName: talos-etcd-backup-credentials
             - name: tmp
               emptyDir: {}
+          initContainers:
+            - name: snapshot
+              image: ghcr.io/siderolabs/talosctl:v1.12.6
+              imagePullPolicy: IfNotPresent
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: secrets
+                  mountPath: /etc/talos-backup-secrets
+                  readOnly: true
+                - name: tmp
+                  mountPath: /tmp
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  SECRETS=/etc/talos-backup-secrets
+                  ENDPOINT=$(cat "${SECRETS}/TALOS_ENDPOINT")
+                  ENV_NAME=$(cat "${SECRETS}/ENV_NAME")
+                  TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
+                  SNAPSHOT="/tmp/etcd-${ENV_NAME}-${TIMESTAMP}.db"
+
+                  cp "${SECRETS}/TALOS_CONFIG" /tmp/talosconfig
+                  chmod 600 /tmp/talosconfig
+
+                  echo "Taking etcd snapshot from ${ENDPOINT} ..."
+                  talosctl etcd snapshot "${SNAPSHOT}" \
+                    --talosconfig /tmp/talosconfig \
+                    --endpoints "${ENDPOINT}" \
+                    --nodes "${ENDPOINT}"
+
+                  # Write snapshot path for the upload container
+                  echo "${SNAPSHOT}" > /tmp/snapshot_path
+                  echo "${ENV_NAME}" > /tmp/env_name
+                  echo "Snapshot saved: ${SNAPSHOT}"
           containers:
-            - name: backup
-              # talosctl binary + AWS CLI in a single image.
-              # Build with: docker-builds/talosctl-aws/build.sh --push
-              image: oci.trueforge.org/homelab/talosctl-aws:v1.12.6
-              imagePullPolicy: Always
+            - name: upload
+              image: amazon/aws-cli:latest
+              imagePullPolicy: IfNotPresent
               securityContext:
                 allowPrivilegeEscalation: false
                 capabilities:
@@ -44,36 +79,20 @@ spec:
                   readOnly: true
                 - name: tmp
                   mountPath: /tmp
-              command: ["/bin/bash", "-c"]
+              command: ["/bin/sh", "-c"]
               args:
                 - |
-                  set -euo pipefail
-
+                  set -eu
                   SECRETS=/etc/talos-backup-secrets
-                  TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
-                  ENDPOINT=$(cat "${SECRETS}/TALOS_ENDPOINT")
-                  ENV_NAME=$(cat "${SECRETS}/ENV_NAME")
+                  SNAPSHOT=$(cat /tmp/snapshot_path)
                   S3_BUCKET=$(cat "${SECRETS}/S3_BUCKET")
                   S3_PREFIX=$(cat "${SECRETS}/S3_PREFIX")
-                  SNAPSHOT="/tmp/etcd-${ENV_NAME}-${TIMESTAMP}.db"
+                  DEST="s3://${S3_BUCKET}/${S3_PREFIX}/$(basename "${SNAPSHOT}")"
 
                   export AWS_ACCESS_KEY_ID=$(cat "${SECRETS}/AWS_ACCESS_KEY_ID")
                   export AWS_SECRET_ACCESS_KEY=$(cat "${SECRETS}/AWS_SECRET_ACCESS_KEY")
                   export AWS_DEFAULT_REGION=$(cat "${SECRETS}/AWS_DEFAULT_REGION")
-                  export TALOSCONFIG=/tmp/talosconfig
 
-                  cp "${SECRETS}/TALOS_CONFIG" "${TALOSCONFIG}"
-                  chmod 600 "${TALOSCONFIG}"
-
-                  echo "Taking etcd snapshot from node ${ENDPOINT} ..."
-                  talosctl etcd snapshot "${SNAPSHOT}" \
-                    --talosconfig "${TALOSCONFIG}" \
-                    --endpoints "${ENDPOINT}" \
-                    --nodes "${ENDPOINT}"
-
-                  echo "Uploading to s3://${S3_BUCKET}/${S3_PREFIX}/etcd-${ENV_NAME}-${TIMESTAMP}.db ..."
-                  aws s3 cp "${SNAPSHOT}" \
-                    "s3://${S3_BUCKET}/${S3_PREFIX}/etcd-${ENV_NAME}-${TIMESTAMP}.db"
-
-                  echo "Backup complete: s3://${S3_BUCKET}/${S3_PREFIX}/etcd-${ENV_NAME}-${TIMESTAMP}.db"
-                  rm -f "${TALOSCONFIG}" "${SNAPSHOT}"
+                  echo "Uploading ${SNAPSHOT} to ${DEST} ..."
+                  aws s3 cp "${SNAPSHOT}" "${DEST}"
+                  echo "Backup complete: ${DEST}"
