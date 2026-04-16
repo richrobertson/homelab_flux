@@ -7,11 +7,10 @@ When displaying times to users, use format_time_for_user() and related functions
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-
-import pytz
+from zoneinfo import ZoneInfo
 
 # PST/PDT timezone (US/Los_Angeles handles DST automatically)
-PST = pytz.timezone("US/Los_Angeles")
+PST = ZoneInfo("America/Los_Angeles")
 
 
 def now_pst() -> datetime:
