@@ -52,7 +52,7 @@ spec:
               public: false
               authorization_policy: one_factor
               redirect_uris:
-                - https://tasks.staging.myrobertson.net/auth/openid/
+                - https://tasks.staging.myrobertson.net/auth/openid/authelia
               scopes:
                 - openid
                 - profile
