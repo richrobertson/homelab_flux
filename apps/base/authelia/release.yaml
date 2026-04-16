@@ -100,6 +100,8 @@ spec:
           enabled: true
           implementation: 'activedirectory'
           address: 'ldaps://rhonda.myrobertson.net'
+          tls:
+            skip_verify: true
           base_dn: 'cn=Users,dc=myrobertson,dc=net'
           user: 'ldap@myrobertson.net'
 
