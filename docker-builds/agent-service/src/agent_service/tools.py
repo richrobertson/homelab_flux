@@ -167,6 +167,7 @@ class ToolExecutor:
                 "title": top.get("title"),
                 "due_date": top.get("due_date"),
                 "priority": top.get("priority"),
+                "task_url": top.get("task_url"),
             },
         }
 
