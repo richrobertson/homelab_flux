@@ -19,14 +19,16 @@ spec:
           restartPolicy: Never
           containers:
             - name: nudge-worker
-              image: ghcr.io/richrobertson/nudge-worker:0.3.0
+              image: ghcr.io/richrobertson/nudge-worker:0.3.1
               imagePullPolicy: IfNotPresent
               command: ["python", "-m", "nudge_worker.main"]
               args: ["--mode", "job", "--job", "morning-planning"]
               envFrom:
                 - configMapRef:
                     name: nudge-worker-config
-              env:
+              env:                - name: TZ
+                  value: US/Pacific                - name: TZ
+                  value: US/Pacific
                 - name: OPENAI_API_KEY
                   valueFrom:
                     secretKeyRef:
@@ -97,7 +99,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: nudge-worker
-              image: ghcr.io/richrobertson/nudge-worker:0.3.0
+              image: ghcr.io/richrobertson/nudge-worker:0.3.1
               imagePullPolicy: IfNotPresent
               command: ["python", "-m", "nudge_worker.main"]
               args: ["--mode", "job", "--job", "daily-summary"]
@@ -105,6 +107,8 @@ spec:
                 - configMapRef:
                     name: nudge-worker-config
               env:
+                - name: TZ
+                  value: US/Pacific
                 - name: OPENAI_API_KEY
                   valueFrom:
                     secretKeyRef:
@@ -175,7 +179,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: nudge-worker
-              image: ghcr.io/richrobertson/nudge-worker:0.3.0
+              image: ghcr.io/richrobertson/nudge-worker:0.3.1
               imagePullPolicy: IfNotPresent
               command: ["python", "-m", "nudge_worker.main"]
               args: ["--mode", "job", "--job", "end-of-day-reflection"]
@@ -183,6 +187,8 @@ spec:
                 - configMapRef:
                     name: nudge-worker-config
               env:
+                - name: TZ
+                  value: US/Pacific
                 - name: OPENAI_API_KEY
                   valueFrom:
                     secretKeyRef:
@@ -253,7 +259,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: nudge-worker
-              image: ghcr.io/richrobertson/nudge-worker:0.3.0
+              image: ghcr.io/richrobertson/nudge-worker:0.3.1
               imagePullPolicy: IfNotPresent
               command: ["python", "-m", "nudge_worker.main"]
               args: ["--mode", "job", "--job", "weekly-review"]

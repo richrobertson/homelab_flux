@@ -7,7 +7,7 @@ from typing import Any
 from agent_service.behavior import assess_behavior, build_behavior_system_hint
 from agent_service.config import Settings
 from agent_service.models import ToolCallRecord
-from agent_service.prompts import DEFAULT_SYSTEM_PROMPT
+from agent_service.prompts import DEFAULT_SYSTEM_PROMPT, build_system_prompt_with_context
 from agent_service.session_store import InMemorySessionStore
 from agent_service.tools import TOOL_SCHEMAS, ToolExecutor
 
@@ -29,7 +29,8 @@ class AgentOrchestrator:
 
     async def handle_chat(self, session_id: str, user_message: str) -> tuple[str, list[ToolCallRecord]]:
         history = await self._store.get_messages(session_id)
-        system_prompt = self._settings.agent_system_prompt or DEFAULT_SYSTEM_PROMPT
+        base_prompt = self._settings.agent_system_prompt or DEFAULT_SYSTEM_PROMPT
+        system_prompt = build_system_prompt_with_context(base_prompt)
         behavior = assess_behavior(user_message)
 
         messages: list[dict[str, Any]] = [

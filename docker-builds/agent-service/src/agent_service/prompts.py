@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from agent_service.datetimeutil import current_time_context
+
+
 DEFAULT_SYSTEM_PROMPT = """
 You are TaskPilot, a calm and effective personal task assistant.
 
@@ -16,3 +21,32 @@ Tool usage guidance:
 
 When dates are ambiguous, ask one concise follow-up question.
 """.strip()
+
+
+def build_system_prompt_with_context(custom_prompt: str | None = None) -> str:
+    """
+    Build a system prompt with current date/time context injected.
+
+    This ensures the agent is aware of the current time in PST when making decisions.
+
+    Args:
+        custom_prompt: optional custom system prompt; uses DEFAULT_SYSTEM_PROMPT if None
+
+    Returns:
+        System prompt with injected time context
+    """
+    base_prompt = custom_prompt or DEFAULT_SYSTEM_PROMPT
+    time_ctx = current_time_context()
+
+    context_block = f"""
+Current datetime context (all times in Pacific timezone):
+- Date: {time_ctx['date']}
+- Time: {time_ctx['time']}
+- Day: {time_ctx['day_of_week']}
+- Time of day: {time_ctx['time_of_day']}
+
+Use this context when discussing deadlines, scheduling, or time-related decisions.
+""".strip()
+
+    return f"{base_prompt}\n\n{context_block}"
+

@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: agent-service
-          image: ghcr.io/richrobertson/agent-service:0.3.1
+          image: ghcr.io/richrobertson/agent-service:0.3.2
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -29,6 +29,8 @@ spec:
           env:
             - name: PYTHONPATH
               value: /app/src
+            - name: TZ
+              value: US/Pacific
             - name: OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_service.datetimeutil import estimated_time_for_duration, snooze_until_time
+
 CALLBACK_PART_SEPARATOR = "|"
 CALLBACK_KEY_VALUE_SEPARATOR = ":"
 
@@ -100,6 +102,11 @@ def format_task_message(
     else:
         lines.append(body_map.get(message_type, "What do you want to do?"))
 
+    # Add estimated completion time if duration is provided
+    if duration_minutes and duration_minutes > 0:
+        est_time = estimated_time_for_duration(duration_minutes)
+        lines.append(f"Estimate: {est_time}")
+
     prompt_map = {
         "recovery": "What helps most right now?",
         "check_in": "What do you want to do next?",
@@ -116,10 +123,11 @@ def format_callback_confirmation(action: str, task_title: str, task_id: int, min
             f"Started Task #{task_id}. I will keep context on this one.",
         )
     if action == "snooze":
-        label = minutes or 15
+        duration = minutes or 15
+        snooze_time = snooze_until_time(duration)
         return (
             f"Snoozed: {task_title}",
-            f"Okay. I will bring back Task #{task_id} in {label} minutes.",
+            f"Okay. I'll check in at {snooze_time}.",
         )
     if action == "blocked":
         return (

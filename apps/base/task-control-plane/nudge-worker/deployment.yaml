@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: nudge-worker
-          image: ghcr.io/richrobertson/nudge-worker:0.3.0
+          image: ghcr.io/richrobertson/nudge-worker:0.3.1
           imagePullPolicy: IfNotPresent
           ports:
             - name: metrics
@@ -27,6 +27,8 @@ spec:
             - configMapRef:
                 name: nudge-worker-config
           env:
+            - name: TZ
+              value: US/Pacific
             - name: OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:
