@@ -24,12 +24,21 @@ from agent_service.models import ChatRequest, ChatResponse, HealthResponse, Tele
 
 logger = logging.getLogger(__name__)
 
+TELEGRAM_TEXT_LIMIT = 4000
+
 
 async def _safe_send_telegram(bot_token: str, chat_id: int, text: str) -> None:
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     async with httpx.AsyncClient(timeout=15) as client:
         telegram_response = await client.post(url, json={"chat_id": chat_id, "text": text})
         telegram_response.raise_for_status()
+
+
+def _telegram_safe_text(text: str) -> str:
+    cleaned = (text or "").strip()
+    if len(cleaned) <= TELEGRAM_TEXT_LIMIT:
+        return cleaned
+    return cleaned[: TELEGRAM_TEXT_LIMIT - 1] + "…"
 
 
 def build_router(settings: Settings, orchestrator: Any, postgres_store: Any | None = None, redis_store: Any | None = None) -> APIRouter:
@@ -147,9 +156,25 @@ def build_router(settings: Settings, orchestrator: Any, postgres_store: Any | No
             logger.warning("telegram_bot_token_missing")
             return {"ok": True, "delivered": False, "reply": reply}
 
-        await _safe_send_telegram(settings.telegram_bot_token, chat_id, reply)
-        telegram_messages_sent_total.inc()
-        return {"ok": True, "delivered": True}
+        try:
+            await _safe_send_telegram(settings.telegram_bot_token, chat_id, _telegram_safe_text(reply))
+            telegram_messages_sent_total.inc()
+            return {"ok": True, "delivered": True}
+        except httpx.HTTPStatusError as exc:
+            body = ""
+            try:
+                body = exc.response.text
+            except Exception:
+                body = "<unavailable>"
+            logger.warning(
+                "telegram_send_failed",
+                extra={
+                    "chat_id": chat_id,
+                    "status_code": exc.response.status_code,
+                    "response_body": body,
+                },
+            )
+            return {"ok": True, "delivered": False, "reason": "send_failed"}
 
     @router.post("/internal/telegram/send")
     async def internal_telegram_send(payload: dict[str, Any]) -> dict[str, Any]:
@@ -176,9 +201,24 @@ def build_router(settings: Settings, orchestrator: Any, postgres_store: Any | No
 
         sent = 0
         for chat_id in dict.fromkeys(chat_ids):
-            await _safe_send_telegram(settings.telegram_bot_token, chat_id, text)
-            sent += 1
-            telegram_messages_sent_total.inc()
+            try:
+                await _safe_send_telegram(settings.telegram_bot_token, chat_id, _telegram_safe_text(text))
+                sent += 1
+                telegram_messages_sent_total.inc()
+            except httpx.HTTPStatusError as exc:
+                body = ""
+                try:
+                    body = exc.response.text
+                except Exception:
+                    body = "<unavailable>"
+                logger.warning(
+                    "internal_telegram_send_failed",
+                    extra={
+                        "chat_id": chat_id,
+                        "status_code": exc.response.status_code,
+                        "response_body": body,
+                    },
+                )
 
         return {"ok": True, "sent": sent}
 
