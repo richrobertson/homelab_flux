@@ -25,6 +25,7 @@ subjects:
     namespace: ceph-csi
   - kind: ServiceAccount
     name: default
-    namespace: default  - kind: ServiceAccount
+    namespace: default
+  - kind: ServiceAccount
     name: default
     namespace: "talos-etcd-backup"
