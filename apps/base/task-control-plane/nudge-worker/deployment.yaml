@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: nudge-worker
-          image: ghcr.io/richrobertson/nudge-worker:0.2.2
+          image: ghcr.io/richrobertson/nudge-worker:0.3.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: metrics

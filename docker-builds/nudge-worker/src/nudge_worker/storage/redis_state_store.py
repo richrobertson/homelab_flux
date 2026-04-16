@@ -20,6 +20,9 @@ class RedisNudgeStateStore:
         await self._redis.aclose()
 
     async def should_send(self, task_id: int, reason: str, cooldown_minutes: int, now: datetime) -> bool:
+        manual_snooze_key = f"{self._key_prefix}:manual_snooze:{task_id}"
+        if await self._redis.exists(manual_snooze_key):
+            return False
         cooldown_key = f"{self._key_prefix}:nudge_cooldown:{task_id}:{reason}"
         if await self._redis.exists(cooldown_key):
             return False
@@ -92,6 +95,21 @@ class RedisNudgeStateStore:
         key = f"{self._key_prefix}:user_state:{user_id}"
         data = await self._redis.hgetall(key)
         return {str(k): str(v) for k, v in data.items()}
+
+    async def get_telegram_context(self, chat_id: int) -> dict[str, str]:
+        key = f"{self._key_prefix}:telegram_context:{chat_id}"
+        data = await self._redis.hgetall(key)
+        return {str(k): str(v) for k, v in data.items()}
+
+    async def is_telegram_active(self, chat_id: int, within_seconds: int = 900) -> bool:
+        context = await self.get_telegram_context(chat_id)
+        last_seen = context.get("updated_at") or context.get("last_seen")
+        if not last_seen:
+            return False
+        try:
+            return int(datetime.now(timezone.utc).timestamp()) - int(last_seen) <= within_seconds
+        except ValueError:
+            return False
 
     async def ping(self) -> bool:
         try:

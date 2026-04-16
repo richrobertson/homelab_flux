@@ -26,3 +26,6 @@ class InMemoryNudgeStateStore:
 
     async def get(self, task_id: int) -> NudgeHistory:
         return self._history.setdefault(task_id, NudgeHistory())
+
+    async def is_telegram_active(self, chat_id: int, within_seconds: int = 900) -> bool:
+        return False

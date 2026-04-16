@@ -66,5 +66,7 @@ app.include_router(
         orchestrator=orchestrator,
         postgres_store=postgres_store,
         redis_store=session_store if isinstance(session_store, RedisSessionStore) else None,
+        vikunja_client=vikunja_client,
+        tool_executor=tool_executor,
     )
 )

@@ -66,6 +66,91 @@ class RedisSessionStore:
         await self._redis.hset(key, mapping=fields)
         await self._redis.expire(key, self._ttl_seconds)
 
+    async def get_telegram_context(self, chat_id: int) -> dict[str, str]:
+        key = f"{self._key_prefix}:telegram_context:{chat_id}"
+        data = await self._redis.hgetall(key)
+        return {str(key): str(value) for key, value in data.items()}
+
+    async def update_telegram_context(
+        self,
+        chat_id: int,
+        *,
+        user_id: str | None = None,
+        active_task_id: int | None = None,
+        last_task_id: int | None = None,
+        last_action: str | None = None,
+        message_type: str | None = None,
+        task_title: str | None = None,
+        message_id: int | None = None,
+        clear_active_task: bool = False,
+    ) -> None:
+        key = f"{self._key_prefix}:telegram_context:{chat_id}"
+        existing = await self.get_telegram_context(chat_id)
+        mapping = dict(existing)
+        mapping["chat_id"] = str(chat_id)
+        mapping["updated_at"] = str(int(time.time()))
+        if user_id is not None:
+            mapping["user_id"] = user_id
+        if clear_active_task:
+            mapping["active_task_id"] = ""
+        elif active_task_id is not None:
+            mapping["active_task_id"] = str(active_task_id)
+        if last_task_id is not None:
+            mapping["last_task_id"] = str(last_task_id)
+        if last_action is not None:
+            mapping["last_action"] = last_action
+        if message_type is not None:
+            mapping["last_message_type"] = message_type
+        if task_title is not None:
+            mapping["last_task_title"] = task_title[:200]
+        if message_id is not None:
+            mapping["last_bot_message_id"] = str(message_id)
+        await self._redis.hset(key, mapping=mapping)
+        await self._redis.expire(key, self._ttl_seconds)
+
+    async def infer_task_id(self, chat_id: int, message_text: str) -> int | None:
+        context = await self.get_telegram_context(chat_id)
+        if not context:
+            return None
+        lower = message_text.strip().lower()
+        if lower in {"ok", "yes", "start", "push it", "do it", "later", "done", "blocked", "break it down"}:
+            active = context.get("active_task_id")
+            if active:
+                try:
+                    return int(active)
+                except ValueError:
+                    return None
+            last_task = context.get("last_task_id")
+            if last_task:
+                try:
+                    return int(last_task)
+                except ValueError:
+                    return None
+        return None
+
+    async def claim_callback(self, callback_id: str, ttl_seconds: int = 300) -> bool:
+        key = f"{self._key_prefix}:telegram_callback:{callback_id}"
+        return bool(await self._redis.set(key, "1", ex=ttl_seconds, nx=True))
+
+    async def set_manual_snooze(self, task_id: int, minutes: int) -> None:
+        key = f"{self._key_prefix}:manual_snooze:{task_id}"
+        await self._redis.set(key, str(minutes), ex=max(60, minutes * 60))
+
+    async def get_manual_snooze(self, task_id: int) -> str | None:
+        key = f"{self._key_prefix}:manual_snooze:{task_id}"
+        value = await self._redis.get(key)
+        return str(value) if value is not None else None
+
+    async def is_telegram_active(self, chat_id: int, within_seconds: int = 900) -> bool:
+        context = await self.get_telegram_context(chat_id)
+        last_seen = context.get("updated_at") or context.get("last_seen")
+        if not last_seen:
+            return False
+        try:
+            return int(time.time()) - int(last_seen) <= within_seconds
+        except ValueError:
+            return False
+
     async def set_user_state(
         self,
         user_id: str,

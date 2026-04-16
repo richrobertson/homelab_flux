@@ -41,9 +41,17 @@ class TelegramMessage(BaseModel):
     from_: Optional[TelegramUser] = Field(default=None, alias="from")
 
 
+class TelegramCallbackQuery(BaseModel):
+    id: str
+    from_: TelegramUser = Field(alias="from")
+    data: Optional[str] = None
+    message: Optional[TelegramMessage] = None
+
+
 class TelegramUpdate(BaseModel):
     update_id: int
     message: Optional[TelegramMessage] = None
+    callback_query: Optional[TelegramCallbackQuery] = None
 
 
 class HealthResponse(BaseModel):

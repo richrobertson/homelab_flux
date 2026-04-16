@@ -187,17 +187,64 @@ class NudgeWorker:
                     },
                 )
 
+    async def _send_telegram_task_prompt(
+        self,
+        *,
+        task_id: int,
+        task_title: str,
+        message_type: str,
+        body: str | None = None,
+        duration_minutes: int | None = None,
+    ) -> bool:
+        if self._agent_service is None:
+            return False
+        try:
+            result = await self._agent_service.send_task_prompt(
+                task_id=task_id,
+                task_title=task_title,
+                message_type=message_type,
+                body=body,
+                duration_minutes=duration_minutes,
+            )
+            return bool(result.get("sent"))
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                "telegram_task_prompt_failed",
+                extra={"task_id": task_id, "message_type": message_type, "error": str(exc)},
+            )
+            return False
+
+    async def _has_active_telegram_chat(self) -> bool:
+        if self._postgres is None:
+            return False
+        if not hasattr(self._state, "is_telegram_active"):
+            return False
+        chat_ids = await self._postgres.list_recent_chat_ids(minutes=60 * 24 * 7)
+        for chat_id in chat_ids:
+            if await self._state.is_telegram_active(chat_id, within_seconds=15 * 60):
+                return True
+        return False
+
     async def _deliver(self, decision: NudgeDecision, now: datetime) -> None:
         body = await self._coach.compose(decision)
-        channel = self._select_channel(decision)
+        channel = await self._select_channel(decision)
+        message_type = "recovery" if decision.reason == "repeated_drift" else "nudge"
 
         if channel == "telegram":
-            await self._send_telegram_primary(f"{decision.title}: {body}")
+            sent = await self._send_telegram_task_prompt(
+                task_id=decision.task_id,
+                task_title=decision.title,
+                message_type=message_type,
+                body=body,
+                duration_minutes=45,
+            )
+            if not sent:
+                await self._send_telegram_primary(f"{decision.title}: {body}")
         else:
             try:
                 await self._ntfy.publish(
                     decision.topic,
-                    body=body,
+                    body=f"{decision.title}\nOpen Telegram for actions.",
                     title=decision.title,
                     priority=decision.priority,
                     tags=[decision.reason],
@@ -205,6 +252,13 @@ class NudgeWorker:
             except Exception as exc:  # noqa: BLE001
                 logger.warning("ntfy_publish_failed: %s", exc)
                 return
+            await self._send_telegram_task_prompt(
+                task_id=decision.task_id,
+                task_title=decision.title,
+                message_type=message_type,
+                body=body,
+                duration_minutes=45,
+            )
 
         history = await self._state.record_sent(
             decision.task_id,
@@ -247,9 +301,11 @@ class NudgeWorker:
             except Exception as exc:  # noqa: BLE001
                 logger.warning("coach_escalation_failed", extra={"task_id": decision.task_id, "error": str(exc)})
 
-    def _select_channel(self, decision: NudgeDecision) -> str:
+    async def _select_channel(self, decision: NudgeDecision) -> str:
         # Explicit channel policy: Telegram for conversational loops, ntfy for interrupts.
         if decision.reason in {"repeated_drift", "inactive_in_progress"}:
+            return "telegram"
+        if await self._has_active_telegram_chat():
             return "telegram"
         if decision.reason in {"overdue", "due_soon", "start_window_missed"}:
             return "ntfy"
