@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - authelia-config-ceph-pvc.yaml
+  - ldap-ca-secret.yaml
   - migration-rbac.yaml
   - postgres.yaml
   - postgres-ceph.yaml
