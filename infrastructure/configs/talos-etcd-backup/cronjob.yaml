@@ -41,29 +41,23 @@ spec:
                   readOnly: true
                 - name: tmp
                   mountPath: /tmp
-              command: ["/bin/sh", "-c"]
+              env:
+                - name: TALOS_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: talos-etcd-backup-credentials
+                      key: TALOS_ENDPOINT
+              command: ["/talosctl"]
               args:
-                - |
-                  set -eu
-                  SECRETS=/etc/talos-backup-secrets
-                  ENDPOINT=$(cat "${SECRETS}/TALOS_ENDPOINT")
-                  ENV_NAME=$(cat "${SECRETS}/ENV_NAME")
-                  TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
-                  SNAPSHOT="/tmp/etcd-${ENV_NAME}-${TIMESTAMP}.db"
-
-                  cp "${SECRETS}/TALOS_CONFIG" /tmp/talosconfig
-                  chmod 600 /tmp/talosconfig
-
-                  echo "Taking etcd snapshot from ${ENDPOINT} ..."
-                  talosctl etcd snapshot "${SNAPSHOT}" \
-                    --talosconfig /tmp/talosconfig \
-                    --endpoints "${ENDPOINT}" \
-                    --nodes "${ENDPOINT}"
-
-                  # Write snapshot path for the upload container
-                  echo "${SNAPSHOT}" > /tmp/snapshot_path
-                  echo "${ENV_NAME}" > /tmp/env_name
-                  echo "Snapshot saved: ${SNAPSHOT}"
+                - etcd
+                - snapshot
+                - /tmp/etcd-snapshot.db
+                - --talosconfig
+                - /etc/talos-backup-secrets/TALOS_CONFIG
+                - --endpoints
+                - $(TALOS_ENDPOINT)
+                - --nodes
+                - $(TALOS_ENDPOINT)
           containers:
             - name: upload
               image: amazon/aws-cli:latest
@@ -84,10 +78,12 @@ spec:
                 - |
                   set -eu
                   SECRETS=/etc/talos-backup-secrets
-                  SNAPSHOT=$(cat /tmp/snapshot_path)
+                  TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
+                  ENV_NAME=$(cat "${SECRETS}/ENV_NAME")
+                  SNAPSHOT=/tmp/etcd-snapshot.db
                   S3_BUCKET=$(cat "${SECRETS}/S3_BUCKET")
                   S3_PREFIX=$(cat "${SECRETS}/S3_PREFIX")
-                  DEST="s3://${S3_BUCKET}/${S3_PREFIX}/$(basename "${SNAPSHOT}")"
+                  DEST="s3://${S3_BUCKET}/${S3_PREFIX}/etcd-${ENV_NAME}-${TIMESTAMP}.db"
 
                   export AWS_ACCESS_KEY_ID=$(cat "${SECRETS}/AWS_ACCESS_KEY_ID")
                   export AWS_SECRET_ACCESS_KEY=$(cat "${SECRETS}/AWS_SECRET_ACCESS_KEY")
