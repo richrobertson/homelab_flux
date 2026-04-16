@@ -36,6 +36,9 @@ patches:
       - op: replace
         path: /data/VIKUNJA_BASE_URL
         value: https://tasks.myrobertson.com
+      - op: replace
+        path: /data/NTFY_BASE_URL
+        value: http://ntfy.default.svc.cluster.local
     target:
       kind: ConfigMap
       name: nudge-worker-config

@@ -12,6 +12,7 @@ resources:
   - loki-stack
   - mealie
   - netbootxyz
+  - ntfy
   - overseerr
   - plex
   - trilium
