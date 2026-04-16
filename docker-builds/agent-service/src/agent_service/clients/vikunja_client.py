@@ -89,13 +89,35 @@ class VikunjaClient:
             payload["description"] = description
         if due_date:
             payload["due_date"] = due_date
-        if parent_task_id is not None:
-            payload["parent_task_id"] = int(parent_task_id)
 
         target_project = project_id or self._project_id
         created = await self._request("PUT", f"/projects/{target_project}/tasks", json=payload)
         if isinstance(created, dict):
+            if parent_task_id is not None:
+                child_id = created.get("id")
+                if child_id is not None:
+                    await self.create_task_relation(
+                        base_task_id=int(parent_task_id),
+                        other_task_id=int(child_id),
+                        relation_kind="subtask",
+                    )
             return self._with_task_url(created)
+        return {}
+
+    async def create_task_relation(
+        self,
+        base_task_id: int,
+        other_task_id: int,
+        relation_kind: str,
+    ) -> dict[str, Any]:
+        payload = {
+            "task_id": int(base_task_id),
+            "other_task_id": int(other_task_id),
+            "relation_kind": relation_kind,
+        }
+        relation = await self._request("PUT", f"/tasks/{int(base_task_id)}/relations", json=payload)
+        if isinstance(relation, dict):
+            return relation
         return {}
 
     async def update_task(
