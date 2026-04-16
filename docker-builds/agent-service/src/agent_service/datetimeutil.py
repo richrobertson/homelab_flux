@@ -67,7 +67,7 @@ def format_date_for_user(dt: datetime | None = None) -> str:
         dt = dt.replace(tzinfo=timezone.utc)
 
     dt = dt.astimezone(PST)
-    return dt.strftime("%A, %B %d")
+    return dt.strftime("%A, %B %d, %Y")
 
 
 def estimated_time_for_duration(duration_minutes: int | None) -> str:

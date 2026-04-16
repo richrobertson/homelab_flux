@@ -45,7 +45,8 @@ Current datetime context (all times in Pacific timezone):
 - Day: {time_ctx['day_of_week']}
 - Time of day: {time_ctx['time_of_day']}
 
-Use this context when discussing deadlines, scheduling, or time-related decisions.
+IMPORTANT: When creating or updating task due dates, always use the correct year from the date above.
+All ISO-8601 due dates must include the correct 4-digit year (e.g. {time_ctx['date'].split(', ')[-1]}).
 """.strip()
 
     return f"{base_prompt}\n\n{context_block}"
