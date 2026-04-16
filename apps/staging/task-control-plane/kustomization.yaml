@@ -53,10 +53,10 @@ patches:
       name: task-control-plane-app
   - patch: |
       - op: replace
-        path: /spec/path
-        value: task-control-plane/staging/vikunja-oidc
+        path: /stringData/client_id
+        value: vikunja_staging
     target:
-      kind: VaultStaticSecret
+      kind: Secret
       name: vikunja-oidc-secret
   - patch: |
       - op: replace

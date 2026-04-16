@@ -27,6 +27,8 @@ spec:
             - configMapRef:
                 name: agent-service-config
           env:
+            - name: PYTHONPATH
+              value: /app/src
             - name: OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:

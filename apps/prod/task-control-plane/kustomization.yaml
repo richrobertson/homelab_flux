@@ -56,17 +56,17 @@ patches:
   - patch: |
       - op: replace
         path: /spec/path
-        value: task-control-plane/prod/vikunja-oidc
-    target:
-      kind: VaultStaticSecret
-      name: vikunja-oidc-secret
-  - patch: |
-      - op: replace
-        path: /spec/path
         value: task-control-plane/prod/vikunja
     target:
       kind: VaultStaticSecret
       name: task-control-plane-vikunja
+  - patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 0
+    target:
+      kind: Deployment
+      name: nudge-worker
   - patch: |
       - op: add
         path: /spec/backup
