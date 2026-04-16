@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import logging
 import time
+import base64
 from datetime import datetime, timezone
 from typing import Any
 
 import httpx
-from fastapi import APIRouter, Header, HTTPException, Response, status
+from fastapi import APIRouter, File, Form, Header, HTTPException, Response, UploadFile, status
 from fastapi.responses import PlainTextResponse
 
 from agent_service.behavior import assess_behavior, extract_task_id
@@ -21,7 +22,7 @@ from agent_service.metrics import (
     telegram_messages_received_total,
     telegram_messages_sent_total,
 )
-from agent_service.models import ChatRequest, ChatResponse, HealthResponse, TelegramUpdate
+from agent_service.models import ChatAttachment, ChatRequest, ChatResponse, HealthResponse, TelegramUpdate
 from agent_service.telegram_ux import (
     build_breakdown_message,
     build_callback_data,
@@ -384,6 +385,35 @@ def build_router(
         )
         chat_request_latency_seconds.observe(time.perf_counter() - started)
         return ChatResponse(session_id=payload.session_id, response=text, tool_calls=tool_calls)
+
+    @router.post("/chat/multipart", response_model=ChatResponse)
+    async def chat_multipart(
+        session_id: str = Form(...),
+        message: str = Form(...),
+        files: list[UploadFile] = File(default_factory=list),
+    ) -> ChatResponse:
+        started = time.perf_counter()
+        attachments: list[ChatAttachment] = []
+
+        for upload in files:
+            raw = await upload.read()
+            encoded = base64.b64encode(raw).decode("ascii")
+            attachments.append(
+                ChatAttachment(
+                    filename=upload.filename or "attachment.bin",
+                    content_base64=encoded,
+                    mime_type=upload.content_type,
+                )
+            )
+
+        attachments_context = build_attachments_context(attachments)
+        text, tool_calls = await orchestrator.handle_chat(
+            session_id=session_id,
+            user_message=message,
+            attachments_context=attachments_context,
+        )
+        chat_request_latency_seconds.observe(time.perf_counter() - started)
+        return ChatResponse(session_id=session_id, response=text, tool_calls=tool_calls)
 
     @router.post("/webhooks/telegram")
     async def telegram_webhook(

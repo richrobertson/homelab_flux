@@ -82,12 +82,15 @@ class VikunjaClient:
         description: str | None = None,
         due_date: str | None = None,
         project_id: int | None = None,
+        parent_task_id: int | None = None,
     ) -> dict[str, Any]:
         payload: dict[str, Any] = {"title": title}
         if description:
             payload["description"] = description
         if due_date:
             payload["due_date"] = due_date
+        if parent_task_id is not None:
+            payload["parent_task_id"] = int(parent_task_id)
 
         target_project = project_id or self._project_id
         created = await self._request("PUT", f"/projects/{target_project}/tasks", json=payload)

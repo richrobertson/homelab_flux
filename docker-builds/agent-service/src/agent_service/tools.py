@@ -34,8 +34,30 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
                         "description": "ISO-8601 timestamp, for example 2026-04-16T10:00:00Z",
                     },
                     "project_id": {"type": "integer"},
+                    "parent_task_id": {"type": "integer"},
                 },
                 "required": ["title"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_subtask",
+            "description": "Create a subtask under an existing parent task.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "parent_task_id": {"type": "integer"},
+                    "title": {"type": "string"},
+                    "description": {"type": "string"},
+                    "due_date": {
+                        "type": "string",
+                        "description": "ISO-8601 timestamp",
+                    },
+                    "project_id": {"type": "integer"},
+                },
+                "required": ["parent_task_id", "title"],
             },
         },
     },
@@ -111,6 +133,7 @@ class ToolExecutor:
         handlers = {
             "list_tasks": self._list_tasks,
             "create_task": self._create_task,
+            "create_subtask": self._create_subtask,
             "update_task": self._update_task,
             "complete_task": self._complete_task,
             "suggest_next_task": self._suggest_next_task,
@@ -137,6 +160,17 @@ class ToolExecutor:
             description=args.get("description"),
             due_date=args.get("due_date"),
             project_id=args.get("project_id"),
+            parent_task_id=args.get("parent_task_id"),
+        )
+        return {"ok": True, "task": task}
+
+    async def _create_subtask(self, args: dict[str, Any]) -> dict[str, Any]:
+        task = await self._vikunja.create_task(
+            title=str(args["title"]),
+            description=args.get("description"),
+            due_date=args.get("due_date"),
+            project_id=args.get("project_id"),
+            parent_task_id=int(args["parent_task_id"]),
         )
         return {"ok": True, "task": task}
 
