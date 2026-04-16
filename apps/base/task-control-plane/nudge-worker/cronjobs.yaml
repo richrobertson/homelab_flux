@@ -26,8 +26,8 @@ spec:
               envFrom:
                 - configMapRef:
                     name: nudge-worker-config
-              env:                - name: TZ
-                  value: US/Pacific                - name: TZ
+              env:
+                - name: TZ
                   value: US/Pacific
                 - name: OPENAI_API_KEY
                   valueFrom:
@@ -267,6 +267,8 @@ spec:
                 - configMapRef:
                     name: nudge-worker-config
               env:
+                - name: TZ
+                  value: US/Pacific
                 - name: OPENAI_API_KEY
                   valueFrom:
                     secretKeyRef:
