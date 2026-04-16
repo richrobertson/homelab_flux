@@ -65,7 +65,8 @@ class BackfillRow:
 
 
 def _classify_signal(message_text: str) -> tuple[str, str]:
-    upper = message_text.strip().upper()
+    text = message_text.strip()
+    upper = text.upper()
     if upper.startswith("START"):
         return "started", "START command (backfill)"
     if upper.startswith("SNOOZE"):
@@ -74,7 +75,25 @@ def _classify_signal(message_text: str) -> tuple[str, str]:
         return "blocked", "BLOCKED command (backfill)"
     if upper.startswith("BREAK IT DOWN"):
         return "break_down", "BREAK IT DOWN command (backfill)"
-    return "historical_chat", "telegram historical chat backfill"
+    if upper == "/START":
+        return "setup", "bot session start"
+    if "WHAT SHOULD I WORK ON NEXT" in upper or "LIST THOSE TASKS" in upper:
+        return "planning", "task prioritization request"
+    if "INTERVIEW PERFORMANCE REPORT" in upper or "KEY AREAS FOR IMPROVEMENT" in upper:
+        return "self_reflection", "shared interview performance reflection"
+    if "DICTATE THE DAILY TASKS" in upper or "TAKE THE REINS" in upper:
+        return "delegation", "requested stronger task direction"
+    if "GO TO BED" in upper or "START TOMORROW" in upper:
+        return "scheduling", "requested realistic scheduling"
+    if "DATE" in upper or "DAY IT IS" in upper or "APRIL 15TH, 2026" in upper or "DATES ARE WRONG" in upper:
+        return "date_correction", "corrected assistant date or schedule"
+    if "DIRECT LINKS" in upper or "LINK TO THE FIRST TASK" in upper:
+        return "task_navigation", "requested task links or navigation"
+    if "THAT DOESN'T MAKE SENSE" in upper or "WHY NOT?" in upper:
+        return "confusion", "pushed back on unclear assistant response"
+    if upper in {"YES", "HELLO", "PING", "TRY AGAIN"}:
+        return "check_in", "short chat acknowledgement"
+    return "planning_context", "telegram historical chat backfill"
 
 
 def _load_rows(export_file: Path, user_id: str) -> tuple[list[BackfillRow], str | None, datetime | None]:
