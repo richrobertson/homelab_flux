@@ -39,7 +39,7 @@ class NudgeWorker:
             try:
                 await self.run_once()
             except Exception as exc:  # noqa: BLE001
-                logger.warning("nudge_scan_failed", extra={"error": str(exc)})
+                logger.warning("nudge_scan_failed: %s", exc)
             await asyncio.sleep(self._settings.scan_interval_seconds)
 
     async def run_once(self) -> list[NudgeDecision]:
@@ -68,29 +68,42 @@ class NudgeWorker:
         if job_name == "morning-planning":
             top = tasks[:3]
             body = "Morning plan: " + "; ".join(task.title for task in top) if top else "Morning plan: no open tasks."
-            await self._ntfy.publish(self._settings.ntfy_focus_topic, body=body, title="Morning planning", priority="default")
+            try:
+                await self._ntfy.publish(self._settings.ntfy_focus_topic, body=body, title="Morning planning", priority="default")
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("ntfy_publish_failed: %s", exc)
             messages.append(body)
         elif job_name == "daily-summary":
             overdue = [task.title for task in tasks if task.due_date and task.due_date < datetime.now(timezone.utc)][:5]
             body = "Daily summary: " + (", ".join(overdue) if overdue else "no overdue tasks right now.")
-            await self._ntfy.publish(self._settings.ntfy_reminders_topic, body=body, title="Daily summary", priority="default")
+            try:
+                await self._ntfy.publish(self._settings.ntfy_reminders_topic, body=body, title="Daily summary", priority="default")
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("ntfy_publish_failed: %s", exc)
             messages.append(body)
         elif job_name == "end-of-day-reflection":
             body = "End-of-day reflection: What moved forward today, and what should be your first step tomorrow?"
-            await self._ntfy.publish(self._settings.ntfy_focus_topic, body=body, title="Reflection", priority="default")
+            try:
+                await self._ntfy.publish(self._settings.ntfy_focus_topic, body=body, title="Reflection", priority="default")
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("ntfy_publish_failed: %s", exc)
             messages.append(body)
 
         return messages
 
     async def _deliver(self, decision: NudgeDecision, now: datetime) -> None:
         body = await self._coach.compose(decision)
-        await self._ntfy.publish(
-            decision.topic,
-            body=body,
-            title=decision.title,
-            priority=decision.priority,
-            tags=[decision.reason],
-        )
+        try:
+            await self._ntfy.publish(
+                decision.topic,
+                body=body,
+                title=decision.title,
+                priority=decision.priority,
+                tags=[decision.reason],
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("ntfy_publish_failed: %s", exc)
+            return
         history = self._state.record_sent(decision.task_id, decision.reason, now)
         logger.info(
             "nudge_sent",

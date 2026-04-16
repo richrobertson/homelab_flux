@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import logging
+
 from nudge_worker.models import NudgeDecision
 from nudge_worker.prompts import NUDGE_SYSTEM_PROMPT
+
+
+logger = logging.getLogger(__name__)
 
 
 class CoachingComposer:
@@ -18,5 +23,9 @@ class CoachingComposer:
             f"Draft message: {decision.body}\n"
             f"Metadata: {decision.metadata}"
         )
-        rewritten = await self._openai_client.compose_coaching_nudge(NUDGE_SYSTEM_PROMPT, user_prompt)
-        return rewritten.strip() or decision.body
+        try:
+            rewritten = await self._openai_client.compose_coaching_nudge(NUDGE_SYSTEM_PROMPT, user_prompt)
+            return rewritten.strip() or decision.body
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("openai_compose_failed", extra={"error": str(exc)})
+            return decision.body

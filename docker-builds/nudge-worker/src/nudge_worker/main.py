@@ -31,7 +31,7 @@ async def _async_main() -> None:
 
     vikunja_client = VikunjaClient(settings)
     ntfy_client = NtfyClient(settings)
-    openai_client = OpenAIClient(settings) if settings.openai_api_key else None
+    openai_client = OpenAIClient(settings) if settings.has_openai_credentials else None
     coach = CoachingComposer(openai_client=openai_client)
     state_store = InMemoryNudgeStateStore()
     agent_client = AgentServiceClient(settings) if settings.agent_service_base_url else None

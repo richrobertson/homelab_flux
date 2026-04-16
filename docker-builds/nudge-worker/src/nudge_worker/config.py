@@ -42,6 +42,11 @@ class Settings(BaseSettings):
         token = self.vikunja_api_token.strip()
         return bool(token and token.lower() != "set-me")
 
+    @property
+    def has_openai_credentials(self) -> bool:
+        key = self.openai_api_key.strip()
+        return bool(key and key.lower() != "set-me")
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
