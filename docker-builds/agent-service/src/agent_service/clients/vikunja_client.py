@@ -28,7 +28,8 @@ class VikunjaClient:
         return response.json()
 
     async def list_tasks(self, overdue_only: bool = False, limit: int = 25) -> list[dict[str, Any]]:
-        tasks = await self._request("GET", "/tasks/all")
+        # /tasks/all returns 400 on this Vikunja deployment; /tasks is compatible.
+        tasks = await self._request("GET", "/tasks")
         if not isinstance(tasks, list):
             return []
 
