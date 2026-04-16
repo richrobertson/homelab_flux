@@ -416,6 +416,7 @@ def build_router(
         return ChatResponse(session_id=session_id, response=text, tool_calls=tool_calls)
 
     @router.put("/tasks/{task_id}/attachments")
+    @router.put("/chat/tasks/{task_id}/attachments")
     async def upload_task_attachments(task_id: int, files: list[UploadFile] = File(...)) -> dict[str, Any]:
         if vikunja_client is None:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Vikunja client unavailable")
