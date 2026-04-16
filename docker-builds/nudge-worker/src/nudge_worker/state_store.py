@@ -9,7 +9,7 @@ class InMemoryNudgeStateStore:
     def __init__(self) -> None:
         self._history: dict[int, NudgeHistory] = {}
 
-    def should_send(self, task_id: int, reason: str, cooldown_minutes: int, now: datetime) -> bool:
+    async def should_send(self, task_id: int, reason: str, cooldown_minutes: int, now: datetime) -> bool:
         history = self._history.get(task_id)
         if not history or not history.last_sent_at:
             return True
@@ -17,12 +17,12 @@ class InMemoryNudgeStateStore:
             return True
         return now - history.last_sent_at >= timedelta(minutes=cooldown_minutes)
 
-    def record_sent(self, task_id: int, reason: str, now: datetime) -> NudgeHistory:
+    async def record_sent(self, task_id: int, reason: str, now: datetime, cooldown_minutes: int = 0) -> NudgeHistory:
         history = self._history.setdefault(task_id, NudgeHistory())
         history.last_sent_at = now.astimezone(timezone.utc)
         history.last_reason = reason
         history.sent_count += 1
         return history
 
-    def get(self, task_id: int) -> NudgeHistory:
+    async def get(self, task_id: int) -> NudgeHistory:
         return self._history.setdefault(task_id, NudgeHistory())

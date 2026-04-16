@@ -4,23 +4,30 @@ from datetime import datetime, timedelta, timezone
 
 from nudge_worker.config import Settings
 from nudge_worker.models import NudgeDecision, TaskSnapshot
-from nudge_worker.state_store import InMemoryNudgeStateStore
 
 
 class DecisionEngine:
-    def __init__(self, settings: Settings, state_store: InMemoryNudgeStateStore) -> None:
+    def __init__(self, settings: Settings, state_store: object) -> None:
         self._settings = settings
         self._state_store = state_store
 
-    def decide(self, tasks: list[TaskSnapshot], now: datetime | None = None) -> list[NudgeDecision]:
+    async def decide(
+        self,
+        tasks: list[TaskSnapshot],
+        now: datetime | None = None,
+        learning_snapshot: dict | None = None,
+    ) -> list[NudgeDecision]:
         current_time = now or datetime.now(timezone.utc)
         decisions: list[NudgeDecision] = []
+        snapshot = learning_snapshot or {}
+        high_friction_tasks = set(snapshot.get("high_friction_tasks") or [])
 
         for task in tasks:
-            decision = self._classify_task(task, current_time)
+            history = await self._state_store.get(task.task_id)
+            decision = self._classify_task(task, current_time, history.sent_count, high_friction_tasks)
             if not decision:
                 continue
-            if not self._state_store.should_send(
+            if not await self._state_store.should_send(
                 task.task_id,
                 decision.reason,
                 self._settings.nudge_cooldown_minutes,
@@ -31,31 +38,35 @@ class DecisionEngine:
 
         return decisions
 
-    def _classify_task(self, task: TaskSnapshot, now: datetime) -> NudgeDecision | None:
-        history = self._state_store.get(task.task_id)
-
+    def _classify_task(
+        self,
+        task: TaskSnapshot,
+        now: datetime,
+        sent_count: int,
+        high_friction_tasks: set[int],
+    ) -> NudgeDecision | None:
         if task.due_date and task.due_date < now:
-            escalate = history.sent_count >= 1
+            escalate = sent_count >= 1
             return NudgeDecision(
                 task_id=task.task_id,
                 title=task.title,
                 reason="overdue",
                 topic=self._settings.ntfy_escalation_topic,
-                priority="urgent" if history.sent_count >= 2 else "high",
+                priority="urgent" if sent_count >= 2 else "high",
                 body=f"'{task.title}' is overdue. Either finish the smallest next step now or deliberately reschedule it.",
                 metadata={"due_date": task.due_date.isoformat()},
                 escalate_to_chat=escalate,
             )
 
-        if history.sent_count >= self._settings.repeated_nudge_threshold:
+        if task.task_id in high_friction_tasks or sent_count >= self._settings.repeated_nudge_threshold:
             return NudgeDecision(
                 task_id=task.task_id,
                 title=task.title,
                 reason="repeated_drift",
                 topic=self._settings.ntfy_escalation_topic,
                 priority="high",
-                body=f"'{task.title}' keeps slipping. Reply with 'overwhelmed', 'blocked', or 'push this' and we'll change strategy.",
-                metadata={"sent_count": history.sent_count},
+                body=f"'{task.title}' keeps slipping. Reply with START, SNOOZE 15, BLOCKED, or BREAK IT DOWN.",
+                metadata={"sent_count": sent_count},
                 escalate_to_chat=True,
             )
 

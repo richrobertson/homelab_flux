@@ -28,11 +28,27 @@ class Settings(BaseSettings):
     vikunja_project_id: int = 1
     vikunja_timeout_seconds: float = 20.0
 
+    postgres_dsn: Optional[str] = None
+    postgres_host: str = "task-control-plane-cnpg-rw.default.svc.cluster.local"
+    postgres_port: int = 5432
+    postgres_database: str = "vikunja"
+    postgres_user: str = ""
+    postgres_password: str = ""
+
+    redis_url: Optional[str] = None
+    redis_key_prefix: str = "tcp"
+
     ntfy_base_url: str = "https://ntfy.example.com"
     ntfy_access_token: Optional[str] = None
     ntfy_focus_topic: str = "focus"
     ntfy_reminders_topic: str = "reminders"
     ntfy_escalation_topic: str = "escalation"
+
+    telegram_bot_token: Optional[str] = None
+    telegram_primary_chat_id: Optional[int] = None
+    telegram_priority_minutes: int = 90
+
+    metrics_port: int = 9109
 
     agent_service_base_url: str = "http://agent-service.default.svc.cluster.local:8080"
     nudge_session_prefix: str = "coach"
@@ -46,6 +62,17 @@ class Settings(BaseSettings):
     def has_openai_credentials(self) -> bool:
         key = self.openai_api_key.strip()
         return bool(key and key.lower() != "set-me")
+
+    @property
+    def effective_postgres_dsn(self) -> str | None:
+        if self.postgres_dsn:
+            return self.postgres_dsn
+        if self.postgres_user and self.postgres_password:
+            return (
+                f"postgresql://{self.postgres_user}:{self.postgres_password}@"
+                f"{self.postgres_host}:{self.postgres_port}/{self.postgres_database}"
+            )
+        return None
 
 
 @lru_cache(maxsize=1)

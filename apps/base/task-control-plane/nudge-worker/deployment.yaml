@@ -18,8 +18,11 @@ spec:
     spec:
       containers:
         - name: nudge-worker
-          image: ghcr.io/richrobertson/nudge-worker:0.1.3
+          image: ghcr.io/richrobertson/nudge-worker:0.2.0
           imagePullPolicy: IfNotPresent
+          ports:
+            - name: metrics
+              containerPort: 9109
           envFrom:
             - configMapRef:
                 name: nudge-worker-config
@@ -36,11 +39,41 @@ spec:
                   name: task-control-plane-vikunja
                   key: VIKUNJA_API_TOKEN
                   optional: true
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: task-control-plane-cnpg-app
+                  key: username
+                  optional: true
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: task-control-plane-cnpg-app
+                  key: password
+                  optional: true
+            - name: POSTGRES_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: task-control-plane-cnpg-app
+                  key: dbname
+                  optional: true
             - name: NTFY_ACCESS_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: task-control-plane-app
                   key: NTFY_ACCESS_TOKEN
+                  optional: true
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: task-control-plane-app
+                  key: TELEGRAM_BOT_TOKEN
+                  optional: true
+            - name: TELEGRAM_PRIMARY_CHAT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: task-control-plane-app
+                  key: TELEGRAM_PRIMARY_CHAT_ID
                   optional: true
           resources:
             requests:

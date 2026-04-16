@@ -5,6 +5,7 @@ resources:
   - configmaps.yaml
   - secret-stubs.yaml
   - postgres
+  - redis
   - vikunja
   - agent-service
   - nudge-worker

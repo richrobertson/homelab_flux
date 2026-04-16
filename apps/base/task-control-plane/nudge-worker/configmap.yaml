@@ -24,3 +24,9 @@ data:
   NTFY_ESCALATION_TOPIC: escalation
   AGENT_SERVICE_BASE_URL: http://agent-service.default.svc.cluster.local:8080
   NUDGE_SESSION_PREFIX: coach
+  REDIS_URL: redis://task-control-plane-redis.default.svc.cluster.local:6379/0
+  REDIS_KEY_PREFIX: tcp
+  POSTGRES_HOST: task-control-plane-cnpg-rw.default.svc.cluster.local
+  POSTGRES_PORT: "5432"
+  TELEGRAM_PRIORITY_MINUTES: "90"
+  METRICS_PORT: "9109"
