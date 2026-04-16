@@ -48,7 +48,7 @@ spec:
               token_endpoint_auth_method: client_secret_basic
             - client_id: vikunja_staging
               client_name: Vikunja Staging
-              client_secret: '$2b$12$G4e2wFGmXCHkQowZZZKOrecbdJik.gd7L5ORyoRVOL7uMZue8SpBW'
+              client_secret: '$2b$12$kjY20tnxH8rVDpNccpFqs.fFQYD/F5WkKF8Gr9FOx.z0G5z7qJv4a'
               public: false
               authorization_policy: one_factor
               redirect_uris:
