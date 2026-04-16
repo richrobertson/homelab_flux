@@ -47,10 +47,10 @@ patches:
   - patch: |
       - op: replace
         path: /spec/path
-        value: task-control-plane/staging/app
+        value: task-control-plane/staging/vikunja-oidc
     target:
       kind: VaultStaticSecret
-      name: task-control-plane-app
+      name: vikunja-oidc-secret
   - patch: |
       - op: replace
         path: /spec/path
@@ -58,3 +58,43 @@ patches:
     target:
       kind: VaultStaticSecret
       name: task-control-plane-vikunja
+  - patch: |
+      - op: replace
+        path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDER
+        value: https://auth.staging.myrobertson.net
+      - op: replace
+        path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_LOGOUTURL
+        value: https://auth.staging.myrobertson.net/logout
+      - op: replace
+        path: /spec/values/vikunja/configMaps/config/data/config\.yml
+        value: |
+          service:
+            publicurl: https://tasks.staging.myrobertson.net/
+            enableregistration: false
+            timezone: UTC
+          log:
+            level: INFO
+    target:
+      kind: HelmRelease
+      name: vikunja
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: task-control-plane/staging/vikunja-oidc
+    target:
+      kind: VaultStaticSecret
+      name: vikunja-oidc-secret
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: task-control-plane/staging/vikunja
+    target:
+      kind: VaultStaticSecret
+      name: task-control-plane-vikunja
+  - patch: |
+      - op: replace
+        path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDER
+        value: https://auth.staging.myrobertson.net
+    target:
+      kind: HelmRelease
+      name: vikunja

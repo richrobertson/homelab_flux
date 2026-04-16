@@ -46,6 +46,20 @@ spec:
                 - groups
               userinfo_signed_response_alg: none
               token_endpoint_auth_method: client_secret_basic
+            - client_id: vikunja_staging
+              client_name: Vikunja Staging
+              client_secret: '$2b$12$G4e2wFGmXCHkQowZZZKOrecbdJik.gd7L5ORyoRVOL7uMZue8SpBW'
+              public: false
+              authorization_policy: one_factor
+              redirect_uris:
+                - https://tasks.staging.myrobertson.net/auth/openidCallback
+              scopes:
+                - openid
+                - profile
+                - email
+                - groups
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_basic
     secret:
       additionalSecrets: {}
    

@@ -56,6 +56,13 @@ patches:
   - patch: |
       - op: replace
         path: /spec/path
+        value: task-control-plane/prod/vikunja-oidc
+    target:
+      kind: VaultStaticSecret
+      name: vikunja-oidc-secret
+  - patch: |
+      - op: replace
+        path: /spec/path
         value: task-control-plane/prod/vikunja
     target:
       kind: VaultStaticSecret
