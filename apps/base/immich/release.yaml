@@ -1,4 +1,3 @@
----
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -14,7 +13,7 @@ spec:
         containers:
           main:
             image:
-              tag: v2.6.3 # {"$imagepolicy": "default:immich:tag"}
+              tag: v2.7.5 # {"$imagepolicy": "default:immich:tag"}
     server:
       controllers:
         main:
@@ -37,7 +36,6 @@ spec:
                       name: cluster-immich-app
                       key: dbname
                 DB_HOSTNAME: "cluster-immich-rw"
-    
           replicas: 0
           affinity:
             podAntiAffinity:
@@ -47,7 +45,6 @@ spec:
                       app.kubernetes.io/name: server
                       app.kubernetes.io/instance: immich
                   topologyKey: "kubernetes.io/hostname"
-
     immich:
       metrics:
         # Enabling this will create the service monitors needed to monitor immich with the prometheus operator
@@ -58,7 +55,6 @@ spec:
           # Automatically creating the library volume is not supported by this chart
           # You have to specify an existing PVC to use
           existingClaim: immich-data-files-pvc-ceph
-
     valkey:
       enabled: true
       persistence:
