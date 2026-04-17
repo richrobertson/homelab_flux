@@ -141,6 +141,31 @@ class RedisSessionStore:
         value = await self._redis.get(key)
         return str(value) if value is not None else None
 
+    async def set_pending_telegram_attachments(
+        self,
+        chat_id: int,
+        attachments: list[dict[str, str]],
+    ) -> None:
+        key = f"{self._key_prefix}:telegram_pending_attachments:{chat_id}"
+        await self._redis.set(key, json.dumps(attachments), ex=self._ttl_seconds)
+
+    async def get_pending_telegram_attachments(self, chat_id: int) -> list[dict[str, str]]:
+        key = f"{self._key_prefix}:telegram_pending_attachments:{chat_id}"
+        raw = await self._redis.get(key)
+        if not raw:
+            return []
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError:
+            return []
+        if not isinstance(payload, list):
+            return []
+        return [item for item in payload if isinstance(item, dict)]
+
+    async def clear_pending_telegram_attachments(self, chat_id: int) -> None:
+        key = f"{self._key_prefix}:telegram_pending_attachments:{chat_id}"
+        await self._redis.delete(key)
+
     async def is_telegram_active(self, chat_id: int, within_seconds: int = 900) -> bool:
         context = await self.get_telegram_context(chat_id)
         last_seen = context.get("updated_at") or context.get("last_seen")

@@ -52,6 +52,26 @@ async def _safe_send_telegram(
         telegram_response.raise_for_status()
         return telegram_response.json()
 
+async def _download_telegram_document(bot_token: str, document: Any) -> ChatAttachment:
+    meta_url = f"https://api.telegram.org/bot{bot_token}/getFile"
+    async with httpx.AsyncClient(timeout=30) as client:
+        meta_response = await client.get(meta_url, params={"file_id": document.file_id})
+        meta_response.raise_for_status()
+        payload = meta_response.json()
+        file_path = ((payload or {}).get("result") or {}).get("file_path")
+        if not file_path:
+            raise ValueError("Telegram file path missing from getFile response")
+
+        download_url = f"https://api.telegram.org/file/bot{bot_token}/{file_path}"
+        file_response = await client.get(download_url)
+        file_response.raise_for_status()
+
+    return ChatAttachment(
+        filename=document.file_name or file_path.rsplit("/", 1)[-1],
+        content_base64=base64.b64encode(file_response.content).decode("ascii"),
+        mime_type=document.mime_type,
+    )
+
 
 async def _safe_answer_callback(bot_token: str, callback_query_id: str, text: str) -> None:
     url = f"https://api.telegram.org/bot{bot_token}/answerCallbackQuery"
@@ -252,6 +272,43 @@ def build_router(
                     channel="telegram",
                     metadata={"minutes": minutes or 15, "source": "callback"},
                 )
+
+            if update.message.document is not None and settings.telegram_bot_token:
+                try:
+                    attachments.append(await _download_telegram_document(settings.telegram_bot_token, update.message.document))
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning("telegram_document_download_failed", extra={"chat_id": chat_id, "error": str(exc)})
+                    if settings.telegram_bot_token:
+                        await _safe_send_telegram(
+                            settings.telegram_bot_token,
+                            chat_id,
+                            "I could not read that file from Telegram. Please try sending it again.",
+                        )
+                        telegram_messages_sent_total.inc()
+                    return {"ok": True, "ignored": True, "reason": "telegram_document_download_failed"}
+
+            if attachments and redis_store is not None:
+                await redis_store.set_pending_telegram_attachments(
+                    chat_id,
+                    [attachment.model_dump() for attachment in attachments],
+                )
+                redis_state_writes_total.inc()
+
+            if attachments and not message_text:
+                if settings.telegram_bot_token:
+                    await _safe_send_telegram(
+                        settings.telegram_bot_token,
+                        chat_id,
+                        f"I received {attachments[0].filename}. Tell me what to do with it, or send a caption with the file.",
+                    )
+                    telegram_messages_sent_total.inc()
+                return {"ok": True, "handled": True, "reason": "telegram_attachment_stored"}
+
+            if not attachments and redis_store is not None:
+                pending = await redis_store.get_pending_telegram_attachments(chat_id)
+                if pending:
+                    attachments = [ChatAttachment(**item) for item in pending]
+                    redis_state_reads_total.inc()
                 postgres_event_writes_total.inc()
             await _track_task_context(
                 chat_id=chat_id,
@@ -382,6 +439,7 @@ def build_router(
             session_id=payload.session_id,
             user_message=payload.message,
             attachments_context=attachments_context,
+            attachments=payload.attachments,
         )
         chat_request_latency_seconds.observe(time.perf_counter() - started)
         return ChatResponse(session_id=payload.session_id, response=text, tool_calls=tool_calls)
@@ -411,6 +469,7 @@ def build_router(
             session_id=session_id,
             user_message=message,
             attachments_context=attachments_context,
+            attachments=attachments,
         )
         chat_request_latency_seconds.observe(time.perf_counter() - started)
         return ChatResponse(session_id=session_id, response=text, tool_calls=tool_calls)
@@ -499,14 +558,51 @@ def build_router(
 
             return {"ok": True, "handled": True, "action": action, "task_id": task_id}
 
-        if not update.message or not update.message.text:
-            return {"ok": True, "ignored": True, "reason": "No message text"}
+        if not update.message or not (update.message.text or update.message.caption or update.message.document):
+            return {"ok": True, "ignored": True, "reason": "No usable message content"}
 
         telegram_messages_received_total.inc()
-        message_text = update.message.text.strip()
+        message_text = (update.message.text or update.message.caption or "").strip()
         chat_id = update.message.chat.id
         user_id = str(update.message.from_.id) if update.message.from_ else None
         session_id = f"telegram:{chat_id}"
+        attachments: list[ChatAttachment] = []
+
+        if update.message.document is not None and settings.telegram_bot_token:
+            try:
+                attachments.append(await _download_telegram_document(settings.telegram_bot_token, update.message.document))
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("telegram_document_download_failed", extra={"chat_id": chat_id, "error": str(exc)})
+                await _safe_send_telegram(
+                    settings.telegram_bot_token,
+                    chat_id,
+                    "I could not read that file from Telegram. Please try sending it again.",
+                )
+                telegram_messages_sent_total.inc()
+                return {"ok": True, "ignored": True, "reason": "telegram_document_download_failed"}
+
+        if attachments and redis_store is not None:
+            await redis_store.set_pending_telegram_attachments(
+                chat_id,
+                [attachment.model_dump() for attachment in attachments],
+            )
+            redis_state_writes_total.inc()
+
+        if attachments and not message_text:
+            if settings.telegram_bot_token:
+                await _safe_send_telegram(
+                    settings.telegram_bot_token,
+                    chat_id,
+                    f"I received {attachments[0].filename}. Tell me what to do with it, or send a caption with the file.",
+                )
+                telegram_messages_sent_total.inc()
+            return {"ok": True, "handled": True, "reason": "telegram_attachment_stored"}
+
+        if not attachments and redis_store is not None:
+            pending = await redis_store.get_pending_telegram_attachments(chat_id)
+            if pending:
+                attachments = [ChatAttachment(**item) for item in pending]
+                redis_state_reads_total.inc()
 
         behavior = assess_behavior(message_text)
         task_id = extract_task_id(message_text)
@@ -538,7 +634,7 @@ def build_router(
             redis_state_writes_total.inc()
             await redis_store.update_telegram_session(
                 chat_id=chat_id,
-                message_text=message_text,
+                message_text=message_text or (attachments[0].filename if attachments else "[attachment]"),
                 signal_type=behavior.category if behavior else None,
                 user_id=user_id,
             )
@@ -579,7 +675,17 @@ def build_router(
             telegram_messages_sent_total.inc()
             return {"ok": True, "handled": True, "action": action, "task_id": task_id}
 
-        reply, _ = await orchestrator.handle_chat(session_id=session_id, user_message=message_text)
+        attachments_context = build_attachments_context(attachments)
+        reply, _ = await orchestrator.handle_chat(
+            session_id=session_id,
+            user_message=message_text,
+            attachments_context=attachments_context,
+            attachments=attachments,
+        )
+
+        if attachments and redis_store is not None:
+            await redis_store.clear_pending_telegram_attachments(chat_id)
+            redis_state_writes_total.inc()
 
         if not settings.telegram_bot_token:
             logger.warning("telegram_bot_token_missing")

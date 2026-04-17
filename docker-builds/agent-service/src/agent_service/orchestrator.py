@@ -32,6 +32,7 @@ class AgentOrchestrator:
         session_id: str,
         user_message: str,
         attachments_context: str | None = None,
+        attachments: list[Any] | None = None,
     ) -> tuple[str, list[ToolCallRecord]]:
         history = await self._store.get_messages(session_id)
         base_prompt = self._settings.agent_system_prompt or DEFAULT_SYSTEM_PROMPT
@@ -62,35 +63,41 @@ class AgentOrchestrator:
         tool_records: list[ToolCallRecord] = []
         final_response = ""
 
-        for iteration in range(self._settings.tool_max_iterations):
-            assistant_message = await self._openai.create_response(messages=messages, tools=TOOL_SCHEMAS)
-            messages.append(assistant_message)
+        if attachments:
+            self._tools.set_session_attachments(session_id, attachments)
 
-            tool_calls = assistant_message.get("tool_calls") or []
-            if not tool_calls:
-                final_response = assistant_message.get("content") or "I can help with that."
-                break
+        try:
+            for iteration in range(self._settings.tool_max_iterations):
+                assistant_message = await self._openai.create_response(messages=messages, tools=TOOL_SCHEMAS)
+                messages.append(assistant_message)
 
-            logger.info("model_requested_tools", extra={"count": len(tool_calls), "iteration": iteration})
+                tool_calls = assistant_message.get("tool_calls") or []
+                if not tool_calls:
+                    final_response = assistant_message.get("content") or "I can help with that."
+                    break
 
-            for call in tool_calls:
-                name = call["function"]["name"]
-                try:
-                    arguments = json.loads(call["function"].get("arguments") or "{}")
-                except json.JSONDecodeError:
-                    arguments = {}
+                logger.info("model_requested_tools", extra={"count": len(tool_calls), "iteration": iteration})
 
-                result = await self._tools.execute(name, arguments)
-                tool_records.append(ToolCallRecord(name=name, arguments=arguments, result=result))
+                for call in tool_calls:
+                    name = call["function"]["name"]
+                    try:
+                        arguments = json.loads(call["function"].get("arguments") or "{}")
+                    except json.JSONDecodeError:
+                        arguments = {}
 
-                messages.append(
-                    {
-                        "role": "tool",
-                        "tool_call_id": call["id"],
-                        "name": name,
-                        "content": json.dumps(result),
-                    }
-                )
+                    result = await self._tools.execute(name, arguments, session_id=session_id)
+                    tool_records.append(ToolCallRecord(name=name, arguments=arguments, result=result))
+
+                    messages.append(
+                        {
+                            "role": "tool",
+                            "tool_call_id": call["id"],
+                            "name": name,
+                            "content": json.dumps(result),
+                        }
+                    )
+        finally:
+            self._tools.clear_session_attachments(session_id)
 
         if not final_response:
             final_response = "I hit a tool-calling limit. Please try again with a more specific request."

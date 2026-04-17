@@ -40,11 +40,21 @@ class TelegramUser(BaseModel):
     username: Optional[str] = None
 
 
+class TelegramDocument(BaseModel):
+    file_id: str
+    file_unique_id: Optional[str] = None
+    file_name: Optional[str] = None
+    mime_type: Optional[str] = None
+    file_size: Optional[int] = None
+
+
 class TelegramMessage(BaseModel):
     message_id: int
     date: int
     chat: TelegramChat
     text: Optional[str] = None
+    caption: Optional[str] = None
+    document: Optional[TelegramDocument] = None
     from_: Optional[TelegramUser] = Field(default=None, alias="from")
 
 

@@ -5,6 +5,7 @@ import binascii
 from typing import Any
 
 from agent_service.clients.vikunja_client import VikunjaClient
+from agent_service.models import ChatAttachment
 
 TOOL_SCHEMAS: list[dict[str, Any]] = [
     {
@@ -131,6 +132,21 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
     {
         "type": "function",
         "function": {
+            "name": "attach_current_file_to_task",
+            "description": "Attach a file that was uploaded in the current chat session to an existing task.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "task_id": {"type": "integer"},
+                    "filename": {"type": "string"},
+                },
+                "required": ["task_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "suggest_next_task",
             "description": "Suggest the best next task from open tasks.",
             "parameters": {
@@ -161,8 +177,15 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
 class ToolExecutor:
     def __init__(self, vikunja: VikunjaClient) -> None:
         self._vikunja = vikunja
+        self._session_attachments: dict[str, list[ChatAttachment]] = {}
 
-    async def execute(self, name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    def set_session_attachments(self, session_id: str, attachments: list[ChatAttachment]) -> None:
+        self._session_attachments[session_id] = attachments
+
+    def clear_session_attachments(self, session_id: str) -> None:
+        self._session_attachments.pop(session_id, None)
+
+    async def execute(self, name: str, arguments: dict[str, Any], session_id: str | None = None) -> dict[str, Any]:
         handlers = {
             "list_tasks": self._list_tasks,
             "create_task": self._create_task,
@@ -171,6 +194,7 @@ class ToolExecutor:
             "complete_task": self._complete_task,
             "delete_task": self._delete_task,
             "attach_file_to_task": self._attach_file_to_task,
+            "attach_current_file_to_task": self._attach_current_file_to_task,
             "suggest_next_task": self._suggest_next_task,
             "break_down_task": self._break_down_task,
         }
@@ -178,6 +202,8 @@ class ToolExecutor:
             return {"ok": False, "error": f"Unknown tool: {name}"}
 
         try:
+            if name == "attach_current_file_to_task":
+                return await self._attach_current_file_to_task(arguments, session_id=session_id)
             return await handlers[name](arguments)
         except Exception as exc:  # noqa: BLE001
             return {"ok": False, "error": str(exc)}
@@ -239,6 +265,35 @@ class ToolExecutor:
             mime_type=args.get("mime_type"),
         )
         return {"ok": True, "task_id": int(args["task_id"]), "attachments": attachments}
+
+    async def _attach_current_file_to_task(self, args: dict[str, Any], session_id: str | None) -> dict[str, Any]:
+        if not session_id:
+            return {"ok": False, "error": "No active chat session for attachment lookup."}
+
+        attachments = self._session_attachments.get(session_id) or []
+        if not attachments:
+            return {"ok": False, "error": "No uploaded file is available in the current chat session."}
+
+        requested_name = str(args.get("filename") or "").strip().lower()
+        selected = attachments[0]
+        if requested_name:
+            for attachment in attachments:
+                if attachment.filename.lower() == requested_name:
+                    selected = attachment
+                    break
+
+        try:
+            content_bytes = base64.b64decode(selected.content_base64, validate=True)
+        except (binascii.Error, ValueError) as exc:
+            return {"ok": False, "error": f"Stored session attachment is invalid: {exc}"}
+
+        uploaded = await self._vikunja.upload_task_attachment(
+            task_id=int(args["task_id"]),
+            filename=selected.filename,
+            content_bytes=content_bytes,
+            mime_type=selected.mime_type,
+        )
+        return {"ok": True, "task_id": int(args["task_id"]), "attachments": uploaded, "filename": selected.filename}
 
     async def _suggest_next_task(self, args: dict[str, Any]) -> dict[str, Any]:
         tasks = await self._vikunja.list_tasks(limit=int(args.get("limit", 20)))
