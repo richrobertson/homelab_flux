@@ -2,7 +2,6 @@ apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImageRepository
 metadata:
   name: immich
-  namespace: flux-system
   labels:
     app.kubernetes.io/name: immich
 spec:
@@ -13,7 +12,6 @@ apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImagePolicy
 metadata:
   name: immich
-  namespace: flux-system
   labels:
     app.kubernetes.io/name: immich
 spec:
