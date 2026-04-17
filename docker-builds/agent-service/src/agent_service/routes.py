@@ -589,13 +589,19 @@ def build_router(
             redis_state_writes_total.inc()
 
         if attachments and not message_text:
+            ack_text = f"I received {attachments[0].filename}. Tell me what to do with it, or send a caption with the file."
             if settings.telegram_bot_token:
                 await _safe_send_telegram(
                     settings.telegram_bot_token,
                     chat_id,
-                    f"I received {attachments[0].filename}. Tell me what to do with it, or send a caption with the file.",
+                    ack_text,
                 )
                 telegram_messages_sent_total.inc()
+            await orchestrator.append_exchange(
+                session_id=session_id,
+                user_message=f"[Uploaded file: {attachments[0].filename}]",
+                assistant_message=ack_text,
+            )
             return {"ok": True, "handled": True, "reason": "telegram_attachment_stored"}
 
         if not attachments and redis_store is not None:

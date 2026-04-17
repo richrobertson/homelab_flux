@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: agent-service
-          image: ghcr.io/richrobertson/agent-service:0.3.14
+          image: ghcr.io/richrobertson/agent-service:0.3.15
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

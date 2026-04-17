@@ -40,6 +40,13 @@ class AgentOrchestrator:
         behavior = assess_behavior(user_message)
 
         rendered_user_message = user_message
+        stored_user_message = user_message
+        if attachments:
+            attachment_names = ", ".join(
+                str(getattr(attachment, "filename", "attachment")) for attachment in attachments if attachment is not None
+            )
+            if attachment_names:
+                stored_user_message = f"{user_message}\n\n[Attached files: {attachment_names}]".strip()
         if attachments_context:
             rendered_user_message = (
                 f"{user_message}\n\n"
@@ -105,9 +112,18 @@ class AgentOrchestrator:
         await self._store.append_messages(
             session_id,
             [
-                {"role": "user", "content": user_message},
+                {"role": "user", "content": stored_user_message},
                 {"role": "assistant", "content": final_response},
             ],
         )
 
         return final_response, tool_records
+
+    async def append_exchange(self, session_id: str, user_message: str, assistant_message: str) -> None:
+        await self._store.append_messages(
+            session_id,
+            [
+                {"role": "user", "content": user_message},
+                {"role": "assistant", "content": assistant_message},
+            ],
+        )

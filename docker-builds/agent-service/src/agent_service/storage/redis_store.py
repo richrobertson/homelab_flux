@@ -37,10 +37,18 @@ class RedisSessionStore:
 
     async def append_messages(self, session_id: str, new_messages: list[dict[str, Any]]) -> None:
         async with self._lock:
-            existing = await self.get_messages(session_id)
+            key = f"{self._key_prefix}:session:{session_id}"
+            raw = await self._redis.get(key)
+            existing: list[dict[str, Any]] = []
+            if raw:
+                try:
+                    payload = json.loads(raw)
+                except json.JSONDecodeError:
+                    payload = []
+                if isinstance(payload, list):
+                    existing = [msg for msg in payload if isinstance(msg, dict)]
             merged = [*existing, *new_messages]
             merged = merged[-self._max_messages :]
-            key = f"{self._key_prefix}:session:{session_id}"
             await self._redis.set(key, json.dumps(merged), ex=self._ttl_seconds)
 
     async def clear(self, session_id: str) -> None:
