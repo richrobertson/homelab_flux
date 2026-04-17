@@ -1,0 +1,27 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: immich
+  namespace: flux-system
+spec:
+  interval: 10m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  policySelector:
+    matchLabels:
+      app.kubernetes.io/name: immich
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        name: fluxcdbot
+        email: fluxcdbot@users.noreply.github.com
+      messageTemplate: "chore(images): update immich image tag"
+    push:
+      branch: main
+  update:
+    path: ./apps/base/immich
+    strategy: Setters

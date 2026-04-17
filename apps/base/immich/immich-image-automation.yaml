@@ -1,0 +1,25 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: immich
+  labels:
+    app.kubernetes.io/name: immich
+spec:
+  interval: 10m
+  image: ghcr.io/immich-app/immich-server
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: immich
+  labels:
+    app.kubernetes.io/name: immich
+spec:
+  imageRepositoryRef:
+    name: immich
+  filterTags:
+    pattern: '^v(?P<version>.*)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: ">=2.0.0"

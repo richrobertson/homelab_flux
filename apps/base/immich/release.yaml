@@ -9,6 +9,12 @@ spec:
     kind: OCIRepository
     name: immich
   values:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              tag: v2.6.3 # {"$imagepolicy": "default:immich:tag"}
     server:
       controllers:
         main:
