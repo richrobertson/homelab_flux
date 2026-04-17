@@ -11,19 +11,6 @@ spec:
     create: true
     name: restic-config-n8n-cnpg-data
 ---
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultStaticSecret
-metadata:
-  name: restic-config-n8n-redis-data
-spec:
-  type: kv-v2
-  mount: secret
-  path: volsync/prod/n8n-redis-n8n-redis-0
-  refreshAfter: 60s
-  destination:
-    create: true
-    name: restic-config-n8n-redis-data
----
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
@@ -55,31 +42,3 @@ spec:
       limits:
         cpu: "2"
         memory: "4Gi"
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
-  name: n8n-redis-data-backup
-spec:
-  sourcePVC: n8n-redis-n8n-redis-0
-  paused: false
-  trigger:
-    schedule: "22 * * * *"
-  restic:
-    repository: restic-config-n8n-redis-data
-    pruneIntervalDays: 1
-    retain:
-      hourly: 4
-      daily: 0
-      weekly: 0
-      monthly: 0
-      yearly: 0
-    copyMethod: Clone
-    cacheStorageClassName: csi-cephfs-sc
-    moverResources:
-      requests:
-        cpu: "250m"
-        memory: "512Mi"
-      limits:
-        cpu: "1"
-        memory: "1Gi"

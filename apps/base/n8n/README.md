@@ -58,7 +58,6 @@ vault kv put secret/n8n/prod/app \
 The production overlay expects these Vault paths:
 
 - `secret/volsync/prod/n8n-cnpg-1`
-- `secret/volsync/prod/n8n-redis-n8n-redis-0`
 
 Required keys for each path:
 
@@ -71,7 +70,7 @@ Required keys for each path:
 
 1. Commit and push the repo changes. Flux currently reconciles only committed Git revisions.
 2. Seed the Vault app secret path for the target environment.
-3. Seed the production VolSync secret paths if deploying prod.
+3. Seed the production VolSync secret path if deploying prod.
 4. Reconcile `infra-gateway` first so the shared `.com` gateway exposes `n8n.myrobertson.com`.
 5. Reconcile `apps` after the gateway is ready.
 
