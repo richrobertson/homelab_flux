@@ -14,6 +14,8 @@ spec:
         name: plex
       version: ">=1.5.0 <2.0.0"
   values:
+    image:
+      tag: "1.43.0.10492-121068a07" # {"$imagepolicy": "default:plex:tag"}
     fullnameOverride: plex
     pms:
       configExistingClaim: plex-config-ceph

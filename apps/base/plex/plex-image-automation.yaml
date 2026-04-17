@@ -1,0 +1,25 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: plex
+  labels:
+    app.kubernetes.io/name: plex
+spec:
+  interval: 10m
+  image: docker.io/plexinc/pms-docker
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: plex
+  labels:
+    app.kubernetes.io/name: plex
+spec:
+  imageRepositoryRef:
+    name: plex
+  filterTags:
+    pattern: '^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)\.(?P<build>\d+)-[0-9a-f]+$'
+    extract: '$major.$minor.$patch-$build'
+  policy:
+    semver:
+      range: ">=1.0.0-0"
