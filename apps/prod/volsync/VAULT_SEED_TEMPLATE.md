@@ -74,6 +74,7 @@ RESTIC_REPOSITORY format:
 - secret/volsync/prod/sonarr-data-files-pvc
 - secret/volsync/prod/tautulli-config-ceph
 - secret/volsync/prod/syncthing-config-ceph
+- secret/volsync/prod/code-server-data-ceph
 
 ### Example seed command
 
