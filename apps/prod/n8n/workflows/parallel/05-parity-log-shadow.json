@@ -1,0 +1,129 @@
+{
+  "name": "05-parity-log-shadow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "parallel/parity/log",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "parity-webhook",
+      "name": "Parity Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {"name": "source", "value": "={{$json.body.source || 'unknown'}}"},
+            {"name": "session_id", "value": "={{$json.body.session_id || ''}}"},
+            {"name": "intent", "value": "={{$json.body.intent || 'unknown'}}"},
+            {"name": "mode", "value": "={{$json.body.mode || 'shadow'}}"},
+            {"name": "status", "value": "={{$json.body.status || 'unknown'}}"},
+            {"name": "recorded_at", "value": "={{$now}}"},
+            {"name": "sink_url", "value": "={{$env.N8N_PARITY_LOG_SINK_URL || ''}}"}
+          ]
+        }
+      },
+      "id": "normalize",
+      "name": "Normalize Parity Event",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $json.body || {};\nconst stable = {\n  source: $json.source,\n  session_id: $json.session_id,\n  intent: $json.intent,\n  mode: $json.mode,\n  status: $json.status,\n  candidate_task_ids: Array.isArray(payload.candidate_task_ids) ? payload.candidate_task_ids : [],\n  selected_task_id: payload.selected_task_id || null,\n  action_preview: payload.action_preview || null,\n  notes: payload.notes || null\n};\nconst raw = JSON.stringify(stable);\nlet checksum = 0;\nfor (let i = 0; i < raw.length; i++) checksum = (checksum + raw.charCodeAt(i)) % 1000000007;\nreturn [{ json: { ...$json, parity_payload: stable, parity_checksum: String(checksum) } }];"
+      },
+      "id": "build-payload",
+      "name": "Build Parity Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [780, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.sink_url}}", "operation": "notEmpty"}
+          ]
+        }
+      },
+      "id": "has-sink",
+      "name": "Has External Sink?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1040, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$json.sink_url}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"source\": $json.source, \"session_id\": $json.session_id, \"intent\": $json.intent, \"mode\": $json.mode, \"status\": $json.status, \"recorded_at\": $json.recorded_at, \"parity_checksum\": $json.parity_checksum, \"parity_payload\": $json.parity_payload}",
+        "options": {}
+      },
+      "id": "post-sink",
+      "name": "Post To Parity Sink",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1280, 220]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"logged\": true, \"sink\": true, \"checksum\": $json.parity_checksum, \"recorded_at\": $json.recorded_at}"
+      },
+      "id": "respond-sink",
+      "name": "Respond Logged (Sink)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1520, 220]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"logged\": true, \"sink\": false, \"checksum\": $json.parity_checksum, \"recorded_at\": $json.recorded_at}"
+      },
+      "id": "respond-nosink",
+      "name": "Respond Logged (No Sink)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1280, 420]
+    }
+  ],
+  "connections": {
+    "Parity Webhook": {
+      "main": [[{"node": "Normalize Parity Event", "type": "main", "index": 0}]]
+    },
+    "Normalize Parity Event": {
+      "main": [[{"node": "Build Parity Payload", "type": "main", "index": 0}]]
+    },
+    "Build Parity Payload": {
+      "main": [[{"node": "Has External Sink?", "type": "main", "index": 0}]]
+    },
+    "Has External Sink?": {
+      "main": [
+        [{"node": "Post To Parity Sink", "type": "main", "index": 0}],
+        [{"node": "Respond Logged (No Sink)", "type": "main", "index": 0}]
+      ]
+    },
+    "Post To Parity Sink": {
+      "main": [[{"node": "Respond Logged (Sink)", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {"saveExecutionProgress": true},
+  "meta": {"templateCredsSetupCompleted": false},
+  "pinData": {}
+}

@@ -1,0 +1,93 @@
+{
+  "name": "08-callback-state-shadow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "parallel/state/callback/claim",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "claim-webhook",
+      "name": "Claim Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 180]
+    },
+    {
+      "parameters": {
+        "functionCode": "const body = $json.body || {};\nconst callbackId = String(body.callback_id || '').trim();\nconst sessionId = String(body.session_id || '').trim();\nconst ttl = Number(body.ttl_seconds || 3600);\nif (!callbackId) {\n  return [{ json: { claimed: false, error: 'missing callback_id' } }];\n}\nconst store = this.getWorkflowStaticData('global');\nif (!store.callbackClaims) store.callbackClaims = {};\nconst nowMs = Date.now();\nfor (const [key, value] of Object.entries(store.callbackClaims)) {\n  if (!value || !value.expires_at_ms || Number(value.expires_at_ms) <= nowMs) delete store.callbackClaims[key];\n}\nif (store.callbackClaims[callbackId]) {\n  return [{ json: { claimed: false, callback_id: callbackId, session_id: sessionId, reason: 'duplicate' } }];\n}\nstore.callbackClaims[callbackId] = {\n  session_id: sessionId,\n  claimed_at_ms: nowMs,\n  expires_at_ms: nowMs + (ttl * 1000)\n};\nreturn [{ json: { claimed: true, callback_id: callbackId, session_id: sessionId, ttl_seconds: ttl } }];"
+      },
+      "id": "claim-function",
+      "name": "Claim Callback",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [500, 180]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}"
+      },
+      "id": "claim-respond",
+      "name": "Respond Claim",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [760, 180]
+    },
+    {
+      "parameters": {
+        "path": "parallel/state/session/upsert",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "session-webhook",
+      "name": "Session Upsert Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 420]
+    },
+    {
+      "parameters": {
+        "functionCode": "const body = $json.body || {};\nconst sessionId = String(body.session_id || '').trim();\nif (!sessionId) {\n  return [{ json: { ok: false, error: 'missing session_id' } }];\n}\nconst store = this.getWorkflowStaticData('global');\nif (!store.sessionContext) store.sessionContext = {};\nstore.sessionContext[sessionId] = {\n  last_callback_id: String(body.last_callback_id || ''),\n  last_action: String(body.last_action || ''),\n  updated_at: body.updated_at || new Date().toISOString()\n};\nreturn [{ json: { ok: true, session_id: sessionId, context: store.sessionContext[sessionId] } }];"
+      },
+      "id": "session-function",
+      "name": "Upsert Session",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [500, 420]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}"
+      },
+      "id": "session-respond",
+      "name": "Respond Session Upsert",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [760, 420]
+    }
+  ],
+  "connections": {
+    "Claim Webhook": {
+      "main": [[{"node": "Claim Callback", "type": "main", "index": 0}]]
+    },
+    "Claim Callback": {
+      "main": [[{"node": "Respond Claim", "type": "main", "index": 0}]]
+    },
+    "Session Upsert Webhook": {
+      "main": [[{"node": "Upsert Session", "type": "main", "index": 0}]]
+    },
+    "Upsert Session": {
+      "main": [[{"node": "Respond Session Upsert", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "saveExecutionProgress": true
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "pinData": {}
+}

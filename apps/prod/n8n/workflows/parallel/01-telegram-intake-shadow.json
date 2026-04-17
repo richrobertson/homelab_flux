@@ -1,0 +1,60 @@
+{
+  "name": "01-telegram-intake-shadow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "parallel/telegram/intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "telegram-webhook",
+      "name": "Telegram Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 280]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {"name": "mode", "value": "shadow"},
+            {"name": "received_at", "value": "={{$now}}"},
+            {"name": "chat_id", "value": "={{$json.body.message?.chat?.id || $json.body.callback_query?.message?.chat?.id || ''}}"},
+            {"name": "message_text", "value": "={{$json.body.message?.text || $json.body.message?.caption || ''}}"},
+            {"name": "document_name", "value": "={{$json.body.message?.document?.file_name || ''}}"}
+          ]
+        }
+      },
+      "id": "normalize-event",
+      "name": "Normalize Event",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [560, 280]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"mode\": \"shadow\", \"note\": \"parallel intake only\"}",
+        "options": {}
+      },
+      "id": "respond-ok",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 280]
+    }
+  ],
+  "connections": {
+    "Telegram Webhook": {
+      "main": [[{"node": "Normalize Event", "type": "main", "index": 0}]]
+    },
+    "Normalize Event": {
+      "main": [[{"node": "Respond OK", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {"saveExecutionProgress": true},
+  "meta": {"templateCredsSetupCompleted": false},
+  "pinData": {}
+}

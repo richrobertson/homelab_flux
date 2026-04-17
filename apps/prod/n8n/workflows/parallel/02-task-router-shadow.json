@@ -1,0 +1,542 @@
+{
+  "name": "02-task-router-shadow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "parallel/task-router",
+        "responseMode": "responseNode"
+      },
+      "id": "router-webhook",
+      "name": "Router Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 320]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {"name": "intent", "value": "={{$json.body.intent || 'unknown'}}"},
+            {"name": "mode", "value": "={{$json.body.mode || 'shadow'}}"},
+            {"name": "session_id", "value": "={{$json.body.session_id || ''}}"},
+            {"name": "project_id", "value": "={{String($json.body.project_id || '')}}"},
+            {"name": "task_id", "value": "={{String($json.body.task_id || '')}}"},
+            {"name": "parent_task_id", "value": "={{String($json.body.parent_task_id || '')}}"},
+            {"name": "title", "value": "={{$json.body.title || ''}}"},
+            {"name": "description", "value": "={{$json.body.description || ''}}"},
+            {"name": "due_date", "value": "={{$json.body.due_date || ''}}"},
+            {"name": "is_done_raw", "value": "={{$json.body.is_done === true ? 'true' : ($json.body.is_done === false ? 'false' : '')}}"},
+            {"name": "filename", "value": "={{$json.body.filename || 'attachment.bin'}}"},
+            {"name": "mime_type", "value": "={{$json.body.mime_type || 'application/octet-stream'}}"},
+            {"name": "content_base64", "value": "={{$json.body.content_base64 || ''}}"},
+            {"name": "can_execute", "value": "={{($json.body.mode === 'execute' && $env.N8N_PARALLEL_ENABLE_WRITES === 'true') ? 'true' : 'false'}}"}
+          ]
+        }
+      },
+      "id": "normalize",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [520, 320]
+    },
+    {
+      "parameters": {
+        "jsCode": "const supported = ['create_task', 'update_task', 'delete_task', 'create_subtask', 'attach_file_to_task'];\nconst intent = $json.intent || 'unknown';\nreturn [{ json: { ...$json, supported: supported.includes(intent), supported_str: supported.includes(intent) ? 'true' : 'false' } }];"
+      },
+      "id": "assess-intent",
+      "name": "Assess Intent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [780, 320]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.supported_str}}", "operation": "equal", "value2": "true"}
+          ]
+        }
+      },
+      "id": "supported-intent",
+      "name": "Supported Intent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1040, 320]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.can_execute}}", "operation": "equal", "value2": "true"}
+          ]
+        }
+      },
+      "id": "execute-enabled",
+      "name": "Execute Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1280, 240]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.intent}}", "operation": "equal", "value2": "create_task"}
+          ]
+        }
+      },
+      "id": "is-create",
+      "name": "Intent Create?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1520, 120]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://tasks.myrobertson.com/api/v1/projects/{{$json.project_id || $env.VIKUNJA_PROJECT_ID}}/tasks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{$env.VIKUNJA_API_TOKEN}}"},
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"title\": $json.title || 'Untitled task', \"description\": $json.description || undefined, \"due_date\": $json.due_date || undefined}",
+        "options": {}
+      },
+      "id": "create-task",
+      "name": "Create Task",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1760, 60]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"mode\": \"execute\", \"intent\": \"create_task\", \"executed\": true, \"result\": $json}"
+      },
+      "id": "respond-create",
+      "name": "Respond Create",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2000, 60]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.intent}}", "operation": "equal", "value2": "create_subtask"}
+          ]
+        }
+      },
+      "id": "is-subtask",
+      "name": "Intent Subtask?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1760, 220]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://tasks.myrobertson.com/api/v1/projects/{{$json.project_id || $env.VIKUNJA_PROJECT_ID}}/tasks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{$env.VIKUNJA_API_TOKEN}}"},
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"title\": $json.title || 'Untitled subtask', \"description\": $json.description || undefined, \"due_date\": $json.due_date || undefined}",
+        "options": {}
+      },
+      "id": "create-subtask-task",
+      "name": "Create Subtask Task",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2000, 160]
+    },
+    {
+      "parameters": {
+        "jsCode": "const created = $json;\nconst root = $items('Normalize Input', 0, 0)[0].json;\nconst childId = Number(created.id);\nconst parentId = Number(root.parent_task_id || 0);\nif (!parentId || !childId) {\n  throw new Error('create_subtask requires parent_task_id and returned child task id');\n}\nreturn [{ json: { root, child: created, relation_payload: { task_id: parentId, other_task_id: childId, relation_kind: 'subtask' } } }];"
+      },
+      "id": "build-relation-payload",
+      "name": "Build Relation Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2240, 160]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://tasks.myrobertson.com/api/v1/tasks/{{$json.relation_payload.task_id}}/relations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{$env.VIKUNJA_API_TOKEN}}"},
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json.relation_payload}}",
+        "options": {}
+      },
+      "id": "create-subtask-relation",
+      "name": "Create Subtask Relation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2480, 160]
+    },
+    {
+      "parameters": {
+        "jsCode": "const relation = $json;\nconst ctx = $items('Build Relation Payload', 0, 0)[0].json;\nreturn [{ json: { created_task: ctx.child, relation } }];"
+      },
+      "id": "merge-subtask-result",
+      "name": "Merge Subtask Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2720, 160]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"mode\": \"execute\", \"intent\": \"create_subtask\", \"executed\": true, \"result\": $json}"
+      },
+      "id": "respond-subtask",
+      "name": "Respond Subtask",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2960, 160]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.intent}}", "operation": "equal", "value2": "update_task"}
+          ]
+        }
+      },
+      "id": "is-update",
+      "name": "Intent Update?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2000, 320]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://tasks.myrobertson.com/api/v1/tasks/{{$json.task_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{$env.VIKUNJA_API_TOKEN}}"}
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-task-for-update",
+      "name": "Get Task For Update",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2240, 280]
+    },
+    {
+      "parameters": {
+        "jsCode": "const current = $json;\nconst root = $items('Normalize Input', 0, 0)[0].json;\nconst payload = { ...current };\nif ((root.title || '').trim().length > 0) payload.title = root.title;\nif ((root.description || '').trim().length > 0) payload.description = root.description;\nif ((root.due_date || '').trim().length > 0) payload.due_date = root.due_date;\nif (root.is_done_raw === 'true') payload.done = true;\nif (root.is_done_raw === 'false') payload.done = false;\nreturn [{ json: { task_id: root.task_id, payload } }];"
+      },
+      "id": "build-update-payload",
+      "name": "Build Update Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2480, 280]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://tasks.myrobertson.com/api/v1/tasks/{{$json.task_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{$env.VIKUNJA_API_TOKEN}}"},
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json.payload}}",
+        "options": {}
+      },
+      "id": "update-task",
+      "name": "Update Task",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2720, 280]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"mode\": \"execute\", \"intent\": \"update_task\", \"executed\": true, \"result\": $json}"
+      },
+      "id": "respond-update",
+      "name": "Respond Update",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2960, 280]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.intent}}", "operation": "equal", "value2": "delete_task"}
+          ]
+        }
+      },
+      "id": "is-delete",
+      "name": "Intent Delete?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2240, 460]
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://tasks.myrobertson.com/api/v1/tasks/{{$json.task_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{$env.VIKUNJA_API_TOKEN}}"}
+          ]
+        },
+        "options": {}
+      },
+      "id": "delete-task",
+      "name": "Delete Task",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2480, 420]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"mode\": \"execute\", \"intent\": \"delete_task\", \"executed\": true, \"result\": {\"task_id\": $json.task_id || $items('Normalize Input', 0, 0)[0].json.task_id, \"deleted\": true}}"
+      },
+      "id": "respond-delete",
+      "name": "Respond Delete",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2720, 420]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.intent}}", "operation": "equal", "value2": "attach_file_to_task"}
+          ]
+        }
+      },
+      "id": "is-attach",
+      "name": "Intent Attach?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2480, 580]
+    },
+    {
+      "parameters": {
+        "jsCode": "const base64 = ($json.content_base64 || '').trim();\nif (!base64) throw new Error('attach_file_to_task requires content_base64');\nconst taskId = String($json.task_id || '').trim();\nif (!taskId) throw new Error('attach_file_to_task requires task_id');\nreturn [{\n  json: { ...$json },\n  binary: {\n    attachment_file: {\n      data: base64,\n      mimeType: $json.mime_type || 'application/octet-stream',\n      fileName: $json.filename || 'attachment.bin'\n    }\n  }\n}];"
+      },
+      "id": "build-attachment-binary",
+      "name": "Build Attachment Binary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2720, 540]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://tasks.myrobertson.com/api/v1/tasks/{{$json.task_id}}/attachments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{$env.VIKUNJA_API_TOKEN}}"}
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "files",
+              "parameterType": "formBinaryData",
+              "inputDataFieldName": "attachment_file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "attach-file",
+      "name": "Attach File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2960, 540]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"mode\": \"execute\", \"intent\": \"attach_file_to_task\", \"executed\": true, \"result\": $json}"
+      },
+      "id": "respond-attach",
+      "name": "Respond Attach",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [3200, 540]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.N8N_PARITY_EVENT_URL || 'https://n8n.myrobertson.com/webhook/parallel/parity/log'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"source\": \"n8n-shadow-router\", \"session_id\": $json.session_id || '', \"intent\": $json.intent, \"mode\": $json.mode, \"status\": \"received\", \"candidate_task_ids\": [], \"selected_task_id\": $json.task_id || null, \"action_preview\": $json.intent, \"notes\": \"router intake event\"}",
+        "options": {
+          "ignoreResponseCode": true
+        }
+      },
+      "id": "emit-router-parity",
+      "name": "Emit Router Parity",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1040, 120]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"mode\": \"shadow\", \"supported\": true, \"intent\": $json.intent, \"executed\": false, \"reason\": \"execution gate disabled\"}"
+      },
+      "id": "respond-shadow",
+      "name": "Respond Shadow",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1520, 440]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"mode\": \"shadow\", \"supported\": false, \"intent\": $json.intent}"
+      },
+      "id": "respond-unsupported",
+      "name": "Respond Unsupported",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1280, 600]
+    }
+  ],
+  "connections": {
+    "Router Webhook": {
+      "main": [[{"node": "Normalize Input", "type": "main", "index": 0}]]
+    },
+    "Normalize Input": {
+      "main": [[{"node": "Assess Intent", "type": "main", "index": 0}]]
+    },
+    "Assess Intent": {
+      "main": [[
+        {"node": "Supported Intent?", "type": "main", "index": 0},
+        {"node": "Emit Router Parity", "type": "main", "index": 0}
+      ]]
+    },
+    "Supported Intent?": {
+      "main": [
+        [{"node": "Execute Enabled?", "type": "main", "index": 0}],
+        [{"node": "Respond Unsupported", "type": "main", "index": 0}]
+      ]
+    },
+    "Execute Enabled?": {
+      "main": [
+        [{"node": "Intent Create?", "type": "main", "index": 0}],
+        [{"node": "Respond Shadow", "type": "main", "index": 0}]
+      ]
+    },
+    "Intent Create?": {
+      "main": [
+        [{"node": "Create Task", "type": "main", "index": 0}],
+        [{"node": "Intent Subtask?", "type": "main", "index": 0}]
+      ]
+    },
+    "Create Task": {
+      "main": [[{"node": "Respond Create", "type": "main", "index": 0}]]
+    },
+    "Intent Subtask?": {
+      "main": [
+        [{"node": "Create Subtask Task", "type": "main", "index": 0}],
+        [{"node": "Intent Update?", "type": "main", "index": 0}]
+      ]
+    },
+    "Create Subtask Task": {
+      "main": [[{"node": "Build Relation Payload", "type": "main", "index": 0}]]
+    },
+    "Build Relation Payload": {
+      "main": [[{"node": "Create Subtask Relation", "type": "main", "index": 0}]]
+    },
+    "Create Subtask Relation": {
+      "main": [[{"node": "Merge Subtask Result", "type": "main", "index": 0}]]
+    },
+    "Merge Subtask Result": {
+      "main": [[{"node": "Respond Subtask", "type": "main", "index": 0}]]
+    },
+    "Intent Update?": {
+      "main": [
+        [{"node": "Get Task For Update", "type": "main", "index": 0}],
+        [{"node": "Intent Delete?", "type": "main", "index": 0}]
+      ]
+    },
+    "Get Task For Update": {
+      "main": [[{"node": "Build Update Payload", "type": "main", "index": 0}]]
+    },
+    "Build Update Payload": {
+      "main": [[{"node": "Update Task", "type": "main", "index": 0}]]
+    },
+    "Update Task": {
+      "main": [[{"node": "Respond Update", "type": "main", "index": 0}]]
+    },
+    "Intent Delete?": {
+      "main": [
+        [{"node": "Delete Task", "type": "main", "index": 0}],
+        [{"node": "Intent Attach?", "type": "main", "index": 0}]
+      ]
+    },
+    "Delete Task": {
+      "main": [[{"node": "Respond Delete", "type": "main", "index": 0}]]
+    },
+    "Intent Attach?": {
+      "main": [
+        [{"node": "Build Attachment Binary", "type": "main", "index": 0}],
+        [{"node": "Respond Unsupported", "type": "main", "index": 0}]
+      ]
+    },
+    "Build Attachment Binary": {
+      "main": [[{"node": "Attach File", "type": "main", "index": 0}]]
+    },
+    "Attach File": {
+      "main": [[{"node": "Respond Attach", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "saveExecutionProgress": true
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "pinData": {}
+}

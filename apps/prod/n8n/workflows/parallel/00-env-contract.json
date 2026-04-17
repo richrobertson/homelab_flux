@@ -1,0 +1,52 @@
+{
+  "name": "00-env-contract",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 240]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {"name": "mode", "value": "shadow"},
+            {"name": "TASKS_BASE_URL", "value": "https://tasks.myrobertson.com"},
+            {"name": "N8N_PUBLIC_URL", "value": "https://n8n.myrobertson.com"},
+            {"name": "REDIS_URL", "value": "redis://task-control-plane-redis.default.svc.cluster.local:6379/0"},
+            {"name": "VIKUNJA_BASE_URL", "value": "https://tasks.myrobertson.com/api/v1"},
+            {"name": "VIKUNJA_PROJECT_ID", "value": "1"},
+            {"name": "N8N_PARALLEL_ENABLE_WRITES", "value": "false"},
+            {"name": "N8N_PARITY_EVENT_URL", "value": "https://n8n.myrobertson.com/webhook/parallel/parity/log"},
+            {"name": "N8N_PARITY_LOG_SINK_URL", "value": ""},
+            {"name": "N8N_CALLBACK_CLAIM_URL", "value": "https://n8n.myrobertson.com/webhook/parallel/state/callback/claim"},
+            {"name": "N8N_SESSION_UPSERT_URL", "value": "https://n8n.myrobertson.com/webhook/parallel/state/session/upsert"},
+            {"name": "N8N_AGENT_DECISION_ALLOW_ACTION", "value": "false"},
+            {"name": "N8N_TELEGRAM_ACTION_URL", "value": "https://n8n.myrobertson.com/webhook/parallel/telegram/action"},
+            {"name": "N8N_TELEGRAM_SHADOW_ALLOW_SEND", "value": "false"},
+            {"name": "TELEGRAM_BOT_TOKEN", "value": "set-in-n8n-credential"},
+            {"name": "TELEGRAM_WEBHOOK_SECRET", "value": "set-in-n8n-env-or-credential"}
+          ]
+        }
+      },
+      "id": "set-contract",
+      "name": "Set Env Contract",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [520, 240]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [[{"node": "Set Env Contract", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {"saveExecutionProgress": true},
+  "meta": {"templateCredsSetupCompleted": false},
+  "pinData": {}
+}

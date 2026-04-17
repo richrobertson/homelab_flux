@@ -1,0 +1,222 @@
+{
+  "name": "07-telegram-action-shadow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "parallel/telegram/action",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "action-webhook",
+      "name": "Action Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {"name": "mode", "value": "={{$json.body.mode || 'shadow'}}"},
+            {"name": "parity_status", "value": "={{$json.body.parity_status || 'unknown'}}"},
+            {"name": "session_id", "value": "={{$json.body.session_id || ''}}"},
+            {"name": "action", "value": "={{$json.body.action || ''}}"},
+            {"name": "callback_id", "value": "={{$json.body.callback_id || ''}}"},
+            {"name": "chat_id", "value": "={{String($json.body.chat_id || '')}}"},
+            {"name": "text", "value": "={{$json.body.text || ''}}"},
+            {"name": "parse_mode", "value": "={{$json.body.parse_mode || 'Markdown'}}"},
+            {"name": "can_send", "value": "={{($json.body.mode === 'execute' && $json.body.parity_status === 'pass' && $env.N8N_TELEGRAM_SHADOW_ALLOW_SEND === 'true') ? 'true' : 'false'}}"}
+          ]
+        }
+      },
+      "id": "normalize",
+      "name": "Normalize Action",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.can_send}}", "operation": "equal", "value2": "true"}
+          ]
+        }
+      },
+      "id": "can-send",
+      "name": "Can Send?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [760, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.callback_id}}", "operation": "notEmpty"}
+          ]
+        }
+      },
+      "id": "has-callback",
+      "name": "Has Callback ID?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1000, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/answerCallbackQuery",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"callback_query_id\": $json.callback_id, \"text\": \"Received\", \"show_alert\": false}",
+        "options": {
+          "ignoreResponseCode": true
+        }
+      },
+      "id": "answer-callback",
+      "name": "Answer Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1240, 140]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"chat_id\": $json.chat_id, \"text\": $json.text || \"Shadow action executed\", \"parse_mode\": $json.parse_mode || \"Markdown\", \"disable_web_page_preview\": true}",
+        "options": {
+          "ignoreResponseCode": true
+        }
+      },
+      "id": "send-message",
+      "name": "Send Telegram Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1480, 220]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.N8N_PARITY_EVENT_URL || 'https://n8n.myrobertson.com/webhook/parallel/parity/log'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"source\": \"n8n-shadow-telegram-action\", \"session_id\": $json.session_id || '', \"intent\": \"telegram_action\", \"mode\": $json.mode, \"status\": \"sent\", \"candidate_task_ids\": [], \"selected_task_id\": null, \"action_preview\": $json.action || 'send_message', \"notes\": \"telegram shadow action sent\"}",
+        "options": {
+          "ignoreResponseCode": true
+        }
+      },
+      "id": "emit-sent-parity",
+      "name": "Emit Sent Parity",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1720, 220]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"mode\": $json.mode || 'shadow', \"executed\": true, \"sent\": true, \"parity_status\": $json.parity_status || 'unknown'}"
+      },
+      "id": "respond-sent",
+      "name": "Respond Sent",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1960, 220]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.N8N_PARITY_EVENT_URL || 'https://n8n.myrobertson.com/webhook/parallel/parity/log'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"source\": \"n8n-shadow-telegram-action\", \"session_id\": $json.session_id || '', \"intent\": \"telegram_action\", \"mode\": $json.mode, \"status\": \"skipped\", \"candidate_task_ids\": [], \"selected_task_id\": null, \"action_preview\": $json.action || 'send_message', \"notes\": `blocked: can_send=${$json.can_send}, parity=${$json.parity_status}`}",
+        "options": {
+          "ignoreResponseCode": true
+        }
+      },
+      "id": "emit-skipped-parity",
+      "name": "Emit Skipped Parity",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 460]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"mode\": $json.mode || 'shadow', \"executed\": false, \"sent\": false, \"reason\": \"gated by parity/env/mode\", \"parity_status\": $json.parity_status || 'unknown'}"
+      },
+      "id": "respond-skipped",
+      "name": "Respond Skipped",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1240, 460]
+    }
+  ],
+  "connections": {
+    "Action Webhook": {
+      "main": [[{"node": "Normalize Action", "type": "main", "index": 0}]]
+    },
+    "Normalize Action": {
+      "main": [[{"node": "Can Send?", "type": "main", "index": 0}]]
+    },
+    "Can Send?": {
+      "main": [
+        [{"node": "Has Callback ID?", "type": "main", "index": 0}],
+        [{"node": "Emit Skipped Parity", "type": "main", "index": 0}]
+      ]
+    },
+    "Has Callback ID?": {
+      "main": [
+        [{"node": "Answer Callback", "type": "main", "index": 0}],
+        [{"node": "Send Telegram Message", "type": "main", "index": 0}]
+      ]
+    },
+    "Answer Callback": {
+      "main": [[{"node": "Send Telegram Message", "type": "main", "index": 0}]]
+    },
+    "Send Telegram Message": {
+      "main": [[{"node": "Emit Sent Parity", "type": "main", "index": 0}]]
+    },
+    "Emit Sent Parity": {
+      "main": [[{"node": "Respond Sent", "type": "main", "index": 0}]]
+    },
+    "Emit Skipped Parity": {
+      "main": [[{"node": "Respond Skipped", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "saveExecutionProgress": true
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "pinData": {}
+}

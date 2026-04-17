@@ -1,0 +1,69 @@
+{
+  "name": "04-scheduled-jobs-shadow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "cronExpression": "0 8 * * *"
+        }
+      },
+      "id": "morning-trigger",
+      "name": "Morning Planning Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [220, 180]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {"name": "job", "value": "morning-planning"},
+            {"name": "mode", "value": "shadow"}
+          ]
+        }
+      },
+      "id": "set-morning",
+      "name": "Set Morning Job",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [520, 180]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "cronExpression": "0 13 * * *"
+        }
+      },
+      "id": "daily-trigger",
+      "name": "Daily Summary Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [220, 380]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {"name": "job", "value": "daily-summary"},
+            {"name": "mode", "value": "shadow"}
+          ]
+        }
+      },
+      "id": "set-daily",
+      "name": "Set Daily Job",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [520, 380]
+    }
+  ],
+  "connections": {
+    "Morning Planning Trigger": {"main": [[{"node": "Set Morning Job", "type": "main", "index": 0}]]},
+    "Daily Summary Trigger": {"main": [[{"node": "Set Daily Job", "type": "main", "index": 0}]]}
+  },
+  "settings": {"saveExecutionProgress": true},
+  "meta": {"templateCredsSetupCompleted": false},
+  "pinData": {}
+}

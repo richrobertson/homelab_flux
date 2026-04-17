@@ -1,0 +1,175 @@
+{
+  "name": "09-agent-decision-shadow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "parallel/agent/decision",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "decision-webhook",
+      "name": "Decision Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {"name": "session_id", "value": "={{$json.body.session_id || ''}}"},
+            {"name": "parity_status", "value": "={{$json.body.parity_status || 'unknown'}}"},
+            {"name": "mode", "value": "={{$json.body.mode || 'shadow'}}"},
+            {"name": "action", "value": "={{$json.body.action || 'send_message'}}"},
+            {"name": "chat_id", "value": "={{String($json.body.chat_id || '')}}"},
+            {"name": "text", "value": "={{$json.body.text || ''}}"},
+            {"name": "callback_id", "value": "={{$json.body.callback_id || ''}}"},
+            {"name": "can_trigger_action", "value": "={{($json.body.parity_status === 'pass' && $env.N8N_AGENT_DECISION_ALLOW_ACTION === 'true') ? 'true' : 'false'}}"}
+          ]
+        }
+      },
+      "id": "normalize",
+      "name": "Normalize Decision",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.can_trigger_action}}", "operation": "equal", "value2": "true"}
+          ]
+        }
+      },
+      "id": "can-trigger",
+      "name": "Can Trigger Action?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [760, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.N8N_TELEGRAM_ACTION_URL || 'https://n8n.myrobertson.com/webhook/parallel/telegram/action'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"mode\": \"execute\", \"parity_status\": \"pass\", \"session_id\": $json.session_id || '', \"action\": $json.action || 'send_message', \"chat_id\": $json.chat_id || '', \"text\": $json.text || '', \"callback_id\": $json.callback_id || ''}",
+        "options": {
+          "ignoreResponseCode": true
+        }
+      },
+      "id": "trigger-action",
+      "name": "Trigger Telegram Action",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1020, 220]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.N8N_PARITY_EVENT_URL || 'https://n8n.myrobertson.com/webhook/parallel/parity/log'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"source\": \"n8n-shadow-agent-decision\", \"session_id\": $json.session_id || '', \"intent\": \"agent_decision\", \"mode\": $json.mode || 'shadow', \"status\": \"triggered\", \"candidate_task_ids\": [], \"selected_task_id\": null, \"action_preview\": $json.action || 'send_message', \"notes\": \"triggered telegram action workflow\"}",
+        "options": {
+          "ignoreResponseCode": true
+        }
+      },
+      "id": "emit-triggered-parity",
+      "name": "Emit Triggered Parity",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1260, 220]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"triggered\": true, \"reason\": \"parity pass + env gate\", \"session_id\": $json.session_id || ''}"
+      },
+      "id": "respond-triggered",
+      "name": "Respond Triggered",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1500, 220]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.N8N_PARITY_EVENT_URL || 'https://n8n.myrobertson.com/webhook/parallel/parity/log'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"source\": \"n8n-shadow-agent-decision\", \"session_id\": $json.session_id || '', \"intent\": \"agent_decision\", \"mode\": $json.mode || 'shadow', \"status\": \"skipped\", \"candidate_task_ids\": [], \"selected_task_id\": null, \"action_preview\": $json.action || 'send_message', \"notes\": `blocked: parity=${$json.parity_status}, env=${$env.N8N_AGENT_DECISION_ALLOW_ACTION || 'unset'}`}",
+        "options": {
+          "ignoreResponseCode": true
+        }
+      },
+      "id": "emit-skipped-parity",
+      "name": "Emit Skipped Parity",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1020, 440]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"triggered\": false, \"reason\": \"parity or env gate failed\", \"parity_status\": $json.parity_status || 'unknown'}"
+      },
+      "id": "respond-skipped",
+      "name": "Respond Skipped",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1260, 440]
+    }
+  ],
+  "connections": {
+    "Decision Webhook": {
+      "main": [[{"node": "Normalize Decision", "type": "main", "index": 0}]]
+    },
+    "Normalize Decision": {
+      "main": [[{"node": "Can Trigger Action?", "type": "main", "index": 0}]]
+    },
+    "Can Trigger Action?": {
+      "main": [
+        [{"node": "Trigger Telegram Action", "type": "main", "index": 0}],
+        [{"node": "Emit Skipped Parity", "type": "main", "index": 0}]
+      ]
+    },
+    "Trigger Telegram Action": {
+      "main": [[{"node": "Emit Triggered Parity", "type": "main", "index": 0}]]
+    },
+    "Emit Triggered Parity": {
+      "main": [[{"node": "Respond Triggered", "type": "main", "index": 0}]]
+    },
+    "Emit Skipped Parity": {
+      "main": [[{"node": "Respond Skipped", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "saveExecutionProgress": true
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "pinData": {}
+}
