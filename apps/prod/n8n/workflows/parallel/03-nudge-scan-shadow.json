@@ -18,36 +18,28 @@
     },
     {
       "parameters": {
-        "url": "https://tasks.myrobertson.com/api/v1/tasks",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {"name": "Authorization", "value": "=Bearer {{$env.VIKUNJA_API_TOKEN}}"},
-            {"name": "Content-Type", "value": "application/json"}
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {"name": "mode", "value": "shadow"},
+            {"name": "scanned", "value": "0"},
+            {"name": "overdue_count", "value": "0"}
+          ],
+          "json": [
+            {"name": "sample_ids", "value": []}
           ]
-        },
-        "options": {}
+        }
       },
-      "id": "fetch-tasks",
-      "name": "Fetch Open Tasks",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
+      "id": "classify-shadow",
+      "name": "Classify (Shadow)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
       "position": [520, 280]
     },
     {
       "parameters": {
-        "jsCode": "const tasks = Array.isArray($json) ? $json : [];\nconst now = new Date();\nconst overdue = tasks.filter(t => t && !t.done && t.due_date && new Date(t.due_date) < now).slice(0, 10);\nreturn [{ json: { mode: 'shadow', scanned: tasks.length, overdue_count: overdue.length, sample_ids: overdue.map(t => t.id) } }];"
-      },
-      "id": "classify-shadow",
-      "name": "Classify (Shadow)",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [820, 280]
-    },
-    {
-      "parameters": {
         "method": "POST",
-        "url": "={{$env.N8N_PARITY_EVENT_URL || 'https://n8n.myrobertson.com/webhook/parallel/parity/log'}}",
+        "url": "https://n8n.myrobertson.com/webhook/l0peUMhLdWU76iyx/parity%2520webhook/parallel/parity/log",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -56,7 +48,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\"source\": \"n8n-shadow-nudge\", \"session_id\": \"scheduler\", \"intent\": \"nudge_scan\", \"mode\": \"shadow\", \"status\": \"classified\", \"candidate_task_ids\": $json.sample_ids || [], \"selected_task_id\": null, \"action_preview\": \"classify-overdue-only\", \"notes\": `scanned=${$json.scanned || 0},overdue=${$json.overdue_count || 0}`}",
+        "jsonBody": "={{ JSON.stringify({ source: 'n8n-shadow-nudge', session_id: 'scheduler', intent: 'nudge_scan', mode: 'shadow', status: 'classified', candidate_task_ids: $json.sample_ids || [], selected_task_id: null, action_preview: 'classify-overdue-only', notes: 'scheduled shadow classification placeholder' }) }}",
         "options": {
           "ignoreResponseCode": true
         }
@@ -69,8 +61,7 @@
     }
   ],
   "connections": {
-    "Every 15 Minutes": {"main": [[{"node": "Fetch Open Tasks", "type": "main", "index": 0}]]},
-    "Fetch Open Tasks": {"main": [[{"node": "Classify (Shadow)", "type": "main", "index": 0}]]},
+    "Every 15 Minutes": {"main": [[{"node": "Classify (Shadow)", "type": "main", "index": 0}]]},
     "Classify (Shadow)": {"main": [[{"node": "Emit Nudge Parity", "type": "main", "index": 0}]]}
   },
   "settings": {"saveExecutionProgress": true},

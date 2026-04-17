@@ -5,63 +5,37 @@
     {
       "parameters": {
         "rule": {
-          "cronExpression": "0 8 * * *"
+          "interval": [
+            {"field": "cronExpression", "expression": "0 8 * * *"},
+            {"field": "cronExpression", "expression": "0 13 * * *"}
+          ]
         }
       },
-      "id": "morning-trigger",
-      "name": "Morning Planning Trigger",
+      "id": "scheduled-trigger",
+      "name": "Scheduled Jobs Trigger",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1,
-      "position": [220, 180]
+      "position": [220, 280]
     },
     {
       "parameters": {
         "keepOnlySet": true,
         "values": {
           "string": [
-            {"name": "job", "value": "morning-planning"},
+            {"name": "job", "value": "={{$json.Hour === '08' ? 'morning-planning' : 'daily-summary'}}"},
             {"name": "mode", "value": "shadow"}
           ]
         }
       },
-      "id": "set-morning",
-      "name": "Set Morning Job",
+      "id": "set-job",
+      "name": "Set Scheduled Job",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
-      "position": [520, 180]
-    },
-    {
-      "parameters": {
-        "rule": {
-          "cronExpression": "0 13 * * *"
-        }
-      },
-      "id": "daily-trigger",
-      "name": "Daily Summary Trigger",
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1,
-      "position": [220, 380]
-    },
-    {
-      "parameters": {
-        "keepOnlySet": true,
-        "values": {
-          "string": [
-            {"name": "job", "value": "daily-summary"},
-            {"name": "mode", "value": "shadow"}
-          ]
-        }
-      },
-      "id": "set-daily",
-      "name": "Set Daily Job",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3,
-      "position": [520, 380]
+      "position": [520, 280]
     }
   ],
   "connections": {
-    "Morning Planning Trigger": {"main": [[{"node": "Set Morning Job", "type": "main", "index": 0}]]},
-    "Daily Summary Trigger": {"main": [[{"node": "Set Daily Job", "type": "main", "index": 0}]]}
+    "Scheduled Jobs Trigger": {"main": [[{"node": "Set Scheduled Job", "type": "main", "index": 0}]]}
   },
   "settings": {"saveExecutionProgress": true},
   "meta": {"templateCredsSetupCompleted": false},

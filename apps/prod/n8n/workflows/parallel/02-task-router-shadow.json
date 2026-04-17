@@ -4,6 +4,7 @@
   "nodes": [
     {
       "parameters": {
+        "httpMethod": "POST",
         "path": "parallel/task-router",
         "responseMode": "responseNode"
       },
@@ -43,12 +44,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const supported = ['create_task', 'update_task', 'delete_task', 'create_subtask', 'attach_file_to_task'];\nconst intent = $json.intent || 'unknown';\nreturn [{ json: { ...$json, supported: supported.includes(intent), supported_str: supported.includes(intent) ? 'true' : 'false' } }];"
+        "functionCode": "const supported = ['create_task', 'update_task', 'delete_task', 'create_subtask', 'attach_file_to_task'];\nconst intent = $json.intent || 'unknown';\nreturn [{ json: { ...$json, supported: supported.includes(intent), supported_str: supported.includes(intent) ? 'true' : 'false' } }];"
       },
       "id": "assess-intent",
       "name": "Assess Intent",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
       "position": [780, 320]
     },
     {
@@ -164,12 +165,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const created = $json;\nconst root = $items('Normalize Input', 0, 0)[0].json;\nconst childId = Number(created.id);\nconst parentId = Number(root.parent_task_id || 0);\nif (!parentId || !childId) {\n  throw new Error('create_subtask requires parent_task_id and returned child task id');\n}\nreturn [{ json: { root, child: created, relation_payload: { task_id: parentId, other_task_id: childId, relation_kind: 'subtask' } } }];"
+        "functionCode": "const created = $json;\nconst root = $items('Normalize Input', 0, 0)[0].json;\nconst childId = Number(created.id);\nconst parentId = Number(root.parent_task_id || 0);\nif (!parentId || !childId) {\n  throw new Error('create_subtask requires parent_task_id and returned child task id');\n}\nreturn [{ json: { root, child: created, relation_payload: { task_id: parentId, other_task_id: childId, relation_kind: 'subtask' } } }];"
       },
       "id": "build-relation-payload",
       "name": "Build Relation Payload",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
       "position": [2240, 160]
     },
     {
@@ -196,12 +197,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const relation = $json;\nconst ctx = $items('Build Relation Payload', 0, 0)[0].json;\nreturn [{ json: { created_task: ctx.child, relation } }];"
+        "functionCode": "const relation = $json;\nconst ctx = $items('Build Relation Payload', 0, 0)[0].json;\nreturn [{ json: { created_task: ctx.child, relation } }];"
       },
       "id": "merge-subtask-result",
       "name": "Merge Subtask Result",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
       "position": [2720, 160]
     },
     {
@@ -249,12 +250,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const current = $json;\nconst root = $items('Normalize Input', 0, 0)[0].json;\nconst payload = { ...current };\nif ((root.title || '').trim().length > 0) payload.title = root.title;\nif ((root.description || '').trim().length > 0) payload.description = root.description;\nif ((root.due_date || '').trim().length > 0) payload.due_date = root.due_date;\nif (root.is_done_raw === 'true') payload.done = true;\nif (root.is_done_raw === 'false') payload.done = false;\nreturn [{ json: { task_id: root.task_id, payload } }];"
+        "functionCode": "const current = $json;\nconst root = $items('Normalize Input', 0, 0)[0].json;\nconst payload = { ...current };\nif ((root.title || '').trim().length > 0) payload.title = root.title;\nif ((root.description || '').trim().length > 0) payload.description = root.description;\nif ((root.due_date || '').trim().length > 0) payload.due_date = root.due_date;\nif (root.is_done_raw === 'true') payload.done = true;\nif (root.is_done_raw === 'false') payload.done = false;\nreturn [{ json: { task_id: root.task_id, payload } }];"
       },
       "id": "build-update-payload",
       "name": "Build Update Payload",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
       "position": [2480, 280]
     },
     {
@@ -349,12 +350,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const base64 = ($json.content_base64 || '').trim();\nif (!base64) throw new Error('attach_file_to_task requires content_base64');\nconst taskId = String($json.task_id || '').trim();\nif (!taskId) throw new Error('attach_file_to_task requires task_id');\nreturn [{\n  json: { ...$json },\n  binary: {\n    attachment_file: {\n      data: base64,\n      mimeType: $json.mime_type || 'application/octet-stream',\n      fileName: $json.filename || 'attachment.bin'\n    }\n  }\n}];"
+        "functionCode": "const base64 = ($json.content_base64 || '').trim();\nif (!base64) throw new Error('attach_file_to_task requires content_base64');\nconst taskId = String($json.task_id || '').trim();\nif (!taskId) throw new Error('attach_file_to_task requires task_id');\nreturn [{\n  json: { ...$json },\n  binary: {\n    attachment_file: {\n      data: base64,\n      mimeType: $json.mime_type || 'application/octet-stream',\n      fileName: $json.filename || 'attachment.bin'\n    }\n  }\n}];"
       },
       "id": "build-attachment-binary",
       "name": "Build Attachment Binary",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
       "position": [2720, 540]
     },
     {
@@ -400,7 +401,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{$env.N8N_PARITY_EVENT_URL || 'https://n8n.myrobertson.com/webhook/parallel/parity/log'}}",
+        "url": "https://n8n.myrobertson.com/webhook/l0peUMhLdWU76iyx/parity%2520webhook/parallel/parity/log",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -409,7 +410,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\"source\": \"n8n-shadow-router\", \"session_id\": $json.session_id || '', \"intent\": $json.intent, \"mode\": $json.mode, \"status\": \"received\", \"candidate_task_ids\": [], \"selected_task_id\": $json.task_id || null, \"action_preview\": $json.intent, \"notes\": \"router intake event\"}",
+        "jsonBody": "={{ JSON.stringify({ source: 'n8n-shadow-router', session_id: $json.session_id || '', intent: $json.intent, mode: $json.mode, status: 'received', candidate_task_ids: [], selected_task_id: $json.task_id || null, action_preview: $json.intent, notes: 'router intake event' }) }}",
         "options": {
           "ignoreResponseCode": true
         }
@@ -423,7 +424,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\"ok\": true, \"mode\": \"shadow\", \"supported\": true, \"intent\": $json.intent, \"executed\": false, \"reason\": \"execution gate disabled\"}"
+        "responseBody": "={{ JSON.stringify({ ok: true, mode: 'shadow', supported: true, intent: $json.intent, executed: false, reason: 'execution gate disabled' }) }}"
       },
       "id": "respond-shadow",
       "name": "Respond Shadow",
@@ -434,7 +435,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\"ok\": true, \"mode\": \"shadow\", \"supported\": false, \"intent\": $json.intent}"
+        "responseBody": "={{ JSON.stringify({ ok: true, mode: 'shadow', supported: false, intent: $json.intent }) }}"
       },
       "id": "respond-unsupported",
       "name": "Respond Unsupported",
@@ -458,7 +459,7 @@
     },
     "Supported Intent?": {
       "main": [
-        [{"node": "Execute Enabled?", "type": "main", "index": 0}],
+        [{"node": "Respond Shadow", "type": "main", "index": 0}],
         [{"node": "Respond Unsupported", "type": "main", "index": 0}]
       ]
     },

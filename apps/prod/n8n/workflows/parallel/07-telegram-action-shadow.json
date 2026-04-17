@@ -4,6 +4,7 @@
   "nodes": [
     {
       "parameters": {
+        "httpMethod": "POST",
         "path": "parallel/telegram/action",
         "responseMode": "responseNode",
         "options": {}
@@ -27,7 +28,7 @@
             {"name": "chat_id", "value": "={{String($json.body.chat_id || '')}}"},
             {"name": "text", "value": "={{$json.body.text || ''}}"},
             {"name": "parse_mode", "value": "={{$json.body.parse_mode || 'Markdown'}}"},
-            {"name": "can_send", "value": "={{($json.body.mode === 'execute' && $json.body.parity_status === 'pass' && $env.N8N_TELEGRAM_SHADOW_ALLOW_SEND === 'true') ? 'true' : 'false'}}"}
+            {"name": "can_send", "value": "false"}
           ]
         }
       },
@@ -114,7 +115,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{$env.N8N_PARITY_EVENT_URL || 'https://n8n.myrobertson.com/webhook/parallel/parity/log'}}",
+        "url": "https://n8n.myrobertson.com/webhook/l0peUMhLdWU76iyx/parity%2520webhook/parallel/parity/log",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -148,7 +149,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{$env.N8N_PARITY_EVENT_URL || 'https://n8n.myrobertson.com/webhook/parallel/parity/log'}}",
+        "url": "https://n8n.myrobertson.com/webhook/l0peUMhLdWU76iyx/parity%2520webhook/parallel/parity/log",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -157,7 +158,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\"source\": \"n8n-shadow-telegram-action\", \"session_id\": $json.session_id || '', \"intent\": \"telegram_action\", \"mode\": $json.mode, \"status\": \"skipped\", \"candidate_task_ids\": [], \"selected_task_id\": null, \"action_preview\": $json.action || 'send_message', \"notes\": `blocked: can_send=${$json.can_send}, parity=${$json.parity_status}`}",
+        "jsonBody": "={{ JSON.stringify({ source: 'n8n-shadow-telegram-action', session_id: $json.session_id || '', intent: 'telegram_action', mode: $json.mode, status: 'skipped', candidate_task_ids: [], selected_task_id: null, action_preview: $json.action || 'send_message', notes: 'blocked by parity/env/mode gate' }) }}",
         "options": {
           "ignoreResponseCode": true
         }
@@ -171,7 +172,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\"ok\": true, \"mode\": $json.mode || 'shadow', \"executed\": false, \"sent\": false, \"reason\": \"gated by parity/env/mode\", \"parity_status\": $json.parity_status || 'unknown'}"
+        "responseBody": "={{ JSON.stringify({ ok: true, mode: $json.mode || 'shadow', executed: false, sent: false, reason: 'gated by parity/env/mode', parity_status: $json.parity_status || 'unknown' }) }}"
       },
       "id": "respond-skipped",
       "name": "Respond Skipped",
@@ -185,28 +186,7 @@
       "main": [[{"node": "Normalize Action", "type": "main", "index": 0}]]
     },
     "Normalize Action": {
-      "main": [[{"node": "Can Send?", "type": "main", "index": 0}]]
-    },
-    "Can Send?": {
-      "main": [
-        [{"node": "Has Callback ID?", "type": "main", "index": 0}],
-        [{"node": "Emit Skipped Parity", "type": "main", "index": 0}]
-      ]
-    },
-    "Has Callback ID?": {
-      "main": [
-        [{"node": "Answer Callback", "type": "main", "index": 0}],
-        [{"node": "Send Telegram Message", "type": "main", "index": 0}]
-      ]
-    },
-    "Answer Callback": {
-      "main": [[{"node": "Send Telegram Message", "type": "main", "index": 0}]]
-    },
-    "Send Telegram Message": {
-      "main": [[{"node": "Emit Sent Parity", "type": "main", "index": 0}]]
-    },
-    "Emit Sent Parity": {
-      "main": [[{"node": "Respond Sent", "type": "main", "index": 0}]]
+      "main": [[{"node": "Emit Skipped Parity", "type": "main", "index": 0}]]
     },
     "Emit Skipped Parity": {
       "main": [[{"node": "Respond Skipped", "type": "main", "index": 0}]]

@@ -4,6 +4,7 @@
   "nodes": [
     {
       "parameters": {
+        "httpMethod": "POST",
         "path": "parallel/telegram/callback",
         "responseMode": "responseNode",
         "options": {}
@@ -24,8 +25,8 @@
             {"name": "action", "value": "={{$json.body.action || ''}}"},
             {"name": "callback_data", "value": "={{$json.body.callback_data || ''}}"},
             {"name": "message_text", "value": "={{$json.body.message_text || ''}}"},
-            {"name": "claim_url", "value": "={{$env.N8N_CALLBACK_CLAIM_URL || 'https://n8n.myrobertson.com/webhook/parallel/state/callback/claim'}}"},
-            {"name": "session_upsert_url", "value": "={{$env.N8N_SESSION_UPSERT_URL || 'https://n8n.myrobertson.com/webhook/parallel/state/session/upsert'}}"}
+            {"name": "claim_url", "value": "https://n8n.myrobertson.com/webhook/1oGQ9UerEDVeg48r/claim%2520webhook/parallel/state/callback/claim"},
+            {"name": "session_upsert_url", "value": "https://n8n.myrobertson.com/webhook/1oGQ9UerEDVeg48r/session%2520upsert%2520webhook/parallel/state/session/upsert"}
           ]
         }
       },
@@ -37,22 +38,8 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "string": [
-            {"value1": "={{$json.claim_url}}", "operation": "notEmpty"}
-          ]
-        }
-      },
-      "id": "has-claim-url",
-      "name": "Has Claim URL?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [740, 320]
-    },
-    {
-      "parameters": {
         "method": "POST",
-        "url": "={{$json.claim_url}}",
+        "url": "https://n8n.myrobertson.com/webhook/1oGQ9UerEDVeg48r/claim%2520webhook/parallel/state/callback/claim",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -61,7 +48,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\"callback_id\": $json.callback_id, \"session_id\": $json.session_id, \"ttl_seconds\": 3600}",
+        "jsonBody": "={{ JSON.stringify({ callback_id: $json.callback_id, session_id: $json.session_id, ttl_seconds: 3600 }) }}",
         "options": {
           "ignoreResponseCode": true
         }
@@ -74,38 +61,28 @@
     },
     {
       "parameters": {
-        "jsCode": "const root = $items('Normalize Callback', 0, 0)[0].json;\nconst claimed = ($json.claimed === true || $json.claimed === 'true');\nconst status = claimed ? 'claimed' : 'duplicate';\nreturn [{ json: { ...root, claim_status: status, state_source: 'external-claim-service' } }];"
+        "functionCode": "const root = $items('Normalize Callback', 0, 0)[0].json;\nconst claimed = ($json.claimed === true || $json.claimed === 'true');\nconst status = claimed ? 'claimed' : 'duplicate';\nreturn [{ json: { ...root, claim_status: status, state_source: 'external-claim-service' } }];"
       },
       "id": "merge-claim-service",
       "name": "Merge Claim Service",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
       "position": [1220, 220]
     },
     {
       "parameters": {
-        "jsCode": "return [{ json: { ...$json, claim_status: 'claimed', state_source: 'no-claim-service' } }];"
-      },
-      "id": "fallback-claim",
-      "name": "Fallback Claim",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [980, 420]
-    },
-    {
-      "parameters": {
-        "jsCode": "const duplicate = $json.claim_status === 'duplicate';\nconst notes = duplicate ? 'duplicate callback ignored' : 'callback accepted in shadow mode';\nconst parityPayload = {\n  source: 'n8n-shadow-callback',\n  session_id: $json.session_id || '',\n  intent: 'telegram_callback',\n  mode: 'shadow',\n  status: duplicate ? 'duplicate' : 'claimed',\n  candidate_task_ids: [],\n  selected_task_id: null,\n  action_preview: $json.action || '',\n  notes\n};\nreturn [{ json: { ...$json, parity_payload: parityPayload } }];"
+        "functionCode": "const duplicate = $json.claim_status === 'duplicate';\nconst notes = duplicate ? 'duplicate callback ignored' : 'callback accepted in shadow mode';\nconst parityPayload = {\n  source: 'n8n-shadow-callback',\n  session_id: $json.session_id || '',\n  intent: 'telegram_callback',\n  mode: 'shadow',\n  status: duplicate ? 'duplicate' : 'claimed',\n  candidate_task_ids: [],\n  selected_task_id: null,\n  action_preview: $json.action || '',\n  notes\n};\nreturn [{ json: { ...$json, parity_payload: parityPayload } }];"
       },
       "id": "build-parity",
       "name": "Build Callback Parity",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
       "position": [1460, 320]
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "={{$env.N8N_PARITY_EVENT_URL || 'https://n8n.myrobertson.com/webhook/parallel/parity/log'}}",
+        "url": "https://n8n.myrobertson.com/webhook/l0peUMhLdWU76iyx/parity%2520webhook/parallel/parity/log",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -114,7 +91,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{$json.parity_payload}}",
+        "jsonBody": "={{ JSON.stringify($json.parity_payload) }}",
         "options": {
           "ignoreResponseCode": true
         }
@@ -142,7 +119,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\"ok\": true, \"handled\": true, \"duplicate\": true, \"mode\": \"shadow\", \"reason\": \"callback already claimed\"}"
+        "responseBody": "={{ JSON.stringify({ ok: true, handled: true, duplicate: true, mode: 'shadow', reason: 'callback already claimed' }) }}"
       },
       "id": "respond-duplicate",
       "name": "Respond Duplicate",
@@ -152,22 +129,8 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "string": [
-            {"value1": "={{$json.session_upsert_url}}", "operation": "notEmpty"}
-          ]
-        }
-      },
-      "id": "has-session-upsert",
-      "name": "Has Session Upsert URL?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [2180, 420]
-    },
-    {
-      "parameters": {
         "method": "POST",
-        "url": "={{$json.session_upsert_url}}",
+        "url": "https://n8n.myrobertson.com/webhook/1oGQ9UerEDVeg48r/session%2520upsert%2520webhook/parallel/state/session/upsert",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -176,7 +139,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\"session_id\": $json.session_id || '', \"last_callback_id\": $json.callback_id || '', \"last_action\": $json.action || '', \"updated_at\": $now}",
+        "jsonBody": "={{ JSON.stringify({ session_id: $json.session_id || '', last_callback_id: $json.callback_id || '', last_action: $json.action || '', updated_at: $now }) }}",
         "options": {
           "ignoreResponseCode": true
         }
@@ -190,7 +153,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\"ok\": true, \"handled\": true, \"duplicate\": false, \"mode\": \"shadow\", \"state_source\": $json.state_source || 'none'}"
+        "responseBody": "={{ JSON.stringify({ ok: true, handled: true, duplicate: false, mode: 'shadow', state_source: $json.state_source || 'none' }) }}"
       },
       "id": "respond-claimed",
       "name": "Respond Claimed",
@@ -204,42 +167,12 @@
       "main": [[{"node": "Normalize Callback", "type": "main", "index": 0}]]
     },
     "Normalize Callback": {
-      "main": [[{"node": "Has Claim URL?", "type": "main", "index": 0}]]
-    },
-    "Has Claim URL?": {
-      "main": [
-        [{"node": "Claim Callback", "type": "main", "index": 0}],
-        [{"node": "Fallback Claim", "type": "main", "index": 0}]
-      ]
-    },
-    "Claim Callback": {
-      "main": [[{"node": "Merge Claim Service", "type": "main", "index": 0}]]
-    },
-    "Merge Claim Service": {
-      "main": [[{"node": "Build Callback Parity", "type": "main", "index": 0}]]
-    },
-    "Fallback Claim": {
       "main": [[{"node": "Build Callback Parity", "type": "main", "index": 0}]]
     },
     "Build Callback Parity": {
       "main": [[{"node": "Emit Callback Parity", "type": "main", "index": 0}]]
     },
     "Emit Callback Parity": {
-      "main": [[{"node": "Is Duplicate?", "type": "main", "index": 0}]]
-    },
-    "Is Duplicate?": {
-      "main": [
-        [{"node": "Respond Duplicate", "type": "main", "index": 0}],
-        [{"node": "Has Session Upsert URL?", "type": "main", "index": 0}]
-      ]
-    },
-    "Has Session Upsert URL?": {
-      "main": [
-        [{"node": "Upsert Session Context", "type": "main", "index": 0}],
-        [{"node": "Respond Claimed", "type": "main", "index": 0}]
-      ]
-    },
-    "Upsert Session Context": {
       "main": [[{"node": "Respond Claimed", "type": "main", "index": 0}]]
     }
   },

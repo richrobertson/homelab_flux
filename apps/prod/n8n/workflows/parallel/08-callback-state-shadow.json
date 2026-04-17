@@ -4,6 +4,7 @@
   "nodes": [
     {
       "parameters": {
+        "httpMethod": "POST",
         "path": "parallel/state/callback/claim",
         "responseMode": "responseNode",
         "options": {}
@@ -37,6 +38,7 @@
     },
     {
       "parameters": {
+        "httpMethod": "POST",
         "path": "parallel/state/session/upsert",
         "responseMode": "responseNode",
         "options": {}
