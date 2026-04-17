@@ -1,0 +1,49 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/n8n
+  - gateway.yaml
+  - auth-policy.yaml
+patches:
+  - path: n8n-values.yaml
+    target:
+      kind: HelmRelease
+      name: n8n
+  - patch: |
+      - op: replace
+        path: /metadata/annotations/cert-manager.io~1common-name
+        value: n8n.staging.myrobertson.net
+      - op: replace
+        path: /spec/listeners/0/hostname
+        value: n8n.staging.myrobertson.net
+      - op: replace
+        path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
+        value: n8n.staging.myrobertson.net
+    target:
+      kind: Gateway
+      name: n8n
+  - patch: |
+      - op: replace
+        path: /spec/hostnames/0
+        value: n8n.staging.myrobertson.net
+    target:
+      kind: HTTPRoute
+      name: n8n
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: n8n/staging/app
+    target:
+      kind: VaultStaticSecret
+      name: n8n-secret
+  - patch: |
+      - op: replace
+        path: /spec/storage/size
+        value: 5Gi
+      - op: replace
+        path: /spec/walStorage/size
+        value: 2Gi
+    target:
+      kind: Cluster
+      name: n8n-cnpg

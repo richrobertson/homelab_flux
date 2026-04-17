@@ -32,6 +32,7 @@
 - `lidarr`: music collection management and automation.
 - `loki-stack`: log aggregation and collection components.
 - `mealie`: recipe management application.
+- `n8n`: workflow automation platform using external PostgreSQL and Redis.
 - `overseerr`: media request management interface.
 - `plex`: media streaming server with hardware transcoding support.
 - `prowlarr`: indexer management for media automation tools.
@@ -57,6 +58,7 @@ Leaf docs:
 - [Lidarr base](lidarr/README.md)
 - [Loki Stack (Base)](loki-stack/README.md)
 - [Mealie base](mealie/README.md)
+- [n8n base](n8n/README.md)
 - [Overseerr base](overseerr/README.md)
 - [Plex base](plex/README.md)
 - [Prowlarr base](prowlarr/README.md)

@@ -1,0 +1,46 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: n8n
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: n8n
+  install:
+    disableWait: true
+  upgrade:
+    disableWait: true
+  values:
+    secretRefs:
+      existingSecret: n8n-secret
+    replicaCount: 1
+    queueMode:
+      enabled: true
+      workerReplicaCount: 1
+      workerConcurrency: 5
+    persistence:
+      enabled: false
+    database:
+      useExternal: true
+      host: n8n-cnpg-rw
+      port: 5432
+      database: n8n
+      user: n8n
+      passwordSecret:
+        name: n8n-cnpg-app
+        key: password
+    redis:
+      enabled: true
+      host: n8n-redis.default.svc.cluster.local
+      port: 6379
+      database: 0
+    webhook:
+      url: https://n8n.dev.myrobertson.net
+    executions:
+      extraEnv:
+        - name: N8N_PROXY_HOPS
+          value: "1"
+      pruning:
+        enabled: true
+        maxAge: 336

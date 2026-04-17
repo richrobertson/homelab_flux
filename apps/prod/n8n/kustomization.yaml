@@ -1,0 +1,72 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/n8n
+  - httpRoute.yaml
+  - auth-policy.yaml
+  - postgres-scheduled-backup.yaml
+  - backup-volsync.yaml
+patches:
+  - path: n8n-values.yaml
+    target:
+      kind: HelmRelease
+      name: n8n
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: n8n/prod/app
+    target:
+      kind: VaultStaticSecret
+      name: n8n-secret
+  - patch: |
+      - op: add
+        path: /spec/backup
+        value:
+          barmanObjectStore:
+            destinationPath: s3://homelab-prod-backups/cnpg/n8n-cnpg
+            endpointURL: https://s3.us-west-2.amazonaws.com
+            wal:
+              compression: gzip
+              encryption: AES256
+            data:
+              compression: gzip
+              encryption: AES256
+            s3Credentials:
+              accessKeyId:
+                name: cnpg-backup-s3
+                key: AWS_ACCESS_KEY_ID
+              secretAccessKey:
+                name: cnpg-backup-s3
+                key: AWS_SECRET_ACCESS_KEY
+          retentionPolicy: 30d
+    target:
+      kind: Cluster
+      name: n8n-cnpg
+  - patch: |
+      - op: replace
+        path: /spec/storage/size
+        value: 20Gi
+      - op: replace
+        path: /spec/walStorage/size
+        value: 10Gi
+    target:
+      kind: Cluster
+      name: n8n-cnpg
+  - patch: |
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: n8n-cnpg
+        annotations:
+          cnpg.io/skipEmptyWalArchiveCheck: enabled
+    target:
+      kind: Cluster
+      name: n8n-cnpg
+  - patch: |
+      - op: replace
+        path: /spec/storage/volumeClaimTemplate/spec/resources/requests/storage
+        value: 5Gi
+    target:
+      kind: Redis
+      name: n8n-redis

@@ -11,6 +11,7 @@ resources:
   - lidarr
   - loki-stack
   - mealie
+  - n8n
   - netbootxyz
   - ntfy
   - overseerr

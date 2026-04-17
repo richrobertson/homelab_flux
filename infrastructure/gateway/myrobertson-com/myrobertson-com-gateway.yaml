@@ -156,6 +156,19 @@ spec:
       - name: mealie-myrobertson-com-cert
         kind: Secret 
 
+  - name: n8n
+    hostname: n8n.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: n8n-myrobertson-com-cert
+        kind: Secret 
+
   - name: overseerr
     hostname: overseerr.myrobertson.com
     port: 443

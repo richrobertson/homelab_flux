@@ -1,0 +1,25 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: auth-policy-n8n
+  namespace: default
+spec:
+  targetRefs:
+    - kind: Gateway
+      group: gateway.networking.k8s.io
+      name: n8n
+  action: CUSTOM
+  provider:
+    name: authelia-net
+  rules:
+    - to:
+        - operation:
+            notPaths:
+              - /webhook
+              - /webhook/*
+              - /webhook-test
+              - /webhook-test/*
+              - /webhook-waiting
+              - /webhook-waiting/*
+            hosts:
+              - n8n.staging.myrobertson.net
