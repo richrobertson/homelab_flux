@@ -16,6 +16,7 @@ resources:
   - ceph-prometheus-rules.yaml
   - istio-servicemonitor.yaml
   - istio-gateway-alerts.yaml
+  - syncthing-alerts.yaml
   - backup-observability-alerts.yaml
   - proxmox-temperature-alerts.yaml
   - volsync
@@ -79,6 +80,16 @@ configMapGenerator:
       labels:
         grafana_dashboard: "1"
         app.kubernetes.io/part-of: task-control-plane
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: syncthing-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/syncthing-overview.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: syncthing
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled
   - name: ceph-grafana-dashboards

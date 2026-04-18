@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: monitoring
 resources:
   - gotify-token.yaml
+  - syncthing-metrics-token.yaml
   - ClusterRoleBinding.yaml
   - repository.yaml
   - release.yaml

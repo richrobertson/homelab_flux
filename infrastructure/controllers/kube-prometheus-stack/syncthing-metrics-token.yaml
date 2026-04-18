@@ -1,0 +1,14 @@
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: syncthing-metrics-token
+  namespace: monitoring
+spec:
+  type: kv-v2
+  mount: secret
+  path: monitoring/syncthing/metrics
+  refreshAfter: 60s
+  destination:
+    create: true
+    name: syncthing-metrics-token

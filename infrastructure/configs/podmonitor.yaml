@@ -23,3 +23,28 @@ spec:
           - image-reflector-controller
   podMetricsEndpoints:
     - port: http-prom
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: syncthing
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/part-of: syncthing
+    app.kubernetes.io/component: monitoring
+spec:
+  namespaceSelector:
+    matchNames:
+      - default
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: syncthing
+  podMetricsEndpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      authorization:
+        type: Bearer
+        credentials:
+          name: syncthing-metrics-token
+          key: token

@@ -1,0 +1,61 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: syncthing-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/part-of: syncthing
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: syncthing-health
+      rules:
+        - alert: SyncthingMetricsEndpointDown
+          expr: absent_over_time(syncthing_connections_active{namespace="default"}[10m])
+          for: 10m
+          labels:
+            domain: syncthing
+            severity: critical
+          annotations:
+            summary: Syncthing metrics endpoint unavailable
+            description: Prometheus has not scraped any Syncthing metrics in the default namespace for at least 10 minutes.
+
+        - alert: SyncthingNoActivePeerConnections
+          expr: sum(syncthing_connections_active{namespace="default"}) == 0
+          for: 30m
+          labels:
+            domain: syncthing
+            severity: warning
+          annotations:
+            summary: Syncthing has no active peer connections
+            description: Syncthing has reported zero active device connections for 30 minutes.
+
+        - alert: SyncthingFolderBacklogHighWarning
+          expr: sum(syncthing_model_folder_summary{namespace="default",scope="need",type="bytes"}) > 1e11
+          for: 30m
+          labels:
+            domain: syncthing
+            severity: warning
+          annotations:
+            summary: Syncthing backlog is elevated
+            description: Syncthing still needs to sync more than 100 GiB for at least 30 minutes.
+
+        - alert: SyncthingFolderBacklogHighCritical
+          expr: sum(syncthing_model_folder_summary{namespace="default",scope="need",type="bytes"}) > 5e11
+          for: 45m
+          labels:
+            domain: syncthing
+            severity: critical
+          annotations:
+            summary: Syncthing backlog is critically high
+            description: Syncthing still needs to sync more than 500 GiB for at least 45 minutes.
+
+        - alert: SyncthingFolderConflictsDetected
+          expr: sum(increase(syncthing_model_folder_conflicts_total{namespace="default"}[30m])) > 0
+          for: 5m
+          labels:
+            domain: syncthing
+            severity: warning
+          annotations:
+            summary: Syncthing file conflicts detected
+            description: Syncthing has detected at least one file conflict in the last 30 minutes.
