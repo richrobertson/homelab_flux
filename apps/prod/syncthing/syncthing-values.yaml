@@ -30,9 +30,9 @@ spec:
                         done
                         if [ -s /tmp/config.json ]; then
                           sed -E \
-                            -e 's/"hashers":[[:space:]]*[0-9]+/"hashers":16/g' \
+                            -e 's/"hashers":[[:space:]]*[0-9]+/"hashers":20/g' \
                             -e 's/"fsWatcherDelayS":[[:space:]]*[0-9]+/"fsWatcherDelayS":1/g' \
-                            -e 's/"rescanIntervalS":[[:space:]]*[0-9]+/"rescanIntervalS":180/g' \
+                            -e 's/"rescanIntervalS":[[:space:]]*[0-9]+/"rescanIntervalS":120/g' \
                             /tmp/config.json > /tmp/config-patched.json
                           curl -fsS -X PUT http://localhost:8384/rest/config \
                             -H "X-API-Key: $API_KEY" \
