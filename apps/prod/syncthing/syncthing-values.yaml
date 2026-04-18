@@ -3,10 +3,43 @@ kind: HelmRelease
 metadata:
   name: syncthing
 spec:
+  suspend: false
   values:
     workload:
       main:
         replicas: 1
+        podSpec:
+          containers:
+            main:
+              lifecycle:
+                postStart:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -ec
+                      - |
+                        set +e
+                        API_KEY="$(grep -o '<apikey>[^<]*</apikey>' /var/syncthing/config/config.xml | sed -e 's#<apikey>##' -e 's#</apikey>##')"
+                        i=0
+                        while [ "$i" -lt 30 ]; do
+                          if curl -fsS -H "X-API-Key: $API_KEY" http://localhost:8384/rest/config > /tmp/config.json; then
+                            break
+                          fi
+                          i=$((i + 1))
+                          sleep 2
+                        done
+                        if [ -s /tmp/config.json ]; then
+                          sed -E \
+                            -e 's/"hashers":[[:space:]]*[0-9]+/"hashers":16/g' \
+                            -e 's/"fsWatcherDelayS":[[:space:]]*[0-9]+/"fsWatcherDelayS":1/g' \
+                            -e 's/"rescanIntervalS":[[:space:]]*[0-9]+/"rescanIntervalS":180/g' \
+                            /tmp/config.json > /tmp/config-patched.json
+                          curl -fsS -X PUT http://localhost:8384/rest/config \
+                            -H "X-API-Key: $API_KEY" \
+                            -H 'Content-Type: application/json' \
+                            --data-binary @/tmp/config-patched.json > /dev/null || true
+                        fi
+                        exit 0
     persistence:
       downloads:
         enabled: true
