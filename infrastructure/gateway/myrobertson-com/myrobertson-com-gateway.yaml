@@ -195,6 +195,19 @@ spec:
       - name: plex-myrobertson-com-cert
         kind: Secret   
 
+  - name: plex-net
+    hostname: plex.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: plex-myrobertson-net-cert
+        kind: Secret   
+
   - name: prowlarr
     hostname: prowlarr.myrobertson.com
     port: 443

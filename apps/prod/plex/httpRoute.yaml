@@ -11,6 +11,7 @@ spec:
       namespace: default
   hostnames:
     - plex.myrobertson.com
+    - plex.myrobertson.net
   rules:
     - matches:
         - path:
