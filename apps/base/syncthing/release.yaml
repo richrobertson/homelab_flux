@@ -32,12 +32,7 @@ spec:
         path: /volume1/downloads/
         server: scooter.myrobertson.net
         targetSelectAll: true
-
-      immich-data-files-pvc:
-        enabled: true
-        existingClaim: immich-data-files-pvc-ceph
-        mountPath: /var/immich-data
-        readOnly: true
+        
     service:
       listeners:
         enabled: true
