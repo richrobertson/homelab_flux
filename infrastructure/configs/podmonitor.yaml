@@ -40,7 +40,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: syncthing
   podMetricsEndpoints:
-    - port: http
+    - port: main
       path: /metrics
       interval: 30s
       authorization:
