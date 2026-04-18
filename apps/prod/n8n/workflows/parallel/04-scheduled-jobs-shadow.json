@@ -4,10 +4,12 @@
   "nodes": [
     {
       "parameters": {
+        "timezone": "America/Los_Angeles",
         "rule": {
           "interval": [
             {"field": "cronExpression", "expression": "0 8 * * *"},
-            {"field": "cronExpression", "expression": "0 13 * * *"}
+            {"field": "cronExpression", "expression": "0 12 * * *"},
+            {"field": "cronExpression", "expression": "0 18 * * *"}
           ]
         }
       },
@@ -22,7 +24,7 @@
         "keepOnlySet": true,
         "values": {
           "string": [
-            {"name": "job", "value": "={{$json.Hour === '08' ? 'morning-planning' : 'daily-summary'}}"},
+            {"name": "job", "value": "={{$json.Hour === '08' ? 'morning-planning' : ($json.Hour === '12' ? 'midday-checkin' : 'evening-summary')}}"},
             {"name": "mode", "value": "shadow"}
           ]
         }
