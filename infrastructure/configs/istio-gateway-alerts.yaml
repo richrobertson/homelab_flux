@@ -52,15 +52,15 @@ spec:
               sum by (le) (
                 rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])
               )
-            ) > 400
+            ) > 1000
             and
             sum(rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])) > 1
-          for: 10m
+          for: 15m
           labels:
             severity: warning
           annotations:
             summary: High gateway p95 latency
-            description: Gateway p95 latency is above the warning upper bound of 400ms for 10m.
+            description: Gateway p95 latency is above the warning upper bound of 1000ms for 15m.
 
         - alert: IstioGatewayHighP95LatencyCritical
           expr: |
@@ -68,15 +68,15 @@ spec:
               sum by (le) (
                 rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])
               )
-            ) > 1000
+            ) > 2000
             and
-            sum(rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])) > 1
-          for: 10m
+            sum(rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])) > 5
+          for: 15m
           labels:
             severity: critical
           annotations:
             summary: Critical gateway p95 latency
-            description: Gateway p95 latency is above the critical upper bound of 1000ms for 10m.
+            description: Gateway p95 latency is above the critical upper bound of 2000ms for 15m with sustained traffic.
 
         - alert: IstioGatewayServiceHigh5xxRate
           expr: sum by (destination_service_name) (rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source",response_code=~"5.."}[5m])) > 1
@@ -93,14 +93,14 @@ spec:
               sum by (le, destination_service_name) (
                 rate(istio_request_duration_milliseconds_bucket{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])
               )
-            ) > 800
+            ) > 1500
             and
             sum by (destination_service_name) (
               rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])
-            ) > 0.2
-          for: 10m
+            ) > 1
+          for: 15m
           labels:
             severity: warning
           annotations:
             summary: Service has high p95 latency
-            description: Gateway service {{ $labels.destination_service_name }} is above the upper bound of 800ms p95 for 10m.
+            description: Gateway service {{ $labels.destination_service_name }} is above the upper bound of 1500ms p95 for 15m with sustained traffic.

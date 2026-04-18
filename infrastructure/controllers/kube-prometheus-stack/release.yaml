@@ -41,6 +41,9 @@ spec:
                 alertname: Watchdog
               receiver: 'null'
             - match:
+                alertname: FluxKustomizationHealthcheckfailed
+              receiver: 'null'
+            - match:
                 domain: backups
               receiver: backup-receiver
               group_by: ['alertname', 'severity']
