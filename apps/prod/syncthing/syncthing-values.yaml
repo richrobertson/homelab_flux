@@ -31,8 +31,14 @@ spec:
                         if [ -s /tmp/config.json ]; then
                           sed -E \
                             -e 's/"hashers":[[:space:]]*[0-9]+/"hashers":24/g' \
+                            -e 's/"copiers":[[:space:]]*[0-9]+/"copiers":32/g' \
+                            -e 's/"maxConcurrentWrites":[[:space:]]*[0-9]+/"maxConcurrentWrites":64/g' \
+                            -e 's/"pullerMaxPendingKiB":[[:space:]]*[0-9]+/"pullerMaxPendingKiB":1048576/g' \
                             -e 's/"fsWatcherDelayS":[[:space:]]*[0-9]+/"fsWatcherDelayS":1/g' \
                             -e 's/"rescanIntervalS":[[:space:]]*[0-9]+/"rescanIntervalS":120/g' \
+                            -e 's/"disableFsync":[[:space:]]*(true|false)/"disableFsync":true/g' \
+                            -e 's/"maxRequestKiB":[[:space:]]*[0-9]+/"maxRequestKiB":16384/g' \
+                            -e 's/"numConnections":[[:space:]]*[0-9]+/"numConnections":8/g' \
                             /tmp/config.json > /tmp/config-patched.json
                           curl -fsS -X PUT http://localhost:8384/rest/config \
                             -H "X-API-Key: $API_KEY" \
