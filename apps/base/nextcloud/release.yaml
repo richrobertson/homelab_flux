@@ -140,7 +140,7 @@ spec:
           php occ ldap:set-config ${LDAP_CFG_ID} ldapUserFilter "${LDAP_USER_FILTER}"
           php occ ldap:set-config ${LDAP_CFG_ID} ldapGroupFilter "${LDAP_GROUP_FILTER}"
           php occ ldap:set-config ${LDAP_CFG_ID} ldapTLS 0
-          php occ ldap:set-config ${LDAP_CFG_ID} turnOffCertCheck 0
+          php occ ldap:set-config ${LDAP_CFG_ID} turnOffCertCheck 1
 
     internalDatabase:
       enabled: false
