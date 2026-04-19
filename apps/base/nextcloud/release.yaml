@@ -128,6 +128,12 @@ spec:
           #!/bin/sh
           set -eu
 
+          # Keep trusted domains aligned with expected public and in-cluster access.
+          php occ config:system:set trusted_domains 0 --value=localhost
+          php occ config:system:set trusted_domains 1 --value=cloud.myrobertson.com
+          php occ config:system:set trusted_domains 2 --value=nextcloud.default.svc.cluster.local
+          php occ config:system:set trusted_domains 3 --value=nextcloud.default.svc
+
           if [ "${LDAP_ENABLED:-false}" != "true" ]; then
             exit 0
           fi
