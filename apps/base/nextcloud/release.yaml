@@ -33,8 +33,6 @@ spec:
         smtpUsernameKey: SMTP_USERNAME
         smtpPasswordKey: SMTP_PASSWORD
       extraEnv:
-        - name: NEXTCLOUD_TRUSTED_DOMAINS
-          value: "cloud.myrobertson.com"
         - name: OVERWRITEPROTOCOL
           value: "https"
         - name: OVERWRITECLIURL
