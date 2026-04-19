@@ -6,14 +6,22 @@ resources:
   - httpRoute.yaml
   - postgres-scheduled-backup.yaml
 patches:
-  # Migration complete - cutover file no longer exists
-  # - path: ../../base/immich/release-ceph-cutover.yaml
-  #   target:
-  #     kind: HelmRelease
-  #     name: immich
   - path: immich-values.yaml
     target:
       kind: HelmRelease
+  - patch: |
+      - op: replace
+        path: /spec/values/server/controllers/main/containers/main/env/DB_USERNAME/valueFrom/secretKeyRef/name
+        value: cluster-immich-ceph-app
+      - op: replace
+        path: /spec/values/server/controllers/main/containers/main/env/DB_PASSWORD/valueFrom/secretKeyRef/name
+        value: cluster-immich-ceph-app
+      - op: replace
+        path: /spec/values/server/controllers/main/containers/main/env/DB_DATABASE_NAME/valueFrom/secretKeyRef/name
+        value: cluster-immich-ceph-app
+    target:
+      kind: HelmRelease
+      name: immich
   - patch: |
       - op: replace
         path: /spec/resources/requests/storage
