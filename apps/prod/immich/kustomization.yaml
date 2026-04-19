@@ -6,10 +6,11 @@ resources:
   - httpRoute.yaml
   - postgres-scheduled-backup.yaml
 patches:
-  - path: ../../base/immich/release-ceph-cutover.yaml
-    target:
-      kind: HelmRelease
-      name: immich
+  # Migration complete - cutover file no longer exists
+  # - path: ../../base/immich/release-ceph-cutover.yaml
+  #   target:
+  #     kind: HelmRelease
+  #     name: immich
   - path: immich-values.yaml
     target:
       kind: HelmRelease

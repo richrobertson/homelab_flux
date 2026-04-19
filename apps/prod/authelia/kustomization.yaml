@@ -15,9 +15,16 @@ patches:
   #     kind: HelmRelease
   #     name: authelia
   - patch: |
-      - op: replace
-        path: /spec/values/persistence/existingClaim
-        value: authelia-config-ceph-v3
+      apiVersion: helm.toolkit.fluxcd.io/v2beta1
+      kind: HelmRelease
+      metadata:
+        name: authelia
+        namespace: default
+      spec:
+        values:
+          persistence:
+            enabled: true
+            existingClaim: authelia-config-ceph-v3
     target:
       kind: HelmRelease
       name: authelia
