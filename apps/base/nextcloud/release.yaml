@@ -159,7 +159,7 @@ spec:
 
     persistence:
       enabled: true
-      existingClaim: nextcloud-data-pvc-ceph
+      existingClaim: nextcloud-data-pvc-ceph-v2
 
     redis:
       enabled: false

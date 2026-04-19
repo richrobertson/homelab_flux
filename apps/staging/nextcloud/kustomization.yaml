@@ -41,4 +41,4 @@ patches:
         value: 20Gi
     target:
       kind: PersistentVolumeClaim
-      name: nextcloud-data-pvc-ceph
+      name: nextcloud-data-pvc-ceph-v2

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nextcloud-data-pvc-ceph
+  name: nextcloud-data-pvc-ceph-v2
 spec:
   accessModes:
     - ReadWriteMany
