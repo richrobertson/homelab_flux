@@ -1,6 +1,6 @@
-# Overseerr (Base)
+# Seerr (Base)
 
-Base manifests for Overseerr media request workflows.
+Base manifests for Seerr media request workflows.
 
 ## Purpose
 

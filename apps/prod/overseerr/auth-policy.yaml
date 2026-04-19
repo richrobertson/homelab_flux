@@ -1,7 +1,7 @@
 apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
 metadata:
-  name: auth-policy-overseerr
+  name: auth-policy-seerr
   namespace: default
 spec:
   targetRefs:
@@ -16,4 +16,4 @@ spec:
         - operation:
             notPaths: ["/api/v1/*"]
             hosts:
-              - 'overseerr.myrobertson.com'
+              - 'seerr.myrobertson.com'

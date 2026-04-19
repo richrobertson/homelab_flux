@@ -1,12 +1,12 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: overseerr
+  name: seerr
 spec:
   interval: 1h
-  url: oci://oci.trueforge.org/truecharts/overseerr
+  url: oci://oci.trueforge.org/truecharts/seerr
   ref:
-    semver: ">=16.x"
+    semver: ">=15.x"
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy

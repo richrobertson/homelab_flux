@@ -169,8 +169,8 @@ spec:
       - name: n8n-myrobertson-com-cert
         kind: Secret 
 
-  - name: overseerr
-    hostname: overseerr.myrobertson.com
+  - name: seerr
+    hostname: seerr.myrobertson.com
     port: 443
     protocol: HTTPS
     allowedRoutes:
@@ -179,7 +179,7 @@ spec:
     tls:
       mode: Terminate
       certificateRefs:
-      - name: overseerr-myrobertson-com-cert
+      - name: seerr-myrobertson-com-cert
         kind: Secret   
 
   - name: plex

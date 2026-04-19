@@ -1,6 +1,6 @@
-# Overseerr (Staging)
+# Seerr (Staging)
 
-Staging overlay for Overseerr.
+Staging overlay for Seerr.
 
 ## Purpose
 

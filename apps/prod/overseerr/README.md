@@ -1,6 +1,6 @@
-# Overseerr (Prod)
+# Seerr (Prod)
 
-Production overlay for Overseerr.
+Production overlay for Seerr.
 
 ## Purpose
 
