@@ -20,6 +20,13 @@ patches:
       name: nextcloud-secret
   - patch: |
       - op: replace
+        path: /spec/path
+        value: nextcloud/staging/ldap
+    target:
+      kind: VaultStaticSecret
+      name: nextcloud-ldap-secret
+  - patch: |
+      - op: replace
         path: /spec/storage/size
         value: 5Gi
       - op: replace

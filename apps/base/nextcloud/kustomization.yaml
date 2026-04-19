@@ -7,3 +7,4 @@ resources:
   - postgres.yaml
   - pvc-ceph.yaml
   - secret.yaml
+  - ldap-secret.yaml

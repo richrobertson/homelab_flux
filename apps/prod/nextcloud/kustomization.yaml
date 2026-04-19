@@ -20,6 +20,13 @@ patches:
       kind: VaultStaticSecret
       name: nextcloud-secret
   - patch: |
+      - op: replace
+        path: /spec/path
+        value: nextcloud/prod/ldap
+    target:
+      kind: VaultStaticSecret
+      name: nextcloud-ldap-secret
+  - patch: |
       - op: add
         path: /spec/backup
         value:

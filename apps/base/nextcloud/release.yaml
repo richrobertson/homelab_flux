@@ -39,6 +39,60 @@ spec:
           value: "https"
         - name: OVERWRITECLIURL
           value: "https://cloud.myrobertson.com"
+        - name: LDAP_ENABLED
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-ldap-secret
+              key: LDAP_ENABLED
+              optional: true
+        - name: LDAP_HOST
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-ldap-secret
+              key: LDAP_HOST
+              optional: true
+        - name: LDAP_PORT
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-ldap-secret
+              key: LDAP_PORT
+              optional: true
+        - name: LDAP_BASE_DN
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-ldap-secret
+              key: LDAP_BASE_DN
+              optional: true
+        - name: LDAP_BIND_DN
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-ldap-secret
+              key: LDAP_BIND_DN
+              optional: true
+        - name: LDAP_BIND_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-ldap-secret
+              key: LDAP_BIND_PASSWORD
+              optional: true
+        - name: LDAP_LOGIN_FILTER
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-ldap-secret
+              key: LDAP_LOGIN_FILTER
+              optional: true
+        - name: LDAP_USER_FILTER
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-ldap-secret
+              key: LDAP_USER_FILTER
+              optional: true
+        - name: LDAP_GROUP_FILTER
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-ldap-secret
+              key: LDAP_GROUP_FILTER
+              optional: true
       configs:
         proxy.config.php: |-
           <?php
@@ -48,6 +102,47 @@ spec:
             'overwrite.cli.url' => 'https://cloud.myrobertson.com',
             'overwriteprotocol' => 'https',
           );
+      hooks:
+        before-starting: |-
+          #!/bin/sh
+          set -eu
+
+          if [ "${LDAP_ENABLED:-false}" != "true" ]; then
+            exit 0
+          fi
+
+          if [ -z "${LDAP_HOST:-}" ] || [ -z "${LDAP_BASE_DN:-}" ] || [ -z "${LDAP_BIND_DN:-}" ] || [ -z "${LDAP_BIND_PASSWORD:-}" ]; then
+            echo "LDAP enabled but required LDAP_* values are missing; skipping LDAP bootstrap."
+            exit 0
+          fi
+
+          LDAP_PORT="${LDAP_PORT:-636}"
+          LDAP_LOGIN_FILTER="${LDAP_LOGIN_FILTER:-(&(|(objectclass=person)(objectclass=user))(|(sAMAccountName=%uid)(userPrincipalName=%uid)(mail=%uid)))}"
+          LDAP_USER_FILTER="${LDAP_USER_FILTER:-(|(objectclass=person)(objectclass=user))}"
+          LDAP_GROUP_FILTER="${LDAP_GROUP_FILTER:-(|(objectclass=group)(objectclass=groupOfNames))}"
+
+          su -s /bin/sh www-data -c "php occ app:enable user_ldap || php occ app:install user_ldap || true"
+
+          if su -s /bin/sh www-data -c "php occ ldap:show-config s01" >/dev/null 2>&1; then
+            LDAP_CFG_ID="s01"
+          else
+            LDAP_CFG_ID="$(su -s /bin/sh www-data -c 'php occ ldap:create-empty-config 2>/dev/null' | awk '/Created new config ID/{print $5}' | tail -1)"
+            LDAP_CFG_ID="${LDAP_CFG_ID:-s01}"
+          fi
+
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapConfigurationActive 1"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapHost '${LDAP_HOST}'"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapPort '${LDAP_PORT}'"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapBase '${LDAP_BASE_DN}'"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapBaseUsers '${LDAP_BASE_DN}'"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapBaseGroups '${LDAP_BASE_DN}'"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapAgentName '${LDAP_BIND_DN}'"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapAgentPassword '${LDAP_BIND_PASSWORD}'"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapLoginFilter '${LDAP_LOGIN_FILTER}'"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapUserFilter '${LDAP_USER_FILTER}'"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapGroupFilter '${LDAP_GROUP_FILTER}'"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapTLS 0"
+          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} turnOffCertCheck 0"
 
     internalDatabase:
       enabled: false
