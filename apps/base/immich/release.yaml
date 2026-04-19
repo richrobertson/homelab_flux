@@ -35,7 +35,7 @@ spec:
                     secretKeyRef:
                       name: cluster-immich-app
                       key: dbname
-                DB_HOSTNAME: "cluster-immich-rw"
+                DB_HOSTNAME: "cluster-immich-ceph-rw"
           replicas: 0
           affinity:
             podAntiAffinity:
