@@ -119,28 +119,28 @@ spec:
           LDAP_USER_FILTER="${LDAP_USER_FILTER:-(|(objectclass=person)(objectclass=user))}"
           LDAP_GROUP_FILTER="${LDAP_GROUP_FILTER:-(|(objectclass=group)(objectclass=groupOfNames))}"
 
-          su -s /bin/sh www-data -c "php occ app:enable user_ldap || php occ app:install user_ldap || true"
+          php occ app:enable user_ldap || php occ app:install user_ldap || true
 
-          if su -s /bin/sh www-data -c "php occ ldap:show-config s01" >/dev/null 2>&1; then
+          if php occ ldap:show-config s01 >/dev/null 2>&1; then
             LDAP_CFG_ID="s01"
           else
-            LDAP_CFG_ID="$(su -s /bin/sh www-data -c 'php occ ldap:create-empty-config 2>/dev/null' | awk '/Created new config ID/{print $5}' | tail -1)"
+            LDAP_CFG_ID="$(php occ ldap:create-empty-config 2>/dev/null | awk '/Created new config ID/{print $5}' | tail -1)"
             LDAP_CFG_ID="${LDAP_CFG_ID:-s01}"
           fi
 
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapConfigurationActive 1"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapHost '${LDAP_HOST}'"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapPort '${LDAP_PORT}'"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapBase '${LDAP_BASE_DN}'"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapBaseUsers '${LDAP_BASE_DN}'"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapBaseGroups '${LDAP_BASE_DN}'"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapAgentName '${LDAP_BIND_DN}'"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapAgentPassword '${LDAP_BIND_PASSWORD}'"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapLoginFilter '${LDAP_LOGIN_FILTER}'"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapUserFilter '${LDAP_USER_FILTER}'"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapGroupFilter '${LDAP_GROUP_FILTER}'"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} ldapTLS 0"
-          su -s /bin/sh www-data -c "php occ ldap:set-config ${LDAP_CFG_ID} turnOffCertCheck 0"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapConfigurationActive 1
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapHost "${LDAP_HOST}"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapPort "${LDAP_PORT}"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapBase "${LDAP_BASE_DN}"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapBaseUsers "${LDAP_BASE_DN}"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapBaseGroups "${LDAP_BASE_DN}"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapAgentName "${LDAP_BIND_DN}"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapAgentPassword "${LDAP_BIND_PASSWORD}"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapLoginFilter "${LDAP_LOGIN_FILTER}"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapUserFilter "${LDAP_USER_FILTER}"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapGroupFilter "${LDAP_GROUP_FILTER}"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapTLS 0
+          php occ ldap:set-config ${LDAP_CFG_ID} turnOffCertCheck 0
 
     internalDatabase:
       enabled: false
