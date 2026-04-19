@@ -91,6 +91,12 @@ spec:
               name: nextcloud-ldap-secret
               key: LDAP_GROUP_FILTER
               optional: true
+        - name: LDAP_TLS
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-ldap-secret
+              key: LDAP_TLS
+              optional: true
       configs:
         proxy.config.php: |-
           <?php
@@ -114,10 +120,11 @@ spec:
             exit 0
           fi
 
-          LDAP_PORT="${LDAP_PORT:-636}"
+          LDAP_PORT="${LDAP_PORT:-389}"
           LDAP_LOGIN_FILTER="${LDAP_LOGIN_FILTER:-(&(|(objectclass=person)(objectclass=user))(|(sAMAccountName=%uid)(userPrincipalName=%uid)(mail=%uid)))}"
           LDAP_USER_FILTER="${LDAP_USER_FILTER:-(|(objectclass=person)(objectclass=user))}"
           LDAP_GROUP_FILTER="${LDAP_GROUP_FILTER:-(|(objectclass=group)(objectclass=groupOfNames))}"
+          LDAP_TLS="${LDAP_TLS:-1}"
 
           php occ app:enable user_ldap || php occ app:install user_ldap || true
 
@@ -139,7 +146,7 @@ spec:
           php occ ldap:set-config ${LDAP_CFG_ID} ldapLoginFilter "${LDAP_LOGIN_FILTER}"
           php occ ldap:set-config ${LDAP_CFG_ID} ldapUserFilter "${LDAP_USER_FILTER}"
           php occ ldap:set-config ${LDAP_CFG_ID} ldapGroupFilter "${LDAP_GROUP_FILTER}"
-          php occ ldap:set-config ${LDAP_CFG_ID} ldapTLS 0
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapTLS "${LDAP_TLS}"
           php occ ldap:set-config ${LDAP_CFG_ID} turnOffCertCheck 1
 
     internalDatabase:
