@@ -10,10 +10,10 @@ resources:
 patches:
   # Uncomment the following patch to perform the Ceph cutover in prod
   # after the Ceph seed/final-sync jobs complete.
-  # - path: ../../base/authelia/release-ceph-cutover.yaml
-  #   target:
-  #     kind: HelmRelease
-  #     name: authelia
+  - path: ../../base/authelia/release-ceph-cutover.yaml
+    target:
+      kind: HelmRelease
+      name: authelia
   - patch: |
       apiVersion: helm.toolkit.fluxcd.io/v2beta1
       kind: HelmRelease
