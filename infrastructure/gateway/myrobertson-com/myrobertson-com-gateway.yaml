@@ -297,4 +297,17 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: ntfy-myrobertson-com-cert
-        kind: Secret 
+        kind: Secret
+
+  - name: cloud
+    hostname: cloud.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: cloud-myrobertson-com-cert
+        kind: Secret

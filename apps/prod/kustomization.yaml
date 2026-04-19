@@ -24,4 +24,5 @@ resources:
   - syncthing
   - task-control-plane
   - tautulli
+  - nextcloud
   - volsync

@@ -105,4 +105,14 @@ configMapGenerator:
         app.kubernetes.io/part-of: ceph
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: nextcloud-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/nextcloud-overview.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: nextcloud
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
 

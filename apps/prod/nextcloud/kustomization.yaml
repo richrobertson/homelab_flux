@@ -1,0 +1,65 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/nextcloud
+  - httpRoute.yaml
+  - auth-policy.yaml
+  - postgres-scheduled-backup.yaml
+  - s3-bucket-secret.yaml
+patches:
+  - path: nextcloud-values.yaml
+    target:
+      kind: HelmRelease
+      name: nextcloud
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: nextcloud/prod/app
+    target:
+      kind: VaultStaticSecret
+      name: nextcloud-secret
+  - patch: |
+      - op: add
+        path: /spec/backup
+        value:
+          barmanObjectStore:
+            destinationPath: s3://homelab-prod-backups/cnpg/nextcloud-cnpg
+            endpointURL: https://s3.us-east-1.amazonaws.com
+            wal:
+              compression: gzip
+              encryption: AES256
+            data:
+              compression: gzip
+              encryption: AES256
+            s3Credentials:
+              accessKeyId:
+                name: cnpg-backup-s3
+                key: AWS_ACCESS_KEY_ID
+              secretAccessKey:
+                name: cnpg-backup-s3
+                key: AWS_SECRET_ACCESS_KEY
+          retentionPolicy: 30d
+    target:
+      kind: Cluster
+      name: nextcloud-cnpg
+  - patch: |
+      - op: replace
+        path: /spec/storage/size
+        value: 20Gi
+      - op: replace
+        path: /spec/walStorage/size
+        value: 5Gi
+    target:
+      kind: Cluster
+      name: nextcloud-cnpg
+  - patch: |
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: nextcloud-cnpg
+        annotations:
+          cnpg.io/skipEmptyWalArchiveCheck: enabled
+    target:
+      kind: Cluster
+      name: nextcloud-cnpg

@@ -48,3 +48,23 @@ spec:
         credentials:
           name: syncthing-metrics-token
           key: token
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: nextcloud
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/part-of: nextcloud
+    app.kubernetes.io/component: monitoring
+spec:
+  namespaceSelector:
+    matchNames:
+      - default
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nextcloud
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+      interval: 60s

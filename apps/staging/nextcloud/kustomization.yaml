@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/nextcloud
+  - gateway.yaml
+  - auth-policy.yaml
+  - ceph-s3-bucket.yaml
+patches:
+  - path: nextcloud-values.yaml
+    target:
+      kind: HelmRelease
+      name: nextcloud
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: nextcloud/staging/app
+    target:
+      kind: VaultStaticSecret
+      name: nextcloud-secret
+  - patch: |
+      - op: replace
+        path: /spec/storage/size
+        value: 5Gi
+      - op: replace
+        path: /spec/walStorage/size
+        value: 1Gi
+    target:
+      kind: Cluster
+      name: nextcloud-cnpg
+  - patch: |
+      - op: replace
+        path: /spec/resources/requests/storage
+        value: 20Gi
+    target:
+      kind: PersistentVolumeClaim
+      name: nextcloud-data-pvc-ceph

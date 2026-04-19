@@ -1,0 +1,92 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nextcloud
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: nextcloud
+      version: ">=6.0.0 <7.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: nextcloud
+  install:
+    disableWait: true
+  upgrade:
+    disableWait: true
+  values:
+    replicaCount: 1
+
+    image:
+      repository: nextcloud
+      tag: 30-apache
+      pullPolicy: IfNotPresent
+
+    nextcloud:
+      host: cloud.myrobertson.com
+      existingSecret:
+        enabled: true
+        secretName: nextcloud-secret
+        usernameKey: NEXTCLOUD_ADMIN_USER
+        passwordKey: NEXTCLOUD_ADMIN_PASSWORD
+        smtpUsernameKey: SMTP_USERNAME
+        smtpPasswordKey: SMTP_PASSWORD
+      extraEnv:
+        - name: NEXTCLOUD_TRUSTED_DOMAINS
+          value: "cloud.myrobertson.com"
+        - name: OVERWRITEPROTOCOL
+          value: "https"
+        - name: OVERWRITECLIURL
+          value: "https://cloud.myrobertson.com"
+      configs:
+        proxy.config.php: |-
+          <?php
+          $CONFIG = array(
+            'trusted_proxies' => ['10.0.0.0/8'],
+            'forwarded_for_headers' => ['HTTP_X_FORWARDED_FOR'],
+            'overwrite.cli.url' => 'https://cloud.myrobertson.com',
+            'overwriteprotocol' => 'https',
+          );
+
+    internalDatabase:
+      enabled: false
+
+    externalDatabase:
+      enabled: true
+      type: postgresql
+      host: nextcloud-cnpg-rw:5432
+      database: nextcloud
+      user: nextcloud
+      existingSecret:
+        enabled: true
+        secretName: nextcloud-cnpg-app
+        usernameKey: user
+        passwordKey: password
+
+    persistence:
+      enabled: true
+      existingClaim: nextcloud-data-pvc-ceph
+
+    redis:
+      enabled: false
+
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: false
+
+    service:
+      type: ClusterIP
+      port: 80
+
+    ingress:
+      enabled: false
+
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: "2"
+        memory: 2Gi

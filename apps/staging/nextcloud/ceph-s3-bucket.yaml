@@ -1,0 +1,8 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: nextcloud-s3-staging
+  namespace: default
+spec:
+  bucketName: nextcloud-s3-staging
+  storageClassName: rook-ceph-bucket

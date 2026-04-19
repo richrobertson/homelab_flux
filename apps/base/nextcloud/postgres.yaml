@@ -1,0 +1,26 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: nextcloud-cnpg
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: nextcloud
+spec:
+  instances: 1
+  enableSuperuserAccess: false
+  storage:
+    size: 10Gi
+    storageClass: ceph-block
+  walStorage:
+    size: 2Gi
+    storageClass: ceph-block
+  managed:
+    roles:
+      - name: nextcloud
+        login: true
+        superuser: false
+  bootstrap:
+    initdb:
+      database: nextcloud
+      owner: nextcloud

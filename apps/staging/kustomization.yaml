@@ -17,4 +17,5 @@ resources:
   - sonarr
   - syncthing
   - task-control-plane
+  - nextcloud
   - trilium

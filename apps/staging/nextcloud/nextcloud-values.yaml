@@ -1,0 +1,29 @@
+- op: replace
+  path: /spec/values/nextcloud/host
+  value: cloud.staging.myrobertson.net
+- op: add
+  path: /spec/values/nextcloud/configs/s3.config.php
+  value: |-
+    <?php
+    $CONFIG = array(
+      'objectstore' => array(
+        'class' => '\\OC\\Files\\ObjectStore\\S3',
+        'arguments' => array(
+          'bucket'         => getenv('BUCKET_NAME'),
+          'key'            => getenv('AWS_ACCESS_KEY_ID'),
+          'secret'         => getenv('AWS_SECRET_ACCESS_KEY'),
+          'hostname'       => getenv('BUCKET_HOST'),
+          'port'           => 443,
+          'use_ssl'        => true,
+          'use_path_style' => true,
+          'region'         => 'us-east-1',
+        ),
+      ),
+    );
+- op: add
+  path: /spec/values/nextcloud/extraEnvFrom
+  value:
+    - secretRef:
+        name: nextcloud-s3-staging
+    - configMapRef:
+        name: nextcloud-s3-staging

@@ -1,0 +1,25 @@
+- op: add
+  path: /spec/values/nextcloud/configs/s3.config.php
+  value: |-
+    <?php
+    $CONFIG = array(
+      'objectstore' => array(
+        'class' => '\\OC\\Files\\ObjectStore\\S3',
+        'arguments' => array(
+          'bucket'     => getenv('S3_BUCKET'),
+          'key'        => getenv('AWS_ACCESS_KEY_ID'),
+          'secret'     => getenv('AWS_SECRET_ACCESS_KEY'),
+          'region'     => getenv('S3_REGION'),
+          'use_ssl'    => true,
+          'use_path_style' => false,
+        ),
+      ),
+    );
+- op: add
+  path: /spec/values/nextcloud/extraEnvFrom
+  value:
+    - secretRef:
+        name: nextcloud-s3-secret
+- op: replace
+  path: /spec/values/nextcloud/host
+  value: cloud.myrobertson.com
