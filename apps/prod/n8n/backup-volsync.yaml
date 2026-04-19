@@ -29,7 +29,7 @@ spec:
       weekly: 0
       monthly: 0
       yearly: 0
-    copyMethod: Clone
+    copyMethod: Direct
     cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 26
