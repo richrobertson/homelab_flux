@@ -16,8 +16,16 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Direct
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -36,8 +44,20 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Direct
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -45,6 +65,7 @@ metadata:
   name: bitwarden-data-ceph-backup
 spec:
   sourcePVC: bitwarden-data-ceph
+  paused: false
   trigger:
     schedule: "55 * * * *"
   restic:
@@ -55,8 +76,16 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -75,8 +104,16 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -95,8 +132,16 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Direct
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -115,8 +160,16 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Direct
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -124,6 +177,7 @@ metadata:
   name: cluster-authelia-ceph-1-backup
 spec:
   sourcePVC: cluster-authelia-ceph-1
+  paused: false
   trigger:
     schedule: "32 * * * *"
   restic:
@@ -134,12 +188,20 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
       fsGroup: 26
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -158,8 +220,16 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Direct
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "2Gi"
+      limits:
+        cpu: "4"
+        memory: "8Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -167,6 +237,7 @@ metadata:
   name: cluster-immich-ceph-1-backup
 spec:
   sourcePVC: cluster-immich-ceph-1
+  paused: false
   trigger:
     schedule: "12 * * * *"
   restic:
@@ -177,12 +248,20 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
       fsGroup: 26
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -190,6 +269,7 @@ metadata:
   name: lidarr-config-ceph-backup
 spec:
   sourcePVC: lidarr-config-ceph
+  paused: false
   trigger:
     schedule: "20 * * * *"
   restic:
@@ -200,12 +280,20 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
       fsGroup: 568
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -213,6 +301,7 @@ metadata:
   name: mealie-data-ceph-backup
 spec:
   sourcePVC: mealie-data-ceph
+  paused: false
   trigger:
     schedule: "30 * * * *"
   restic:
@@ -223,8 +312,16 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -243,12 +340,20 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
       fsGroup: 26
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -256,6 +361,7 @@ metadata:
   name: mealie-cnpg-main-1-wal-backup
 spec:
   sourcePVC: mealie-cnpg-main-1-wal
+  paused: false
   trigger:
     schedule: "44 * * * *"
   restic:
@@ -266,12 +372,20 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 26
       runAsGroup: 26
       fsGroup: 26
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -290,8 +404,16 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -310,12 +432,20 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
       fsGroup: 568
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -334,12 +464,20 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
       fsGroup: 568
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -358,12 +496,20 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
       fsGroup: 568
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -382,8 +528,16 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Direct
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -391,6 +545,7 @@ metadata:
   name: syncthing-config-ceph-backup
 spec:
   sourcePVC: syncthing-config-ceph
+  paused: false
   trigger:
     schedule: "25 * * * *"
   restic:
@@ -401,9 +556,81 @@ spec:
       daily: 0
       weekly: 0
       monthly: 0
+      yearly: 0
     copyMethod: Clone
-    cacheStorageClassName: ceph-filesystem
+    cacheStorageClassName: csi-cephfs-sc
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
       fsGroup: 568
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: trilium-data-ceph-backup
+spec:
+  sourcePVC: trilium-data-ceph-v3
+  paused: false
+  trigger:
+    schedule: "42 * * * *"
+  restic:
+    repository: restic-config-trilium
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Direct
+    cacheStorageClassName: csi-cephfs-sc
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: plex-config-ceph-backup
+spec:
+  sourcePVC: plex-config-ceph
+  paused: false
+  trigger:
+    schedule: "52 * * * *"
+  restic:
+    repository: restic-config-plex
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Direct
+    cacheStorageClassName: csi-cephfs-sc
+    moverSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
+    moverResources:
+      requests:
+        cpu: "1"
+        memory: "4Gi"
+      limits:
+        cpu: "4"
+        memory: "16Gi"

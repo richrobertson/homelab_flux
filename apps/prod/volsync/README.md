@@ -1,18 +1,24 @@
 # VolSync (Prod)
 
-Production overlay for VolSync backups to S3-compatible object storage.
+Production helper resources for VolSync backups to S3-compatible object storage.
 
 ## Purpose
 
-- Enables scheduled Restic backups for production PVCs.
-- Uses Vault-managed restic repository secrets per PVC.
-- Keeps VolSync chart defaults in base and applies prod-specific values here.
+- Provides helper PVCs and cleanup CronJobs used by production VolSync backups.
+- Keeps operational notes close to the backup workflows.
+- Leaves the active VolSync controller, repository secrets, and ReplicationSources under `infrastructure/`.
 
 ## In this folder
 
-- kustomization wiring for prod VolSync resources.
-- VaultStaticSecret resources for restic repository configuration.
-- ReplicationSource resources for each protected production PVC.
+- Kustomization wiring for prod VolSync helper resources.
+- V3 backup-source PVC definitions.
+- Cleanup CronJobs for stale locks and released backup PVs.
+
+## Active Source Of Truth
+
+- Controller manifests live under `infrastructure/controllers/volsync`.
+- Active VaultStaticSecret and ReplicationSource manifests live under `infrastructure/configs/volsync`.
+- This folder intentionally excludes those resources to avoid Flux ownership drift.
 
 ## Covered PVCs
 
@@ -79,7 +85,7 @@ For VolSync restic secrets, set RESTIC_REPOSITORY with the S3 endpoint and path-
 
 ## Retention policy (prod)
 
-VolSync retain settings are defined per ReplicationSource in `replicationsources.yaml`:
+VolSync retain settings are defined per ReplicationSource in `infrastructure/configs/volsync/replicationsources.yaml`:
 
 - schedule: every hour at the source's assigned minute offset
 - hourly: 4
