@@ -116,8 +116,19 @@ spec:
           fi
 
           if [ -z "${LDAP_HOST:-}" ] || [ -z "${LDAP_BASE_DN:-}" ] || [ -z "${LDAP_BIND_DN:-}" ] || [ -z "${LDAP_BIND_PASSWORD:-}" ]; then
-            echo "LDAP enabled but required LDAP_* values are missing; skipping LDAP bootstrap."
-            exit 0
+             # Wait for Vault secret injection (up to 30 seconds)
+             for i in $(seq 1 30); do
+               if [ -z "${LDAP_HOST:-}" ] || [ -z "${LDAP_BASE_DN:-}" ] || [ -z "${LDAP_BIND_DN:-}" ] || [ -z "${LDAP_BIND_PASSWORD:-}" ]; then
+                 echo "LDAP: Waiting for secret injection... (attempt $i/30)"
+                 sleep 1
+               else
+                 break
+               fi
+             done
+             if [ -z "${LDAP_HOST:-}" ] || [ -z "${LDAP_BASE_DN:-}" ] || [ -z "${LDAP_BIND_DN:-}" ] || [ -z "${LDAP_BIND_PASSWORD:-}" ]; then
+               echo "LDAP enabled but required LDAP_* values are missing; skipping LDAP bootstrap."
+               exit 0
+             fi
           fi
 
           LDAP_PORT="${LDAP_PORT:-389}"
