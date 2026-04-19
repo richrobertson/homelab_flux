@@ -138,7 +138,7 @@ spec:
         postgres:
           enabled: true
           username: 'authelia'
-          address: 'tcp://cluster-authelia-rw.default.svc.cluster.local:5432'
+          address: 'tcp://cluster-authelia-ceph-rw.default.svc.cluster.local:5432'
       
       notifier:
         filesystem:
