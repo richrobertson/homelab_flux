@@ -43,11 +43,6 @@ spec:
     - port: main
       path: /metrics
       interval: 30s
-      authorization:
-        type: Bearer
-        credentials:
-          name: syncthing-metrics-token
-          key: token
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
