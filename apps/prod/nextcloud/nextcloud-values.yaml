@@ -1,5 +1,5 @@
 - op: add
-  path: /spec/values/nextcloud/configs/s3.config.php
+  path: /spec/values/nextcloud/configs/objectstore-s3.config.php
   value: |-
     <?php
     $CONFIG = array(
