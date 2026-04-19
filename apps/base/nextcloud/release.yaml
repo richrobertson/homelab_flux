@@ -15,6 +15,23 @@ spec:
     disableWait: true
   upgrade:
     disableWait: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: nextcloud
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/0/livenessProbe/httpGet/httpHeaders
+                value:
+                  - name: Host
+                    value: localhost
+              - op: add
+                path: /spec/template/spec/containers/0/readinessProbe/httpGet/httpHeaders
+                value:
+                  - name: Host
+                    value: localhost
   values:
     replicaCount: 1
 
