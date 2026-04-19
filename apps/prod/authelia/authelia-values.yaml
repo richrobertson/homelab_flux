@@ -5,6 +5,9 @@ metadata:
 spec:
   values:
     configMap:
+      storage:
+        postgres:
+          address: tcp://cluster-authelia-ceph-rw.default.svc.cluster.local:5432
       identity_providers:
         oidc:
           enabled: true
