@@ -22,17 +22,6 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: plex-cert
-  - name: plex-public
-    hostname: plex.myrobertson.com
-    port: 443
-    protocol: HTTPS
-    allowedRoutes:
-      namespaces:
-        from: All
-    tls:
-      mode: Terminate
-      certificateRefs:
-      - name: plex-myrobertson-com-cert
   infrastructure:
     labels:
       istio-injection: enabled

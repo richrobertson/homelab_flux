@@ -7,6 +7,8 @@ Production overlay for Plex.
 - Runs Plex in the production Kubernetes cluster after migration from the legacy Proxmox LXC.
 - Mirrors the legacy Plex media mounts at `/plex`, `/radarr`, and `/sonarr`.
 - Keeps `/dev/dri` disabled because production rollout is not using hardware transcoding.
+- Exposes `plex.myrobertson.com` through the shared `myrobertson-com` Gateway listener on TLS port `443`.
+- Keeps LAN split-DNS able to resolve `plex.myrobertson.com` to the internal gateway path while remote clients use public DNS.
 
 ## In this folder
 
@@ -17,6 +19,7 @@ Production overlay for Plex.
 
 - Verified from a working prod media pod that writes to the scooter-backed Plex share succeed, but new files are created as uid/gid `568:568`.
 - If scooter-side consumers still expect Synology ownership such as `99:100`, fix that on scooter with an ACL or ownership policy before final cutover.
+- The public HTTPRoute depends on the `plex.myrobertson.com` listener in [infrastructure/gateway/myrobertson-com/myrobertson-com-gateway.yaml](../../../infrastructure/gateway/myrobertson-com/myrobertson-com-gateway.yaml).
 
 ## Migration inputs
 

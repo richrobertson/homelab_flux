@@ -7,9 +7,9 @@ metadata:
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
 spec:
   parentRefs:
-    - name: plex
+    - name: myrobertson-com-gateway
       namespace: default
-      sectionName: plex-public
+      sectionName: plex
   hostnames:
     - plex.myrobertson.com
   rules:
