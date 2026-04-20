@@ -1,14 +1,15 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: plex
+  name: plex-public
   namespace: default
   annotations:
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
 spec:
   parentRefs:
-    - name: myrobertson-com-gateway
+    - name: plex
       namespace: default
+      sectionName: plex-public
   hostnames:
     - plex.myrobertson.com
   rules:

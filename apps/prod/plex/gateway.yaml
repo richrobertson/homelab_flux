@@ -36,8 +36,6 @@ spec:
   infrastructure:
     labels:
       istio-injection: enabled
-    annotations:
-      external-dns.alpha.kubernetes.io/hostname: plex.prod.myrobertson.net,plex.myrobertson.com
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -79,7 +77,8 @@ spec:
   parentRefs:
   - name: plex
     namespace: default
-  hostnames: ["plex.prod.myrobertson.net", "plex.myrobertson.com"]
+    sectionName: plex
+  hostnames: ["plex.prod.myrobertson.net"]
   rules:
   - matches:
     - path:
