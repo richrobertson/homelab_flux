@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/plex
-  - httpRoute.yaml
   - gateway.yaml
   - lan-service.yaml
 patches:

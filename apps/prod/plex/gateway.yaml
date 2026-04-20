@@ -22,11 +22,22 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: plex-cert
+  - name: plex-public
+    hostname: plex.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: plex-myrobertson-com-cert
   infrastructure:
     labels:
       istio-injection: enabled
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: plex.prod.myrobertson.net
+      external-dns.alpha.kubernetes.io/hostname: plex.prod.myrobertson.net,plex.myrobertson.com
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -68,7 +79,7 @@ spec:
   parentRefs:
   - name: plex
     namespace: default
-  hostnames: ["plex.prod.myrobertson.net"]
+  hostnames: ["plex.prod.myrobertson.net", "plex.myrobertson.com"]
   rules:
   - matches:
     - path:
