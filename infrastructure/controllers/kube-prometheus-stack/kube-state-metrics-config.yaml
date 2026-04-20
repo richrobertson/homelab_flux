@@ -316,6 +316,8 @@ kube-state-metrics:
                 labelsFromPath:
                   exported_namespace: [ metadata, namespace ]
                   ready: [ status, conditions, "[type=Ready]", status ]
+                  last_backup_succeeded: [ status, conditions, "[type=LastBackupSucceeded]", status ]
+                  last_failed_backup: [ status, lastFailedBackup ]
                   phase: [ status, phase ]
           - groupVersionKind:
               group: postgresql.cnpg.io
@@ -335,6 +337,8 @@ kube-state-metrics:
                   suspended: [ spec, suspend ]
                   cluster: [ spec, cluster, name ]
                   schedule: [ spec, schedule ]
+                  last_schedule_time: [ status, lastScheduleTime ]
+                  next_schedule_time: [ status, nextScheduleTime ]
           - groupVersionKind:
               group: postgresql.cnpg.io
               version: v1
@@ -351,4 +355,5 @@ kube-state-metrics:
                 labelsFromPath:
                   exported_namespace: [ metadata, namespace ]
                   cluster: [ spec, cluster, name ]
+                  error: [ status, error ]
                   phase: [ status, phase ]

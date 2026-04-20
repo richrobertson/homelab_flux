@@ -41,14 +41,14 @@ spec:
             description: A CloudNativePG ScheduledBackup resource is suspended in the default namespace.
 
         - alert: CNPGBackupFailedRecently
-          expr: count(max_over_time(homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Backup",exported_namespace="default",phase=~"failed|error"}[6h])) > 0
+          expr: count((homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Backup",exported_namespace="default",phase=~"failed|error"}) and on (cluster, exported_namespace) (homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Cluster",exported_namespace="default",ready="True",last_backup_succeeded!="True"})) > 0
           for: 5m
           labels:
             domain: backups
             severity: critical
           annotations:
-            summary: CNPG backup failed recently
-            description: A CloudNativePG Backup resource entered a failed or error phase within the last 6 hours.
+            summary: CNPG latest backup is failed
+            description: A CloudNativePG cluster's latest backup state is failed or error.
 
         - alert: BackupJobsFailing
           expr: max_over_time(kube_job_status_failed{namespace="default",job_name=~".*(backup|volsync).*"}[30m]) > 0
