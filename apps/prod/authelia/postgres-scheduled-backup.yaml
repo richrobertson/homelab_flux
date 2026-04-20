@@ -4,7 +4,7 @@ metadata:
   name: cluster-authelia-ceph-daily
   namespace: default
 spec:
-  schedule: "0 3 * * *"
+  schedule: "0 0 3 * * *"
   backupOwnerReference: self
   cluster:
     name: cluster-authelia-ceph

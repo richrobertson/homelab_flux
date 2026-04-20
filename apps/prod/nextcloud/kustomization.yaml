@@ -32,7 +32,7 @@ patches:
         value:
           barmanObjectStore:
             destinationPath: s3://homelab-prod-backups/cnpg/nextcloud-cnpg
-            endpointURL: https://s3.us-east-1.amazonaws.com
+            endpointURL: https://s3.us-west-2.amazonaws.com
             wal:
               compression: gzip
               encryption: AES256
@@ -56,7 +56,7 @@ patches:
         value: 20Gi
       - op: replace
         path: /spec/walStorage/size
-        value: 5Gi
+        value: 20Gi
     target:
       kind: Cluster
       name: nextcloud-cnpg
