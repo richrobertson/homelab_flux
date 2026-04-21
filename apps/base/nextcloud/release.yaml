@@ -23,6 +23,21 @@ spec:
               name: nextcloud
             patch: |
               - op: add
+                path: /spec/template/spec/containers/0/startupProbe
+                value:
+                  httpGet:
+                    path: /status.php
+                    port: 80
+                    scheme: HTTP
+                    httpHeaders:
+                      - name: Host
+                        value: localhost
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 60
+                  successThreshold: 1
+              - op: add
                 path: /spec/template/spec/containers/0/livenessProbe/httpGet/httpHeaders
                 value:
                   - name: Host
@@ -37,7 +52,7 @@ spec:
 
     image:
       repository: nextcloud
-      tag: 30-apache
+      tag: 33-apache
       pullPolicy: IfNotPresent
 
     nextcloud:
@@ -140,6 +155,12 @@ spec:
           php occ config:system:set trusted_domains 1 --value=cloud.myrobertson.com
           php occ config:system:set trusted_domains 2 --value=nextcloud.default.svc.cluster.local
           php occ config:system:set trusted_domains 3 --value=nextcloud.default.svc
+
+          # Major upgrades expose only a reduced occ command set until migrations finish.
+          if php occ status 2>/dev/null | grep -q 'needsDbUpgrade: true'; then
+            echo "Nextcloud upgrade pending; skipping LDAP bootstrap until after migrations."
+            exit 0
+          fi
 
           if [ "${LDAP_ENABLED:-false}" != "true" ]; then
             exit 0
