@@ -3,7 +3,7 @@
   "uid": "istio-gateway-service-drilldown",
   "timezone": "utc",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "15s",
   "graphTooltip": 1,
   "tags": [
@@ -36,12 +36,21 @@
       },
       {
         "name": "service",
-        "type": "custom",
+        "type": "query",
         "label": "service",
-        "query": "authelia,bitwarden.myrobertson.net,gotify.myrobertson.net,immich-server,kermit.myrobertson.net,lidarr,mealie,overseerr,plex.myrobertson.net,prowlarr,radarr,sonarr,syncthing,tautulli.myrobertson.net,trilium.myrobertson.net,whisparr",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "query": {
+          "query": "label_values(istio_requests_total{source_workload=\"myrobertson-com-gateway-istio\", reporter=\"source\"}, destination_service_name)",
+          "refId": "StandardVariableQuery"
+        },
+        "regex": "/^(?!unknown$).+/",
         "multi": false,
         "includeAll": false,
-        "sort": 0,
+        "refresh": 2,
+        "sort": 1,
         "current": {}
       }
     ]

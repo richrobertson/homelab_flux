@@ -3,7 +3,7 @@
   "uid": "istio-gateway-case-metrics",
   "timezone": "utc",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "15s",
   "graphTooltip": 1,
   "tags": [
@@ -13,7 +13,7 @@
   ],
   "links": [
     {
-      "title": "Drilldown: auth",
+      "title": "Drilldown: authelia",
       "type": "link",
       "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=authelia",
       "keepTime": true,
@@ -22,14 +22,14 @@
     {
       "title": "Drilldown: bitwarden",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=bitwarden.myrobertson.net",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=bitwarden",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: gotify",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=gotify.myrobertson.net",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=gotify",
       "keepTime": true,
       "targetBlank": false
     },
@@ -62,16 +62,16 @@
       "targetBlank": false
     },
     {
-      "title": "Drilldown: overseerr",
+      "title": "Drilldown: seerr",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=overseerr",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=seerr",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: plex",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=plex.myrobertson.net",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=plex",
       "keepTime": true,
       "targetBlank": false
     },
@@ -106,21 +106,49 @@
     {
       "title": "Drilldown: tautulli",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=tautulli.myrobertson.net",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=tautulli",
       "keepTime": true,
       "targetBlank": false
     },
     {
       "title": "Drilldown: trilium",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=trilium.myrobertson.net",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=trilium",
       "keepTime": true,
       "targetBlank": false
     },
     {
-      "title": "Drilldown: whisparr",
+      "title": "Drilldown: code-server",
       "type": "link",
-      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=whisparr",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=code-server",
+      "keepTime": true,
+      "targetBlank": false
+    },
+    {
+      "title": "Drilldown: n8n",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=n8n-main",
+      "keepTime": true,
+      "targetBlank": false
+    },
+    {
+      "title": "Drilldown: nextcloud",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=nextcloud",
+      "keepTime": true,
+      "targetBlank": false
+    },
+    {
+      "title": "Drilldown: ntfy",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=ntfy",
+      "keepTime": true,
+      "targetBlank": false
+    },
+    {
+      "title": "Drilldown: vikunja",
+      "type": "link",
+      "url": "/d/istio-gateway-service-drilldown/istio-gateway-service-drilldown?var-service=vikunja",
       "keepTime": true,
       "targetBlank": false
     }
@@ -148,6 +176,7 @@
           "query": "label_values(istio_requests_total{source_workload=\"myrobertson-com-gateway-istio\", reporter=\"source\"}, destination_service_name)",
           "refId": "StandardVariableQuery"
         },
+        "regex": "/^(?!unknown$).+/",
         "refresh": 2,
         "sort": 1,
         "multi": true,
