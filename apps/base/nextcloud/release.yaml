@@ -47,6 +47,12 @@ spec:
                 value:
                   - name: Host
                     value: localhost
+              - op: add
+                path: /spec/template/spec/containers/0/args
+                value:
+                  - apache2-foreground
+                  - -C
+                  - ServerName cloud.myrobertson.com
   values:
     replicaCount: 1
 
