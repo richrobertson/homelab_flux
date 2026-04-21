@@ -18,7 +18,7 @@ resources:
   - plex
   - prowlarr
   - radarr
-  - redis-operator
+  - redis-operator-namespace.yaml
   - sonarr
   - syncthing
   - task-control-plane
