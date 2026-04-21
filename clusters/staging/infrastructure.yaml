@@ -17,14 +17,14 @@ spec:
   patches:
     - patch: |
         - op: replace
-          path: /spec/values/defaultAuthMethod/mount
+          path: /spec/mount
           value: staging-kubernetes
         - op: replace
-          path: /spec/values/defaultAuthMethod/kubernetes/tokenAudiences/0
+          path: /spec/kubernetes/audiences/0
           value: https://cp.staging.myrobertson.net:6443
       target:
-        kind: HelmRelease
-        name: vault-secrets-operator
+        kind: VaultAuth
+        name: default
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization

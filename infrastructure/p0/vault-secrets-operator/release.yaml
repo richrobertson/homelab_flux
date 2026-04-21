@@ -20,13 +20,4 @@ spec:
       address: "https://vault.myrobertson.net:8200"
       skipTLSVerify: true
     defaultAuthMethod:
-      enabled: true
-      namespace: ""
-      mount: dev-kubernetes
-      allowedNamespaces:
-        - "*"
-      kubernetes:
-        role: "vault-secrets-operator-role"
-        serviceAccount: "default"
-        tokenAudiences:
-          - "https://cp.dev.myrobertson.net:6443"
+      enabled: false
