@@ -15,3 +15,8 @@ spec:
     crds: Create
   upgrade:
     crds: CreateReplace
+  values:
+    redisOperator:
+      imageName: ghcr.io/ot-container-kit/redis-operator/redis-operator
+      imageTag: v0.24.0
+      initContainerImageTag: v0.24.0
