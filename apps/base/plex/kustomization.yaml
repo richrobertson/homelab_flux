@@ -5,4 +5,5 @@ resources:
   - plex-image-automation.yaml
   - repository.yaml
   - release.yaml
+  - service-lan.yaml
   - config-ceph-pvc.yaml
