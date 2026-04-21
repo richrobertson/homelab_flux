@@ -6,7 +6,7 @@ spec:
   interval: 1h
   url: oci://oci.trueforge.org/truecharts/syncthing
   ref:
-    semver: ">=22.x"
+    tag: "23.1.0"
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy

@@ -6,7 +6,7 @@ spec:
   interval: 1h
   url: oci://oci.trueforge.org/truecharts/lidarr
   ref:
-    semver: ">=13.x"
+    tag: "29.1.0"
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy

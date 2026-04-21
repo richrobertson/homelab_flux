@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - authelia
   - bitwarden
-  - bazarr
   - code-server
   - external-dns
   - gotify
