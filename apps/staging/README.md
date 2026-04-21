@@ -45,4 +45,3 @@ Leaf docs:
 - [Radarr staging](radarr/README.md)
 - [Shared Storage (Staging)](shared_storage/README.md)
 - [Sonarr staging](sonarr/README.md)
-- [Syncthing staging](syncthing/README.md)

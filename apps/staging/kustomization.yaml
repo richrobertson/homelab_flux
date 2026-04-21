@@ -19,7 +19,6 @@ resources:
   - radarr
   - redis-operator-namespace.yaml
   - sonarr
-  - syncthing
   - task-control-plane
   - tautulli
   - nextcloud
