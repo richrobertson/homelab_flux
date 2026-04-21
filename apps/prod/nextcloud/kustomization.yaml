@@ -4,7 +4,6 @@ namespace: default
 resources:
   - ../../base/nextcloud
   - httpRoute.yaml
-  - auth-policy.yaml
   - postgres-scheduled-backup.yaml
   - s3-bucket-secret.yaml
 patches:
