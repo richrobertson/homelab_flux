@@ -129,6 +129,12 @@ spec:
               name: nextcloud-ldap-secret
               key: LDAP_TLS
               optional: true
+        - name: LDAP_ADMIN_GROUP
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-ldap-secret
+              key: LDAP_ADMIN_GROUP
+              optional: true
       configs:
         proxy.config.php: |-
           <?php
@@ -149,6 +155,17 @@ spec:
         before-starting: |-
           #!/bin/sh
           set -eu
+
+          # Nextcloud 33 on PHP 8.4 can return a native bool here, which breaks LDAP auth checks.
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('/var/www/html/lib/private/Config/UserConfig.php')
+          old = """\t\t$b = strtolower($this->getTypedValue($userId, $app, $key, $default ? 'true' : 'false', $lazy, ValueType::BOOL));\n\t\treturn in_array($b, ['1', 'true', 'yes', 'on']);\n"""
+          new = """\t\t$b = $this->getTypedValue($userId, $app, $key, $default ? 'true' : 'false', $lazy, ValueType::BOOL);\n\t\tif (is_bool($b)) {\n\t\t\treturn $b;\n\t\t}\n\n\t\t$b = strtolower((string)$b);\n\t\treturn in_array($b, ['1', 'true', 'yes', 'on']);\n"""
+          text = path.read_text()
+          if old in text and new not in text:
+              path.write_text(text.replace(old, new, 1))
+          PY
 
           # Keep trusted domains aligned with expected public and in-cluster access.
           php occ config:system:set trusted_domains 0 --value=localhost
@@ -187,6 +204,7 @@ spec:
           LDAP_USER_FILTER="${LDAP_USER_FILTER:-(|(objectclass=person)(objectclass=user))}"
           LDAP_GROUP_FILTER="${LDAP_GROUP_FILTER:-(|(objectclass=group)(objectclass=groupOfNames))}"
           LDAP_TLS="${LDAP_TLS:-1}"
+          LDAP_ADMIN_GROUP="${LDAP_ADMIN_GROUP:-cn=Domain Admins,cn=Users,dc=myrobertson,dc=net}"
 
           php occ app:enable user_ldap || php occ app:install user_ldap || true
 
@@ -208,6 +226,7 @@ spec:
           php occ ldap:set-config ${LDAP_CFG_ID} ldapLoginFilter "${LDAP_LOGIN_FILTER}"
           php occ ldap:set-config ${LDAP_CFG_ID} ldapUserFilter "${LDAP_USER_FILTER}"
           php occ ldap:set-config ${LDAP_CFG_ID} ldapGroupFilter "${LDAP_GROUP_FILTER}"
+          php occ ldap:set-config ${LDAP_CFG_ID} ldapAdminGroup "${LDAP_ADMIN_GROUP}"
           php occ ldap:set-config ${LDAP_CFG_ID} ldapTLS "${LDAP_TLS}"
           php occ ldap:set-config ${LDAP_CFG_ID} turnOffCertCheck 1
 
