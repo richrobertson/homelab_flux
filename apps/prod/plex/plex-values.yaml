@@ -5,6 +5,8 @@ metadata:
 spec:
   interval: 1h
   values:
+    extraEnv:
+      ADVERTISE_IP: "https://plex.myrobertson.com/"
     pms:
       resources:
         requests:
