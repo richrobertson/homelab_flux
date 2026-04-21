@@ -28,6 +28,7 @@
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchLabels:
+              app.kubernetes.io/component: app
               app.kubernetes.io/name: nextcloud
               app.kubernetes.io/instance: nextcloud
           topologyKey: kubernetes.io/hostname
