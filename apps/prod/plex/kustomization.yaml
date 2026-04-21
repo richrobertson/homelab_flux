@@ -4,7 +4,6 @@ namespace: default
 resources:
   - ../../base/plex
   - httpRoute.yaml
-  - lan-service.yaml
 patches:
   - path: plex-values.yaml
     target:
