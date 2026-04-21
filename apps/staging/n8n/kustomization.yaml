@@ -5,15 +5,18 @@ resources:
   - ../../base/n8n
   - httpRoute.yaml
   - auth-policy.yaml
+  - n8n-secret.yaml
 patches:
   - path: n8n-values.yaml
     target:
       kind: HelmRelease
       name: n8n
   - patch: |
-      - op: replace
-        path: /spec/path
-        value: n8n/staging/app
+      $patch: delete
+      apiVersion: secrets.hashicorp.com/v1beta1
+      kind: VaultStaticSecret
+      metadata:
+        name: n8n-secret
     target:
       kind: VaultStaticSecret
       name: n8n-secret

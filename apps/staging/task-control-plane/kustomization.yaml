@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/task-control-plane
+  - secret-stubs.yaml
 patches:
   - patch: |
       - op: replace
@@ -41,16 +42,20 @@ patches:
       kind: ConfigMap
       name: nudge-worker-config
   - patch: |
-      - op: replace
-        path: /spec/path
-        value: task-control-plane/staging/openai
+      $patch: delete
+      apiVersion: secrets.hashicorp.com/v1beta1
+      kind: VaultStaticSecret
+      metadata:
+        name: task-control-plane-openai
     target:
       kind: VaultStaticSecret
       name: task-control-plane-openai
   - patch: |
-      - op: replace
-        path: /spec/path
-        value: task-control-plane/staging/app
+      $patch: delete
+      apiVersion: secrets.hashicorp.com/v1beta1
+      kind: VaultStaticSecret
+      metadata:
+        name: task-control-plane-app
     target:
       kind: VaultStaticSecret
       name: task-control-plane-app
@@ -62,9 +67,11 @@ patches:
       kind: Secret
       name: vikunja-oidc-secret
   - patch: |
-      - op: replace
-        path: /spec/path
-        value: task-control-plane/staging/vikunja
+      $patch: delete
+      apiVersion: secrets.hashicorp.com/v1beta1
+      kind: VaultStaticSecret
+      metadata:
+        name: task-control-plane-vikunja
     target:
       kind: VaultStaticSecret
       name: task-control-plane-vikunja
