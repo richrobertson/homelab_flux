@@ -25,7 +25,7 @@ spec:
         daemonHealth:
           mon:
             disabled: false
-          interval: 45s
+            interval: 45s
     # -- A list of CephBlockPool configurations to deploy
     # @default -- See [below](#ceph-block-pools)
     cephBlockPools: {}
@@ -193,4 +193,3 @@ data:
     mds_cache_memory_limit = 2147483648
     mds_max_file_size = 1099511627776
     mds_enforce_unique_name = true
-

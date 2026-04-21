@@ -37,3 +37,47 @@ spec:
         version: v2
         kind: HelmRelease
         name: volsync
+    - patch: |
+        $patch: delete
+        apiVersion: image.toolkit.fluxcd.io/v1beta2
+        kind: ImageRepository
+        metadata:
+          name: immich
+      target:
+        group: image.toolkit.fluxcd.io
+        version: v1beta2
+        kind: ImageRepository
+        name: immich
+    - patch: |
+        $patch: delete
+        apiVersion: image.toolkit.fluxcd.io/v1beta2
+        kind: ImagePolicy
+        metadata:
+          name: immich
+      target:
+        group: image.toolkit.fluxcd.io
+        version: v1beta2
+        kind: ImagePolicy
+        name: immich
+    - patch: |
+        $patch: delete
+        apiVersion: image.toolkit.fluxcd.io/v1beta2
+        kind: ImageRepository
+        metadata:
+          name: plex
+      target:
+        group: image.toolkit.fluxcd.io
+        version: v1beta2
+        kind: ImageRepository
+        name: plex
+    - patch: |
+        $patch: delete
+        apiVersion: image.toolkit.fluxcd.io/v1beta2
+        kind: ImagePolicy
+        metadata:
+          name: plex
+      target:
+        group: image.toolkit.fluxcd.io
+        version: v1beta2
+        kind: ImagePolicy
+        name: plex
