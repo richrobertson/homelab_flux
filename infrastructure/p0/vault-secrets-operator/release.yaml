@@ -21,12 +21,12 @@ spec:
       skipTLSVerify: true
     defaultAuthMethod:
       enabled: true
+      namespace: ""
       mount: dev-kubernetes
-      allowed_namespaces:
+      allowedNamespaces:
         - "*"
       kubernetes:
         role: "vault-secrets-operator-role"
-        serviceAccountName: "default"
-        namespace: "vault-secrets-operator-system"
+        serviceAccount: "default"
         tokenAudiences:
           - "https://cp.dev.myrobertson.net:6443"
