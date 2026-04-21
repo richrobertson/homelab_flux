@@ -94,3 +94,9 @@ patches:
     target:
       kind: HelmRelease
       name: vikunja
+  - patch: |
+      - op: remove
+        path: /metadata/annotations/external-dns.alpha.kubernetes.io~1cloudflare-proxied
+    target:
+      kind: HTTPRoute
+      name: task-control-plane
