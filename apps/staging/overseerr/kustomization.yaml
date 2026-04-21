@@ -3,28 +3,9 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/overseerr
-  - gateway.yaml
+  - httpRoute.yaml
+  - auth-policy.yaml
 patches:
   - path: overseerr-values.yaml
     target:
       kind: HelmRelease
-  - patch: |
-      - op: replace
-        path: /metadata/annotations/cert-manager.io~1common-name
-        value: seerr.staging.myrobertson.net
-      - op: replace
-        path: /spec/listeners/0/hostname
-        value: seerr.staging.myrobertson.net
-      - op: replace
-        path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
-        value: seerr.staging.myrobertson.net
-    target:
-      kind: Gateway
-      name: seerr
-  - patch: |
-      - op: replace
-        path: /spec/hostnames/0
-        value: seerr.staging.myrobertson.net
-    target:
-      kind: HTTPRoute
-      name: seerr

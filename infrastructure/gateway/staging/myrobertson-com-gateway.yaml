@@ -1,0 +1,290 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: myrobertson-com-gateway
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: vault-issuer
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: auth
+    hostname: auth.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: auth-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: code
+    hostname: code.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: code-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: bazarr
+    hostname: bazarr.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: bazarr-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: bitwarden
+    hostname: bitwarden.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: bitwarden-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: gotify
+    hostname: gotify.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: gotify-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: immich-http
+    hostname: immich.staging.myrobertson.net
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: immich
+    hostname: immich.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: immich-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: lidarr
+    hostname: lidarr.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: lidarr-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: mealie
+    hostname: mealie.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: mealie-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: n8n
+    hostname: n8n.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: n8n-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: netboot
+    hostname: netboot.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: netboot-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: seerr
+    hostname: seerr.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: seerr-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: plex
+    hostname: plex.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: plex-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: prowlarr
+    hostname: prowlarr.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: prowlarr-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: radarr
+    hostname: radarr.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: radarr-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: sonarr
+    hostname: sonarr.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: sonarr-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: syncthing
+    hostname: syncthing.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: syncthing-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: tautulli
+    hostname: tautulli.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: tautulli-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: tasks
+    hostname: tasks.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: tasks-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: trilium
+    hostname: trilium.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: trilium-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: ntfy
+    hostname: ntfy.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: ntfy-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: cloud
+    hostname: cloud.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: cloud-staging-myrobertson-net-cert
+          kind: Secret

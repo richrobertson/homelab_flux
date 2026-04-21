@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/tautulli
+  - httpRoute.yaml
+  - data-ceph-pvc-v2.yaml
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
+        value: tautulli-config-ceph-v2
+    target:
+      kind: Deployment
+      name: tautulli
+  - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: tautulli-config-ceph
+        namespace: default
+    target:
+      kind: PersistentVolumeClaim
+      name: tautulli-config-ceph

@@ -3,31 +3,11 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/mealie
-  - gateway.yaml
+  - httpRoute.yaml
 patches:
   - path: mealie-values.yaml
     target:
       kind: HelmRelease
-  - patch: |
-      - op: replace
-        path: /metadata/annotations/cert-manager.io~1common-name
-        value: mealie.staging.myrobertson.net
-      - op: replace
-        path: /spec/listeners/0/hostname
-        value: mealie.staging.myrobertson.net
-      - op: replace
-        path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
-        value: mealie.staging.myrobertson.net
-    target:
-      kind: Gateway
-      name: mealie
-  - patch: |
-      - op: replace
-        path: /spec/hostnames/0
-        value: mealie.staging.myrobertson.net
-    target:
-      kind: HTTPRoute
-      name: mealie
   - patch: |
       - op: replace
         path: /spec/resources/requests/storage

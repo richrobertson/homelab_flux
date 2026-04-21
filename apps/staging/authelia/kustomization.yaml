@@ -3,8 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/authelia
-  - gateway.yaml
-  - auth-policy.yaml
+  - httpRoute.yaml
 patches:
   - path: remove-legacy-postgres-cluster.yaml
     target:
@@ -12,11 +11,6 @@ patches:
       version: v1
       kind: Cluster
       name: cluster-authelia
-  # Enable after the Ceph seed/final-sync jobs complete.
-  # - path: ../../base/authelia/release-ceph-cutover.yaml
-  #   target:
-  #     kind: HelmRelease
-  #     name: authelia
   - path: authelia-values.yaml
     target:
       kind: HelmRelease
@@ -31,30 +25,3 @@ patches:
     target:
       kind: PersistentVolumeClaim
       name: authelia-config-ceph
-  - patch: |
-      - op: replace
-        path: /metadata/annotations/cert-manager.io~1common-name
-        value: auth.staging.myrobertson.net
-      - op: replace
-        path: /spec/listeners/0/hostname
-        value: auth.staging.myrobertson.net
-      - op: replace
-        path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
-        value: auth.staging.myrobertson.net
-    target:
-      kind: Gateway
-      name: authelia
-  - patch: |
-      - op: replace
-        path: /spec/hostnames/0
-        value: auth.staging.myrobertson.net
-    target:
-      kind: HTTPRoute
-      name: authelia
-  # - patch: |
-  #     - op: replace
-  #       path: /spec/path
-  #       value: oidc/staging
-  #   target:
-  #     kind: VaultStaticSecret
-  #     name: authelia-oidc-secret

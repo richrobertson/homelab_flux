@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/gotify
+  - httpRoute.yaml
+  - data-ceph-pvc-v3.yaml
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
+        value: gotify-data-ceph-v3
+    target:
+      kind: Deployment
+      name: gotify
+  - path: deployment-strategy-patch.yaml
+    target:
+      kind: Deployment
+      name: gotify
+  - patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: gotify-data-ceph
+        namespace: default
+    target:
+      kind: PersistentVolumeClaim
+      name: gotify-data-ceph

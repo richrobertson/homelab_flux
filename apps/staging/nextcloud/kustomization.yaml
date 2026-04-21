@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/nextcloud
-  - gateway.yaml
+  - httpRoute.yaml
   - auth-policy.yaml
   - ceph-s3-bucket.yaml
 patches:

@@ -3,7 +3,8 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/syncthing
-  - gateway.yaml
+  - httpRoute.yaml
+  - auth-policy.yaml
   - config-ceph-pvc-v2.yaml
 patches:
   - path: syncthing-values.yaml
@@ -26,23 +27,3 @@ patches:
     target:
       kind: PersistentVolumeClaim
       name: syncthing-config-ceph
-  - patch: |
-      - op: replace
-        path: /metadata/annotations/cert-manager.io~1common-name
-        value: syncthing.staging.myrobertson.net
-      - op: replace
-        path: /spec/listeners/0/hostname
-        value: syncthing.staging.myrobertson.net
-      - op: replace
-        path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
-        value: syncthing.staging.myrobertson.net
-    target:
-      kind: Gateway
-      name: syncthing
-  - patch: |
-      - op: replace
-        path: /spec/hostnames/0
-        value: syncthing.staging.myrobertson.net
-    target:
-      kind: HTTPRoute
-      name: syncthing

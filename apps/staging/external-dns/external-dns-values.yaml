@@ -7,11 +7,12 @@ spec:
   values:
     provider:
       name: pdns
+    sources:
+      - gateway-httproute
     extraArgs:
-        - --source=service
-        - --pdns-server=http://192.168.7.201:8001
-        - --pdns-server-id=localhost
-        - --pdns-api-key=$(PDNS_API_KEY) 
+      - --pdns-server=http://192.168.7.201:8001
+      - --pdns-server-id=localhost
+      - --pdns-api-key=$(PDNS_API_KEY)
     txtOwnerId: staging.myrobertson.net
     domainFilters: [ staging.myrobertson.net ]
     extraVolumes: # to mount the PDNS API key secret

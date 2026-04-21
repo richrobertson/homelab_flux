@@ -3,31 +3,12 @@ kind: Kustomization
 namespace: default
 resources:
   - ../../base/lidarr
-  - gateway.yaml
+  - httpRoute.yaml
+  - auth-policy.yaml
 patches:
   - path: lidarr-values.yaml
     target:
       kind: HelmRelease
-  - patch: |
-      - op: replace
-        path: /metadata/annotations/cert-manager.io~1common-name
-        value: lidarr.staging.myrobertson.net
-      - op: replace
-        path: /spec/listeners/0/hostname
-        value: lidarr.staging.myrobertson.net
-      - op: replace
-        path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
-        value: lidarr.staging.myrobertson.net
-    target:
-      kind: Gateway
-      name: lidarr
-  - patch: |
-      - op: replace
-        path: /spec/hostnames/0
-        value: lidarr.staging.myrobertson.net
-    target:
-      kind: HTTPRoute
-      name: lidarr
   - patch: |
       - op: replace
         path: /spec/resources/requests/storage

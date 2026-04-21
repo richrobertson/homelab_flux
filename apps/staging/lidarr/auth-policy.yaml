@@ -1,18 +1,19 @@
 apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
 metadata:
-  name: auth-policy-waypoint
+  name: auth-policy-lidarr
   namespace: default
 spec:
   targetRefs:
   - kind: Gateway
     group: gateway.networking.k8s.io
-    name: radarr
+    name: myrobertson-com-gateway
   action: 'CUSTOM'
   provider:
     name:  'authelia'
   rules:
     - to:
         - operation:
+            notPaths: ["/api/*"]
             hosts:
-              - 'radarr.staging.myrobertson.net'
+              - 'lidarr.staging.myrobertson.net'

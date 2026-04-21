@@ -7,10 +7,10 @@ spec:
   targetRefs:
     - kind: Gateway
       group: gateway.networking.k8s.io
-      name: n8n
+      name: myrobertson-com-gateway
   action: CUSTOM
   provider:
-    name: authelia-net
+    name: authelia
   rules:
     - to:
         - operation:
