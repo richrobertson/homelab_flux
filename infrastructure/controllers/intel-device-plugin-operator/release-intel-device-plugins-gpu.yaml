@@ -3,6 +3,8 @@ kind: HelmRelease
 metadata:
   name: intel-device-plugins-gpu
 spec:
+  dependsOn:
+    - name: intel-device-plugins-operator
   interval: 30m
   chart:
     spec:
