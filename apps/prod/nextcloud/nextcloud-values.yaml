@@ -1,52 +1,17 @@
 - op: add
-  path: /spec/values/nextcloud/configs/objectstore-s3.config.php
-  value: |-
-    <?php
-    $CONFIG = array(
-      'objectstore' => array(
-        'class' => '\\OC\\Files\\ObjectStore\\S3',
-        'arguments' => array(
-          'bucket'     => getenv('S3_BUCKET'),
-          'key'        => getenv('AWS_ACCESS_KEY_ID'),
-          'secret'     => getenv('AWS_SECRET_ACCESS_KEY'),
-          'region'     => getenv('S3_REGION'),
-          'use_ssl'    => true,
-          'use_path_style' => false,
-        ),
-      ),
-    );
-- op: add
-  path: /spec/values/nextcloud/extraEnv/-
+  path: /spec/values/nextcloud/objectStore
   value:
-    name: S3_BUCKET
-    valueFrom:
-      secretKeyRef:
-        name: nextcloud-s3-secret
-        key: S3_BUCKET
-- op: add
-  path: /spec/values/nextcloud/extraEnv/-
-  value:
-    name: S3_REGION
-    valueFrom:
-      secretKeyRef:
-        name: nextcloud-s3-secret
-        key: S3_REGION
-- op: add
-  path: /spec/values/nextcloud/extraEnv/-
-  value:
-    name: AWS_ACCESS_KEY_ID
-    valueFrom:
-      secretKeyRef:
-        name: nextcloud-s3-secret
-        key: AWS_ACCESS_KEY_ID
-- op: add
-  path: /spec/values/nextcloud/extraEnv/-
-  value:
-    name: AWS_SECRET_ACCESS_KEY
-    valueFrom:
-      secretKeyRef:
-        name: nextcloud-s3-secret
-        key: AWS_SECRET_ACCESS_KEY
+    s3:
+      enabled: true
+      existingSecret: nextcloud-s3-secret
+      region: us-east-1
+      usePathStyle: false
+      ssl: true
+      autoCreate: false
+      secretKeys:
+        bucket: S3_BUCKET
+        accessKey: AWS_ACCESS_KEY_ID
+        secretKey: AWS_SECRET_ACCESS_KEY
 - op: replace
   path: /spec/values/nextcloud/host
   value: cloud.myrobertson.com
