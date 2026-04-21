@@ -13,5 +13,24 @@
         accessKey: AWS_ACCESS_KEY_ID
         secretKey: AWS_SECRET_ACCESS_KEY
 - op: replace
+  path: /spec/values/replicaCount
+  value: 3
+- op: add
+  path: /spec/values/affinity
+  value:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: nextcloud
+              app.kubernetes.io/instance: nextcloud
+          topologyKey: kubernetes.io/hostname
+- op: replace
   path: /spec/values/nextcloud/host
   value: cloud.myrobertson.com

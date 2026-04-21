@@ -210,7 +210,9 @@ spec:
       existingClaim: nextcloud-data-pvc-ceph-v2
 
     redis:
-      enabled: false
+      enabled: true
+      auth:
+        enabled: false
 
     metrics:
       enabled: true
@@ -223,6 +225,15 @@ spec:
 
     ingress:
       enabled: false
+
+    cronjob:
+      enabled: true
+
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
 
     resources:
       requests:
