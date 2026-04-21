@@ -76,7 +76,7 @@ patches:
         path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_LOGOUTURL
         value: https://auth.staging.myrobertson.net/logout
       - op: replace
-        path: /spec/values/vikunja/configMaps/config/data/config\.yml
+        path: /spec/values/vikunja/configMaps/config/data/config.yml
         value: |
           service:
             publicurl: https://tasks.staging.myrobertson.net/
