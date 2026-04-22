@@ -1,5 +1,10 @@
 # Custom Plex VAAPI Image Build
 
+## Latest Investigation Recap
+
+- Full experiment recap:
+  - [EXPERIMENT_RECAP_2026-04-22.md](./EXPERIMENT_RECAP_2026-04-22.md)
+
 ## Problem Statement
 
 Plex Media Server's bundled Transcoder binary fails to initialize VAAPI hardware transcoding in the staging Kubernetes cluster with the error:
