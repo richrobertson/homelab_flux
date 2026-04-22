@@ -6,7 +6,8 @@ spec:
   interval: 1h
   values:
     image:
-      repository: ghcr.io/richrobertson/plex-vaapi
+      registry: ghcr.io
+      repository: richrobertson/plex-vaapi
       tag: "20260411-160525"
       pullPolicy: IfNotPresent
     nodeSelector:
