@@ -12,6 +12,11 @@
 - op: add
   path: /spec/values/nextcloud/extraEnv/-
   value:
+    name: COLLABORA_WOPI_URL
+    value: http://nextcloud-collabora:9980
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
     name: BUCKET_NAME
     valueFrom:
       configMapKeyRef:
