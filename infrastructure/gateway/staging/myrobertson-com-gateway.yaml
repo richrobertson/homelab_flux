@@ -5,6 +5,7 @@ metadata:
   namespace: default
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
+    cert-manager.io/private-key-algorithm: "ECDSA"
 spec:
   gatewayClassName: istio
   listeners:
