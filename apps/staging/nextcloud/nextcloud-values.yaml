@@ -10,6 +10,54 @@
     name: COLLABORA_PUBLIC_URL
     value: https://office.staging.myrobertson.net
 - op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: BUCKET_NAME
+    valueFrom:
+      configMapKeyRef:
+        name: nextcloud-s3-staging
+        key: BUCKET_NAME
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: BUCKET_HOST
+    valueFrom:
+      configMapKeyRef:
+        name: nextcloud-s3-staging
+        key: BUCKET_HOST
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: BUCKET_PORT
+    valueFrom:
+      configMapKeyRef:
+        name: nextcloud-s3-staging
+        key: BUCKET_PORT
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: BUCKET_REGION
+    valueFrom:
+      configMapKeyRef:
+        name: nextcloud-s3-staging
+        key: BUCKET_REGION
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: AWS_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: nextcloud-s3-staging
+        key: AWS_ACCESS_KEY_ID
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: AWS_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: nextcloud-s3-staging
+        key: AWS_SECRET_ACCESS_KEY
+- op: add
   path: /spec/values/collabora
   value:
     enabled: true
@@ -35,17 +83,10 @@
           'key'            => getenv('AWS_ACCESS_KEY_ID'),
           'secret'         => getenv('AWS_SECRET_ACCESS_KEY'),
           'hostname'       => getenv('BUCKET_HOST'),
-          'port'           => 443,
-          'use_ssl'        => true,
+          'port'           => (int)(getenv('BUCKET_PORT') ?: 8080),
+          'use_ssl'        => false,
           'use_path_style' => true,
-          'region'         => 'us-east-1',
+          'region'         => getenv('BUCKET_REGION') ?: 'us-east-1',
         ),
       ),
     );
-- op: add
-  path: /spec/values/nextcloud/extraEnvFrom
-  value:
-    - secretRef:
-        name: nextcloud-s3-staging
-    - configMapRef:
-        name: nextcloud-s3-staging
