@@ -289,3 +289,16 @@ spec:
       certificateRefs:
         - name: cloud-staging-myrobertson-net-cert
           kind: Secret
+
+  - name: office
+    hostname: office.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: office-staging-myrobertson-net-cert
+          kind: Secret

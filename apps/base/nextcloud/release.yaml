@@ -147,8 +147,8 @@ spec:
           $CONFIG = array(
             'trusted_proxies' => ['10.0.0.0/8'],
             'forwarded_for_headers' => ['HTTP_X_FORWARDED_FOR'],
-            'overwrite.cli.url' => 'https://cloud.myrobertson.com',
-            'overwriteprotocol' => 'https',
+            'overwrite.cli.url' => getenv('OVERWRITECLIURL') ?: 'https://cloud.myrobertson.com',
+            'overwriteprotocol' => getenv('OVERWRITEPROTOCOL') ?: 'https',
           );
       phpConfigs:
         uploads.ini: |-
@@ -173,16 +173,47 @@ spec:
               path.write_text(text.replace(old, new, 1))
           PY
 
+          NEXTCLOUD_PUBLIC_URL="${OVERWRITECLIURL:-https://cloud.myrobertson.com}"
+          NEXTCLOUD_PUBLIC_HOST="${NEXTCLOUD_PUBLIC_URL#https://}"
+          NEXTCLOUD_PUBLIC_HOST="${NEXTCLOUD_PUBLIC_HOST#http://}"
+          NEXTCLOUD_PUBLIC_HOST="${NEXTCLOUD_PUBLIC_HOST%%/*}"
+
           # Keep trusted domains aligned with expected public and in-cluster access.
           php occ config:system:set trusted_domains 0 --value=localhost
-          php occ config:system:set trusted_domains 1 --value=cloud.myrobertson.com
+          php occ config:system:set trusted_domains 1 --value="${NEXTCLOUD_PUBLIC_HOST}"
           php occ config:system:set trusted_domains 2 --value=nextcloud.default.svc.cluster.local
           php occ config:system:set trusted_domains 3 --value=nextcloud.default.svc
 
           # Major upgrades expose only a reduced occ command set until migrations finish.
           if php occ status 2>/dev/null | grep -q 'needsDbUpgrade: true'; then
-            echo "Nextcloud upgrade pending; skipping LDAP bootstrap until after migrations."
+            echo "Nextcloud upgrade pending; skipping Office and LDAP bootstrap until after migrations."
             exit 0
+          fi
+
+          if [ -n "${COLLABORA_PUBLIC_URL:-}" ]; then
+            COLLABORA_WOPI_URL="${COLLABORA_WOPI_URL:-${COLLABORA_PUBLIC_URL}}"
+
+            if php occ app:enable richdocuments || php occ app:install richdocuments; then
+              collabora_activate() {
+                php occ richdocuments:activate-config \
+                  --wopi-url="${COLLABORA_WOPI_URL}" \
+                  --callback-url="${NEXTCLOUD_PUBLIC_URL}"
+              }
+
+              for i in $(seq 1 30); do
+                if collabora_activate; then
+                  break
+                fi
+                if [ "$i" -eq 30 ]; then
+                  echo "Collabora: unable to validate discovery after 30 attempts; keeping configured values for the next startup."
+                  break
+                fi
+                echo "Collabora: waiting for discovery endpoint... (attempt $i/30)"
+                sleep 2
+              done
+            else
+              echo "Collabora: failed to install or enable richdocuments; skipping Office bootstrap."
+            fi
           fi
 
           if [ "${LDAP_ENABLED:-false}" != "true" ]; then

@@ -14,5 +14,10 @@ spec:
   rules:
     - to:
         - operation:
+            notPaths:
+              - /apps/richdocuments/wopi
+              - /apps/richdocuments/wopi/*
+              - /index.php/apps/richdocuments/wopi
+              - /index.php/apps/richdocuments/wopi/*
             hosts:
               - cloud.staging.myrobertson.net

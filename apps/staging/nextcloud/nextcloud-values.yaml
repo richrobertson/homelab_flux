@@ -1,6 +1,28 @@
 - op: replace
   path: /spec/values/nextcloud/host
   value: cloud.staging.myrobertson.net
+- op: replace
+  path: /spec/values/nextcloud/extraEnv/1/value
+  value: https://cloud.staging.myrobertson.net
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: COLLABORA_PUBLIC_URL
+    value: https://office.staging.myrobertson.net
+- op: add
+  path: /spec/values/collabora
+  value:
+    enabled: true
+    collabora:
+      aliasgroups:
+        - host: "https://cloud.staging.myrobertson.net:443"
+      extra_params: "--o:ssl.enable=false --o:ssl.termination=true"
+      server_name: office.staging.myrobertson.net
+      existingSecret:
+        enabled: true
+        secretName: collabora-secret
+    ingress:
+      enabled: false
 - op: add
   path: /spec/values/nextcloud/configs/objectstore-s3.config.php
   value: |-

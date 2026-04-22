@@ -4,6 +4,8 @@ namespace: default
 resources:
   - ../../base/nextcloud
   - httpRoute.yaml
+  - collabora-httpRoute.yaml
+  - collabora-secret.yaml
   - auth-policy.yaml
   - ceph-s3-bucket.yaml
 patches:
