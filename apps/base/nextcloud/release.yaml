@@ -162,6 +162,32 @@ spec:
           #!/bin/sh
           set -eu
 
+          if find /usr/local/share/ca-certificates -maxdepth 1 -name '*.crt' | grep -q .; then
+            # Nextcloud uses its own CA bundle for outbound HTTPS, so extend it
+            # with any custom certs we mount into the container.
+            python3 - <<'PY'
+          from pathlib import Path
+
+          bundle = Path('/var/www/html/resources/config/ca-bundle.crt')
+          cert_dir = Path('/usr/local/share/ca-certificates')
+
+          if not bundle.exists() or not cert_dir.exists():
+              raise SystemExit(0)
+
+          bundle_text = bundle.read_text()
+          changed = False
+
+          for cert_path in sorted(cert_dir.glob('*.crt')):
+              cert_text = cert_path.read_text().strip()
+              if cert_text and cert_text not in bundle_text:
+                  bundle_text = bundle_text.rstrip() + '\n' + cert_text + '\n'
+                  changed = True
+
+          if changed:
+              bundle.write_text(bundle_text)
+          PY
+          fi
+
           # Nextcloud 33 on PHP 8.4 can return a native bool here, which breaks LDAP auth checks.
           python3 - <<'PY'
           from pathlib import Path

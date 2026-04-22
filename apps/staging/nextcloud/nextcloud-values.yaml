@@ -95,3 +95,19 @@
         ),
       ),
     );
+- op: add
+  path: /spec/values/nextcloud/extraVolumes
+  value:
+    - name: trusted-root-ca
+      configMap:
+        name: nextcloud-trusted-root-ca
+        items:
+          - key: myrobertson-DC1-CA-1.crt
+            path: myrobertson-DC1-CA-1.crt
+- op: add
+  path: /spec/values/nextcloud/extraVolumeMounts
+  value:
+    - name: trusted-root-ca
+      mountPath: /usr/local/share/ca-certificates/myrobertson-DC1-CA-1.crt
+      subPath: myrobertson-DC1-CA-1.crt
+      readOnly: true
