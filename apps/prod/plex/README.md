@@ -6,7 +6,8 @@ Production overlay for Plex.
 
 - Runs Plex in the production Kubernetes cluster after migration from the legacy Proxmox LXC.
 - Mirrors the legacy Plex media mounts at `/plex`, `/radarr`, and `/sonarr`.
-- Keeps `/dev/dri` disabled because production rollout is not using hardware transcoding.
+- Pins Plex to the Intel GPU worker via Node Feature Discovery labels and requests one `gpu.intel.com/i915` device for hardware transcoding.
+- Uses the published `ghcr.io/richrobertson/plex-vaapi` image to keep VAAPI support working under Kubernetes.
 - Exposes `plex.myrobertson.com` through the shared `myrobertson-com` Gateway listener on TLS port `443`.
 - Keeps LAN split-DNS able to resolve `plex.myrobertson.com` to the internal gateway path while remote clients use public DNS.
 

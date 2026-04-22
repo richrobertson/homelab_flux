@@ -4,13 +4,21 @@ metadata:
   name: plex
 spec:
   values:
+    image:
+      repository: ghcr.io/richrobertson/plex-vaapi
+      tag: "20260411-160525"
+      pullPolicy: IfNotPresent
+    nodeSelector:
+      intel.feature.node.kubernetes.io/gpu: "true"
     pms:
       resources:
         requests:
           cpu: 500m
+          gpu.intel.com/i915: "1"
           memory: 1Gi
         limits:
           cpu: 4000m
+          gpu.intel.com/i915: "1"
           memory: 8Gi
     extraVolumes: []
     extraVolumeMounts: []
