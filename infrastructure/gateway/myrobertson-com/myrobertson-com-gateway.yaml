@@ -311,3 +311,16 @@ spec:
       certificateRefs:
       - name: cloud-myrobertson-com-cert
         kind: Secret
+
+  - name: office
+    hostname: office.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: office-myrobertson-com-cert
+        kind: Secret

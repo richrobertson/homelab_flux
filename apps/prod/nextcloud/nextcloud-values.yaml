@@ -35,3 +35,27 @@
 - op: replace
   path: /spec/values/nextcloud/host
   value: cloud.myrobertson.com
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: COLLABORA_PUBLIC_URL
+    value: https://office.myrobertson.com
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: COLLABORA_WOPI_URL
+    value: http://nextcloud-collabora:9980
+- op: add
+  path: /spec/values/collabora
+  value:
+    enabled: true
+    collabora:
+      aliasgroups:
+        - host: "https://cloud.myrobertson.com:443"
+      extra_params: "--o:ssl.enable=false --o:ssl.termination=true"
+      server_name: office.myrobertson.com
+      existingSecret:
+        enabled: true
+        secretName: collabora-secret
+    ingress:
+      enabled: false

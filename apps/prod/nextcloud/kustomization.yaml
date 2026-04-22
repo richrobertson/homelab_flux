@@ -4,6 +4,8 @@ namespace: default
 resources:
   - ../../base/nextcloud
   - httpRoute.yaml
+  - collabora-httpRoute.yaml
+  - collabora-secret.yaml
   - postgres-scheduled-backup.yaml
   - s3-bucket-secret.yaml
 patches:

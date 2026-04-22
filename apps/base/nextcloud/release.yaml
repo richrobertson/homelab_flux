@@ -234,6 +234,7 @@ spec:
 
               for i in $(seq 1 30); do
                 if collabora_activate; then
+                  php occ app:disable richdocumentscode || true
                   break
                 fi
                 if [ "$i" -eq 30 ]; then
