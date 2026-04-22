@@ -178,6 +178,12 @@ spec:
           NEXTCLOUD_PUBLIC_HOST="${NEXTCLOUD_PUBLIC_HOST#http://}"
           NEXTCLOUD_PUBLIC_HOST="${NEXTCLOUD_PUBLIC_HOST%%/*}"
 
+          OCC_STATUS="$(php occ status 2>/dev/null || true)"
+          if ! printf '%s\n' "${OCC_STATUS}" | grep -q 'installed: true'; then
+            echo "Nextcloud not installed yet; skipping Office and LDAP bootstrap until after initial install."
+            exit 0
+          fi
+
           # Keep trusted domains aligned with expected public and in-cluster access.
           php occ config:system:set trusted_domains 0 --value=localhost
           php occ config:system:set trusted_domains 1 --value="${NEXTCLOUD_PUBLIC_HOST}"
