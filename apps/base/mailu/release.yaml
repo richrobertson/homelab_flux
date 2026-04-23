@@ -1,0 +1,134 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mailu
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: mailu
+      version: "2.7.0"
+      sourceRef:
+        kind: HelmRepository
+        name: mailu
+  install:
+    disableWait: true
+  upgrade:
+    disableWait: true
+  valuesFrom:
+    - kind: Secret
+      name: mailu-config
+      valuesKey: values.yaml
+      optional: true
+  values:
+    domain: myrobertson.net
+    hostnames:
+      - mail.myrobertson.net
+    timezone: America/Los_Angeles
+    tls:
+      outboundLevel: encrypt
+    existingSecret: mailu-secret
+    initialAccount:
+      enabled: true
+      username: admin
+      domain: myrobertson.net
+      existingSecret: mailu-secret
+      existingSecretPasswordKey: initial-account-password
+      mode: ifmissing
+    global:
+      storageClass: ceph-block
+      database:
+        roundcube:
+          existingSecret: mailu-secret
+          existingSecretPasswordKey: roundcube-password
+    persistence:
+      single_pvc: false
+    ingress:
+      enabled: false
+      tls: true
+      existingSecret: mailu-certificates
+    front:
+      hostPort:
+        enabled: false
+    externalRelay:
+      existingSecret: mailu-ses-relay
+    postgresql:
+      enabled: true
+      auth:
+        existingSecret: mailu-secret
+      primary:
+        persistence:
+          enabled: true
+          storageClass: ceph-block
+          size: 8Gi
+    redis:
+      enabled: true
+      architecture: standalone
+      master:
+        persistence:
+          enabled: true
+          storageClass: ceph-block
+          size: 8Gi
+    admin:
+      persistence:
+        storageClass: ceph-block
+        size: 20Gi
+    postfix:
+      persistence:
+        storageClass: ceph-block
+        size: 20Gi
+    dovecot:
+      persistence:
+        storageClass: ceph-block
+        size: 20Gi
+      serviceMonitor:
+        enabled: true
+        interval: 30s
+      overrides:
+        dovecot.conf: |
+          metric auth_successes {
+            filter = event=auth_request_finished AND success=yes
+          }
+
+          metric auth_failures {
+            filter = event=auth_request_finished AND NOT success=yes
+          }
+
+          metric login_aborted {
+            filter = event=login_aborted
+          }
+
+          metric imap_commands {
+            filter = event=imap_command_finished
+            group_by = tagged_reply_state
+          }
+
+          metric mail_deliveries {
+            filter = event=mail_delivery_finished
+          }
+
+          metric mail_submissions {
+            filter = event=smtp_submit_finished
+          }
+
+          service stats {
+            inet_listener http {
+              port = 9900
+            }
+          }
+    rspamd:
+      persistence:
+        storageClass: ceph-block
+        size: 2Gi
+      serviceMonitor:
+        enabled: true
+        interval: 30s
+    clamav:
+      persistence:
+        enabled: true
+        storageClass: ceph-block
+        size: 4Gi
+    webmail:
+      persistence:
+        storageClass: ceph-block
+        size: 20Gi

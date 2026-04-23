@@ -8,6 +8,12 @@ metadata:
     cert-manager.io/issuer: letsencrypt-prod
 spec:
   gatewayClassName: istio
+  addresses:
+  - type: IPAddress
+    value: 10.31.0.69
+  infrastructure:
+    annotations:
+      metallb.io/address-pool: myrobertson-com-gateway-pool
   listeners:
 
   - name: apex-http

@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/mailu
+  - admin-start-configmap.yaml
+  - certificate.yaml
+patches:
+  - path: mailu-values.yaml
+    target:
+      kind: HelmRelease
+      name: mailu
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: mailu/prod/app
+    target:
+      kind: VaultStaticSecret
+      name: mailu-secret
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: mailu/prod/ses-relay
+    target:
+      kind: VaultStaticSecret
+      name: mailu-ses-relay
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: mailu/prod/config
+    target:
+      kind: VaultStaticSecret
+      name: mailu-config

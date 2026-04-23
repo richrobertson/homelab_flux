@@ -10,6 +10,17 @@ spec:
 
 ---
 apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  namespace: metallb-system
+  name: myrobertson-com-gateway-pool
+spec:
+  addresses:
+    - 10.21.0.69/32
+  autoAssign: false
+
+---
+apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
 metadata:
   name: my-l2-advertisment
@@ -17,6 +28,7 @@ metadata:
 spec:
   ipAddressPools:
   -  my-ip-pool
+  -  myrobertson-com-gateway-pool
   interfaces:
   - eth0
 # ---

@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mailu-certificates
+spec:
+  secretName: mailu-certificates
+  issuerRef:
+    kind: Issuer
+    name: letsencrypt-prod
+  commonName: mail.myrobertson.net
+  dnsNames:
+    - mail.myrobertson.net

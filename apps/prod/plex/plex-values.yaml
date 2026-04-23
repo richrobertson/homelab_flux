@@ -13,7 +13,7 @@ spec:
     nodeSelector:
       intel.feature.node.kubernetes.io/gpu: "true"
     extraEnv:
-      ADVERTISE_IP: "https://plex.myrobertson.com/"
+      ADVERTISE_IP: "https://plex.myrobertson.com/,http://10.31.0.67:32400/"
     pms:
       resources:
         requests:

@@ -35,17 +35,35 @@ configMapGenerator:
         app.kubernetes.io/part-of: flux
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled
-  - name: istio-grafana-dashboards
+  - name: istio-control-plane-grafana-dashboards
     namespace: monitoring
     files:
       - dashboards/istio-mesh-dashboard.json
-      - dashboards/istio-service-dashboard.json
-      - dashboards/istio-workload-dashboard.json
       - dashboards/istio-pilot-dashboard.json
-      - dashboards/istio-ztunnel-dashboard.json
       - dashboards/istio-performance-dashboard.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: istio
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: istio-traffic-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/istio-service-dashboard.json
       - dashboards/istio-gateway-case-metrics.json
       - dashboards/istio-gateway-service-drilldown.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: istio
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: istio-workload-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/istio-workload-dashboard.json
+      - dashboards/istio-ztunnel-dashboard.json
     options:
       labels:
         grafana_dashboard: "1"
@@ -92,11 +110,20 @@ configMapGenerator:
         app.kubernetes.io/part-of: syncthing
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled
-  - name: ceph-grafana-dashboards
+  - name: ceph-core-grafana-dashboards
     namespace: monitoring
     files:
       - dashboards/ceph-cluster.json
       - dashboards/ceph-osd.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: ceph
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: ceph-storage-grafana-dashboards
+    namespace: monitoring
+    files:
       - dashboards/ceph-pools.json
       - dashboards/ceph-rgw-overview.json
     options:
@@ -115,4 +142,13 @@ configMapGenerator:
         app.kubernetes.io/part-of: nextcloud
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled
-
+  - name: mailu-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/mailu-overview.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: mailu
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled

@@ -10,6 +10,7 @@ resources:
   - immich
   - lidarr
   - loki-stack
+  - mailu
   - mealie
   - n8n
   - netbootxyz

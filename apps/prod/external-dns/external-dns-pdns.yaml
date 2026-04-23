@@ -17,6 +17,7 @@ spec:
     logLevel: debug
     sources:
       - gateway-httproute
+      - service
     provider:
       name: pdns
     rbac:

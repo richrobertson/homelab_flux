@@ -1,0 +1,43 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mailu
+spec:
+  values:
+    front:
+      hostPort:
+        enabled: false
+      externalService:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: 10.31.0.73
+        externalTrafficPolicy: Local
+        ports:
+          pop3: false
+          pop3s: true
+          imap: false
+          imaps: true
+          smtp: true
+          smtps: true
+          submission: true
+          manageSieve: true
+    admin:
+      startupProbe:
+        enabled: true
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 1
+        failureThreshold: 30
+        successThreshold: 1
+      extraEnvVars:
+        - name: SKIP_DNS_CHECK
+          value: "true"
+      extraVolumes:
+        - name: admin-start
+          configMap:
+            name: mailu-admin-start
+            defaultMode: 0555
+      extraVolumeMounts:
+        - name: admin-start
+          mountPath: /start.py
+          subPath: start.py

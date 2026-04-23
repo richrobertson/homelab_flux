@@ -110,11 +110,22 @@ spec:
   patches:
     - patch: |
         - op: replace
-          path: /spec/addresses/0
-          value: 10.31.0.64/28
+          path: /spec/addresses
+          value:
+            - 10.31.0.64/30
+            - 10.31.0.68/32
+            - 10.31.0.70/31
+            - 10.31.0.72/29
       target:
         kind: IPAddressPool
         name: my-ip-pool
+    - patch: |
+        - op: replace
+          path: /spec/addresses/0
+          value: 10.31.0.69/32
+      target:
+        kind: IPAddressPool
+        name: myrobertson-com-gateway-pool
     - patch: |
         - op: replace
           path: /metadata/annotations/cert-manager.io~1common-name
