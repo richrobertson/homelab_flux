@@ -139,6 +139,10 @@ spec:
       yearly: 0
     copyMethod: Direct
     cacheStorageClassName: csi-cephfs-sc
+    moverSecurityContext:
+      runAsUser: 999
+      runAsGroup: 999
+      fsGroup: 999
     moverResources:
       requests:
         cpu: "500m"
