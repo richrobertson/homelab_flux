@@ -1,12 +1,13 @@
 # VolSync (Prod)
 
-Production helper resources for VolSync backups to S3-compatible object storage.
+Production helper resources for VolSync backups to Backblaze B2 via the S3-compatible API.
 
 ## Purpose
 
 - Provides helper PVCs and cleanup CronJobs used by production VolSync backups.
+- Documents the shared Backblaze secret contract used to render per-repository restic secrets.
 - Keeps operational notes close to the backup workflows.
-- Leaves the active VolSync controller, repository secrets, and ReplicationSources under `infrastructure/`.
+- Leaves the shared VolSync controller and most live repository/ReplicationSource resources under `infrastructure/`.
 
 ## In this folder
 
@@ -17,8 +18,9 @@ Production helper resources for VolSync backups to S3-compatible object storage.
 ## Active Source Of Truth
 
 - Controller manifests live under `infrastructure/controllers/volsync`.
-- Active VaultStaticSecret and ReplicationSource manifests live under `infrastructure/configs/volsync`.
-- This folder intentionally excludes those resources to avoid Flux ownership drift.
+- Shared Backblaze `SecretTransformation`, most active `VaultStaticSecret`, and most `ReplicationSource` manifests live under `infrastructure/configs/volsync`.
+- App-scoped prod backups for `n8n` and `task-control-plane` still live under their app overlays and reuse the shared Backblaze transformation.
+- This folder intentionally excludes those live resources to avoid Flux ownership drift.
 
 ## Covered PVCs
 
@@ -44,12 +46,29 @@ Production helper resources for VolSync backups to S3-compatible object storage.
 
 ## Vault secret requirements
 
-Each Vault path under secret/volsync/prod/<pvc-name> should provide:
+Shared Vault path:
 
-- RESTIC_REPOSITORY
-- RESTIC_PASSWORD
-- AWS_ACCESS_KEY_ID
-- AWS_SECRET_ACCESS_KEY
+- `secret/backblaze/k8s/prod/volsync`
+
+The shared path should provide:
+
+- `RESTIC_PASSWORD`
+- Either `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` or Backblaze-style app key fields such as `applicationKeyId`/`applicationKey`
+
+Optional overrides supported by the shared transformation:
+
+- `AWS_REGION` or `AWS_DEFAULT_REGION`
+- `S3_ENDPOINT`, `AWS_ENDPOINT`, or `B2_ENDPOINT`
+- `S3_BUCKET`, `B2_BUCKET`, or `BUCKET_NAME`
+
+The transformation renders the Kubernetes repository secret fields VolSync expects:
+
+- `RESTIC_REPOSITORY`
+- `RESTIC_PASSWORD`
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+- `AWS_DEFAULT_REGION`
 
 Seed reference:
 
@@ -64,7 +83,7 @@ Seed reference:
 
 **Evidence:** [Incident post-mortem (2026-04-11)](INCIDENT_POSTMORTEM_2026-04-11.md)
 
-**Automation:** A CronJob `volsync-stale-lock-cleanup` runs every 2 hours to detect and remove stale locks across all repositories.
+**Automation:** A CronJob `volsync-stale-lock-cleanup` runs every 10 minutes to detect and remove stale locks across all repositories.
 
 **Manual Recovery (if needed):** See the post-mortem appendix for quick recovery commands.
 
@@ -77,11 +96,15 @@ Seed reference:
 ## Bucket structure
 
 - CNPG backups: s3://homelab-prod-backups/cnpg/<cluster-name>
-- VolSync backups: s3://homelab-prod-backups/volsync/default/<pvc-name>
+- VolSync backups: s3://myrobertson-k8s-prod-volsync/volsync/default/<pvc-name>
 
-For VolSync restic secrets, set RESTIC_REPOSITORY with the S3 endpoint and path-style URL format, for example:
+For VolSync restic secrets, the shared transformation renders `RESTIC_REPOSITORY` with the Backblaze endpoint and path-style URL format, for example:
 
-- s3:s3.us-west-2.amazonaws.com/homelab-prod-backups/volsync/default/immich-data-files-pvc-ceph
+- s3:https://s3.us-west-002.backblazeb2.com/myrobertson-k8s-prod-volsync/volsync/default/immich-data-files-pvc-ceph
+
+## Encryption
+
+- Restic encrypts repository contents client-side using `RESTIC_PASSWORD`; production backups remain unreadable without that key.
 
 ## Retention policy (prod)
 

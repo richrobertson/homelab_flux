@@ -1,32 +1,25 @@
-# Vault Seed Template (Prod Backups)
+# Vault Seed Template (Prod VolSync to Backblaze B2)
 
-This template documents the Vault KV paths and keys required by the production CNPG and VolSync backup configuration.
+This template documents the shared Vault KV path and keys required by the production VolSync backup configuration after the Backblaze B2 migration.
 
 ## Assumptions
 
-- Vault KV mount: secret
-- Bucket: homelab-prod-backups
-
-## Region variable
-
-Set this once and reuse it in all commands:
-
-```bash
-AWS_REGION='us-west-2'
-AWS_S3_ENDPOINT="s3.${AWS_REGION}.amazonaws.com"
-BACKUP_BUCKET='homelab-prod-backups'
-```
+- Vault KV mount: `secret`
+- Shared VolSync path: `secret/backblaze/k8s/prod/volsync`
+- Bucket: `myrobertson-k8s-prod-volsync`
+- Endpoint: `s3.us-west-002.backblazeb2.com`
+- Region: `us-west-002`
 
 ## CNPG shared credentials
 
 Path:
 
-- secret/cnpg/prod/backup-s3
+- `secret/cnpg/prod/backup-s3`
 
 Required keys:
 
-- AWS_ACCESS_KEY_ID
-- AWS_SECRET_ACCESS_KEY
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
 
 Example:
 
@@ -36,57 +29,69 @@ vault kv put secret/cnpg/prod/backup-s3 \
   AWS_SECRET_ACCESS_KEY='<set-me>'
 ```
 
-## VolSync per-PVC restic secrets
+## VolSync shared Backblaze secret
 
-Each path below must contain:
+Path:
 
-- RESTIC_REPOSITORY
-- RESTIC_PASSWORD
-- AWS_ACCESS_KEY_ID
-- AWS_SECRET_ACCESS_KEY
+- `secret/backblaze/k8s/prod/volsync`
 
-RESTIC_REPOSITORY format:
+At minimum this shared path should contain:
 
-- s3:s3.${AWS_REGION}.amazonaws.com/${BACKUP_BUCKET}/volsync/default/<pvc-name>
+- `RESTIC_PASSWORD`
+- Either AWS-style S3 credentials:
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+- Or Backblaze-style application key fields:
+  - `applicationKeyId`
+  - `applicationKey`
 
-### Paths to create
+Optional overrides supported by the shared transformation:
 
-- secret/volsync/prod/authelia-config-ceph
-- secret/volsync/prod/cluster-authelia-ceph-1
-- secret/volsync/prod/bitwarden-data-ceph
-- secret/volsync/prod/gotify-data-ceph
-- secret/volsync/prod/netbootxyz-config-ceph
-- secret/volsync/prod/netbootxyz-assets-ceph
-- secret/volsync/prod/immich-data-files-pvc-ceph
-- secret/volsync/prod/cluster-immich-ceph-1
-- secret/volsync/prod/lidarr-config-ceph
-- secret/volsync/prod/lidarr-data-files-pvc
-- secret/volsync/prod/mealie-data-ceph
-- secret/volsync/prod/mealie-cnpg-main-1
-- secret/volsync/prod/mealie-cnpg-main-1-wal
-- secret/volsync/prod/overseerr-config-ceph
-- secret/volsync/prod/overseerr-data-files-pvc
-- secret/volsync/prod/prowlarr-config-ceph
-- secret/volsync/prod/prowlarr-data-files-pvc
-- secret/volsync/prod/radarr-config-ceph
-- secret/volsync/prod/radarr-data-files-pvc
-- secret/volsync/prod/sonarr-config-ceph
-- secret/volsync/prod/sonarr-data-files-pvc
-- secret/volsync/prod/tautulli-config-ceph
-- secret/volsync/prod/syncthing-config-ceph
-- secret/volsync/prod/code-server-data-ceph
+- `AWS_REGION` or `AWS_DEFAULT_REGION`
+- `S3_ENDPOINT`, `AWS_ENDPOINT`, or `B2_ENDPOINT`
+- `S3_BUCKET`, `B2_BUCKET`, or `BUCKET_NAME`
 
-### Example seed command
+The shared transformation renders per-repository Kubernetes secrets with:
+
+- `RESTIC_REPOSITORY`
+- `RESTIC_PASSWORD`
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+- `AWS_DEFAULT_REGION`
+
+Rendered repository format:
+
+- `s3:https://${S3_ENDPOINT}/${S3_BUCKET}/volsync/default/<repository-name>`
+
+## Example seed command
+
+Using Backblaze application key field names:
 
 ```bash
-PVC_NAME='immich-data-files-pvc-ceph'
-AWS_REGION='us-west-2'
-AWS_S3_ENDPOINT="s3.${AWS_REGION}.amazonaws.com"
-BACKUP_BUCKET='homelab-prod-backups'
-
-vault kv put "secret/volsync/prod/${PVC_NAME}" \
-  RESTIC_REPOSITORY="s3:${AWS_S3_ENDPOINT}/${BACKUP_BUCKET}/volsync/default/${PVC_NAME}" \
-  RESTIC_PASSWORD='<set-me-unique-per-repo>' \
-  AWS_ACCESS_KEY_ID='<set-me>' \
-  AWS_SECRET_ACCESS_KEY='<set-me>'
+vault kv put secret/backblaze/k8s/prod/volsync \
+  applicationKeyId='<set-me>' \
+  applicationKey='<set-me>' \
+  RESTIC_PASSWORD='<long-random-restic-password>' \
+  AWS_REGION='us-west-002' \
+  AWS_DEFAULT_REGION='us-west-002' \
+  S3_ENDPOINT='s3.us-west-002.backblazeb2.com' \
+  S3_BUCKET='myrobertson-k8s-prod-volsync'
 ```
+
+Using AWS-style field names:
+
+```bash
+vault kv put secret/backblaze/k8s/prod/volsync \
+  AWS_ACCESS_KEY_ID='<set-me>' \
+  AWS_SECRET_ACCESS_KEY='<set-me>' \
+  RESTIC_PASSWORD='<long-random-restic-password>' \
+  AWS_REGION='us-west-002' \
+  AWS_DEFAULT_REGION='us-west-002' \
+  S3_ENDPOINT='s3.us-west-002.backblazeb2.com' \
+  S3_BUCKET='myrobertson-k8s-prod-volsync'
+```
+
+## Encryption
+
+- Restic uses `RESTIC_PASSWORD` to encrypt repository contents client-side before upload.

@@ -104,6 +104,8 @@ data:
       # Extract restic credentials from the Secret
       export AWS_ACCESS_KEY_ID=$(kubectl get secret "$SECRET_NAME" -n default -o jsonpath='{.data.AWS_ACCESS_KEY_ID}' 2>/dev/null | base64 -d || echo "")
       export AWS_SECRET_ACCESS_KEY=$(kubectl get secret "$SECRET_NAME" -n default -o jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' 2>/dev/null | base64 -d || echo "")
+      export AWS_REGION=$(kubectl get secret "$SECRET_NAME" -n default -o jsonpath='{.data.AWS_REGION}' 2>/dev/null | base64 -d || echo "")
+      export AWS_DEFAULT_REGION=$(kubectl get secret "$SECRET_NAME" -n default -o jsonpath='{.data.AWS_DEFAULT_REGION}' 2>/dev/null | base64 -d || echo "")
       export RESTIC_PASSWORD=$(kubectl get secret "$SECRET_NAME" -n default -o jsonpath='{.data.RESTIC_PASSWORD}' 2>/dev/null | base64 -d || echo "")
       export RESTIC_REPOSITORY=$(kubectl get secret "$SECRET_NAME" -n default -o jsonpath='{.data.RESTIC_REPOSITORY}' 2>/dev/null | base64 -d || echo "")
       
@@ -141,7 +143,7 @@ data:
       fi
       
       # Clear env vars for next iteration
-      unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY RESTIC_PASSWORD RESTIC_REPOSITORY
+      unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION AWS_DEFAULT_REGION RESTIC_PASSWORD RESTIC_REPOSITORY
     done
     
     echo ""

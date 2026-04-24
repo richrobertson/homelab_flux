@@ -53,24 +53,22 @@ vault kv put secret/n8n/prod/app \
   N8N_PROTOCOL='https'
 ```
 
-### Production VolSync secrets
+### Production VolSync secret
 
-The production overlay expects these Vault paths:
+The production overlay expects the shared Vault path:
 
-- `secret/volsync/prod/n8n-cnpg-1`
+- `secret/backblaze/k8s/prod/volsync`
 
-Required keys for each path:
+Required keys:
 
-- `RESTIC_REPOSITORY`
 - `RESTIC_PASSWORD`
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
+- Either `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` or `applicationKeyId`/`applicationKey`
 
 ## Rollout sequence
 
 1. Commit and push the repo changes. Flux currently reconciles only committed Git revisions.
 2. Seed the Vault app secret path for the target environment.
-3. Seed the production VolSync secret path if deploying prod.
+3. Seed the shared production Backblaze VolSync secret path if deploying prod.
 4. Reconcile `infra-gateway` first so the shared `.com` gateway exposes `n8n.myrobertson.com`.
 5. Reconcile `apps` after the gateway is ready.
 

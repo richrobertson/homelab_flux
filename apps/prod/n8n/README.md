@@ -13,7 +13,7 @@
 
 - shared gateway listener in [infrastructure/gateway/myrobertson-com/myrobertson-com-gateway.yaml](../../../infrastructure/gateway/myrobertson-com/myrobertson-com-gateway.yaml)
 - shared backup credentials in `secret/cnpg/prod/backup-s3`
-- VolSync restic credentials for `secret/volsync/prod/n8n-cnpg-1`
+- shared VolSync Backblaze credentials for `secret/backblaze/k8s/prod/volsync`
 
 ## Notes
 
