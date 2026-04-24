@@ -7,7 +7,7 @@
 - public route on `n8n.myrobertson.com`
 - Authelia protection for the UI with webhook path exemptions
 - CNPG scheduled backups
-- VolSync replication source for the CNPG PVC
+- VolSync replication sources for the CNPG data PVC, CNPG WAL PVC, and Redis PVC
 
 ## Dependencies
 

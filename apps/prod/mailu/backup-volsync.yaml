@@ -1,0 +1,375 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: restic-config-mailu-admin
+  annotations:
+    volsync.myrobertson.net/repository-name: mailu-admin
+spec:
+  type: kv-v2
+  mount: secret
+  path: backblaze/k8s/prod/volsync
+  refreshAfter: 60s
+  destination:
+    create: true
+    name: restic-config-mailu-admin
+    transformation:
+      excludeRaw: true
+      transformationRefs:
+        - name: volsync-backblaze-b2
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: restic-config-mailu-clamav
+  annotations:
+    volsync.myrobertson.net/repository-name: mailu-clamav-data
+spec:
+  type: kv-v2
+  mount: secret
+  path: backblaze/k8s/prod/volsync
+  refreshAfter: 60s
+  destination:
+    create: true
+    name: restic-config-mailu-clamav
+    transformation:
+      excludeRaw: true
+      transformationRefs:
+        - name: volsync-backblaze-b2
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: restic-config-mailu-dovecot
+  annotations:
+    volsync.myrobertson.net/repository-name: mailu-dovecot
+spec:
+  type: kv-v2
+  mount: secret
+  path: backblaze/k8s/prod/volsync
+  refreshAfter: 60s
+  destination:
+    create: true
+    name: restic-config-mailu-dovecot
+    transformation:
+      excludeRaw: true
+      transformationRefs:
+        - name: volsync-backblaze-b2
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: restic-config-mailu-postfix
+  annotations:
+    volsync.myrobertson.net/repository-name: mailu-postfix
+spec:
+  type: kv-v2
+  mount: secret
+  path: backblaze/k8s/prod/volsync
+  refreshAfter: 60s
+  destination:
+    create: true
+    name: restic-config-mailu-postfix
+    transformation:
+      excludeRaw: true
+      transformationRefs:
+        - name: volsync-backblaze-b2
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: restic-config-mailu-postgresql
+  annotations:
+    volsync.myrobertson.net/repository-name: mailu-postgresql-data
+spec:
+  type: kv-v2
+  mount: secret
+  path: backblaze/k8s/prod/volsync
+  refreshAfter: 60s
+  destination:
+    create: true
+    name: restic-config-mailu-postgresql
+    transformation:
+      excludeRaw: true
+      transformationRefs:
+        - name: volsync-backblaze-b2
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: restic-config-mailu-redis
+  annotations:
+    volsync.myrobertson.net/repository-name: mailu-redis-data
+spec:
+  type: kv-v2
+  mount: secret
+  path: backblaze/k8s/prod/volsync
+  refreshAfter: 60s
+  destination:
+    create: true
+    name: restic-config-mailu-redis
+    transformation:
+      excludeRaw: true
+      transformationRefs:
+        - name: volsync-backblaze-b2
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: restic-config-mailu-rspamd
+  annotations:
+    volsync.myrobertson.net/repository-name: mailu-rspamd
+spec:
+  type: kv-v2
+  mount: secret
+  path: backblaze/k8s/prod/volsync
+  refreshAfter: 60s
+  destination:
+    create: true
+    name: restic-config-mailu-rspamd
+    transformation:
+      excludeRaw: true
+      transformationRefs:
+        - name: volsync-backblaze-b2
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: restic-config-mailu-webmail
+  annotations:
+    volsync.myrobertson.net/repository-name: mailu-webmail
+spec:
+  type: kv-v2
+  mount: secret
+  path: backblaze/k8s/prod/volsync
+  refreshAfter: 60s
+  destination:
+    create: true
+    name: restic-config-mailu-webmail
+    transformation:
+      excludeRaw: true
+      transformationRefs:
+        - name: volsync-backblaze-b2
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mailu-admin-backup
+spec:
+  sourcePVC: mailu-admin
+  paused: false
+  trigger:
+    schedule: "1 * * * *"
+  restic:
+    repository: restic-config-mailu-admin
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Direct
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mailu-dovecot-backup
+spec:
+  sourcePVC: mailu-dovecot
+  paused: false
+  trigger:
+    schedule: "2 * * * *"
+  restic:
+    repository: restic-config-mailu-dovecot
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Direct
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mailu-postfix-backup
+spec:
+  sourcePVC: mailu-postfix
+  paused: false
+  trigger:
+    schedule: "3 * * * *"
+  restic:
+    repository: restic-config-mailu-postfix
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Direct
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mailu-rspamd-backup
+spec:
+  sourcePVC: mailu-rspamd
+  paused: false
+  trigger:
+    schedule: "4 * * * *"
+  restic:
+    repository: restic-config-mailu-rspamd
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Direct
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mailu-webmail-backup
+spec:
+  sourcePVC: mailu-webmail
+  paused: false
+  trigger:
+    schedule: "6 * * * *"
+  restic:
+    repository: restic-config-mailu-webmail
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Direct
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mailu-clamav-data-backup
+spec:
+  sourcePVC: data-mailu-clamav-0
+  paused: false
+  trigger:
+    schedule: "7 * * * *"
+  restic:
+    repository: restic-config-mailu-clamav
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Direct
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mailu-postgresql-data-backup
+spec:
+  sourcePVC: data-mailu-postgresql-0
+  paused: false
+  trigger:
+    schedule: "9 * * * *"
+  restic:
+    repository: restic-config-mailu-postgresql
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Direct
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mailu-redis-data-backup
+spec:
+  sourcePVC: redis-data-mailu-redis-master-0
+  paused: false
+  trigger:
+    schedule: "11 * * * *"
+  restic:
+    repository: restic-config-mailu-redis
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Direct
+    cacheStorageClassName: csi-cephfs-sc
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"

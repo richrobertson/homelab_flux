@@ -4,6 +4,7 @@ namespace: default
 resources:
   - ../../base/mailu
   - admin-start-configmap.yaml
+  - backup-volsync.yaml
   - certificate.yaml
 patches:
   - path: mailu-values.yaml

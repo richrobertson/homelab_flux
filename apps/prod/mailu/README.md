@@ -38,6 +38,7 @@ Mailu/Postfix -> Amazon SES SMTP relay on 587
 - Mailu Helm chart `2.7.0`
 - A prod TLS certificate for `mail.myrobertson.net` via the existing `letsencrypt-prod` issuer and direct Cloudflare DNS-01
 - Vault-backed Kubernetes Secrets for Mailu app credentials, SES relay credentials, and dynamic Helm values
+- VolSync replication sources for Mailu's stateful PVCs, all targeting the shared Backblaze B2 backup bucket
 - A stable MetalLB address on `10.31.0.73` for the Mailu external front service
 - Prometheus ServiceMonitors for Dovecot and Rspamd, plus a provisioned Grafana overview dashboard
 
@@ -57,6 +58,8 @@ Mailu/Postfix -> Amazon SES SMTP relay on 587
   - `values.yaml`
 
 Terraform in `homelab_bootstrap/terraform` seeds these paths. Public `myrobertson.net` mail records live in Cloudflare.
+
+Mailu's VolSync backup credentials are rendered from the shared Vault path `secret/backblaze/k8s/prod/volsync`.
 
 ## Initial Account
 

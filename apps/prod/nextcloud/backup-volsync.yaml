@@ -1,9 +1,9 @@
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: restic-config-task-control-plane-vikunja
+  name: restic-config-nextcloud
   annotations:
-    volsync.myrobertson.net/repository-name: task-control-plane-vikunja-data
+    volsync.myrobertson.net/repository-name: nextcloud-data-pvc-ceph
 spec:
   type: kv-v2
   mount: secret
@@ -11,7 +11,7 @@ spec:
   refreshAfter: 60s
   destination:
     create: true
-    name: restic-config-task-control-plane-vikunja
+    name: restic-config-nextcloud
     transformation:
       excludeRaw: true
       transformationRefs:
@@ -20,9 +20,9 @@ spec:
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: restic-config-task-control-plane-cnpg-data
+  name: restic-config-nextcloud-cnpg-data
   annotations:
-    volsync.myrobertson.net/repository-name: task-control-plane-cnpg-1
+    volsync.myrobertson.net/repository-name: nextcloud-cnpg-1
 spec:
   type: kv-v2
   mount: secret
@@ -30,7 +30,7 @@ spec:
   refreshAfter: 60s
   destination:
     create: true
-    name: restic-config-task-control-plane-cnpg-data
+    name: restic-config-nextcloud-cnpg-data
     transformation:
       excludeRaw: true
       transformationRefs:
@@ -39,9 +39,9 @@ spec:
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: restic-config-task-control-plane-vikunja-db
+  name: restic-config-nextcloud-cnpg-wal
   annotations:
-    volsync.myrobertson.net/repository-name: vikunja-database
+    volsync.myrobertson.net/repository-name: nextcloud-cnpg-1-wal
 spec:
   type: kv-v2
   mount: secret
@@ -49,7 +49,7 @@ spec:
   refreshAfter: 60s
   destination:
     create: true
-    name: restic-config-task-control-plane-vikunja-db
+    name: restic-config-nextcloud-cnpg-wal
     transformation:
       excludeRaw: true
       transformationRefs:
@@ -58,14 +58,14 @@ spec:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: task-control-plane-vikunja-data-backup
+  name: nextcloud-data-pvc-ceph-backup
 spec:
-  sourcePVC: vikunja-data
+  sourcePVC: nextcloud-data-pvc-ceph-v2
   paused: false
   trigger:
-    schedule: "8 * * * *"
+    schedule: "21 * * * *"
   restic:
-    repository: restic-config-task-control-plane-vikunja
+    repository: restic-config-nextcloud
     pruneIntervalDays: 1
     retain:
       hourly: 4
@@ -78,22 +78,22 @@ spec:
     moverResources:
       requests:
         cpu: "500m"
-        memory: "1Gi"
+        memory: "2Gi"
       limits:
-        cpu: "2"
-        memory: "4Gi"
+        cpu: "4"
+        memory: "8Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: task-control-plane-vikunja-database-backup
+  name: nextcloud-cnpg-data-backup
 spec:
-  sourcePVC: vikunja-database
+  sourcePVC: nextcloud-cnpg-1
   paused: false
   trigger:
-    schedule: "13 * * * *"
+    schedule: "22 * * * *"
   restic:
-    repository: restic-config-task-control-plane-vikunja-db
+    repository: restic-config-nextcloud-cnpg-data
     pruneIntervalDays: 1
     retain:
       hourly: 4
@@ -103,6 +103,10 @@ spec:
       yearly: 0
     copyMethod: Direct
     cacheStorageClassName: csi-cephfs-sc
+    moverSecurityContext:
+      runAsUser: 26
+      runAsGroup: 26
+      fsGroup: 26
     moverResources:
       requests:
         cpu: "500m"
@@ -114,14 +118,14 @@ spec:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: task-control-plane-cnpg-data-backup
+  name: nextcloud-cnpg-wal-backup
 spec:
-  sourcePVC: task-control-plane-cnpg-1
+  sourcePVC: nextcloud-cnpg-1-wal
   paused: false
   trigger:
-    schedule: "14 * * * *"
+    schedule: "23 * * * *"
   restic:
-    repository: restic-config-task-control-plane-cnpg-data
+    repository: restic-config-nextcloud-cnpg-wal
     pruneIntervalDays: 1
     retain:
       hourly: 4

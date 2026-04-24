@@ -4,7 +4,6 @@ namespace: default
 resources:
   - ../../base/tautulli
   - httpRoute.yaml
-  - data-ceph-pvc-v2.yaml
 patches:
   - patch: |
       - op: replace
@@ -23,4 +22,3 @@ patches:
     target:
       kind: PersistentVolumeClaim
       name: tautulli-config-ceph
-

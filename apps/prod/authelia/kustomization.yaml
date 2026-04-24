@@ -5,7 +5,6 @@ resources:
   #- change-pvc-permissions.yaml
   - httpRoute.yaml
   - postgres-scheduled-backup.yaml
-  - authelia-config-ceph-pvc-v2.yaml
   - ../../base/authelia
 patches:
   # Uncomment the following patch to perform the Ceph cutover in prod

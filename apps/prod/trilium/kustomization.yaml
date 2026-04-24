@@ -4,7 +4,6 @@ namespace: default
 resources:
   - ../../base/trilium
   - httpRoute.yaml
-  - data-ceph-pvc-v2.yaml
 patches:
   - patch: |
       - op: replace
