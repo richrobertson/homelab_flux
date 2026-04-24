@@ -11,46 +11,35 @@
 ## What belongs here
 
 - Production-specific patches, values files, and app kustomizations.
-- Stronger availability/resource settings (for example replicas, persistence, retention).
+- Stronger availability and retention settings where production differs from staging.
 - Production ingress, hostnames, and integration references.
-
-## Promotion model
-
-1. Validate base/overlay changes in staging.
-2. Promote equivalent changes into production overlays.
-3. Reconcile Flux and confirm health/metrics post-deploy.
 
 ## Change guardrails
 
 - Keep production-only deltas explicit and reviewable.
 - Avoid introducing breaking drift between staging and prod unless required.
 - Record major behavior differences in PR descriptions for auditability.
+- Keep shared operational procedures in `../../docs/runbooks/` so the overlay stays focused on manifests.
+
+## Documented directories
+
+- Platform and support services: [Authelia](authelia/README.md), [Code Server](code-server/README.md), [External DNS](external-dns/README.md), [Mailu](mailu/README.md), [n8n](n8n/README.md), [Shared Storage](shared_storage/README.md), [VolSync](volsync/README.md)
+- Media and sync services: [Bazarr](bazarr/README.md), [Immich](immich/README.md), [Lidarr](lidarr/README.md), [Mealie](mealie/README.md), [Overseerr](overseerr/README.md), [Plex](plex/README.md), [Prowlarr](prowlarr/README.md), [Radarr](radarr/README.md), [Sonarr](sonarr/README.md), [Syncthing](syncthing/README.md)
+- Observability: [Loki Stack](loki-stack/README.md)
+
+## Additional manifest directories
+
+- These directories exist but do not have dedicated README files yet: `bitwarden`, `gotify`, `netbootxyz`, `nextcloud`, `ntfy`, `redis-operator`, `task-control-plane`, `tautulli`, `trilium`
+
+## Operational docs
+
+- [Runbook index](../../docs/runbooks/README.md)
+- [App Ceph migration runbook](../../docs/runbooks/APP_CEPH_MIGRATION_RUNBOOK.md)
+- [SynologyNAS container migration playbook](../../docs/runbooks/APP_SYNOLOGYNAS_CONTAINER_MIGRATION_PLAYBOOK.md)
+- [VolSync production verification commands](volsync/README.md#operational-verification)
 
 ## See also
 
 - [Apps overview](../README.md)
 - [Shared base layer](../base/README.md)
 - [Staging overlays](../staging/README.md)
-
-Operational docs:
-
-- [VolSync production verification commands](volsync/README.md#operational-verification)
-- [App Ceph migration runbook](../../scripts/APP_CEPH_MIGRATION_RUNBOOK.md)
-
-Leaf docs:
-
-- [Authelia production](authelia/README.md)
-- [Bazarr production](bazarr/README.md)
-- [External DNS production](external-dns/README.md)
-- [Immich production](immich/README.md)
-- [Lidarr production](lidarr/README.md)
-- [Loki Stack (Prod)](loki-stack/README.md)
-- [Mealie production](mealie/README.md)
-- [Overseerr production](overseerr/README.md)
-- [Plex production](plex/README.md)
-- [Prowlarr production](prowlarr/README.md)
-- [Radarr production](radarr/README.md)
-- [Shared Storage (Prod)](shared_storage/README.md)
-- [Sonarr production](sonarr/README.md)
-- [Syncthing production](syncthing/README.md)
-- [VolSync production](volsync/README.md)

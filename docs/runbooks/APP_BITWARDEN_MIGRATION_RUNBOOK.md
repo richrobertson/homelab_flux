@@ -11,7 +11,7 @@ This runbook migrates Vaultwarden data from the Synology-hosted container (`192.
 - External Synology route and migration-only manifests have been removed from active GitOps resources.
 - VolSync backs up the full `bitwarden-data-ceph` PVC; the old in-PVC `bitwarden-files-backup` CronJob has been removed.
 
-Use this document as a historical execution reference; use `APP_SYNOLOGYNAS_CONTAINER_MIGRATION_PLAYBOOK.md` for future app migrations.
+Use this document as a historical execution reference; use [APP_SYNOLOGYNAS_CONTAINER_MIGRATION_PLAYBOOK.md](./APP_SYNOLOGYNAS_CONTAINER_MIGRATION_PLAYBOOK.md) for future app migrations.
 
 ## Prerequisites
 

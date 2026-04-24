@@ -67,7 +67,7 @@ Replace Plex's bundled VAAPI libraries with versions built from **Ubuntu 24.04 b
 #### 1a. Build Locally (Linux/macOS with Docker)
 
 ```bash
-cd /Users/rich/Documents/GitHub/homelab_flux/docker-builds/plex-vaapi
+cd /path/to/homelab_flux/docker-builds/plex-vaapi
 
 # Make build script executable
 chmod +x build-plex-vaapi.sh test-plex-vaapi.sh
@@ -156,7 +156,7 @@ image:
 #### 3b. Commit and Push Changes
 
 ```bash
-cd /Users/rich/Documents/GitHub/homelab_flux
+cd /path/to/homelab_flux
 git add apps/staging/plex/plex-values.yaml
 git commit -m "chore(staging): upgrade plex to custom VAAPI image"
 git push origin main
@@ -231,7 +231,7 @@ Failed to initialise VAAPI connection: -1 (unknown libva error)
 #### 4b. Comprehensive Test Script
 
 ```bash
-cd /Users/rich/Documents/GitHub/homelab_flux/docker-builds/plex-vaapi
+cd /path/to/homelab_flux/docker-builds/plex-vaapi
 chmod +x test-plex-vaapi.sh
 ./test-plex-vaapi.sh --k8s --image oci.trueforge.org/homelab/plex-vaapi:v1.43.0.10492-ubuntu24.04
 ```
@@ -281,7 +281,7 @@ If custom image causes issues:
 
 ```bash
 # Revert to standard linuxserver/plex
-cd /Users/rich/Documents/GitHub/homelab_flux
+cd /path/to/homelab_flux
 git revert HEAD  # Or manually edit apps/staging/plex/plex-values.yaml
 # Change back to: image: lscr.io/linuxserver/plex:latest
 

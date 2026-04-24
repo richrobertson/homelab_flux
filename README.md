@@ -17,6 +17,7 @@ This repository is one part of a shared homelab stack:
 - **Infrastructure config resources** (issuers, load balancer pools, alerts, dashboards, gateway-related config) under `infrastructure/configs/`.
 - **Gateway and external routing** under `infrastructure/gateway/`.
 - **Applications** (media stack, auth, sync, etc.) via Helm releases under `apps/`.
+- **Operational documentation** (runbooks and playbooks) under `docs/runbooks/`.
 
 ## Environments
 
@@ -89,6 +90,8 @@ kubectl get pods -A
 
 ```text
 .
+├── docs/
+│   └── runbooks/             # centralized operational runbooks and migration playbooks
 ├── apps/
 │   ├── base/                 # shared app HelmRepository/HelmRelease and base manifests
 │   ├── staging/              # staging overlays/patches
@@ -102,21 +105,28 @@ kubectl get pods -A
 │   ├── configs/              # policy/config objects, dashboards, alerts, cert config
 │   └── gateway/              # ingress/gateway config and external service routing
 ├── scripts/
-│   └── validate.sh           # local/CI schema and kustomize validation
+│   ├── validate.sh           # local/CI schema and kustomize validation
+│   └── migrations/           # helper manifests for one-off copy/recovery jobs
 └── README.md
 ```
 
 ## Documentation map
 
+- [Docs overview](docs/README.md)
+- [Runbook index](docs/runbooks/README.md)
 - [Apps overview](apps/README.md)
 - [Clusters overview](clusters/README.md)
 - [Infrastructure overview](infrastructure/README.md)
 - [Scripts overview](scripts/README.md)
 
-Backup and migration docs:
+Operational runbooks:
 
 - [Prod VolSync backups and retention](apps/prod/volsync/README.md)
-- [App Ceph migration runbook](scripts/APP_CEPH_MIGRATION_RUNBOOK.md)
+- [App Ceph migration runbook](docs/runbooks/APP_CEPH_MIGRATION_RUNBOOK.md)
+- [Bitwarden Synology to Ceph migration runbook](docs/runbooks/APP_BITWARDEN_MIGRATION_RUNBOOK.md)
+- [SynologyNAS container migration playbook](docs/runbooks/APP_SYNOLOGYNAS_CONTAINER_MIGRATION_PLAYBOOK.md)
+- [Ceph pool consolidation runbook](docs/runbooks/CEPH_POOL_CONSOLIDATION_RUNBOOK.md)
+- [Plex VAAPI option 3 runbook](docs/runbooks/PLEX_VAAPI_OPTION3_RUNBOOK.md)
 
 Environment and bootstrap docs:
 

@@ -381,6 +381,6 @@ If we want to keep pushing this further, the next worthwhile areas are:
 
 - [docker-builds/plex-vaapi/Dockerfile](./Dockerfile)
 - [docker-builds/plex-vaapi/README.md](./README.md)
-- [PLEX_VAAPI_OPTION3_RUNBOOK.md](../../PLEX_VAAPI_OPTION3_RUNBOOK.md)
+- [PLEX_VAAPI_OPTION3_RUNBOOK.md](../../docs/runbooks/PLEX_VAAPI_OPTION3_RUNBOOK.md)
 - [apps/staging/plex/LESSONS_LEARNED.md](../../apps/staging/plex/LESSONS_LEARNED.md)
 - [apps/prod/plex/README.md](../../apps/prod/plex/README.md)
