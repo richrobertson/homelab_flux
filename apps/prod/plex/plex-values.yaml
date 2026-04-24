@@ -12,6 +12,10 @@ spec:
       pullPolicy: IfNotPresent
     nodeSelector:
       intel.feature.node.kubernetes.io/gpu: "true"
+    # Do not reintroduce ADVERTISE_IP here.
+    # On April 23-24, 2026, forcing custom advertised URLs caused
+    # plex.myrobertson.com gateway requests and local playback to fail
+    # until the override was removed and Plex was restarted.
     pms:
       resources:
         requests:

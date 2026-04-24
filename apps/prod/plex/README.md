@@ -21,6 +21,8 @@ Production overlay for Plex.
 - Verified from a working prod media pod that writes to the scooter-backed Plex share succeed, but new files are created as uid/gid `568:568`.
 - If scooter-side consumers still expect Synology ownership such as `99:100`, fix that on scooter with an ACL or ownership policy before final cutover.
 - The public HTTPRoute depends on the `plex.myrobertson.com` listener in [infrastructure/gateway/myrobertson-com/myrobertson-com-gateway.yaml](../../../infrastructure/gateway/myrobertson-com/myrobertson-com-gateway.yaml).
+- Do not reintroduce an `ADVERTISE_IP` override in Flux for prod Plex. On April 23-24, 2026, forcing custom advertised URLs caused `plex.myrobertson.com` requests on the shared gateway to stall/reset and broke local Shield playback until the override was removed and Plex restarted.
+- When validating the shared gateway path from a shell, prefer `curl --http1.1 https://plex.myrobertson.com/identity`. On April 24, 2026, macOS `curl` negotiated HTTP/2 by default and still timed out even after the HTTP/1.1 gateway path and actual playback had recovered.
 
 ## Migration inputs
 
