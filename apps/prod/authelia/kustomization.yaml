@@ -57,8 +57,8 @@ patches:
         path: /spec/backup
         value:
           barmanObjectStore:
-            destinationPath: s3://homelab-prod-backups/cnpg/cluster-authelia-ceph
-            endpointURL: https://s3.us-west-2.amazonaws.com
+            destinationPath: s3://myrobertson-k8s-prod-volsync/cnpg/cluster-authelia-ceph
+            endpointURL: https://s3.us-west-002.backblazeb2.com
             wal:
               compression: gzip
               encryption: AES256

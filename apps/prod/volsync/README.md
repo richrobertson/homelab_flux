@@ -95,7 +95,7 @@ Seed reference:
 
 ## Bucket structure
 
-- CNPG backups: s3://homelab-prod-backups/cnpg/<cluster-name>
+- CNPG backups: s3://myrobertson-k8s-prod-volsync/cnpg/<cluster-name>
 - VolSync backups: s3://myrobertson-k8s-prod-volsync/volsync/default/<pvc-name>
 
 For VolSync restic secrets, the shared transformation renders `RESTIC_REPOSITORY` with the Backblaze endpoint and path-style URL format, for example:

@@ -1,35 +1,31 @@
-# Vault Seed Template (Prod VolSync to Backblaze B2)
+# Vault Seed Template (Prod Backups on Backblaze B2)
 
-This template documents the shared Vault KV path and keys required by the production VolSync backup configuration after the Backblaze B2 migration.
+This template documents the shared Vault KV path and keys required by the production CNPG and VolSync backup configuration after the Backblaze B2 migration.
 
 ## Assumptions
 
 - Vault KV mount: `secret`
-- Shared VolSync path: `secret/backblaze/k8s/prod/volsync`
+- Shared Backblaze path: `secret/backblaze/k8s/prod/volsync`
 - Bucket: `myrobertson-k8s-prod-volsync`
 - Endpoint: `s3.us-west-002.backblazeb2.com`
 - Region: `us-west-002`
 
 ## CNPG shared credentials
 
-Path:
+Kubernetes secret:
 
-- `secret/cnpg/prod/backup-s3`
+- `cnpg-backup-s3`
 
-Required keys:
+Source Vault path:
+
+- `secret/backblaze/k8s/prod/volsync`
+
+The `cnpg-backup-s3` secret is rendered from the shared Backblaze application key path via the `cnpg-backblaze-b2` transformation and exposes only:
 
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 
-Example:
-
-```bash
-vault kv put secret/cnpg/prod/backup-s3 \
-  AWS_ACCESS_KEY_ID='<set-me>' \
-  AWS_SECRET_ACCESS_KEY='<set-me>'
-```
-
-## VolSync shared Backblaze secret
+## Shared Backblaze secret
 
 Path:
 
@@ -51,14 +47,18 @@ Optional overrides supported by the shared transformation:
 - `S3_ENDPOINT`, `AWS_ENDPOINT`, or `B2_ENDPOINT`
 - `S3_BUCKET`, `B2_BUCKET`, or `BUCKET_NAME`
 
-The shared transformation renders per-repository Kubernetes secrets with:
+The shared transformations render:
 
-- `RESTIC_REPOSITORY`
-- `RESTIC_PASSWORD`
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_REGION`
-- `AWS_DEFAULT_REGION`
+- CNPG secret `cnpg-backup-s3` with:
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+- Per-repository VolSync Kubernetes secrets with:
+  - `RESTIC_REPOSITORY`
+  - `RESTIC_PASSWORD`
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+  - `AWS_REGION`
+  - `AWS_DEFAULT_REGION`
 
 Rendered repository format:
 
