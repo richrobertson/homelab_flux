@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: gotify-bridge
-        image: druggeri/alertmanager_gotify_bridge:v2.3.2
+        image: druggeri/alertmanager_gotify_bridge@sha256:242441023c6a7956fc7bcdd30350a8fed38f791e703d670aa286fc0465f88b41
         env:
         - name: GOTIFY_ENDPOINT
           value: "https://gotify.myrobertson.com"
@@ -65,7 +65,7 @@ spec:
     spec:
       containers:
       - name: gotify-bridge
-        image: druggeri/alertmanager_gotify_bridge:v2.3.2
+        image: druggeri/alertmanager_gotify_bridge@sha256:242441023c6a7956fc7bcdd30350a8fed38f791e703d670aa286fc0465f88b41
         env:
         - name: GOTIFY_ENDPOINT
           value: "https://gotify.myrobertson.com"
