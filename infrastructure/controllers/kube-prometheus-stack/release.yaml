@@ -43,6 +43,9 @@ spec:
             - match:
                 alertname: FluxKustomizationHealthcheckfailed
               receiver: 'null'
+            - match_re:
+                alertname: '^Flux.*'
+              receiver: 'gotify-flux-receiver'
             - match:
                 domain: backups
               receiver: backup-receiver
@@ -62,6 +65,10 @@ spec:
           - name: 'gotify-receiver'
             webhook_configs:
               - url: 'http://gotify-bridge.monitoring.svc.cluster.local/gotify_webhook'
+                send_resolved: true
+          - name: 'gotify-flux-receiver'
+            webhook_configs:
+              - url: 'http://gotify-bridge-flux.monitoring.svc.cluster.local/gotify_webhook'
                 send_resolved: true
       alertmanagerSpec:
         storage:

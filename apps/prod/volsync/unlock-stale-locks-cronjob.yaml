@@ -35,6 +35,14 @@ data:
       esac
     }
 
+    delete_resource() {
+      kind="$1"
+      name="$2"
+
+      # Don't let a protected PVC or terminating object wedge the whole cleanup run.
+      kubectl --request-timeout=15s delete "$kind" -n default "$name" --ignore-not-found --wait=false >/dev/null 2>&1 || true
+    }
+
     echo "=== Checking for stuck/failed volsync backup pods (>= ${MAX_STUCK_MINUTES}m) ==="
     POD_LINES=$(kubectl get pods -n default --no-headers 2>/dev/null | awk '/^volsync-src-/ {print $1" "$3" "$5}')
     if [ -n "$POD_LINES" ]; then
@@ -48,10 +56,10 @@ data:
               STUCK_FOUND=$((STUCK_FOUND + 1))
               BASE=$(echo "$POD" | sed -E 's/^volsync-src-(.*)-[a-z0-9]{5}$/\1/')
               echo "Stuck mover pod detected: $POD status=$STATUS age=$AGE"
-              kubectl delete pod -n default "$POD" --ignore-not-found >/dev/null 2>&1 || true
-              kubectl delete job -n default "volsync-src-${BASE}" --ignore-not-found >/dev/null 2>&1 || true
-              kubectl delete pvc -n default "volsync-${BASE}-src" --ignore-not-found >/dev/null 2>&1 || true
-              kubectl delete pvc -n default "volsync-src-${BASE}-cache" --ignore-not-found >/dev/null 2>&1 || true
+              delete_resource pod "$POD"
+              delete_resource job "volsync-src-${BASE}"
+              delete_resource pvc "volsync-${BASE}-src"
+              delete_resource pvc "volsync-src-${BASE}-cache"
               echo "Cleaned stuck resources for base=$BASE"
               STUCK_CLEANED=$((STUCK_CLEANED + 1))
             fi
@@ -169,11 +177,13 @@ metadata:
 spec:
   # Run every 10 minutes so stale restic locks are cleared promptly.
   schedule: "*/10 * * * *"
+  startingDeadlineSeconds: 600
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
+      activeDeadlineSeconds: 1800
       backoffLimit: 1
       ttlSecondsAfterFinished: 3600
       template:
@@ -225,6 +235,9 @@ rules:
   - apiGroups: ["volsync.backube"]
     resources: ["replicationsources", "replicationdestinations"]
     verbs: ["get", "list"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "delete"]
   - apiGroups: [""]
     resources: ["pods", "persistentvolumeclaims"]
     verbs: ["get", "list", "delete"]
