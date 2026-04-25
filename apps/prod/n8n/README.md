@@ -7,7 +7,7 @@
 - public route on `n8n.myrobertson.com`
 - Authelia protection for the UI with webhook path exemptions
 - CNPG scheduled backups
-- VolSync replication sources for the CNPG data PVC, CNPG WAL PVC, and Redis PVC
+- VolSync replication source for the Redis PVC
 
 ## Dependencies
 
@@ -18,4 +18,5 @@
 ## Notes
 
 - The HTTPRoute will not become externally reachable unless the `.com` gateway includes the `n8n.myrobertson.com` listener.
+- CNPG PVCs are intentionally excluded from VolSync because native CNPG backups to B2 are the database recovery path.
 - The production certificate secret expected by the gateway listener is `n8n-myrobertson-com-cert`.

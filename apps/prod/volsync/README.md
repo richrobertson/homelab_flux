@@ -20,19 +20,16 @@ Production helper resources for VolSync backups to Backblaze B2 via the S3-compa
 - Controller manifests live under `infrastructure/controllers/volsync`.
 - Shared Backblaze `SecretTransformation`, most active `VaultStaticSecret`, and most `ReplicationSource` manifests live under `infrastructure/configs/volsync`.
 - App-scoped prod backups for `n8n` and `task-control-plane` still live under their app overlays and reuse the shared Backblaze transformation.
+- CNPG clusters use native CloudNativePG backups to B2 rather than VolSync PVC backups.
 - This folder intentionally excludes those live resources to avoid Flux ownership drift.
 
 ## Covered PVCs
 
 - authelia-config-ceph
-- cluster-authelia-ceph-1
 - immich-data-files-pvc-ceph
-- cluster-immich-ceph-1
 - lidarr-config-ceph
 - lidarr-data-files-pvc
 - mealie-data-ceph
-- mealie-cnpg-main-1
-- mealie-cnpg-main-1-wal
 - overseerr-config-ceph
 - overseerr-data-files-pvc
 - prowlarr-config-ceph

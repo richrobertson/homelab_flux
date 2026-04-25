@@ -1,44 +1,6 @@
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: restic-config-n8n-cnpg-data
-  annotations:
-    volsync.myrobertson.net/repository-name: n8n-cnpg-1
-spec:
-  type: kv-v2
-  mount: secret
-  path: backblaze/k8s/prod/volsync
-  refreshAfter: 60s
-  destination:
-    create: true
-    name: restic-config-n8n-cnpg-data
-    transformation:
-      excludeRaw: true
-      transformationRefs:
-        - name: volsync-backblaze-b2
----
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultStaticSecret
-metadata:
-  name: restic-config-n8n-cnpg-wal
-  annotations:
-    volsync.myrobertson.net/repository-name: n8n-cnpg-1-wal
-spec:
-  type: kv-v2
-  mount: secret
-  path: backblaze/k8s/prod/volsync
-  refreshAfter: 60s
-  destination:
-    create: true
-    name: restic-config-n8n-cnpg-wal
-    transformation:
-      excludeRaw: true
-      transformationRefs:
-        - name: volsync-backblaze-b2
----
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultStaticSecret
-metadata:
   name: restic-config-n8n-redis
   annotations:
     volsync.myrobertson.net/repository-name: n8n-redis-data
@@ -54,70 +16,6 @@ spec:
       excludeRaw: true
       transformationRefs:
         - name: volsync-backblaze-b2
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
-  name: n8n-cnpg-data-backup
-spec:
-  sourcePVC: n8n-cnpg-1
-  paused: false
-  trigger:
-    schedule: "16 * * * *"
-  restic:
-    repository: restic-config-n8n-cnpg-data
-    pruneIntervalDays: 1
-    retain:
-      hourly: 4
-      daily: 0
-      weekly: 0
-      monthly: 0
-      yearly: 0
-    copyMethod: Direct
-    cacheStorageClassName: csi-cephfs-sc
-    moverSecurityContext:
-      runAsUser: 26
-      runAsGroup: 26
-      fsGroup: 26
-    moverResources:
-      requests:
-        cpu: "500m"
-        memory: "1Gi"
-      limits:
-        cpu: "2"
-        memory: "4Gi"
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
-  name: n8n-cnpg-wal-backup
-spec:
-  sourcePVC: n8n-cnpg-1-wal
-  paused: false
-  trigger:
-    schedule: "17 * * * *"
-  restic:
-    repository: restic-config-n8n-cnpg-wal
-    pruneIntervalDays: 1
-    retain:
-      hourly: 4
-      daily: 0
-      weekly: 0
-      monthly: 0
-      yearly: 0
-    copyMethod: Direct
-    cacheStorageClassName: csi-cephfs-sc
-    moverSecurityContext:
-      runAsUser: 26
-      runAsGroup: 26
-      fsGroup: 26
-    moverResources:
-      requests:
-        cpu: "500m"
-        memory: "1Gi"
-      limits:
-        cpu: "2"
-        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource

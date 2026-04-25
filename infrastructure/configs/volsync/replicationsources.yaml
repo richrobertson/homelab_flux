@@ -174,38 +174,6 @@ spec:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: cluster-authelia-ceph-1-backup
-spec:
-  sourcePVC: cluster-authelia-ceph-1
-  paused: false
-  trigger:
-    schedule: "32 * * * *"
-  restic:
-    repository: restic-config-authelia-cnpg-data
-    pruneIntervalDays: 1
-    retain:
-      hourly: 4
-      daily: 0
-      weekly: 0
-      monthly: 0
-      yearly: 0
-    copyMethod: Direct
-    cacheStorageClassName: csi-cephfs-sc
-    moverSecurityContext:
-      runAsUser: 26
-      runAsGroup: 26
-      fsGroup: 26
-    moverResources:
-      requests:
-        cpu: "500m"
-        memory: "1Gi"
-      limits:
-        cpu: "2"
-        memory: "4Gi"
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
   name: immich-data-files-pvc-ceph-backup
 spec:
   sourcePVC: immich-data-files-pvc-ceph
@@ -230,38 +198,6 @@ spec:
       limits:
         cpu: "4"
         memory: "8Gi"
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
-  name: cluster-immich-ceph-1-backup
-spec:
-  sourcePVC: cluster-immich-ceph-1
-  paused: false
-  trigger:
-    schedule: "12 * * * *"
-  restic:
-    repository: restic-config-immich-cnpg-data
-    pruneIntervalDays: 1
-    retain:
-      hourly: 4
-      daily: 0
-      weekly: 0
-      monthly: 0
-      yearly: 0
-    copyMethod: Direct
-    cacheStorageClassName: csi-cephfs-sc
-    moverSecurityContext:
-      runAsUser: 26
-      runAsGroup: 26
-      fsGroup: 26
-    moverResources:
-      requests:
-        cpu: "500m"
-        memory: "1Gi"
-      limits:
-        cpu: "2"
-        memory: "4Gi"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -315,70 +251,6 @@ spec:
       yearly: 0
     copyMethod: Direct
     cacheStorageClassName: csi-cephfs-sc
-    moverResources:
-      requests:
-        cpu: "500m"
-        memory: "1Gi"
-      limits:
-        cpu: "2"
-        memory: "4Gi"
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
-  name: mealie-cnpg-main-1-backup
-spec:
-  sourcePVC: mealie-cnpg-main-1
-  paused: false
-  trigger:
-    schedule: "34 * * * *"
-  restic:
-    repository: restic-config-mealie-cnpg-data
-    pruneIntervalDays: 1
-    retain:
-      hourly: 4
-      daily: 0
-      weekly: 0
-      monthly: 0
-      yearly: 0
-    copyMethod: Direct
-    cacheStorageClassName: csi-cephfs-sc
-    moverSecurityContext:
-      runAsUser: 26
-      runAsGroup: 26
-      fsGroup: 26
-    moverResources:
-      requests:
-        cpu: "500m"
-        memory: "1Gi"
-      limits:
-        cpu: "2"
-        memory: "4Gi"
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationSource
-metadata:
-  name: mealie-cnpg-main-1-wal-backup
-spec:
-  sourcePVC: mealie-cnpg-main-1-wal
-  paused: false
-  trigger:
-    schedule: "44 * * * *"
-  restic:
-    repository: restic-config-mealie-cnpg-wal
-    pruneIntervalDays: 1
-    retain:
-      hourly: 4
-      daily: 0
-      weekly: 0
-      monthly: 0
-      yearly: 0
-    copyMethod: Direct
-    cacheStorageClassName: csi-cephfs-sc
-    moverSecurityContext:
-      runAsUser: 26
-      runAsGroup: 26
-      fsGroup: 26
     moverResources:
       requests:
         cpu: "500m"
