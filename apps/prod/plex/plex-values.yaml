@@ -4,6 +4,22 @@ metadata:
   name: plex
 spec:
   interval: 1h
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: StatefulSet
+              name: plex
+            patch: |
+              apiVersion: apps/v1
+              kind: StatefulSet
+              metadata:
+                name: plex
+              spec:
+                template:
+                  metadata:
+                    labels:
+                      istio.io/dataplane-mode: none
   values:
     image:
       registry: ghcr.io
