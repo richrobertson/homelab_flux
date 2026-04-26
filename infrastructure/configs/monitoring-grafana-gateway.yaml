@@ -10,6 +10,9 @@ metadata:
     cert-manager.io/private-key-algorithm: "ECDSA"
 spec:
   gatewayClassName: istio
+  addresses:
+  - type: IPAddress
+    value: 10.31.0.75
   listeners:
   - name: grafana
     hostname: grafana.dev.myrobertson.net
