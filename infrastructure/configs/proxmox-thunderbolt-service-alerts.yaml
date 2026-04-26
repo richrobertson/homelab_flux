@@ -1,0 +1,56 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: proxmox-thunderbolt-service-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/part-of: proxmox
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: proxmox.thunderbolt-service-traffic
+      interval: 30s
+      rules:
+        - alert: ProxmoxBackupStorageNotUsingThunderbolt
+          expr: |
+            proxmox_backup_storage_route_up{job="proxmox-node-exporter", expected_network="thunderbolt"} == 0
+          for: 10m
+          labels:
+            domain: proxmox
+            severity: warning
+          annotations:
+            summary: Proxmox backup storage is not routed over Thunderbolt
+            description: "{{ $labels.node }} routes backup storage {{ $labels.storage }} ({{ $labels.server }}/{{ $labels.datastore }}) through {{ $labels.route_dev }} instead of en05/en06."
+
+        - alert: ProxmoxCephClusterNetworkNotUsingThunderbolt
+          expr: |
+            min(proxmox_ceph_network_configured{job="proxmox-node-exporter", network_role="cluster", expected_network="10.0.0.0/24"}) < 1
+          for: 10m
+          labels:
+            domain: ceph
+            severity: critical
+          annotations:
+            summary: Ceph backend cluster network is not on Thunderbolt
+            description: One or more Proxmox nodes report Ceph cluster_network is not configured for 10.0.0.0/24.
+
+        - alert: ProxmoxCephOSDBackendNotUsingThunderbolt
+          expr: |
+            proxmox_ceph_osd_address_on_thunderbolt{job="proxmox-node-exporter", address_role="back"} == 0
+          for: 10m
+          labels:
+            domain: ceph
+            severity: critical
+          annotations:
+            summary: Ceph OSD backend address is not on Thunderbolt
+            description: "{{ $labels.node }} osd.{{ $labels.osd }} backend address is {{ $labels.address }}, not a 10.0.0.x Thunderbolt address."
+
+        - alert: ProxmoxCephPublicNetworkCutoverPending
+          expr: |
+            min(proxmox_ceph_network_configured{job="proxmox-node-exporter", network_role="public", expected_network="10.0.0.0/24"}) < 1
+          for: 6h
+          labels:
+            domain: ceph
+            severity: info
+          annotations:
+            summary: Ceph public/client network cutover is still pending
+            description: Ceph public_network is not yet 10.0.0.0/24. Keep K8s and Proxmox client references staged before changing monitor/front addresses.

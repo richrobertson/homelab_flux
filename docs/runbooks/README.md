@@ -5,6 +5,7 @@
 ## Runbook index
 
 - [App Ceph migration runbook](APP_CEPH_MIGRATION_RUNBOOK.md): migrate app config PVCs from Synology-backed storage to CephFS.
+- [Ceph public/client Thunderbolt cutover](CEPH_PUBLIC_CLIENT_THUNDERBOLT_CUTOVER.md): staged process for moving Ceph client traffic to the Thunderbolt ring.
 - [Bitwarden Synology to Ceph migration runbook](APP_BITWARDEN_MIGRATION_RUNBOOK.md): historical execution reference for the Vaultwarden cutover.
 - [SynologyNAS container migration playbook](APP_SYNOLOGYNAS_CONTAINER_MIGRATION_PLAYBOOK.md): reusable migration pattern for stateful Synology-to-Kubernetes moves.
 - [Ceph pool consolidation runbook](CEPH_POOL_CONSOLIDATION_RUNBOOK.md): staged storage-pool consolidation plan and validation sequence.
