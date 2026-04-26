@@ -8,6 +8,10 @@ spec:
       storage:
         postgres:
           address: tcp://cluster-authelia-ceph-rw.default.svc.cluster.local:5432
+      definitions:
+        user_attributes:
+          proxmox_groups:
+            expression: '"proxAdmins" in groups ? ["proxAdmins"] : []'
       identity_providers:
         oidc:
           enabled: true
@@ -17,6 +21,21 @@ spec:
               use: sig
               key:
                 path: /secrets/internal/identity_providers.oidc.jwks.key
+          authorization_policies:
+            proxmox_domain_admins:
+              default_policy: deny
+              rules:
+                - subject: 'group:proxAdmins'
+                  policy: two_factor
+          claims_policies:
+            proxmox:
+              custom_claims:
+                proxmox_groups:
+                  attribute: proxmox_groups
+          scopes:
+            proxmox_groups:
+              claims:
+                - proxmox_groups
           clients:
             - client_id: mealie_prod
               client_name: Mealie
@@ -58,6 +77,36 @@ spec:
                 - profile
                 - email
                 - groups
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_basic
+            - client_id: proxmox_prod
+              client_name: Proxmox VE cl0
+              client_secret: '{{ secret "/secrets/internal/pve_oidc" }}'
+              public: false
+              authorization_policy: proxmox_domain_admins
+              claims_policy: proxmox
+              require_pkce: true
+              pkce_challenge_method: S256
+              redirect_uris:
+                - https://cl0.myrobertson.net:8006
+                - https://cl0.myrobertson.net:8006/
+                - https://pve3.myrobertson.net:8006
+                - https://pve3.myrobertson.net:8006/
+                - https://pve4.myrobertson.net:8006
+                - https://pve4.myrobertson.net:8006/
+                - https://pve5.myrobertson.net:8006
+                - https://pve5.myrobertson.net:8006/
+              scopes:
+                - openid
+                - profile
+                - email
+                - groups
+                - proxmox_groups
+              response_types:
+                - code
+              grant_types:
+                - authorization_code
+              access_token_signed_response_alg: none
               userinfo_signed_response_alg: none
               token_endpoint_auth_method: client_secret_basic
     secret:

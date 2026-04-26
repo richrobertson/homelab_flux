@@ -36,6 +36,8 @@ spec:
                               path: identity_providers.oidc.hmac.key
                             - key: identity_providers.oidc.jwks.key
                               path: identity_providers.oidc.jwks.key
+                            - key: pve_oidc
+                              path: pve_oidc
                       - name: db-secret
                         secret:
                           secretName: cluster-authelia-ceph-app
