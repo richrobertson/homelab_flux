@@ -21,6 +21,7 @@ resources:
   - backup-observability-alerts.yaml
   - proxmox-temperature-alerts.yaml
   - proxmox-thunderbolt-ring-alerts.yaml
+  - proxmox-transport-alerts.yaml
   - volsync
   - talos-etcd-backup
 configMapGenerator:
@@ -32,6 +33,7 @@ configMapGenerator:
       - dashboards/logs.json
       - dashboards/proxmox-host-temperatures.json
       - dashboards/proxmox-thunderbolt-ring.json
+      - dashboards/proxmox-migration-replication.json
     options:
       labels:
         grafana_dashboard: "1"

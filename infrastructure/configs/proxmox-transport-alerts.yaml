@@ -1,0 +1,78 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: proxmox-transport-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/part-of: proxmox
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: proxmox.migration-replication
+      interval: 30s
+      rules:
+        - alert: ProxmoxTransportMetricsMissing
+          expr: |
+            count(proxmox_transport_metrics_scrape_success{job="proxmox-node-exporter", instance=~"pve[3-5].*"}) < 3
+          for: 10m
+          labels:
+            domain: proxmox
+            severity: warning
+          annotations:
+            summary: Proxmox transport metrics are incomplete
+            description: Fewer than three Proxmox transport textfile metrics are being scraped for pve3-pve5.
+
+        - alert: ProxmoxMigrationNotUsingThunderboltRing
+          expr: |
+            min(proxmox_transport_thunderbolt_network_configured{job="proxmox-node-exporter", transport="migration", network="10.0.0.0/24"}) < 1
+          for: 5m
+          labels:
+            domain: proxmox
+            severity: critical
+          annotations:
+            summary: Proxmox live migration is not using the Thunderbolt ring
+            description: One or more Proxmox nodes report migration.network is not configured for 10.0.0.0/24.
+
+        - alert: ProxmoxReplicationNotUsingThunderboltRing
+          expr: |
+            min(proxmox_transport_thunderbolt_network_configured{job="proxmox-node-exporter", transport="replication", network="10.0.0.0/24"}) < 1
+          for: 5m
+          labels:
+            domain: proxmox
+            severity: critical
+          annotations:
+            summary: Proxmox scheduled replication is not using the Thunderbolt ring
+            description: One or more Proxmox nodes report replication.network is not configured for 10.0.0.0/24.
+
+        - alert: ProxmoxTransportPeerRouteDown
+          expr: |
+            proxmox_transport_peer_route_up{job="proxmox-node-exporter"} == 0
+          for: 2m
+          labels:
+            domain: proxmox
+            severity: critical
+          annotations:
+            summary: Proxmox Thunderbolt transport route is unavailable
+            description: "{{ $labels.node }} cannot route to {{ $labels.peer }} ({{ $labels.peer_ip }}) through en05/en06."
+
+        - alert: ProxmoxMigrationTaskFailures
+          expr: |
+            proxmox_migration_tasks_24h{job="proxmox-node-exporter", status="failed"} > 0
+          for: 15m
+          labels:
+            domain: proxmox
+            severity: warning
+          annotations:
+            summary: Proxmox migration task failures detected
+            description: "{{ $labels.node }} has one or more failed Proxmox migration tasks in the last 24 hours."
+
+        - alert: ProxmoxTransportCollectorFailed
+          expr: |
+            proxmox_transport_metrics_scrape_success{job="proxmox-node-exporter"} != 1
+          for: 5m
+          labels:
+            domain: proxmox
+            severity: warning
+          annotations:
+            summary: Proxmox transport metrics collector failed
+            description: The Proxmox transport metrics collector on {{ $labels.node }} did not report success.
