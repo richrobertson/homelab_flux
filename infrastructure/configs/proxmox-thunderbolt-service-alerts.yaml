@@ -44,6 +44,28 @@ spec:
             summary: Proxmox backup success is stale
             description: "{{ $labels.node }} has not reported a successful Proxmox backup task in more than 36 hours."
 
+        - alert: ProxmoxBackupCompletedWithoutGuestAgentFreeze
+          expr: |
+            sum by (node) (proxmox_backup_guest_agent_freeze_tasks_24h{job="proxmox-node-exporter", freeze_status="missing"}) > 0
+          for: 10m
+          labels:
+            domain: backups
+            severity: warning
+          annotations:
+            summary: Proxmox VM backup completed without guest-agent filesystem freeze
+            description: "{{ $labels.node }} has one or more successful QEMU VM backups in the last 24 hours whose task log did not include guest-agent fs-freeze."
+
+        - alert: ProxmoxBackupGuestAgentFreezeFailed
+          expr: |
+            sum by (node) (proxmox_backup_guest_agent_freeze_tasks_24h{job="proxmox-node-exporter", freeze_status="failed"}) > 0
+          for: 10m
+          labels:
+            domain: backups
+            severity: warning
+          annotations:
+            summary: Proxmox VM backup guest-agent freeze failed
+            description: "{{ $labels.node }} has one or more failed QEMU VM backup attempts in the last 24 hours where guest-agent freeze could not be confirmed."
+
         - alert: ProxmoxCephClusterNetworkNotUsingThunderbolt
           expr: |
             min(proxmox_ceph_network_configured{job="proxmox-node-exporter", network_role="cluster", expected_network="10.0.0.0/24"}) < 1
