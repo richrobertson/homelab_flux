@@ -24,14 +24,24 @@ spec:
 
         - alert: ProxmoxBackupTasksFailing
           expr: |
-            sum by (node) (proxmox_backup_restore_tasks_24h{job="proxmox-node-exporter", operation="backup", status="failed"}) > 0
+            proxmox_backup_restore_tasks_24h{job="proxmox-node-exporter", operation="backup", status="failed"} > 0
+              and on(node)
+            (
+              proxmox_backup_restore_last_task_timestamp_seconds{job="proxmox-node-exporter", operation="backup", status="failed"}
+                > on(node)
+              proxmox_backup_restore_last_task_timestamp_seconds{job="proxmox-node-exporter", operation="backup", status="ok"}
+              or
+              proxmox_backup_restore_last_task_timestamp_seconds{job="proxmox-node-exporter", operation="backup", status="failed"}
+                unless on(node)
+              proxmox_backup_restore_last_task_timestamp_seconds{job="proxmox-node-exporter", operation="backup", status="ok"}
+            )
           for: 15m
           labels:
             domain: backups
             severity: warning
           annotations:
             summary: Proxmox backup task failures detected
-            description: "{{ $labels.node }} has failed Proxmox backup tasks in the last 24 hours. Check PBS route health and vzdump task logs before running soak or cutover work."
+            description: "{{ $labels.node }} has a failed Proxmox backup task newer than its last successful backup. Check PBS route health and vzdump task logs before running soak or cutover work."
 
         - alert: ProxmoxBackupSuccessStale
           expr: |
