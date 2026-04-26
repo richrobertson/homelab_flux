@@ -1,0 +1,86 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: proxmox-thunderbolt-ring-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/part-of: proxmox
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: proxmox.thunderbolt-ring
+      interval: 30s
+      rules:
+        - alert: ProxmoxThunderboltRingMetricsMissing
+          expr: |
+            count(node_network_carrier{job="proxmox-node-exporter", instance=~"pve[3-5].*", device=~"en05|en06"}) < 6
+          for: 10m
+          labels:
+            domain: proxmox
+            severity: warning
+          annotations:
+            summary: Proxmox Thunderbolt ring metrics are incomplete
+            description: Fewer than six Thunderbolt interfaces are being scraped across pve3-pve5 for 10m.
+
+        - alert: ProxmoxThunderboltRingInterfaceDown
+          expr: |
+            node_network_carrier{job="proxmox-node-exporter", instance=~"pve[3-5].*", device=~"en05|en06"} == 0
+          for: 2m
+          labels:
+            domain: proxmox
+            severity: critical
+          annotations:
+            summary: Proxmox Thunderbolt ring interface is down
+            description: Interface {{ $labels.device }} on {{ $labels.instance }} has reported no carrier for 2m.
+
+        - alert: ProxmoxThunderboltRingMTUMismatch
+          expr: |
+            node_network_mtu_bytes{job="proxmox-node-exporter", instance=~"pve[3-5].*", device=~"en05|en06"} != 65520
+          for: 10m
+          labels:
+            domain: proxmox
+            severity: warning
+          annotations:
+            summary: Proxmox Thunderbolt ring MTU mismatch
+            description: Interface {{ $labels.device }} on {{ $labels.instance }} is not using MTU 65520.
+
+        - alert: ProxmoxThunderboltRingErrors
+          expr: |
+            (
+              rate(node_network_receive_errs_total{job="proxmox-node-exporter", instance=~"pve[3-5].*", device=~"en05|en06"}[5m])
+              + rate(node_network_transmit_errs_total{job="proxmox-node-exporter", instance=~"pve[3-5].*", device=~"en05|en06"}[5m])
+            ) > 0
+          for: 5m
+          labels:
+            domain: proxmox
+            severity: critical
+          annotations:
+            summary: Proxmox Thunderbolt ring interface errors
+            description: Interface {{ $labels.device }} on {{ $labels.instance }} is reporting RX/TX errors.
+
+        - alert: ProxmoxThunderboltRingDrops
+          expr: |
+            (
+              rate(node_network_receive_drop_total{job="proxmox-node-exporter", instance=~"pve[3-5].*", device=~"en05|en06"}[5m])
+              + rate(node_network_transmit_drop_total{job="proxmox-node-exporter", instance=~"pve[3-5].*", device=~"en05|en06"}[5m])
+            ) > 10
+          for: 5m
+          labels:
+            domain: proxmox
+            severity: warning
+          annotations:
+            summary: Proxmox Thunderbolt ring packet drops
+            description: Interface {{ $labels.device }} on {{ $labels.instance }} is dropping more than 10 packets/sec.
+
+        - alert: ProxmoxThunderboltRingSpeedLow
+          expr: |
+            node_network_speed_bytes{job="proxmox-node-exporter", instance=~"pve[3-5].*", device=~"en05|en06"} > 0
+            and
+            node_network_speed_bytes{job="proxmox-node-exporter", instance=~"pve[3-5].*", device=~"en05|en06"} < 2500000000
+          for: 10m
+          labels:
+            domain: proxmox
+            severity: warning
+          annotations:
+            summary: Proxmox Thunderbolt ring negotiated speed is low
+            description: Interface {{ $labels.device }} on {{ $labels.instance }} is reporting less than 20 Gbit/s link speed.
