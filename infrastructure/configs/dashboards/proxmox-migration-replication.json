@@ -315,13 +315,13 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(proxmox_migration_tasks_24h{job=\"proxmox-node-exporter\",status=\"failed\"})",
+          "expr": "sum(proxmox_migration_tasks_24h{job=\"proxmox-node-exporter\",status=\"failed\"} > 0 and on(node) (proxmox_migration_last_task_timestamp_seconds{job=\"proxmox-node-exporter\",status=\"failed\"} > on(node) proxmox_migration_last_task_timestamp_seconds{job=\"proxmox-node-exporter\",status=\"ok\"} or proxmox_migration_last_task_timestamp_seconds{job=\"proxmox-node-exporter\",status=\"failed\"} unless on(node) proxmox_migration_last_task_timestamp_seconds{job=\"proxmox-node-exporter\",status=\"ok\"}))",
           "legendFormat": "failed migrations",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Migration Failures 24h",
+      "title": "Active Migration Failures",
       "type": "stat"
     },
     {
