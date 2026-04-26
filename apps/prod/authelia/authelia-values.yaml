@@ -81,7 +81,8 @@ spec:
               token_endpoint_auth_method: client_secret_basic
             - client_id: proxmox_prod
               client_name: Proxmox VE cl0
-              client_secret: '{{ secret "/secrets/internal/pve_oidc" }}'
+              client_secret:
+                path: /secrets/internal/pve_oidc
               public: false
               authorization_policy: proxmox_domain_admins
               claims_policy: proxmox
