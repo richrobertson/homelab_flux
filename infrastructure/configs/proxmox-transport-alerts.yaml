@@ -58,13 +58,23 @@ spec:
         - alert: ProxmoxMigrationTaskFailures
           expr: |
             proxmox_migration_tasks_24h{job="proxmox-node-exporter", status="failed"} > 0
+              and on(node)
+            (
+              proxmox_migration_last_task_timestamp_seconds{job="proxmox-node-exporter", status="failed"}
+                > on(node)
+              proxmox_migration_last_task_timestamp_seconds{job="proxmox-node-exporter", status="ok"}
+              or
+              proxmox_migration_last_task_timestamp_seconds{job="proxmox-node-exporter", status="failed"}
+                unless on(node)
+              proxmox_migration_last_task_timestamp_seconds{job="proxmox-node-exporter", status="ok"}
+            )
           for: 15m
           labels:
             domain: proxmox
             severity: warning
           annotations:
             summary: Proxmox migration task failures detected
-            description: "{{ $labels.node }} has one or more failed Proxmox migration tasks in the last 24 hours."
+            description: "{{ $labels.node }} has a failed Proxmox migration task newer than its last successful migration."
 
         - alert: ProxmoxTransportCollectorFailed
           expr: |
