@@ -8,6 +8,10 @@ spec:
       storage:
         postgres:
           address: tcp://cluster-authelia-ceph-rw.default.svc.cluster.local:5432
+      session:
+        cookies:
+          - domain: "myrobertson.com"
+            authelia_url: "https://auth.myrobertson.com"
       definitions:
         user_attributes:
           proxmox_groups:
