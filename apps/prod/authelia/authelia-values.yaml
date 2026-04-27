@@ -26,7 +26,7 @@ spec:
               default_policy: deny
               rules:
                 - subject: 'group:proxAdmins'
-                  policy: two_factor
+                  policy: one_factor
           claims_policies:
             proxmox:
               custom_claims:
