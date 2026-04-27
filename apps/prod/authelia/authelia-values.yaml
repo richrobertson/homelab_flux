@@ -110,6 +110,26 @@ spec:
               access_token_signed_response_alg: none
               userinfo_signed_response_alg: none
               token_endpoint_auth_method: client_secret_basic
+            - client_id: pbs_prod
+              client_name: Proxmox Backup Server
+              client_secret:
+                path: /secrets/internal/pbs_oidc
+              public: false
+              authorization_policy: proxmox_domain_admins
+              redirect_uris:
+                - https://pbs.myrobertson.net:8007
+                - https://pbs.myrobertson.net:8007/
+              scopes:
+                - openid
+                - profile
+                - email
+              response_types:
+                - code
+              grant_types:
+                - authorization_code
+              access_token_signed_response_alg: none
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_basic
     secret:
       additionalSecrets: {}
    
