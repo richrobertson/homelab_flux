@@ -46,6 +46,7 @@ spec:
               client_secret: '$2b$12$G4e2wFGmXCHkQowZZZKOrecbdJik.gd7L5ORyoRVOL7uMZue8SpBW'
               public: false
               authorization_policy: one_factor
+              consent_mode: implicit
               redirect_uris:
                 - https://mealie.myrobertson.com/login
               scopes:
@@ -60,6 +61,7 @@ spec:
               client_secret: '$2b$12$G4e2wFGmXCHkQowZZZKOrecbdJik.gd7L5ORyoRVOL7uMZue8SpBW'
               public: false
               authorization_policy: one_factor
+              consent_mode: implicit
               redirect_uris:
                 - https://grafana.prod.myrobertson.net/login/generic_oauth
               scopes:
@@ -74,6 +76,7 @@ spec:
               client_secret: '$2b$12$kjY20tnxH8rVDpNccpFqs.fFQYD/F5WkKF8Gr9FOx.z0G5z7qJv4a'
               public: false
               authorization_policy: one_factor
+              consent_mode: implicit
               redirect_uris:
                 - https://tasks.myrobertson.com/auth/openid/authelia
               scopes:
@@ -90,6 +93,7 @@ spec:
               public: false
               authorization_policy: proxmox_domain_admins
               claims_policy: proxmox
+              consent_mode: implicit
               require_pkce: true
               pkce_challenge_method: S256
               redirect_uris:
@@ -120,6 +124,7 @@ spec:
                 path: /secrets/internal/pbs_oidc
               public: false
               authorization_policy: proxmox_domain_admins
+              consent_mode: implicit
               redirect_uris:
                 - https://pbs.myrobertson.net:8007
                 - https://pbs.myrobertson.net:8007/

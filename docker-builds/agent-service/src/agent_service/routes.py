@@ -25,7 +25,6 @@ from agent_service.metrics import (
 from agent_service.models import ChatAttachment, ChatRequest, ChatResponse, HealthResponse, TelegramUpdate
 from agent_service.telegram_ux import (
     build_breakdown_message,
-    build_callback_data,
     build_task_keyboard,
     build_task_send_payload,
     format_callback_confirmation,
@@ -272,44 +271,6 @@ def build_router(
                     channel="telegram",
                     metadata={"minutes": minutes or 15, "source": "callback"},
                 )
-
-            if update.message.document is not None and settings.telegram_bot_token:
-                try:
-                    attachments.append(await _download_telegram_document(settings.telegram_bot_token, update.message.document))
-                except Exception as exc:  # noqa: BLE001
-                    logger.warning("telegram_document_download_failed", extra={"chat_id": chat_id, "error": str(exc)})
-                    if settings.telegram_bot_token:
-                        await _safe_send_telegram(
-                            settings.telegram_bot_token,
-                            chat_id,
-                            "I could not read that file from Telegram. Please try sending it again.",
-                        )
-                        telegram_messages_sent_total.inc()
-                    return {"ok": True, "ignored": True, "reason": "telegram_document_download_failed"}
-
-            if attachments and redis_store is not None:
-                await redis_store.set_pending_telegram_attachments(
-                    chat_id,
-                    [attachment.model_dump() for attachment in attachments],
-                )
-                redis_state_writes_total.inc()
-
-            if attachments and not message_text:
-                if settings.telegram_bot_token:
-                    await _safe_send_telegram(
-                        settings.telegram_bot_token,
-                        chat_id,
-                        f"I received {attachments[0].filename}. Tell me what to do with it, or send a caption with the file.",
-                    )
-                    telegram_messages_sent_total.inc()
-                return {"ok": True, "handled": True, "reason": "telegram_attachment_stored"}
-
-            if not attachments and redis_store is not None:
-                pending = await redis_store.get_pending_telegram_attachments(chat_id)
-                if pending:
-                    attachments = [ChatAttachment(**item) for item in pending]
-                    redis_state_reads_total.inc()
-                postgres_event_writes_total.inc()
             await _track_task_context(
                 chat_id=chat_id,
                 user_id=user_id,

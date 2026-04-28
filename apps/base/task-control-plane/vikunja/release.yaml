@@ -59,7 +59,13 @@ spec:
                 openid:
                   enabled: true
                   providers:
-                    authelia: {}
+                    authelia:
+                      name: Authelia
+                      authurl: https://auth.myrobertson.com
+                      logouturl: https://auth.myrobertson.com/logout
+                      clientid: ""
+                      clientsecret: ""
+                      scope: openid profile email groups
               log:
                 level: INFO
       persistence:

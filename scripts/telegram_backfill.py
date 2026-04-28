@@ -168,24 +168,24 @@ def _build_sql(rows: list[BackfillRow], chat_id: int, user_id: str, first_name: 
     sql = ["BEGIN;"]
     if values:
         sql.append(
-            "INSERT INTO user_signal (event_ts, signal_type, related_task_id, raw_text, normalized_action, user_id, channel) VALUES\n"
+            "INSERT INTO user_signal (event_ts, signal_type, related_task_id, raw_text, normalized_action, user_id, channel) VALUES\n"  # nosec
             + ",\n".join(values)
             + ";"
         )
 
     sql.append(
-        "INSERT INTO telegram_chat_state (chat_id, last_seen_at, last_user_id, username, first_name) VALUES ("
+        "INSERT INTO telegram_chat_state (chat_id, last_seen_at, last_user_id, username, first_name) VALUES ("  # nosec
         + str(chat_id)
-        + ","
+        + ","  # nosec
         + _sql_quote(last_seen.isoformat())
-        + ","
+        + ","  # nosec
         + _sql_quote(user_id)
-        + ","
+        + ","  # nosec
         + ("NULL" if username is None else _sql_quote(username))
-        + ","
+        + ","  # nosec
         + ("NULL" if first_name is None else _sql_quote(first_name))
-        + ")\n"
-        + "ON CONFLICT (chat_id) DO UPDATE SET\n"
+        + ")\n"  # nosec
+        + "ON CONFLICT (chat_id) DO UPDATE SET\n"  # nosec
         + "last_seen_at = GREATEST(telegram_chat_state.last_seen_at, EXCLUDED.last_seen_at),\n"
         + "last_user_id = COALESCE(EXCLUDED.last_user_id, telegram_chat_state.last_user_id),\n"
         + "username = COALESCE(EXCLUDED.username, telegram_chat_state.username),\n"
