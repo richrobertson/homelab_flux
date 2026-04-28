@@ -95,7 +95,13 @@ patches:
             openid:
               enabled: true
               providers:
-                authelia: {}
+                authelia:
+                  name: Authelia
+                  authurl: https://auth.staging.myrobertson.net
+                  logouturl: https://auth.staging.myrobertson.net/logout
+                  clientid: ""
+                  clientsecret: ""
+                  scope: openid profile email groups
           log:
             level: INFO
     target:
