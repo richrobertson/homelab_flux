@@ -46,6 +46,7 @@ spec:
               client_secret: '$2b$12$G4e2wFGmXCHkQowZZZKOrecbdJik.gd7L5ORyoRVOL7uMZue8SpBW'
               public: false
               authorization_policy: one_factor
+              consent_mode: implicit
               redirect_uris:
                 - https://mealie.myrobertson.com/login
               scopes:
