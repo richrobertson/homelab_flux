@@ -122,6 +122,7 @@ spec:
                 path: /secrets/internal/pbs_oidc
               public: false
               authorization_policy: proxmox_domain_admins
+              consent_mode: implicit
               redirect_uris:
                 - https://pbs.myrobertson.net:8007
                 - https://pbs.myrobertson.net:8007/
