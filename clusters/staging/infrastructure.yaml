@@ -153,7 +153,10 @@ spec:
         - op: replace
           path: /spec/addresses
           value:
-            - 10.21.0.64/26
+            - 10.21.0.64/30
+            - 10.21.0.68/32
+            - 10.21.0.70/31
+            - 10.21.0.72/29
       target:
         kind: IPAddressPool
         name: my-ip-pool

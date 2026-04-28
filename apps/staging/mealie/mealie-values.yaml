@@ -34,7 +34,7 @@ spec:
                 POSTGRES_PORT: "5432"
                 POSTGRES_PASSWORD:
                   secretKeyRef:
-                    name: mealie-cnpg-main-app
+                    name: mealie-cnpg-main-user
                     key: password
                     expandObjectName: false
               envFrom:
