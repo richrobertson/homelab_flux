@@ -61,6 +61,7 @@ spec:
               client_secret: '$2b$12$G4e2wFGmXCHkQowZZZKOrecbdJik.gd7L5ORyoRVOL7uMZue8SpBW'
               public: false
               authorization_policy: one_factor
+              consent_mode: implicit
               redirect_uris:
                 - https://grafana.prod.myrobertson.net/login/generic_oauth
               scopes:
@@ -75,6 +76,7 @@ spec:
               client_secret: '$2b$12$kjY20tnxH8rVDpNccpFqs.fFQYD/F5WkKF8Gr9FOx.z0G5z7qJv4a'
               public: false
               authorization_policy: one_factor
+              consent_mode: implicit
               redirect_uris:
                 - https://tasks.myrobertson.com/auth/openid/authelia
               scopes:
