@@ -21,6 +21,7 @@ spec:
                     volumes:
                       - name: secrets
                         secret:
+                          optional: true
                           items:
                             - key: identity_validation.reset_password.jwt.hmac.key
                               path: identity_validation.reset_password.jwt.hmac.key
