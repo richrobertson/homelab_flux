@@ -108,6 +108,46 @@ patches:
       kind: HelmRelease
       name: vikunja
   - patch: |
+      - op: add
+        path: /spec/postRenderers
+        value:
+          - kustomize:
+              patches:
+                - target:
+                    kind: Deployment
+                    name: vikunja
+                  patch: |
+                    apiVersion: apps/v1
+                    kind: Deployment
+                    metadata:
+                      name: vikunja
+                    spec:
+                      template:
+                        spec:
+                          containers:
+                            - name: vikunja
+                              env:
+                                - name: SSL_CERT_FILE
+                                  value: /etc/ssl/certs/auth-staging-ca.crt
+                              volumeMounts:
+                                - name: auth-staging-ca
+                                  mountPath: /etc/ssl/certs/auth-staging-ca.crt
+                                  subPath: ca.crt
+                                  readOnly: true
+                          volumes:
+                            - name: auth-staging-ca
+                              secret:
+                                secretName: auth-staging-myrobertson-net-cert
+                                items:
+                                  - key: ca.crt
+                                    path: ca.crt
+    target:
+      kind: HelmRelease
+      name: vikunja
+  - patch: |
+      - op: replace
+        path: /spec/hostnames/0
+        value: tasks.staging.myrobertson.net
       - op: remove
         path: /metadata/annotations/external-dns.alpha.kubernetes.io~1cloudflare-proxied
     target:
