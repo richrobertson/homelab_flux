@@ -90,6 +90,7 @@ spec:
               public: false
               authorization_policy: proxmox_domain_admins
               claims_policy: proxmox
+              consent_mode: implicit
               require_pkce: true
               pkce_challenge_method: S256
               redirect_uris:
