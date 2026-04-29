@@ -5,6 +5,7 @@ resources:
   - ../../base/mailu
   - admin-start-configmap.yaml
   - backup-volsync.yaml
+  - backend-tls-policy.yaml
   - certificate.yaml
   - front-web-service.yaml
   - auth-policy.yaml
