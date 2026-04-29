@@ -5,6 +5,9 @@ metadata:
 spec:
   values:
     configMap:
+      server:
+        buffers:
+          read: 32768
       storage:
         postgres:
           address: tcp://cluster-authelia-ceph-rw.default.svc.cluster.local:5432
