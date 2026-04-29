@@ -80,6 +80,30 @@ spec:
           </clientConfig>
           ';
           }
+
+          location = /Autodiscover/Autodiscover.xml {
+            rewrite ^ /internal/autoconfig/microsoft break;
+            include /etc/nginx/proxy.conf;
+            proxy_set_header Accept-Encoding "";
+            sub_filter_types text/xml application/xml;
+            sub_filter_once off;
+            sub_filter '<Port>993</Port>' '<Port>143</Port>';
+            sub_filter '<Port>465</Port>' '<Port>587</Port>';
+            sub_filter '<SSL>on</SSL>' '<SSL>off</SSL><Encryption>TLS</Encryption>';
+            proxy_pass http://$admin;
+          }
+
+          location = /autodiscover/autodiscover.xml {
+            rewrite ^ /internal/autoconfig/microsoft break;
+            include /etc/nginx/proxy.conf;
+            proxy_set_header Accept-Encoding "";
+            sub_filter_types text/xml application/xml;
+            sub_filter_once off;
+            sub_filter '<Port>993</Port>' '<Port>143</Port>';
+            sub_filter '<Port>465</Port>' '<Port>587</Port>';
+            sub_filter '<SSL>on</SSL>' '<SSL>off</SSL><Encryption>TLS</Encryption>';
+            proxy_pass http://$admin;
+          }
       hostPort:
         enabled: false
       externalService:
