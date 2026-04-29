@@ -15,6 +15,71 @@ spec:
       header: Remote-Email
       create: "true"
     front:
+      overrides:
+        autoconfiguration-starttls.conf: |
+          location = /mail/config-v1.1.xml {
+            default_type application/xml;
+            return 200 '<?xml version="1.0"?>
+          <clientConfig version="1.1">
+          <emailProvider id="%EMAILDOMAIN%">
+          <domain>%EMAILDOMAIN%</domain>
+          <displayName>MyRobertson Mail</displayName>
+          <displayShortName>MyRobertson</displayShortName>
+          <incomingServer type="imap">
+          <hostname>mail.myrobertson.net</hostname>
+          <port>143</port>
+          <socketType>STARTTLS</socketType>
+          <username>%EMAILADDRESS%</username>
+          <authentication>password-cleartext</authentication>
+          </incomingServer>
+          <outgoingServer type="smtp">
+          <hostname>mail.myrobertson.net</hostname>
+          <port>587</port>
+          <socketType>STARTTLS</socketType>
+          <username>%EMAILADDRESS%</username>
+          <authentication>password-cleartext</authentication>
+          <addThisServer>true</addThisServer>
+          <useGlobalPreferredServer>false</useGlobalPreferredServer>
+          </outgoingServer>
+          <documentation url="https://mail.myrobertson.net/admin/client">
+          <descr lang="en">Configure your email client</descr>
+          </documentation>
+          </emailProvider>
+          </clientConfig>
+          ';
+          }
+
+          location = /.well-known/autoconfig/mail/config-v1.1.xml {
+            default_type application/xml;
+            return 200 '<?xml version="1.0"?>
+          <clientConfig version="1.1">
+          <emailProvider id="%EMAILDOMAIN%">
+          <domain>%EMAILDOMAIN%</domain>
+          <displayName>MyRobertson Mail</displayName>
+          <displayShortName>MyRobertson</displayShortName>
+          <incomingServer type="imap">
+          <hostname>mail.myrobertson.net</hostname>
+          <port>143</port>
+          <socketType>STARTTLS</socketType>
+          <username>%EMAILADDRESS%</username>
+          <authentication>password-cleartext</authentication>
+          </incomingServer>
+          <outgoingServer type="smtp">
+          <hostname>mail.myrobertson.net</hostname>
+          <port>587</port>
+          <socketType>STARTTLS</socketType>
+          <username>%EMAILADDRESS%</username>
+          <authentication>password-cleartext</authentication>
+          <addThisServer>true</addThisServer>
+          <useGlobalPreferredServer>false</useGlobalPreferredServer>
+          </outgoingServer>
+          <documentation url="https://mail.myrobertson.net/admin/client">
+          <descr lang="en">Configure your email client</descr>
+          </documentation>
+          </emailProvider>
+          </clientConfig>
+          ';
+          }
       hostPort:
         enabled: false
       externalService:
