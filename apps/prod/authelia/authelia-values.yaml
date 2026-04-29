@@ -173,7 +173,7 @@ spec:
               consent_mode: implicit
               redirect_uris:
                 - https://kermit.myrobertson.com/webman/ssoclient/token_relay.html
-                - https://kermit.myrobertson.net:5001/webman/ssoclient/token_relay.html
+                - https://kermit.myrobertson.net:5011/webman/ssoclient/token_relay.html
               scopes:
                 - openid
                 - profile
