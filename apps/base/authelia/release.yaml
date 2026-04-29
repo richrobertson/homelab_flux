@@ -41,6 +41,10 @@ spec:
                               path: pve_oidc
                             - key: pbs_oidc
                               path: pbs_oidc
+                            - key: synology_scooter_oidc
+                              path: synology_scooter_oidc
+                            - key: synology_kermit_oidc
+                              path: synology_kermit_oidc
                       - name: db-secret
                         secret:
                           secretName: cluster-authelia-ceph-app

@@ -139,6 +139,49 @@ spec:
               access_token_signed_response_alg: none
               userinfo_signed_response_alg: none
               token_endpoint_auth_method: client_secret_basic
+            - client_id: synology_scooter_prod
+              client_name: Synology Scooter
+              client_secret:
+                path: /secrets/internal/synology_scooter_oidc
+              public: false
+              authorization_policy: one_factor
+              consent_mode: implicit
+              redirect_uris:
+                - https://scooter.myrobertson.net:5001/webman/ssoclient/token_relay.html
+              scopes:
+                - openid
+                - profile
+                - email
+                - groups
+              response_types:
+                - code
+              grant_types:
+                - authorization_code
+              access_token_signed_response_alg: none
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_basic
+            - client_id: synology_kermit_prod
+              client_name: Synology Kermit
+              client_secret:
+                path: /secrets/internal/synology_kermit_oidc
+              public: false
+              authorization_policy: one_factor
+              consent_mode: implicit
+              redirect_uris:
+                - https://kermit.myrobertson.com/webman/ssoclient/token_relay.html
+                - https://kermit.myrobertson.net:5001/webman/ssoclient/token_relay.html
+              scopes:
+                - openid
+                - profile
+                - email
+                - groups
+              response_types:
+                - code
+              grant_types:
+                - authorization_code
+              access_token_signed_response_alg: none
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_basic
     secret:
       additionalSecrets: {}
    
