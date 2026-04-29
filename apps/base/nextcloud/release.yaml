@@ -141,6 +141,12 @@ spec:
               name: nextcloud-ldap-secret
               key: LDAP_ADMIN_GROUP
               optional: true
+        - name: NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-mail-provisioning
+              key: MASTER_PASSWORD
+              optional: true
       configs:
         proxy.config.php: |-
           <?php
@@ -226,6 +232,122 @@ spec:
           if php occ status 2>/dev/null | grep -q 'needsDbUpgrade: true'; then
             echo "Nextcloud upgrade pending; skipping Office and LDAP bootstrap until after migrations."
             exit 0
+          fi
+
+          # Calendar invitations and other server notifications use Nextcloud's
+          # system SMTP settings, while the Mail app uses its own provisioned
+          # IMAP/SMTP account configuration.
+          php occ config:system:set mail_smtpmode --value=smtp
+          php occ config:system:set mail_smtphost --value=mailu-postfix.default.svc.cluster.local
+          php occ config:system:set mail_smtpport --type=integer --value=25
+          php occ config:system:set mail_smtpauth --type=boolean --value=false
+          php occ config:system:set mail_from_address --value=calendar
+          php occ config:system:set mail_domain --value=myrobertson.net
+          php occ config:system:delete mail_smtpsecure || true
+          php occ config:system:delete mail_smtpname || true
+          php occ config:system:delete mail_smtppassword || true
+
+          if [ "${LDAP_ENABLED:-false}" = "true" ]; then
+            php occ ldap:set-config s01 ldapEmailAttribute mail || true
+            php occ ldap:set-config s01 ldapLoginFilterEmail 1 || true
+          fi
+
+          if php occ app:list | grep -q '^  - mail:' && [ -n "${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD:-}" ]; then
+            php -r '
+          require_once "/var/www/html/lib/base.php";
+
+          $data = [
+              "provisioningDomain" => "myrobertson.net",
+              "emailTemplate" => "%EMAIL%",
+              "imapUser" => "%EMAIL%*nextcloud",
+              "imapHost" => "mailu-dovecot.default.svc.cluster.local",
+              "imapPort" => 143,
+              "imapSslMode" => "none",
+              "smtpUser" => "%EMAIL%*nextcloud",
+              "smtpHost" => "mailu-postfix.default.svc.cluster.local",
+              "smtpPort" => 10025,
+              "smtpSslMode" => "none",
+              "masterPasswordEnabled" => true,
+              "masterPassword" => getenv("NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD"),
+              "sieveEnabled" => false,
+              "sieveHost" => "",
+              "sieveUser" => "",
+              "sievePort" => null,
+              "sieveSslMode" => "",
+              "ldapAliasesProvisioning" => false,
+              "ldapAliasesAttribute" => "",
+          ];
+
+          $manager = \OC::$server->get(\OCA\Mail\Service\Provisioning\Manager::class);
+          $configs = $manager->getConfigs();
+          $existing = null;
+          foreach ($configs as $config) {
+              if ($config->getProvisioningDomain() === "myrobertson.net") {
+                  $existing = $config;
+                  break;
+              }
+          }
+
+          if ($existing !== null) {
+              $data["id"] = $existing->getId();
+              $manager->updateProvisioning($data);
+          } else {
+              $manager->newProvisioning($data);
+          }
+
+          $count = $manager->provision();
+          $userManager = \OC::$server->get(\OCP\IUserManager::class);
+          $configs = $manager->getConfigs();
+          $userManager->callForAllUsers(function (\OCP\IUser $user) use ($manager, $configs) {
+              $email = $user->getEMailAddress();
+              if ($email !== null && str_ends_with(strtolower($email), "@myrobertson.net")) {
+                  $manager->updatePassword($user, getenv("NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD"), $configs);
+              }
+          });
+
+          echo "Mail: provisioned or updated {$count} accounts.\n";
+          '
+
+            php occ user:list --output=json | python3 -c 'import json, sys; print("\n".join(json.load(sys.stdin).keys()))' | while IFS= read -r MAIL_USER_ID; do
+              USER_INFO="$(php occ user:info "${MAIL_USER_ID}" 2>/dev/null || true)"
+              MAIL_ADDRESS="$(printf '%s\n' "${USER_INFO}" | awk -F': ' '/  - email: / {print $2; exit}')"
+              DISPLAY_NAME="$(printf '%s\n' "${USER_INFO}" | awk -F': ' '/  - display_name: / {print $2; exit}')"
+
+              case "${MAIL_ADDRESS}" in
+                *@myrobertson.net) ;;
+                *) continue ;;
+              esac
+
+              DISPLAY_NAME="${DISPLAY_NAME:-${MAIL_ADDRESS}}"
+              ACCOUNT_ID="$(
+                php occ mail:account:export "${MAIL_USER_ID}" 2>/dev/null \
+                  | awk -v email="${MAIL_ADDRESS}" '
+                      /^Account [0-9]+:/ { id = $2; sub(":", "", id) }
+                      $0 == "- E-Mail: " email { print id; exit }
+                    '
+              )"
+
+              if [ -n "${ACCOUNT_ID}" ]; then
+                php occ mail:account:update "${ACCOUNT_ID}" \
+                  --name="${DISPLAY_NAME}" \
+                  --email="${MAIL_ADDRESS}" \
+                  --imap-host=mailu-dovecot.default.svc.cluster.local \
+                  --imap-port=143 \
+                  --imap-ssl-mode=none \
+                  --imap-user="${MAIL_ADDRESS}*nextcloud" \
+                  --imap-password="${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD}" \
+                  --smtp-host=mailu-postfix.default.svc.cluster.local \
+                  --smtp-port=10025 \
+                  --smtp-ssl-mode=none \
+                  --smtp-user="${MAIL_ADDRESS}" \
+                  --smtp-password="${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD}"
+              else
+                php occ mail:account:create "${MAIL_USER_ID}" "${DISPLAY_NAME}" "${MAIL_ADDRESS}" \
+                  mailu-dovecot.default.svc.cluster.local 143 none "${MAIL_ADDRESS}*nextcloud" "${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD}" \
+                  mailu-postfix.default.svc.cluster.local 10025 none "${MAIL_ADDRESS}" "${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD}" \
+                  password
+              fi
+            done
           fi
 
           if [ -n "${COLLABORA_PUBLIC_URL:-}" ]; then

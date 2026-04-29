@@ -135,6 +135,17 @@ spec:
         name: backup-observability-alerts
     - patch: |
         $patch: delete
+        apiVersion: monitoring.coreos.com/v1
+        kind: PrometheusRule
+        metadata:
+          name: syncthing-alerts
+      target:
+        group: monitoring.coreos.com
+        version: v1
+        kind: PrometheusRule
+        name: syncthing-alerts
+    - patch: |
+        $patch: delete
         apiVersion: volsync.backube/v1alpha1
         kind: ReplicationSource
         metadata:
@@ -179,6 +190,11 @@ spec:
         - op: replace
           path: /spec/listeners/0/hostname
           value: prometheus.staging.myrobertson.net
+        - op: add
+          path: /spec/addresses
+          value:
+            - type: IPAddress
+              value: 10.21.0.66
         - op: replace
           path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
           value: prometheus.staging.myrobertson.net
@@ -200,6 +216,9 @@ spec:
           path: /spec/listeners/0/hostname
           value: grafana.staging.myrobertson.net
         - op: replace
+          path: /spec/addresses/0/value
+          value: 10.21.0.65
+        - op: replace
           path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
           value: grafana.staging.myrobertson.net
       target:
@@ -219,6 +238,11 @@ spec:
         - op: replace
           path: /spec/listeners/0/hostname
           value: alertmanager.staging.myrobertson.net
+        - op: add
+          path: /spec/addresses
+          value:
+            - type: IPAddress
+              value: 10.21.0.64
         - op: replace
           path: /spec/infrastructure/annotations/external-dns.alpha.kubernetes.io~1hostname
           value: alertmanager.staging.myrobertson.net

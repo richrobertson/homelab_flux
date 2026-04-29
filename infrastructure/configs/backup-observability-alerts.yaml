@@ -51,11 +51,11 @@ spec:
             description: A CloudNativePG cluster's latest backup state is failed or error.
 
         - alert: BackupJobsFailing
-          expr: max_over_time(kube_job_status_failed{namespace="default",job_name=~".*(backup|volsync).*"}[30m]) > 0
+          expr: kube_job_status_failed{namespace="default",job_name=~".*(backup|volsync).*"} > 0
           for: 10m
           labels:
             domain: backups
             severity: warning
           annotations:
-            summary: Backup job failures detected
-            description: Kubernetes Jobs related to backups or VolSync have failures in the last 30 minutes.
+            summary: Backup job {{ $labels.namespace }}/{{ $labels.job_name }} is failing
+            description: Kubernetes Job {{ $labels.namespace }}/{{ $labels.job_name }} currently has failed pods.

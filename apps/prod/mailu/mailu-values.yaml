@@ -15,6 +15,29 @@ spec:
       header: Remote-Email
       create: "true"
     front:
+      extraVolumes:
+        - name: dovecot-master-users
+          secret:
+            secretName: mailu-dovecot-master-users
+            defaultMode: 0444
+            items:
+              - key: master-users
+                path: master-users
+        - name: dovecot-master-override
+          secret:
+            secretName: mailu-front-dovecot-master-override
+            defaultMode: 0444
+            items:
+              - key: proxy.conf
+                path: proxy.conf
+      extraVolumeMounts:
+        - name: dovecot-master-users
+          mountPath: /etc/dovecot/master-users
+          subPath: master-users
+          readOnly: true
+        - name: dovecot-master-override
+          mountPath: /overrides/dovecot
+          readOnly: true
       overrides:
         autoconfiguration-starttls.conf: |
           location = /mail/config-v1.1.xml {

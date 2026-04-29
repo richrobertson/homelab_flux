@@ -87,11 +87,32 @@ spec:
       persistence:
         storageClass: ceph-block
         size: 20Gi
+      extraVolumes:
+        - name: dovecot-master-users
+          secret:
+            secretName: mailu-dovecot-master-users
+            defaultMode: 0444
+            items:
+              - key: master-users
+                path: master-users
+      extraVolumeMounts:
+        - name: dovecot-master-users
+          mountPath: /etc/dovecot/master-users
+          subPath: master-users
+          readOnly: true
       serviceMonitor:
         enabled: true
         interval: 30s
       overrides:
         dovecot.conf: |
+          auth_master_user_separator = *
+
+          passdb {
+            driver = passwd-file
+            master = yes
+            args = /etc/dovecot/master-users
+          }
+
           metric auth_successes {
             filter = event=auth_request_finished AND success=yes
           }
