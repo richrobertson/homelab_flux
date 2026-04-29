@@ -1,0 +1,130 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: powerdns-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/part-of: powerdns
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: powerdns.health
+      interval: 30s
+      rules:
+        - alert: PowerDNSAuthoritativeMetricsEndpointDown
+          expr: absent(up{job="powerdns-authoritative"} == 1)
+          for: 10m
+          labels:
+            domain: powerdns
+            severity: critical
+            service: authoritative
+          annotations:
+            summary: PowerDNS authoritative metrics endpoint is down
+            description: Prometheus has not scraped the authoritative PowerDNS metrics endpoint on subns for at least 10 minutes.
+
+        - alert: PowerDNSRecursorMetricsEndpointDown
+          expr: absent(up{job="powerdns-recursor"} == 1)
+          for: 10m
+          labels:
+            domain: powerdns
+            severity: critical
+            service: recursor
+          annotations:
+            summary: PowerDNS recursor metrics endpoint is down
+            description: Prometheus has not scraped the PowerDNS Recursor metrics endpoint on ns1 for at least 10 minutes.
+
+        - alert: PowerDNSAuthoritativeQueryQueueBackedUp
+          expr: pdns_auth_qsize_q{job="powerdns-authoritative"} > 10
+          for: 5m
+          labels:
+            domain: powerdns
+            severity: warning
+            service: authoritative
+          annotations:
+            summary: PowerDNS authoritative query queue is backed up
+            description: The authoritative server has more than 10 DNS questions waiting for database attention for at least 5 minutes.
+
+        - alert: PowerDNSAuthoritativeLatencyHigh
+          expr: pdns_auth_latency{job="powerdns-authoritative"} > 50000
+          for: 10m
+          labels:
+            domain: powerdns
+            severity: warning
+            service: authoritative
+          annotations:
+            summary: PowerDNS authoritative latency is elevated
+            description: The authoritative server average response latency is above 50 ms for at least 10 minutes.
+
+        - alert: PowerDNSRecursorLatencyHigh
+          expr: pdns_recursor_qa_latency{job="powerdns-recursor"} > 100000
+          for: 10m
+          labels:
+            domain: powerdns
+            severity: warning
+            service: recursor
+          annotations:
+            summary: PowerDNS Recursor latency is elevated
+            description: The recursor average query-answer latency is above 100 ms for at least 10 minutes.
+
+        - alert: PowerDNSRecursorOverCapacityDrops
+          expr: increase(pdns_recursor_over_capacity_drops{job="powerdns-recursor"}[5m]) > 0
+          for: 2m
+          labels:
+            domain: powerdns
+            severity: critical
+            service: recursor
+          annotations:
+            summary: PowerDNS Recursor is dropping over-capacity queries
+            description: The recursor has dropped DNS queries because its thread limit was reached.
+
+        - alert: PowerDNSRecursorOutgoingTimeoutsHigh
+          expr: rate(pdns_recursor_outgoing_timeouts{job="powerdns-recursor"}[10m]) > 0.5
+          for: 10m
+          labels:
+            domain: powerdns
+            severity: warning
+            service: recursor
+          annotations:
+            summary: PowerDNS Recursor outgoing timeouts are elevated
+            description: The recursor is seeing more than 0.5 upstream timeout events per second over 10 minutes.
+
+        - alert: PowerDNSRecursorServfailRateHigh
+          expr: |
+            (
+              rate(pdns_recursor_servfail_answers{job="powerdns-recursor"}[10m])
+                /
+              clamp_min(rate(pdns_recursor_questions{job="powerdns-recursor"}[10m]), 1)
+            ) > 0.05
+          for: 15m
+          labels:
+            domain: powerdns
+            severity: warning
+            service: recursor
+          annotations:
+            summary: PowerDNS Recursor SERVFAIL rate is high
+            description: More than 5% of recursor answers have been SERVFAIL responses for at least 15 minutes.
+
+        - alert: PowerDNSRecursorCacheHitRatioLow
+          expr: |
+            (
+              rate(pdns_recursor_cache_hits{job="powerdns-recursor"}[30m])
+                + rate(pdns_recursor_packetcache_hits{job="powerdns-recursor"}[30m])
+            )
+              /
+            clamp_min(
+              rate(pdns_recursor_cache_hits{job="powerdns-recursor"}[30m])
+                + rate(pdns_recursor_cache_misses{job="powerdns-recursor"}[30m])
+                + rate(pdns_recursor_packetcache_hits{job="powerdns-recursor"}[30m])
+                + rate(pdns_recursor_packetcache_misses{job="powerdns-recursor"}[30m]),
+              1
+            ) < 0.40
+              and
+            rate(pdns_recursor_questions{job="powerdns-recursor"}[30m]) > 1
+          for: 1h
+          labels:
+            domain: powerdns
+            severity: warning
+            service: recursor
+          annotations:
+            summary: PowerDNS Recursor cache hit ratio is low
+            description: Combined record and packet cache hit ratio has stayed below 40% for at least 1 hour.

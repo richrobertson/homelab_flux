@@ -173,6 +173,24 @@ spec:
                   - pve5.myrobertson.net:9100
                 labels:
                   domain: proxmox
+          - job_name: powerdns-authoritative
+            metrics_path: /metrics
+            scrape_interval: 30s
+            static_configs:
+              - targets:
+                  - 192.168.7.201:8001
+                labels:
+                  domain: powerdns
+                  service: authoritative
+          - job_name: powerdns-recursor
+            metrics_path: /metrics
+            scrape_interval: 30s
+            static_configs:
+              - targets:
+                  - 192.168.7.202:8001
+                labels:
+                  domain: powerdns
+                  service: recursor
         retention: 14d
         retentionSize: 50GB
         resources:
