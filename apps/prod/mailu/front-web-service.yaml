@@ -8,7 +8,7 @@ metadata:
 spec:
   type: LoadBalancer
   loadBalancerIP: 10.31.0.73
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: Cluster
   selector:
     app.kubernetes.io/component: front
     app.kubernetes.io/instance: mailu
