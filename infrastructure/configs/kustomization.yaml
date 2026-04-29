@@ -143,6 +143,7 @@ configMapGenerator:
     namespace: monitoring
     files:
       - dashboards/nextcloud-overview.json
+      - dashboards/nextcloud-logs.json
     options:
       labels:
         grafana_dashboard: "1"
