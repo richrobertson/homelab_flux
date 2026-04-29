@@ -10,6 +10,7 @@ resources:
   - front-web-service.yaml
   - auth-policy.yaml
   - httproute-sso.yaml
+  - webmail-branding-configmap.yaml
   - wireguard-home-peer-secret.yaml
   - wireguard-home-peer.yaml
 patches:

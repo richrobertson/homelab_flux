@@ -1,0 +1,243 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mailu-webmail-branding
+data:
+  myrobertson-branding.inc.php: |
+    <?php
+    $config['product_name'] = 'MyRobertson Mail';
+    $config['support_url'] = 'https://myrobertson.com';
+    $config['plugins'][] = 'myrobertson_branding';
+    $config['display_product_info'] = 1;
+  myrobertson_branding.php: |
+    <?php
+    class myrobertson_branding extends rcube_plugin
+    {
+        public $task = '.*';
+
+        public function init()
+        {
+            $this->include_stylesheet('myrobertson.css');
+        }
+    }
+  myrobertson.css: |
+    :root {
+      --mr-blue: #1a73e8;
+      --mr-blue-dark: #1558b0;
+      --mr-red: #d93025;
+      --mr-yellow: #f9ab00;
+      --mr-green: #188038;
+      --mr-ink: #202124;
+      --mr-muted: #5f6368;
+      --mr-line: #dadce0;
+      --mr-bg: #f8fafd;
+      --mr-panel: #ffffff;
+      --mr-hover: #f1f3f4;
+      --mr-selected: #e8f0fe;
+      --mr-shadow: 0 1px 2px rgba(60, 64, 67, 0.18), 0 1px 3px rgba(60, 64, 67, 0.12);
+    }
+
+    body,
+    body.mail,
+    body.task-mail,
+    body.task-addressbook,
+    body.task-settings {
+      background: var(--mr-bg);
+      color: var(--mr-ink);
+      font-family: Roboto, Arial, sans-serif;
+    }
+
+    #layout-menu,
+    #layout-sidebar,
+    #layout-list,
+    #layout-content,
+    .listbox,
+    .header {
+      background-color: var(--mr-panel);
+      border-color: var(--mr-line);
+    }
+
+    #layout-menu {
+      box-shadow: inset -1px 0 0 var(--mr-line);
+    }
+
+    #layout-menu .popover-header img,
+    #layout-menu .popover-header .app-logo {
+      max-height: 38px;
+    }
+
+    .button,
+    .btn,
+    button,
+    input.button {
+      border-radius: 999px;
+      font-weight: 500;
+    }
+
+    .btn-primary,
+    .button.primary,
+    button.btn-primary {
+      background: var(--mr-blue);
+      border-color: var(--mr-blue);
+      color: #fff;
+      box-shadow: none;
+    }
+
+    .btn-primary:hover,
+    .button.primary:hover,
+    button.btn-primary:hover {
+      background: var(--mr-blue-dark);
+      border-color: var(--mr-blue-dark);
+    }
+
+    #compose-button,
+    a.compose,
+    .toolbar a.compose,
+    .button.compose {
+      background: #c2e7ff;
+      border: 0;
+      border-radius: 16px;
+      box-shadow: var(--mr-shadow);
+      color: #001d35;
+      min-height: 46px;
+      padding-inline: 18px;
+    }
+
+    #compose-button:hover,
+    a.compose:hover,
+    .toolbar a.compose:hover,
+    .button.compose:hover {
+      background: #d3e3fd;
+    }
+
+    #mailsearchform,
+    .searchbar {
+      background: #edf2fa;
+      border: 1px solid transparent;
+      border-radius: 24px;
+      box-shadow: none;
+      color: var(--mr-ink);
+    }
+
+    #mailsearchform:focus-within,
+    .searchbar:focus-within {
+      background: #fff;
+      border-color: #c7d2fe;
+      box-shadow: var(--mr-shadow);
+    }
+
+    #mailboxlist li,
+    .treelist li {
+      border-radius: 0 999px 999px 0;
+      margin-right: 8px;
+    }
+
+    #mailboxlist li.selected > a,
+    #mailboxlist li.active > a,
+    .treelist li.selected > a,
+    .treelist li.active > a {
+      background: #d3e3fd;
+      color: #001d35;
+      font-weight: 700;
+    }
+
+    #messagelist tr,
+    .messagelist tr {
+      background: var(--mr-panel);
+      border-bottom: 1px solid var(--mr-line);
+    }
+
+    #messagelist tr:hover,
+    .messagelist tr:hover {
+      background: var(--mr-hover);
+      box-shadow: inset 1px 0 0 var(--mr-line), inset -1px 0 0 var(--mr-line);
+    }
+
+    #messagelist tr.selected,
+    .messagelist tr.selected {
+      background: var(--mr-selected);
+    }
+
+    #messagelist .subject,
+    .messagelist .subject {
+      color: var(--mr-ink);
+      font-weight: 500;
+    }
+
+    #messagelist .date,
+    #messagelist .fromto,
+    .messagelist .date,
+    .messagelist .fromto {
+      color: var(--mr-muted);
+    }
+
+    .iframe-wrapper,
+    .message-part,
+    .mailview-left,
+    .mailview-right {
+      background: var(--mr-panel);
+    }
+
+    body.task-login {
+      background:
+        radial-gradient(circle at 20% 16%, rgba(26, 115, 232, 0.08), transparent 28%),
+        radial-gradient(circle at 82% 20%, rgba(249, 171, 0, 0.10), transparent 24%),
+        linear-gradient(180deg, #fff 0%, #f8fafd 100%);
+    }
+
+    body.task-login #layout-content {
+      background: #fff;
+      border: 1px solid var(--mr-line);
+      border-radius: 24px;
+      box-shadow: var(--mr-shadow);
+      padding: 32px;
+    }
+
+    body.task-login #logo {
+      display: block;
+      height: auto;
+      margin: 0 auto 28px;
+      max-width: 260px;
+      width: 72%;
+    }
+
+    body.task-login #login-form input,
+    body.task-login #login-form .form-control {
+      border: 1px solid var(--mr-line);
+      border-radius: 12px;
+      min-height: 44px;
+    }
+
+    body.task-login #login-form input:focus,
+    body.task-login #login-form .form-control:focus {
+      border-color: var(--mr-blue);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.16);
+    }
+
+    body.task-login #login-form button,
+    body.task-login #login-form input[type="submit"] {
+      background: var(--mr-blue);
+      border-color: var(--mr-blue);
+      border-radius: 999px;
+      color: #fff;
+      min-height: 42px;
+      padding-inline: 22px;
+    }
+
+    #login-footer {
+      color: var(--mr-muted);
+    }
+  logo.svg: |
+    <svg xmlns="http://www.w3.org/2000/svg" width="360" height="96" viewBox="0 0 360 96" role="img" aria-labelledby="title desc">
+      <title id="title">MyRobertson Mail</title>
+      <desc id="desc">MyRobertson Mail brand mark</desc>
+      <rect width="360" height="96" rx="24" fill="#fff"/>
+      <path d="M39 29h58c5.5 0 10 4.5 10 10v34c0 5.5-4.5 10-10 10H39c-5.5 0-10-4.5-10-10V39c0-5.5 4.5-10 10-10Z" fill="#1a73e8"/>
+      <path d="M34 39l34 24 34-24" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M34 74l22-20M102 74L80 54" fill="none" stroke="#d3e3fd" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="102" cy="31" r="8" fill="#d93025"/>
+      <circle cx="85" cy="25" r="7" fill="#f9ab00"/>
+      <circle cx="112" cy="50" r="6" fill="#188038"/>
+      <text x="128" y="47" fill="#202124" font-family="Roboto, Arial, sans-serif" font-size="26" font-weight="700">MyRobertson</text>
+      <text x="129" y="72" fill="#5f6368" font-family="Roboto, Arial, sans-serif" font-size="18" font-weight="500">Mail</text>
+    </svg>

@@ -52,3 +52,26 @@ spec:
         - name: admin-start
           mountPath: /start.py
           subPath: start.py
+    customization:
+      siteName: MyRobertson Mail
+      website: https://myrobertson.com
+      logoUrl: /webmail/skins/elastic/images/logo.svg
+      logoBackground: "#ffffff"
+    webmail:
+      extraVolumes:
+        - name: webmail-branding
+          configMap:
+            name: mailu-webmail-branding
+      extraVolumeMounts:
+        - name: webmail-branding
+          mountPath: /overrides/myrobertson-branding.inc.php
+          subPath: myrobertson-branding.inc.php
+        - name: webmail-branding
+          mountPath: /var/www/roundcube/plugins/myrobertson_branding/myrobertson_branding.php
+          subPath: myrobertson_branding.php
+        - name: webmail-branding
+          mountPath: /var/www/roundcube/plugins/myrobertson_branding/myrobertson.css
+          subPath: myrobertson.css
+        - name: webmail-branding
+          mountPath: /var/www/roundcube/skins/elastic/images/logo.svg
+          subPath: logo.svg
