@@ -10,3 +10,5 @@ spec:
   commonName: mail.myrobertson.net
   dnsNames:
     - mail.myrobertson.net
+    - autoconfig.myrobertson.net
+    - autodiscover.myrobertson.net

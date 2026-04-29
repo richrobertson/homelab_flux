@@ -6,6 +6,8 @@ spec:
   values:
     hostnames:
       - mail.myrobertson.net
+      - autoconfig.myrobertson.net
+      - autodiscover.myrobertson.net
       - webmail.myrobertson.com
     subnet: 10.244.0.0/16
     proxyAuth:
@@ -24,9 +26,9 @@ spec:
           metallb.io/allow-shared-ip: mailu-front
           metallb.universe.tf/allow-shared-ip: mailu-front
         ports:
-          pop3: false
+          pop3: true
           pop3s: true
-          imap: false
+          imap: true
           imaps: true
           smtp: true
           smtps: true

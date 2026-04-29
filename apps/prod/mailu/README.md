@@ -10,9 +10,11 @@ Internet
   v
 Public Cloudflare zone for myrobertson.net
   - A mail.myrobertson.net -> AWS mail edge Elastic IP
+  - CNAME autoconfig.myrobertson.net -> mail.myrobertson.net
+  - CNAME autodiscover.myrobertson.net -> mail.myrobertson.net
   - MX myrobertson.net -> mail.myrobertson.net
   - SES verification, DKIM, and MAIL FROM records
-  - cert-manager writes temporary DNS-01 TXT records for mail.myrobertson.net
+  - cert-manager writes temporary DNS-01 TXT records for Mailu hostnames
   |
   v
 AWS EC2 mail edge
@@ -41,7 +43,7 @@ Browser -> webmail.myrobertson.com -> myrobertson-com Gateway -> Authelia LDAP -
 ## What Gets Deployed
 
 - Mailu Helm chart `2.7.0`
-- A prod TLS certificate for `mail.myrobertson.net` via the existing `letsencrypt-prod` issuer and direct Cloudflare DNS-01
+- A prod TLS certificate for `mail.myrobertson.net`, `autoconfig.myrobertson.net`, and `autodiscover.myrobertson.net` via the existing `letsencrypt-prod` issuer and direct Cloudflare DNS-01
 - Vault-backed Kubernetes Secrets for Mailu app credentials, SES relay credentials, and dynamic Helm values
 - A Vault-backed home-side WireGuard peer deployment pinned to `k8s-prod-worker-2`
 - VolSync replication sources for Mailu's stateful PVCs, all targeting the shared Backblaze B2 backup bucket
@@ -82,15 +84,17 @@ Mailu's VolSync backup credentials are rendered from the shared Vault path `secr
 
 - Public Cloudflare records required for Mailu:
   - `mail.myrobertson.net` `A`
+  - `autoconfig.myrobertson.net` `CNAME`
+  - `autodiscover.myrobertson.net` `CNAME`
   - `myrobertson.net` `MX`
   - SES verification, DKIM, and MAIL FROM records
 - Local `myrobertson.net` DNS should override `mail.myrobertson.net` to `10.31.0.73` for LAN clients.
   - Without that split-horizon override, local browsers hairpin through the AWS edge at `44.237.126.101` and can stall even while Mailu itself is healthy on the cluster VIP.
 - Automatically managed by cert-manager in Cloudflare:
-  - Temporary DNS-01 TXT records for `_acme-challenge.mail.myrobertson.net`
+  - Temporary DNS-01 TXT records for Mailu certificate names
 - Optional split-horizon/internal `myrobertson.net` records can still be managed separately if you want LAN resolution to mirror public mail DNS.
 - Still manual unless you choose to automate them separately:
-  - SPF, DMARC, MTA-STS, TLS-RPT, and any autodiscover/autoconfig records you want beyond the SES defaults
+  - SPF, DMARC, MTA-STS, and TLS-RPT records
 
 ## Post-Apply Steps
 
@@ -99,7 +103,7 @@ Mailu's VolSync backup credentials are rendered from the shared Vault path `secr
 3. Seed `secret/mailu/prod/wireguard-home-peer` with the rendered `wg0.conf` if Terraform is not managing it yet.
 4. Reconcile Flux and wait for `mailu-secret`, `mailu-ses-relay`, and `mailu-config` to sync from Vault.
 5. Confirm `mailu-wireguard-home-peer` is `Ready` on `k8s-prod-worker-2`.
-6. Confirm cert-manager can create and clean up `_acme-challenge.mail.myrobertson.net` TXT records in Cloudflare.
+6. Confirm cert-manager can create and clean up `_acme-challenge` TXT records in Cloudflare.
 7. Confirm the `mailu-certificates` certificate becomes Ready.
 8. Confirm `mailu-front-ext` and `mailu-front-web-ext` both share `10.31.0.73`.
 9. Sign in to Mailu as `admin@myrobertson.net` and rotate any credentials if desired.
@@ -111,6 +115,17 @@ Mailu is configured to relay outbound mail through Amazon SES SMTP rather than s
 - Relay hostname is injected from Vault as `[email-smtp.<region>.amazonaws.com]:587`
 - Username and password come from the `mailu-ses-relay` Secret
 - SES production sending approval is required before unrestricted outbound delivery will work.
+
+## Remote Client Settings
+
+Mailu serves Mozilla autoconfig and Microsoft Autodiscover over HTTPS on the public autoconfig hostnames.
+
+- Incoming IMAP: `mail.myrobertson.net`, port `143`, STARTTLS
+- Incoming IMAPS: `mail.myrobertson.net`, port `993`, TLS
+- Incoming POP3: `mail.myrobertson.net`, port `110`, STARTTLS
+- Incoming POP3S: `mail.myrobertson.net`, port `995`, TLS
+- Outgoing submission: `mail.myrobertson.net`, port `587`, STARTTLS
+- Outgoing SMTPS: `mail.myrobertson.net`, port `465`, TLS
 
 ## Observability
 
