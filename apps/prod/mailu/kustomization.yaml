@@ -6,6 +6,9 @@ resources:
   - admin-start-configmap.yaml
   - backup-volsync.yaml
   - certificate.yaml
+  - front-web-service.yaml
+  - wireguard-home-peer-secret.yaml
+  - wireguard-home-peer.yaml
 patches:
   - path: mailu-values.yaml
     target:

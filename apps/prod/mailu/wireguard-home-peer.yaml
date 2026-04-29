@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailu-wireguard-home-peer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mailu-wireguard-home-peer
+  template:
+    metadata:
+      labels:
+        app: mailu-wireguard-home-peer
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      nodeSelector:
+        kubernetes.io/hostname: k8s-prod-worker-2
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: wireguard
+          image: ghcr.io/linuxserver/wireguard:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              set -eux
+              wg-quick up wg0
+              trap 'wg-quick down wg0' TERM INT EXIT
+              sleep infinity & wait $!
+          securityContext:
+            privileged: true
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - wg show wg0 >/dev/null 2>&1
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - wg show wg0 >/dev/null 2>&1
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: config
+              mountPath: /config/wg_confs
+              readOnly: true
+      volumes:
+        - name: config
+          secret:
+            secretName: mailu-wireguard-home-peer
+            defaultMode: 0600

@@ -153,6 +153,7 @@ configMapGenerator:
     namespace: monitoring
     files:
       - dashboards/mailu-overview.json
+      - dashboards/mailu-auth-troubleshooting.json
     options:
       labels:
         grafana_dashboard: "1"

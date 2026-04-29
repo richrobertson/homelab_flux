@@ -4,6 +4,7 @@ metadata:
   name: mailu
 spec:
   values:
+    subnet: 10.244.0.0/16
     front:
       hostPort:
         enabled: false
@@ -12,6 +13,9 @@ spec:
         type: LoadBalancer
         loadBalancerIP: 10.31.0.73
         externalTrafficPolicy: Local
+        annotations:
+          metallb.io/allow-shared-ip: mailu-front
+          metallb.universe.tf/allow-shared-ip: mailu-front
         ports:
           pop3: false
           pop3s: true
