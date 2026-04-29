@@ -76,7 +76,7 @@ Mailu's VolSync backup credentials are rendered from the shared Vault path `secr
 - Initial admin account: `admin@myrobertson.net`
 - Retrieve the generated password from Vault or from the synced `mailu-secret` Kubernetes Secret after VSO reconciliation.
 - Direct login with local Mailu credentials remains available at `mail.myrobertson.net`.
-- LDAP SSO is available at `webmail.myrobertson.com` through Authelia. The Authelia `Remote-Email` header must match an existing Mailu account because proxy auto-creation is disabled.
+- LDAP SSO is available at `webmail.myrobertson.com` through Authelia. Mailu trusts Authelia's `Remote-Email` header and auto-creates missing Mailu accounts for authenticated LDAP users.
 
 ## DNS Handling
 

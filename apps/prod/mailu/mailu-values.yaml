@@ -11,7 +11,7 @@ spec:
     proxyAuth:
       whitelist: 10.244.0.0/16
       header: Remote-Email
-      create: "false"
+      create: "true"
     front:
       hostPort:
         enabled: false
