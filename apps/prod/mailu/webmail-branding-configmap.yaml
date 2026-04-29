@@ -7,20 +7,34 @@ data:
     <?php
     $config['product_name'] = 'MyRobertson Mail';
     $config['support_url'] = 'https://myrobertson.com';
-    $config['plugins'][] = 'myrobertson_branding';
+    $config['skin'] = 'myrobertson_gmail';
     $config['display_product_info'] = 1;
-  myrobertson_branding.php: |
-    <?php
-    class myrobertson_branding extends rcube_plugin
+  meta.json: |
     {
-        public $task = '.*';
-
-        public function init()
-        {
-            $this->include_stylesheet('myrobertson.css');
-        }
+      "extends": "elastic",
+      "name": "MyRobertson Gmail",
+      "author": "MyRobertson",
+      "url": "https://myrobertson.com",
+      "license": "Private",
+      "localization": false,
+      "config": {
+        "supported_layouts": ["widescreen"],
+        "jquery_ui_colors_theme": "bootstrap",
+        "embed_css_location": "/styles/embed.css",
+        "editor_css_location": "/styles/embed.css",
+        "dark_mode_support": false,
+        "media_browser_css_location": "none",
+        "additional_logo_types": []
+      },
+      "meta": {
+        "viewport": "width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1.0",
+        "theme-color": "#f8fafd",
+        "msapplication-navbutton-color": "#f8fafd"
+      }
     }
-  myrobertson.css: |
+  styles.min.css: |
+    @import url("../../elastic/styles/styles.min.css");
+
     :root {
       --mr-blue: #1a73e8;
       --mr-blue-dark: #1558b0;
@@ -35,8 +49,10 @@ data:
       --mr-hover: #f1f3f4;
       --mr-selected: #e8f0fe;
       --mr-shadow: 0 1px 2px rgba(60, 64, 67, 0.18), 0 1px 3px rgba(60, 64, 67, 0.12);
+      --mr-header-height: 64px;
     }
 
+    html,
     body,
     body.mail,
     body.task-mail,
@@ -45,6 +61,43 @@ data:
       background: var(--mr-bg);
       color: var(--mr-ink);
       font-family: Roboto, Arial, sans-serif;
+    }
+
+    body:not(.task-login)::before {
+      align-items: center;
+      background: var(--mr-panel);
+      border-bottom: 1px solid var(--mr-line);
+      color: var(--mr-ink);
+      content: "MyRobertson Mail";
+      display: flex;
+      font-size: 20px;
+      font-weight: 500;
+      height: var(--mr-header-height);
+      left: 0;
+      letter-spacing: 0;
+      padding-left: 88px;
+      position: fixed;
+      right: 0;
+      top: 0;
+      z-index: 100;
+    }
+
+    body:not(.task-login)::after {
+      background: url("../images/logo.svg") center / contain no-repeat;
+      content: "";
+      height: 42px;
+      left: 24px;
+      position: fixed;
+      top: 11px;
+      width: 48px;
+      z-index: 101;
+    }
+
+    body:not(.task-login) #layout-menu,
+    body:not(.task-login) #layout-sidebar,
+    body:not(.task-login) #layout-list,
+    body:not(.task-login) #layout-content {
+      margin-top: var(--mr-header-height);
     }
 
     #layout-menu,
@@ -58,12 +111,18 @@ data:
     }
 
     #layout-menu {
+      border-right: 0;
       box-shadow: inset -1px 0 0 var(--mr-line);
+      padding-top: 12px;
     }
 
-    #layout-menu .popover-header img,
-    #layout-menu .popover-header .app-logo {
-      max-height: 38px;
+    #layout-menu .menu a,
+    #layout-menu a,
+    #layout-sidebar a,
+    .treelist li a {
+      border-radius: 0 999px 999px 0;
+      color: var(--mr-muted);
+      font-weight: 500;
     }
 
     .button,
@@ -103,6 +162,14 @@ data:
       padding-inline: 18px;
     }
 
+    #layout-menu a:hover,
+    #layout-sidebar a:hover,
+    .treelist li a:hover {
+      background: var(--mr-hover);
+      color: var(--mr-ink);
+      text-decoration: none;
+    }
+
     #compose-button:hover,
     a.compose:hover,
     .toolbar a.compose:hover,
@@ -126,6 +193,12 @@ data:
       box-shadow: var(--mr-shadow);
     }
 
+    #layout-list .header,
+    #layout-content .header,
+    #layout-sidebar .header {
+      min-height: 56px;
+    }
+
     #mailboxlist li,
     .treelist li {
       border-radius: 0 999px 999px 0;
@@ -141,6 +214,8 @@ data:
       font-weight: 700;
     }
 
+    .listing,
+    table.messagelist,
     #messagelist tr,
     .messagelist tr {
       background: var(--mr-panel);
@@ -158,6 +233,18 @@ data:
       background: var(--mr-selected);
     }
 
+    #messagelist tr.unread td,
+    .messagelist tr.unread td {
+      color: var(--mr-ink);
+      font-weight: 700;
+    }
+
+    #messagelist td,
+    .messagelist td {
+      min-height: 42px;
+      padding-block: 10px;
+    }
+
     #messagelist .subject,
     .messagelist .subject {
       color: var(--mr-ink);
@@ -169,6 +256,20 @@ data:
     .messagelist .date,
     .messagelist .fromto {
       color: var(--mr-muted);
+    }
+
+    .toolbar a,
+    .toolbar .button,
+    .toolbar-button,
+    .header a.button {
+      border-radius: 999px;
+    }
+
+    .toolbar a:hover,
+    .toolbar .button:hover,
+    .toolbar-button:hover,
+    .header a.button:hover {
+      background: var(--mr-hover);
     }
 
     .iframe-wrapper,
@@ -226,6 +327,24 @@ data:
 
     #login-footer {
       color: var(--mr-muted);
+    }
+
+    @media (max-width: 768px) {
+      body:not(.task-login)::before {
+        font-size: 18px;
+        padding-left: 74px;
+      }
+
+      body:not(.task-login)::after {
+        left: 18px;
+      }
+
+      body:not(.task-login) #layout-menu,
+      body:not(.task-login) #layout-sidebar,
+      body:not(.task-login) #layout-list,
+      body:not(.task-login) #layout-content {
+        margin-top: 0;
+      }
     }
   logo.svg: |
     <svg xmlns="http://www.w3.org/2000/svg" width="360" height="96" viewBox="0 0 360 96" role="img" aria-labelledby="title desc">

@@ -55,23 +55,26 @@ spec:
     customization:
       siteName: MyRobertson Mail
       website: https://myrobertson.com
-      logoUrl: /webmail/skins/elastic/images/logo.svg
+      logoUrl: /webmail/skins/myrobertson_gmail/images/logo.svg
       logoBackground: "#ffffff"
     webmail:
       extraVolumes:
         - name: webmail-branding
           configMap:
             name: mailu-webmail-branding
+        - name: webmail-gmail-skin
+          configMap:
+            name: mailu-webmail-branding
+            items:
+              - key: meta.json
+                path: meta.json
+              - key: styles.min.css
+                path: styles/styles.min.css
+              - key: logo.svg
+                path: images/logo.svg
       extraVolumeMounts:
         - name: webmail-branding
           mountPath: /overrides/myrobertson-branding.inc.php
           subPath: myrobertson-branding.inc.php
-        - name: webmail-branding
-          mountPath: /var/www/roundcube/plugins/myrobertson_branding/myrobertson_branding.php
-          subPath: myrobertson_branding.php
-        - name: webmail-branding
-          mountPath: /var/www/roundcube/plugins/myrobertson_branding/myrobertson.css
-          subPath: myrobertson.css
-        - name: webmail-branding
-          mountPath: /var/www/roundcube/skins/elastic/images/logo.svg
-          subPath: logo.svg
+        - name: webmail-gmail-skin
+          mountPath: /var/www/roundcube/skins/myrobertson_gmail
