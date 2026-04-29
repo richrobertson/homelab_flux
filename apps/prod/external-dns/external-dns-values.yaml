@@ -9,6 +9,7 @@ spec:
     provider:
       name: cloudflare
     sources:
+      - crd
       - gateway-httproute
       - service
     domainFilters:

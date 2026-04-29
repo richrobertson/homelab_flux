@@ -7,6 +7,7 @@ resources:
   - backup-volsync.yaml
   - backend-tls-policy.yaml
   - certificate.yaml
+  - dnsendpoint.yaml
   - front-web-service.yaml
   - auth-policy.yaml
   - httproute-sso.yaml

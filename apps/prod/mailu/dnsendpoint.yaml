@@ -1,0 +1,22 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: mailu-autoconfig
+spec:
+  endpoints:
+    - dnsName: autoconfig.myrobertson.net
+      recordType: CNAME
+      recordTTL: 300
+      targets:
+        - mail.myrobertson.net
+      providerSpecific:
+        - name: external-dns.alpha.kubernetes.io/cloudflare-proxied
+          value: "false"
+    - dnsName: autodiscover.myrobertson.net
+      recordType: CNAME
+      recordTTL: 300
+      targets:
+        - mail.myrobertson.net
+      providerSpecific:
+        - name: external-dns.alpha.kubernetes.io/cloudflare-proxied
+          value: "false"
