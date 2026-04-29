@@ -97,14 +97,3 @@ spec:
           annotations:
             summary: Ceph OSD backend address is not on Thunderbolt
             description: "{{ $labels.node }} osd.{{ $labels.osd }} backend address is {{ $labels.address }}, not a 10.0.0.x Thunderbolt address."
-
-        - alert: ProxmoxCephPublicNetworkCutoverPending
-          expr: |
-            min(proxmox_ceph_network_configured{job="proxmox-node-exporter", network_role="public", expected_network="10.0.0.0/24"}) < 1
-          for: 6h
-          labels:
-            domain: ceph
-            severity: info
-          annotations:
-            summary: Ceph public/client network cutover is still pending
-            description: Ceph public_network is not yet 10.0.0.0/24. Keep K8s and Proxmox client references staged before changing monitor/front addresses.

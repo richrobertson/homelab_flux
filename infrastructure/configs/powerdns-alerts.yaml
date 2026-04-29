@@ -103,28 +103,3 @@ spec:
           annotations:
             summary: PowerDNS Recursor SERVFAIL rate is high
             description: More than 5% of recursor answers have been SERVFAIL responses for at least 15 minutes.
-
-        - alert: PowerDNSRecursorCacheHitRatioLow
-          expr: |
-            (
-              rate(pdns_recursor_cache_hits{job="powerdns-recursor"}[30m])
-                + rate(pdns_recursor_packetcache_hits{job="powerdns-recursor"}[30m])
-            )
-              /
-            clamp_min(
-              rate(pdns_recursor_cache_hits{job="powerdns-recursor"}[30m])
-                + rate(pdns_recursor_cache_misses{job="powerdns-recursor"}[30m])
-                + rate(pdns_recursor_packetcache_hits{job="powerdns-recursor"}[30m])
-                + rate(pdns_recursor_packetcache_misses{job="powerdns-recursor"}[30m]),
-              1
-            ) < 0.40
-              and
-            rate(pdns_recursor_questions{job="powerdns-recursor"}[30m]) > 1
-          for: 1h
-          labels:
-            domain: powerdns
-            severity: warning
-            service: recursor
-          annotations:
-            summary: PowerDNS Recursor cache hit ratio is low
-            description: Combined record and packet cache hit ratio has stayed below 40% for at least 1 hour.
