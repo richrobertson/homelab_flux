@@ -129,6 +129,9 @@ spec:
       serviceMonitor:
         enabled: true
         interval: 30s
+      overrides:
+        greylist.conf: |
+          enabled = false;
     clamav:
       persistence:
         enabled: true
