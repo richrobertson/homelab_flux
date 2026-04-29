@@ -84,6 +84,8 @@ spec:
         storageClass: ceph-block
         size: 20Gi
     dovecot:
+      updateStrategy:
+        type: Recreate
       persistence:
         storageClass: ceph-block
         size: 20Gi
