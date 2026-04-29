@@ -7,6 +7,8 @@ resources:
   - backup-volsync.yaml
   - certificate.yaml
   - front-web-service.yaml
+  - auth-policy.yaml
+  - httproute-sso.yaml
   - wireguard-home-peer-secret.yaml
   - wireguard-home-peer.yaml
 patches:

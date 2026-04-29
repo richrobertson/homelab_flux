@@ -4,7 +4,14 @@ metadata:
   name: mailu
 spec:
   values:
+    hostnames:
+      - mail.myrobertson.net
+      - webmail.myrobertson.com
     subnet: 10.244.0.0/16
+    proxyAuth:
+      whitelist: 10.244.0.0/16
+      header: Remote-Email
+      create: "false"
     front:
       hostPort:
         enabled: false

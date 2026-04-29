@@ -33,6 +33,9 @@ Mailu pods on the prod cluster
 
 Outbound mail:
 Mailu/Postfix -> Amazon SES SMTP relay on 587
+
+SSO webmail:
+Browser -> webmail.myrobertson.com -> myrobertson-com Gateway -> Authelia LDAP -> Mailu proxy auth
 ```
 
 ## What Gets Deployed
@@ -43,6 +46,7 @@ Mailu/Postfix -> Amazon SES SMTP relay on 587
 - A Vault-backed home-side WireGuard peer deployment pinned to `k8s-prod-worker-2`
 - VolSync replication sources for Mailu's stateful PVCs, all targeting the shared Backblaze B2 backup bucket
 - A stable MetalLB address on `10.31.0.73` for Mailu mail and web services
+- An Authelia-protected `webmail.myrobertson.com` path for LDAP SSO into existing Mailu accounts
 - Prometheus ServiceMonitors for Dovecot and Rspamd, plus a provisioned Grafana overview dashboard
 - A Mailu-specific pod network override so Dovecot trusts the real cluster pod CIDR for front-to-backend proxy auth
 
@@ -71,6 +75,8 @@ Mailu's VolSync backup credentials are rendered from the shared Vault path `secr
 
 - Initial admin account: `admin@myrobertson.net`
 - Retrieve the generated password from Vault or from the synced `mailu-secret` Kubernetes Secret after VSO reconciliation.
+- Direct login with local Mailu credentials remains available at `mail.myrobertson.net`.
+- LDAP SSO is available at `webmail.myrobertson.com` through Authelia. The Authelia `Remote-Email` header must match an existing Mailu account because proxy auto-creation is disabled.
 
 ## DNS Handling
 
@@ -117,4 +123,5 @@ Mailu is configured to relay outbound mail through Amazon SES SMTP rather than s
 ## Operational Flow
 
 - Inbound mail/web: internet -> Cloudflare public DNS for `myrobertson.net` -> AWS Elastic IP -> EC2 HAProxy/WireGuard -> `mailu-front-ext` and `mailu-front-web-ext` on `10.31.0.73`
+- SSO webmail: browser -> `webmail.myrobertson.com` -> `myrobertson-com-gateway` -> Authelia LDAP ext-auth -> `mailu-front` port 80 with `Remote-Email` proxy auth
 - Outbound mail: Mailu -> SES SMTP -> recipient mail exchangers
