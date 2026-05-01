@@ -43,6 +43,108 @@ spec:
             summary: UniFi security reporter telemetry is stale
             description: The UniFi security reporter has not completed a scrape for more than 30 minutes. This usually points to a stuck process or gateway access issue.
 
+        - alert: UniFiGatewayCpuSaturatedWhileFiltering
+          expr: |
+            (
+              1 -
+              (
+                sum(rate(unifi_gateway_cpu_seconds_total{job="unifi-security-reporter", mode=~"idle|iowait"}[10m]))
+                /
+                sum(rate(unifi_gateway_cpu_seconds_total{job="unifi-security-reporter"}[10m]))
+              )
+            ) > 0.90
+            and
+            (
+              sum(unifi_security_threat_events_recent{job="unifi-security-reporter", window="10m", severity=~"high|critical"}) >= 25
+              or
+              sum(rate(unifi_gateway_interface_bytes_total{job="unifi-security-reporter", direction=~"rx|tx"}[10m])) * 8 > 700000000
+            )
+          for: 10m
+          labels:
+            domain: security
+            severity: critical
+          annotations:
+            summary: UniFi gateway CPU is saturated while routing or filtering
+            description: Gateway CPU has been above 90% for 10 minutes while security filtering or routed traffic is materially active. Network security and forwarding stability may be degraded.
+
+        - alert: UniFiGatewayLoadSustainedHigh
+          expr: |
+            unifi_gateway_load_average{job="unifi-security-reporter", interval="5m"} / unifi_gateway_cpu_cores{job="unifi-security-reporter"} > 1.75
+          for: 15m
+          labels:
+            domain: security
+            severity: warning
+          annotations:
+            summary: UniFi gateway load is persistently high
+            description: Gateway 5 minute load average has exceeded 1.75x online CPU cores for at least 15 minutes. Review traffic, IDS/IPS load, and gateway process health.
+
+        - alert: UniFiGatewayMemoryPressure
+          expr: |
+            sum(unifi_gateway_memory_bytes{job="unifi-security-reporter", state="available"})
+              /
+            sum(unifi_gateway_memory_bytes{job="unifi-security-reporter", state="total"}) < 0.10
+          for: 15m
+          labels:
+            domain: security
+            severity: critical
+          annotations:
+            summary: UniFi gateway memory headroom is low
+            description: Gateway available memory has been below 10% for at least 15 minutes. Filtering, routing, and management-plane stability may be at risk.
+
+        - alert: UniFiGatewayCoreInterfaceDown
+          expr: |
+            unifi_gateway_interface_up{job="unifi-security-reporter", role=~"wan|lan"} == 0
+          for: 2m
+          labels:
+            domain: security
+            severity: critical
+          annotations:
+            summary: UniFi gateway core interface is down
+            description: Gateway {{ $labels.role }} interface {{ $labels.device }} has reported down for at least 2 minutes.
+
+        - alert: UniFiGatewayInterfaceErrorsOrDrops
+          expr: |
+            (
+              sum by (device, role) (rate(unifi_gateway_interface_errors_total{job="unifi-security-reporter", role=~"wan|lan"}[5m]))
+              +
+              sum by (device, role) (rate(unifi_gateway_interface_drops_total{job="unifi-security-reporter", role=~"wan|lan"}[5m]))
+            ) > 10
+          for: 10m
+          labels:
+            domain: security
+            severity: critical
+          annotations:
+            summary: UniFi gateway interface impairment
+            description: Gateway {{ $labels.role }} interface {{ $labels.device }} is seeing more than 10 errors/drops per second for 10 minutes, which can degrade routing and filtering.
+
+        - alert: UniFiGatewayTrafficNearCapacity
+          expr: |
+            (
+              sum by (device, role) (rate(unifi_gateway_interface_bytes_total{job="unifi-security-reporter", role=~"wan|lan"}[10m])) * 8
+              /
+              max by (device, role) (unifi_gateway_interface_speed_bits{job="unifi-security-reporter", role=~"wan|lan"})
+            ) > 0.85
+            and on(device, role)
+            max by (device, role) (unifi_gateway_interface_speed_bits{job="unifi-security-reporter", role=~"wan|lan"}) > 0
+            and on()
+            (
+              (
+                1 -
+                (
+                  sum(rate(unifi_gateway_cpu_seconds_total{job="unifi-security-reporter", mode=~"idle|iowait"}[10m]))
+                  /
+                  sum(rate(unifi_gateway_cpu_seconds_total{job="unifi-security-reporter"}[10m]))
+                )
+              ) > 0.70
+            )
+          for: 10m
+          labels:
+            domain: security
+            severity: critical
+          annotations:
+            summary: UniFi gateway traffic is near interface capacity
+            description: Gateway {{ $labels.role }} interface {{ $labels.device }} is above 85% of negotiated capacity while CPU is above 70%. Routing and filtering headroom may be exhausted.
+
         - alert: UniFiHighSeverityThreatBurst
           expr: |
             sum(unifi_security_threat_events_recent{job="unifi-security-reporter", window="10m", severity=~"high|critical"}) >= 50

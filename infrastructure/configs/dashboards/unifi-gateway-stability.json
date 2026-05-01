@@ -31,37 +31,24 @@
           "color": {
             "mode": "thresholds"
           },
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "color": "red",
-                  "index": 0,
-                  "text": "Failing"
-                },
-                "1": {
-                  "color": "green",
-                  "index": 1,
-                  "text": "Healthy"
-                }
-              },
-              "type": "value"
-            }
-          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
+                "color": "green",
                 "value": null
               },
               {
-                "color": "green",
-                "value": 1
+                "color": "orange",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
               }
             ]
           },
-          "unit": "none"
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -74,7 +61,7 @@
       "id": 1,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
@@ -84,19 +71,19 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto",
+        "textMode": "value_and_name",
         "wideLayout": true
       },
       "targets": [
         {
           "editorMode": "code",
-          "expr": "unifi_security_scrape_success{job=\"unifi-security-reporter\"}",
+          "expr": "100 * (1 - (sum(rate(unifi_gateway_cpu_seconds_total{job=\"unifi-security-reporter\",mode=~\"idle|iowait\"}[5m])) / sum(rate(unifi_gateway_cpu_seconds_total{job=\"unifi-security-reporter\"}[5m]))))",
           "instant": true,
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Gateway Alert Scrape",
+      "title": "Gateway CPU Used",
       "type": "stat"
     },
     {
@@ -113,20 +100,20 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
               },
               {
                 "color": "orange",
-                "value": 900
+                "value": 10
               },
               {
-                "color": "red",
-                "value": 1800
+                "color": "green",
+                "value": 20
               }
             ]
           },
-          "unit": "s"
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -139,7 +126,7 @@
       "id": 2,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
@@ -155,13 +142,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "time() - unifi_security_last_scrape_timestamp_seconds{job=\"unifi-security-reporter\"}",
+          "expr": "100 * sum(unifi_gateway_memory_bytes{job=\"unifi-security-reporter\",state=\"available\"}) / sum(unifi_gateway_memory_bytes{job=\"unifi-security-reporter\",state=\"total\"})",
           "instant": true,
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Last Successful Scrape Age",
+      "title": "Memory Available",
       "type": "stat"
     },
     {
@@ -183,15 +170,15 @@
               },
               {
                 "color": "orange",
-                "value": 86400
+                "value": 1
               },
               {
                 "color": "red",
-                "value": 172800
+                "value": 1.75
               }
             ]
           },
-          "unit": "s"
+          "unit": "none"
         },
         "overrides": []
       },
@@ -204,7 +191,7 @@
       "id": 3,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
@@ -220,13 +207,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "time() - unifi_security_last_event_timestamp_seconds{job=\"unifi-security-reporter\"}",
+          "expr": "unifi_gateway_load_average{job=\"unifi-security-reporter\",interval=\"5m\"} / unifi_gateway_cpu_cores{job=\"unifi-security-reporter\"}",
           "instant": true,
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Last Gateway Event Age",
+      "title": "5m Load Per Core",
       "type": "stat"
     },
     {
@@ -248,15 +235,15 @@
               },
               {
                 "color": "orange",
-                "value": 90000
+                "value": 1
               },
               {
                 "color": "red",
-                "value": 108000
+                "value": 2
               }
             ]
           },
-          "unit": "s"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -285,14 +272,101 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "time() - kube_cronjob_status_last_successful_time{namespace=\"monitoring\",cronjob=\"unifi-security-daily-email\"}",
+          "expr": "count(ALERTS{alertstate=\"firing\",alertname=~\"UniFiGateway.*\"}) or on() vector(0)",
           "instant": true,
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Daily Email Success Age",
+      "title": "Gateway Capacity Alerts",
       "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 14,
+        "x": 0,
+        "y": 5
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "rate(unifi_gateway_interface_bytes_total{job=\"unifi-security-reporter\",role=~\"wan|lan\"}[$__rate_interval]) * 8",
+          "legendFormat": "{{role}} {{device}} {{direction}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Routed Interface Throughput",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -318,14 +392,14 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "stepAfter",
+            "lineInterpolation": "linear",
             "lineWidth": 2,
             "pointSize": 4,
             "scaleDistribution": {
               "type": "linear"
             },
             "showPoints": "never",
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -334,51 +408,39 @@
               "mode": "line"
             }
           },
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "color": "red",
-                  "index": 0,
-                  "text": "Fail"
-                },
-                "1": {
-                  "color": "green",
-                  "index": 1,
-                  "text": "OK"
-                }
-              },
-              "type": "value"
-            }
-          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
+                "color": "green",
                 "value": null
               },
               {
-                "color": "green",
-                "value": 1
+                "color": "orange",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 85
               }
             ]
           },
-          "unit": "none"
+          "unit": "percent"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 0,
+        "w": 10,
+        "x": 14,
         "y": 5
       },
-      "id": 5,
+      "id": 6,
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull"
+            "lastNotNull",
+            "max"
           ],
           "displayMode": "table",
           "placement": "bottom",
@@ -386,19 +448,19 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "desc"
         }
       },
       "targets": [
         {
           "editorMode": "code",
-          "expr": "unifi_security_scrape_success{job=\"unifi-security-reporter\"}",
-          "legendFormat": "gateway alert scrape",
+          "expr": "100 * sum by (device,role) (rate(unifi_gateway_interface_bytes_total{job=\"unifi-security-reporter\",role=~\"wan|lan\"}[$__rate_interval])) * 8 / max by (device,role) (unifi_gateway_interface_speed_bits{job=\"unifi-security-reporter\",role=~\"wan|lan\"})",
+          "legendFormat": "{{role}} {{device}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Gateway Telemetry Availability",
+      "title": "Interface Capacity Used",
       "type": "timeseries"
     },
     {
@@ -447,28 +509,20 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "orange",
-                "value": 300
-              },
-              {
-                "color": "red",
-                "value": 900
               }
             ]
           },
-          "unit": "s"
+          "unit": "percent"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 12,
-        "y": 5
+        "x": 0,
+        "y": 13
       },
-      "id": 6,
+      "id": 7,
       "options": {
         "legend": {
           "calcs": [
@@ -487,13 +541,20 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "time() - unifi_security_last_scrape_timestamp_seconds{job=\"unifi-security-reporter\"}",
-          "legendFormat": "scrape age",
+          "expr": "100 * (1 - (sum(rate(unifi_gateway_cpu_seconds_total{job=\"unifi-security-reporter\",mode=~\"idle|iowait\"}[$__rate_interval])) / sum(rate(unifi_gateway_cpu_seconds_total{job=\"unifi-security-reporter\"}[$__rate_interval]))))",
+          "legendFormat": "CPU used",
           "range": true,
           "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "expr": "100 * sum(unifi_gateway_memory_bytes{job=\"unifi-security-reporter\",state=\"available\"}) / sum(unifi_gateway_memory_bytes{job=\"unifi-security-reporter\",state=\"total\"})",
+          "legendFormat": "memory available",
+          "range": true,
+          "refId": "B"
         }
       ],
-      "title": "Telemetry Freshness",
+      "title": "Gateway Resource Headroom",
       "type": "timeseries"
     },
     {
@@ -504,7 +565,37 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "thresholds": {
             "mode": "absolute",
@@ -512,14 +603,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "orange",
-                "value": 1
-              },
-              {
-                "color": "red",
-                "value": 3
               }
             ]
           },
@@ -528,163 +611,45 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 0,
-        "y": 13
-      },
-      "id": 7,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "targets": [
-        {
-          "editorMode": "code",
-          "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"monitoring\",container=\"unifi-security-reporter\"}[$__range])) or on() vector(0)",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Reporter Restarts",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 8,
+        "h": 8,
+        "w": 12,
+        "x": 12,
         "y": 13
       },
       "id": 8,
       "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
+        "legend": {
           "calcs": [
-            "lastNotNull"
+            "lastNotNull",
+            "max"
           ],
-          "fields": "",
-          "values": false
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
         },
-        "textMode": "value_and_name",
-        "wideLayout": true
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(kube_job_status_failed{namespace=\"monitoring\",job_name=~\"unifi-security-daily-email-.*\"}) or on() vector(0)",
-          "instant": true,
-          "range": false,
+          "expr": "sum by (device,role,direction) (rate(unifi_gateway_interface_errors_total{job=\"unifi-security-reporter\",role=~\"wan|lan\"}[$__rate_interval]))",
+          "legendFormat": "{{role}} {{device}} {{direction}} errors/s",
+          "range": true,
           "refId": "A"
-        }
-      ],
-      "title": "Daily Email Job Failures",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 1
-              },
-              {
-                "color": "red",
-                "value": 2
-              }
-            ]
-          },
-          "unit": "short"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 16,
-        "y": 13
-      },
-      "id": 9,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "targets": [
         {
           "editorMode": "code",
-          "expr": "count(ALERTS{alertstate=\"firing\",alertname=~\"UniFiSecurityReporter.*|UniFiSecurityDailyEmail.*\"}) or on() vector(0)",
-          "instant": true,
-          "range": false,
-          "refId": "A"
+          "expr": "sum by (device,role,direction) (rate(unifi_gateway_interface_drops_total{job=\"unifi-security-reporter\",role=~\"wan|lan\"}[$__rate_interval]))",
+          "legendFormat": "{{role}} {{device}} {{direction}} drops/s",
+          "range": true,
+          "refId": "B"
         }
       ],
-      "title": "Telemetry Path Alerts",
-      "type": "stat"
+      "title": "Interface Errors and Drops",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -720,9 +685,9 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 21
       },
-      "id": 10,
+      "id": 9,
       "options": {
         "cellHeight": "sm",
         "footer": {
@@ -738,14 +703,14 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "ALERTS{alertstate=\"firing\",alertname=~\"UniFiSecurityReporter.*|UniFiSecurityDailyEmail.*\"}",
+          "expr": "ALERTS{alertstate=\"firing\",alertname=~\"UniFiGateway.*|UniFiSecurityReporter.*\"}",
           "format": "table",
           "instant": true,
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Active Gateway Telemetry Alerts",
+      "title": "Active Gateway Stability Alerts",
       "type": "table"
     }
   ],
@@ -754,7 +719,8 @@
   "tags": [
     "unifi",
     "gateway",
-    "stability"
+    "stability",
+    "capacity"
   ],
   "templating": {
     "list": []
@@ -767,6 +733,6 @@
   "timezone": "browser",
   "title": "UniFi Gateway Stability",
   "uid": "unifi-gateway-stability",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }

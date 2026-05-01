@@ -8,6 +8,7 @@ data:
   POLL_INTERVAL_SECONDS: "60"
   QUERY_LOOKBACK_HOURS: "24"
   TOP_LIMIT: "10"
+  GATEWAY_INTERFACES: "eth9,eth10"
   METRICS_PORT: "8080"
   SMTP_HOST: "email-smtp.us-west-2.amazonaws.com"
   SMTP_PORT: "587"

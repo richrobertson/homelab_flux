@@ -8,6 +8,7 @@ import html
 import json
 import logging
 import os
+import re
 import smtplib
 import socket
 import sys
@@ -33,6 +34,7 @@ class Settings:
     metrics_port: int = int(os.getenv("METRICS_PORT", "8080"))
     query_lookback_hours: int = int(os.getenv("QUERY_LOOKBACK_HOURS", "24"))
     top_limit: int = int(os.getenv("TOP_LIMIT", "10"))
+    gateway_interfaces: str = os.getenv("GATEWAY_INTERFACES", "eth9,eth10")
     smtp_host: str = os.getenv("SMTP_HOST", "email-smtp.us-west-2.amazonaws.com")
     smtp_port: int = int(os.getenv("SMTP_PORT", "587"))
     smtp_username: str = os.getenv("SMTP_USERNAME", "")
@@ -152,6 +154,125 @@ def run_gateway_command(settings: Settings, command: str) -> str:
         client.close()
 
 
+@dataclass(frozen=True)
+class GatewayInterfaceStats:
+    device: str
+    role: str
+    operstate_up: float
+    speed_bits_per_second: float
+    rx_bytes: float
+    tx_bytes: float
+    rx_packets: float
+    tx_packets: float
+    rx_errors: float
+    tx_errors: float
+    rx_dropped: float
+    tx_dropped: float
+
+
+@dataclass(frozen=True)
+class GatewayHealth:
+    cpu: dict[str, float]
+    load1: float
+    load5: float
+    load15: float
+    cpu_cores: float
+    mem_total_bytes: float
+    mem_available_bytes: float
+    interfaces: list[GatewayInterfaceStats]
+
+
+def fetch_gateway_health(settings: Settings) -> GatewayHealth:
+    devices = [item.strip() for item in settings.gateway_interfaces.split(",") if item.strip()]
+    safe_devices = [device for device in devices if re.fullmatch(r"[A-Za-z0-9_.:-]+", device)]
+    if not safe_devices:
+        raise RuntimeError("GATEWAY_INTERFACES did not contain any safe interface names")
+
+    command = r"""
+set -eu
+echo "LOAD $(cat /proc/loadavg)"
+echo "NPROC $(getconf _NPROCESSORS_ONLN 2>/dev/null || nproc 2>/dev/null || echo 1)"
+grep -E '^(MemTotal|MemAvailable):' /proc/meminfo | sed 's/^/MEM /'
+head -n1 /proc/stat | sed 's/^/CPU /'
+for dev in """ + " ".join(_shell_quote(device) for device in safe_devices) + r"""; do
+  if [ -d "/sys/class/net/$dev" ]; then
+    echo "IFACE $dev"
+    cat "/sys/class/net/$dev/operstate" 2>/dev/null | sed "s/^/OPER $dev /" || true
+    cat "/sys/class/net/$dev/speed" 2>/dev/null | sed "s/^/SPEED $dev /" || true
+    for stat in rx_bytes tx_bytes rx_packets tx_packets rx_errors tx_errors rx_dropped tx_dropped; do
+      cat "/sys/class/net/$dev/statistics/$stat" 2>/dev/null | sed "s/^/STAT $dev $stat /" || true
+    done
+  fi
+done
+"""
+    output = run_gateway_command(settings, command)
+    cpu: dict[str, float] = {}
+    load1 = load5 = load15 = 0.0
+    cpu_cores = 1.0
+    mem_total_bytes = mem_available_bytes = 0.0
+    iface_data: dict[str, dict[str, float | str]] = {}
+
+    for raw_line in output.splitlines():
+        parts = raw_line.split()
+        if not parts:
+            continue
+        if parts[0] == "LOAD" and len(parts) >= 4:
+            load1, load5, load15 = float(parts[1]), float(parts[2]), float(parts[3])
+        elif parts[0] == "NPROC" and len(parts) >= 2:
+            cpu_cores = max(float(parts[1]), 1.0)
+        elif parts[:2] == ["MEM", "MemTotal:"] and len(parts) >= 3:
+            mem_total_bytes = float(parts[2]) * 1024
+        elif parts[:2] == ["MEM", "MemAvailable:"] and len(parts) >= 3:
+            mem_available_bytes = float(parts[2]) * 1024
+        elif parts[:2] == ["CPU", "cpu"] and len(parts) >= 12:
+            labels = ["user", "nice", "system", "idle", "iowait", "irq", "softirq", "steal", "guest", "guest_nice"]
+            cpu = {label: float(value) for label, value in zip(labels, parts[2:12])}
+        elif parts[0] == "IFACE" and len(parts) >= 2:
+            iface_data.setdefault(parts[1], {})
+        elif parts[0] == "OPER" and len(parts) >= 3:
+            iface_data.setdefault(parts[1], {})["operstate"] = parts[2]
+        elif parts[0] == "SPEED" and len(parts) >= 3:
+            try:
+                speed_mbps = float(parts[2])
+            except ValueError:
+                speed_mbps = 0.0
+            iface_data.setdefault(parts[1], {})["speed_bits_per_second"] = max(speed_mbps, 0.0) * 1_000_000
+        elif parts[0] == "STAT" and len(parts) >= 4:
+            iface_data.setdefault(parts[1], {})[parts[2]] = float(parts[3])
+
+    interfaces = []
+    for device in safe_devices:
+        data = iface_data.get(device, {})
+        role = "wan" if device == safe_devices[0] else "lan" if len(safe_devices) > 1 and device == safe_devices[1] else "routed"
+        interfaces.append(
+            GatewayInterfaceStats(
+                device=device,
+                role=role,
+                operstate_up=1.0 if data.get("operstate") == "up" else 0.0,
+                speed_bits_per_second=float(data.get("speed_bits_per_second") or 0),
+                rx_bytes=float(data.get("rx_bytes") or 0),
+                tx_bytes=float(data.get("tx_bytes") or 0),
+                rx_packets=float(data.get("rx_packets") or 0),
+                tx_packets=float(data.get("tx_packets") or 0),
+                rx_errors=float(data.get("rx_errors") or 0),
+                tx_errors=float(data.get("tx_errors") or 0),
+                rx_dropped=float(data.get("rx_dropped") or 0),
+                tx_dropped=float(data.get("tx_dropped") or 0),
+            )
+        )
+
+    return GatewayHealth(
+        cpu=cpu,
+        load1=load1,
+        load5=load5,
+        load15=load15,
+        cpu_cores=cpu_cores,
+        mem_total_bytes=mem_total_bytes,
+        mem_available_bytes=mem_available_bytes,
+        interfaces=interfaces,
+    )
+
+
 def _shell_quote(value: str) -> str:
     return "'" + value.replace("'", "'\"'\"'") + "'"
 
@@ -178,6 +299,36 @@ RECENT_HONEYPOT_EVENTS = Gauge(
     "unifi_security_honeypot_events_recent",
     "Recent UniFi honeypot-related events by window",
     ["window"],
+)
+GATEWAY_LOAD = Gauge("unifi_gateway_load_average", "UniFi gateway load average by interval", ["interval"])
+GATEWAY_CPU_CORES = Gauge("unifi_gateway_cpu_cores", "UniFi gateway online CPU cores")
+GATEWAY_CPU_SECONDS = Gauge("unifi_gateway_cpu_seconds_total", "UniFi gateway cumulative CPU seconds by mode", ["mode"])
+GATEWAY_MEMORY_BYTES = Gauge("unifi_gateway_memory_bytes", "UniFi gateway memory by state", ["state"])
+GATEWAY_INTERFACE_UP = Gauge("unifi_gateway_interface_up", "UniFi gateway interface operational state", ["device", "role"])
+GATEWAY_INTERFACE_SPEED_BITS = Gauge(
+    "unifi_gateway_interface_speed_bits",
+    "UniFi gateway interface negotiated speed in bits per second",
+    ["device", "role"],
+)
+GATEWAY_INTERFACE_BYTES = Gauge(
+    "unifi_gateway_interface_bytes_total",
+    "UniFi gateway interface byte counters",
+    ["device", "role", "direction"],
+)
+GATEWAY_INTERFACE_PACKETS = Gauge(
+    "unifi_gateway_interface_packets_total",
+    "UniFi gateway interface packet counters",
+    ["device", "role", "direction"],
+)
+GATEWAY_INTERFACE_ERRORS = Gauge(
+    "unifi_gateway_interface_errors_total",
+    "UniFi gateway interface error counters",
+    ["device", "role", "direction"],
+)
+GATEWAY_INTERFACE_DROPS = Gauge(
+    "unifi_gateway_interface_drops_total",
+    "UniFi gateway interface drop counters",
+    ["device", "role", "direction"],
 )
 
 
@@ -213,16 +364,40 @@ def update_metrics(events: list[ThreatEvent], top_limit: int) -> None:
         RECENT_HONEYPOT_EVENTS.labels(window=window_name).set(honeypot_count)
 
 
+def update_gateway_health_metrics(health: GatewayHealth) -> None:
+    GATEWAY_LOAD.labels(interval="1m").set(health.load1)
+    GATEWAY_LOAD.labels(interval="5m").set(health.load5)
+    GATEWAY_LOAD.labels(interval="15m").set(health.load15)
+    GATEWAY_CPU_CORES.set(health.cpu_cores)
+    for mode, ticks in health.cpu.items():
+        GATEWAY_CPU_SECONDS.labels(mode=mode).set(ticks / os.sysconf(os.sysconf_names["SC_CLK_TCK"]))
+    GATEWAY_MEMORY_BYTES.labels(state="total").set(health.mem_total_bytes)
+    GATEWAY_MEMORY_BYTES.labels(state="available").set(health.mem_available_bytes)
+    for iface in health.interfaces:
+        GATEWAY_INTERFACE_UP.labels(device=iface.device, role=iface.role).set(iface.operstate_up)
+        GATEWAY_INTERFACE_SPEED_BITS.labels(device=iface.device, role=iface.role).set(iface.speed_bits_per_second)
+        GATEWAY_INTERFACE_BYTES.labels(device=iface.device, role=iface.role, direction="rx").set(iface.rx_bytes)
+        GATEWAY_INTERFACE_BYTES.labels(device=iface.device, role=iface.role, direction="tx").set(iface.tx_bytes)
+        GATEWAY_INTERFACE_PACKETS.labels(device=iface.device, role=iface.role, direction="rx").set(iface.rx_packets)
+        GATEWAY_INTERFACE_PACKETS.labels(device=iface.device, role=iface.role, direction="tx").set(iface.tx_packets)
+        GATEWAY_INTERFACE_ERRORS.labels(device=iface.device, role=iface.role, direction="rx").set(iface.rx_errors)
+        GATEWAY_INTERFACE_ERRORS.labels(device=iface.device, role=iface.role, direction="tx").set(iface.tx_errors)
+        GATEWAY_INTERFACE_DROPS.labels(device=iface.device, role=iface.role, direction="rx").set(iface.rx_dropped)
+        GATEWAY_INTERFACE_DROPS.labels(device=iface.device, role=iface.role, direction="tx").set(iface.tx_dropped)
+
+
 def run_exporter(settings: Settings) -> None:
     start_http_server(settings.metrics_port)
     LOG.info("listening for metrics on :%s", settings.metrics_port)
     while True:
         try:
             events = fetch_events(settings)
+            health = fetch_gateway_health(settings)
             update_metrics(events, settings.top_limit)
+            update_gateway_health_metrics(health)
             SCRAPE_SUCCESS.set(1)
             SCRAPE_TIMESTAMP.set(time.time())
-            LOG.info("scraped %s UniFi security events", len(events))
+            LOG.info("scraped %s UniFi security events and gateway health", len(events))
         except Exception:
             LOG.exception("failed to scrape UniFi security events")
             SCRAPE_SUCCESS.set(0)
