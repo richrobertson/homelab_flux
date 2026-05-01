@@ -67,6 +67,30 @@ class ThreatEvent:
             device_name=_param_name(params, "DEVICE"),
         )
 
+    @property
+    def event_id(self) -> str:
+        return f"{int(self.timestamp * 1000)}:{self.key}:{self.src_ip}:{self.dst_ip}"
+
+    @property
+    def timestamp_text(self) -> str:
+        return dt.datetime.fromtimestamp(self.timestamp, UTC).astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
+
+    def is_important(self) -> bool:
+        return self.severity in {"high", "critical"} or "honeypot" in self.key.lower()
+
+    def to_log_record(self) -> dict[str, Any]:
+        return {
+            "event_type": "unifi_security_event",
+            "event_id": self.event_id,
+            "event_time": dt.datetime.fromtimestamp(self.timestamp, UTC).isoformat(),
+            "key": self.key,
+            "severity": self.severity,
+            "status": self.status,
+            "src_ip": self.src_ip,
+            "dst_ip": self.dst_ip,
+            "device_name": self.device_name,
+        }
+
 
 def _param_name(params: dict[str, Any], key: str) -> str:
     value = params.get(key) or {}
@@ -386,15 +410,25 @@ def update_gateway_health_metrics(health: GatewayHealth) -> None:
         GATEWAY_INTERFACE_DROPS.labels(device=iface.device, role=iface.role, direction="tx").set(iface.tx_dropped)
 
 
+def emit_important_event_logs(events: list[ThreatEvent], seen_event_ids: set[str]) -> None:
+    for event in sorted(events, key=lambda item: item.timestamp):
+        if not event.is_important() or event.event_id in seen_event_ids:
+            continue
+        print(json.dumps(event.to_log_record(), sort_keys=True), flush=True)
+        seen_event_ids.add(event.event_id)
+
+
 def run_exporter(settings: Settings) -> None:
     start_http_server(settings.metrics_port)
     LOG.info("listening for metrics on :%s", settings.metrics_port)
+    seen_event_ids: set[str] = set()
     while True:
         try:
             events = fetch_events(settings)
             health = fetch_gateway_health(settings)
             update_metrics(events, settings.top_limit)
             update_gateway_health_metrics(health)
+            emit_important_event_logs(events, seen_event_ids)
             SCRAPE_SUCCESS.set(1)
             SCRAPE_TIMESTAMP.set(time.time())
             LOG.info("scraped %s UniFi security events and gateway health", len(events))
@@ -433,6 +467,7 @@ def render_report(events: list[ThreatEvent]) -> tuple[str, str]:
     by_target = collections.Counter(event.dst_ip for event in high if event.dst_ip != "unknown")
     by_source = collections.Counter(event.src_ip for event in high if event.src_ip != "unknown")
     by_key = collections.Counter(event.key for event in high)
+    important_events = sorted((event for event in events if event.is_important()), key=lambda item: item.timestamp, reverse=True)[:15]
     newest = max((event.timestamp for event in events), default=0)
     newest_text = (
         dt.datetime.fromtimestamp(newest, UTC).astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
@@ -442,6 +477,10 @@ def render_report(events: list[ThreatEvent]) -> tuple[str, str]:
     target_lines = [f"- {dst}: {count}" for dst, count in by_target.most_common(10)] or ["- none"]
     source_lines = [f"- {src}: {count}" for src, count in by_source.most_common(10)] or ["- none"]
     key_lines = [f"- {key}: {count}" for key, count in by_key.most_common(10)] or ["- none"]
+    important_lines = [
+        f"- {event.timestamp_text} {event.severity.upper()} {event.key} src={event.src_ip} dst={event.dst_ip} device={event.device_name} status={event.status}"
+        for event in important_events
+    ] or ["- none"]
 
     lines = [
         "Homelab security situational awareness",
@@ -458,6 +497,9 @@ def render_report(events: list[ThreatEvent]) -> tuple[str, str]:
         "",
         "Event types:",
         *key_lines,
+        "",
+        "Important event details:",
+        *important_lines,
     ]
     text_body = "\n".join(lines)
 
@@ -478,6 +520,11 @@ def render_report(events: list[ThreatEvent]) -> tuple[str, str]:
         {table(by_target, "Top targeted internal IPs")}
         {table(by_source, "Top external sources")}
         {table(by_key, "Event types")}
+        <h3>Important event details</h3>
+        <table>
+          <tr><th>Time</th><th>Severity</th><th>Type</th><th>Source</th><th>Target</th><th>Device</th><th>Status</th></tr>
+          {''.join(f'<tr><td>{html.escape(event.timestamp_text)}</td><td>{html.escape(event.severity.upper())}</td><td>{html.escape(event.key)}</td><td>{html.escape(event.src_ip)}</td><td>{html.escape(event.dst_ip)}</td><td>{html.escape(event.device_name)}</td><td>{html.escape(event.status)}</td></tr>' for event in important_events) or '<tr><td colspan="7">none</td></tr>'}
+        </table>
       </body>
     </html>
     """

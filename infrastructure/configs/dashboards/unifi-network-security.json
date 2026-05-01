@@ -559,6 +559,41 @@
       ],
       "title": "Active UniFi Security Alerts",
       "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "id": 9,
+      "options": {
+        "dedupStrategy": "numbers",
+        "enableLogDetails": true,
+        "prettifyLogMessage": true,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{namespace=\"monitoring\", pod=~\"unifi-security-reporter-.*\"} |= \"unifi_security_event\" | json",
+          "refId": "A"
+        }
+      ],
+      "title": "Important UniFi Security Event Details",
+      "type": "logs"
     }
   ],
   "refresh": "1m",
