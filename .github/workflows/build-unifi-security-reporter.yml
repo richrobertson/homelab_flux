@@ -44,7 +44,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: docker-builds/unifi-security-reporter
-          push: ${{ inputs.push != false }}
+          push: ${{ github.event_name == 'push' || inputs.push != false }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
@@ -52,7 +52,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Make package publicly pullable
-        if: ${{ inputs.push != false }}
+        if: ${{ github.event_name == 'push' || inputs.push != false }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
