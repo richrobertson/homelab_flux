@@ -1,0 +1,123 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: unifi-security-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: unifi-security-reporter
+    app.kubernetes.io/part-of: security-monitoring
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: unifi.security
+      interval: 60s
+      rules:
+        - alert: UniFiSecurityReporterDown
+          expr: absent(up{job="unifi-security-reporter"} == 1)
+          for: 15m
+          labels:
+            domain: security
+            severity: critical
+          annotations:
+            summary: UniFi security reporter is down
+            description: Prometheus has not scraped the UniFi security reporter for at least 15 minutes, so gateway threat alerting is blind.
+
+        - alert: UniFiSecurityReporterScrapeFailed
+          expr: unifi_security_scrape_success{job="unifi-security-reporter"} != 1
+          for: 15m
+          labels:
+            domain: security
+            severity: critical
+          annotations:
+            summary: UniFi security reporter cannot read gateway alerts
+            description: The reporter has failed to scrape UniFi security events from the gateway for at least 15 minutes.
+
+        - alert: UniFiSecurityReporterTelemetryStale
+          expr: |
+            time() - unifi_security_last_scrape_timestamp_seconds{job="unifi-security-reporter"} > 1800
+          for: 15m
+          labels:
+            domain: security
+            severity: warning
+          annotations:
+            summary: UniFi security reporter telemetry is stale
+            description: The UniFi security reporter has not completed a scrape for more than 30 minutes. This usually points to a stuck process or gateway access issue.
+
+        - alert: UniFiHighSeverityThreatBurst
+          expr: |
+            sum(unifi_security_threat_events_recent{job="unifi-security-reporter", window="10m", severity=~"high|critical"}) >= 50
+          for: 5m
+          labels:
+            domain: security
+            severity: critical
+          annotations:
+            summary: High-severity UniFi threat block burst
+            description: UniFi blocked at least 50 high/critical threats in a 10 minute window for at least 5 minutes. This suggests a meaningful attack burst rather than normal internet background noise.
+
+        - alert: UniFiThreatActivityElevated
+          expr: |
+            sum(unifi_security_threat_events_recent{job="unifi-security-reporter", window="1h", severity=~"high|critical"}) >= 150
+          for: 15m
+          labels:
+            domain: security
+            severity: warning
+          annotations:
+            summary: Sustained elevated UniFi threat-block activity
+            description: UniFi blocked at least 150 high/critical threats in the last hour for at least 15 minutes. Review for exposed services or broad scanning before it becomes operationally noisy.
+
+        - alert: UniFiInternalTargetUnderAttack
+          expr: |
+            unifi_security_target_events_recent{job="unifi-security-reporter", window="10m", severity=~"high|critical"} >= 25
+          for: 5m
+          labels:
+            domain: security
+            severity: critical
+          annotations:
+            summary: Internal host is repeatedly targeted
+            description: "{{ $labels.dst_ip }} received at least 25 high/critical blocked threat events in a 10 minute window for at least 5 minutes. Consider temporarily disabling exposure or tightening firewall rules."
+
+        - alert: UniFiDistributedAttackSources
+          expr: |
+            sum(unifi_security_unique_sources_recent{job="unifi-security-reporter", window="10m", severity=~"high|critical"}) >= 25
+          for: 5m
+          labels:
+            domain: security
+            severity: critical
+          annotations:
+            summary: Many external sources are attacking the network
+            description: UniFi saw at least 25 unique high/critical threat sources in a 10 minute window for at least 5 minutes, which can indicate a distributed scan or campaign.
+
+        - alert: UniFiHoneypotTriggered
+          expr: |
+            unifi_security_honeypot_events_recent{job="unifi-security-reporter", window="10m"} > 0
+          for: 1m
+          labels:
+            domain: security
+            severity: critical
+          annotations:
+            summary: UniFi honeypot was triggered
+            description: The UniFi honeypot saw activity in the last 10 minutes. Treat this as a strong signal of hostile scanning or lateral movement.
+
+        - alert: UniFiSecurityDailyEmailFailed
+          expr: |
+            kube_job_status_failed{namespace="monitoring", job_name=~"unifi-security-daily-email-.*"} > 0
+          for: 5m
+          labels:
+            domain: security
+            severity: warning
+          annotations:
+            summary: UniFi security daily email job failed
+            description: A recent unifi-security-daily-email CronJob run failed. Check the job logs before relying on the morning security report.
+
+        - alert: UniFiSecurityDailyEmailMissing
+          expr: |
+            absent(kube_cronjob_status_last_successful_time{namespace="monitoring", cronjob="unifi-security-daily-email"})
+              or
+            (time() - kube_cronjob_status_last_successful_time{namespace="monitoring", cronjob="unifi-security-daily-email"} > 108000)
+          for: 30m
+          labels:
+            domain: security
+            severity: warning
+          annotations:
+            summary: UniFi security daily email has not succeeded recently
+            description: The morning UniFi security situational awareness email has no successful run recorded in the last 30 hours.

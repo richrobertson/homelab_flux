@@ -24,6 +24,7 @@ resources:
   - proxmox-thunderbolt-ring-alerts.yaml
   - proxmox-transport-alerts.yaml
   - proxmox-thunderbolt-service-alerts.yaml
+  - unifi-security
   - volsync
   - talos-etcd-backup
 configMapGenerator:
@@ -171,5 +172,16 @@ configMapGenerator:
       labels:
         grafana_dashboard: "1"
         app.kubernetes.io/part-of: powerdns
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: unifi-security-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/unifi-network-security.json
+      - dashboards/unifi-gateway-stability.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: unifi-security
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled

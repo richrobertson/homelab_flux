@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: unifi-security-reporter
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: unifi-security-reporter
+    app.kubernetes.io/part-of: security-monitoring
+    app.kubernetes.io/component: monitoring
+spec:
+  jobLabel: app.kubernetes.io/name
+  namespaceSelector:
+    matchNames:
+      - monitoring
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: unifi-security-reporter
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 60s
+      scrapeTimeout: 30s
