@@ -8,6 +8,9 @@ spec:
     workload:
       main:
         replicas: 1
+    service:
+      discovery:
+        loadBalancerIP: 10.31.0.72
     persistence:
       downloads:
         enabled: true
