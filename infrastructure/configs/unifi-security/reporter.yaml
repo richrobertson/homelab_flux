@@ -11,7 +11,7 @@ data:
   METRICS_PORT: "8080"
   SMTP_HOST: "email-smtp.us-west-2.amazonaws.com"
   SMTP_PORT: "587"
-  EMAIL_FROM: "security-reporter@myrobertson.com"
+  EMAIL_FROM: "security-reporter@myrobertson.net"
   EMAIL_TO: "roy@myrobertson.com"
   EMAIL_SUBJECT_PREFIX: "[homelab security]"
 ---
@@ -36,9 +36,14 @@ spec:
     spec:
       containers:
         - name: reporter
-          image: ghcr.io/richrobertson/unifi-security-reporter:0.1.0
+          image: python:3.12-slim
           imagePullPolicy: IfNotPresent
-          args: ["exporter"]
+          command:
+            - sh
+            - -c
+            - |
+              pip install --no-cache-dir paramiko prometheus-client PyYAML >/tmp/pip-install.log 2>&1
+              PYTHONPATH=/src exec python -m unifi_security_reporter.main exporter
           ports:
             - name: metrics
               containerPort: 8080
@@ -70,6 +75,10 @@ spec:
               port: metrics
             initialDelaySeconds: 60
             periodSeconds: 60
+          volumeMounts:
+            - name: reporter-source
+              mountPath: /src/unifi_security_reporter
+              readOnly: true
           resources:
             requests:
               cpu: 25m
@@ -77,6 +86,10 @@ spec:
             limits:
               cpu: 500m
               memory: 384Mi
+      volumes:
+        - name: reporter-source
+          configMap:
+            name: unifi-security-reporter-source
 ---
 apiVersion: v1
 kind: Service
@@ -121,9 +134,14 @@ spec:
           restartPolicy: Never
           containers:
             - name: reporter
-              image: ghcr.io/richrobertson/unifi-security-reporter:0.1.0
+              image: python:3.12-slim
               imagePullPolicy: IfNotPresent
-              args: ["daily-email"]
+              command:
+                - sh
+                - -c
+                - |
+                  pip install --no-cache-dir paramiko prometheus-client PyYAML >/tmp/pip-install.log 2>&1
+                  PYTHONPATH=/src exec python -m unifi_security_reporter.main daily-email
               envFrom:
                 - configMapRef:
                     name: unifi-security-reporter-config
@@ -157,3 +175,11 @@ spec:
                 limits:
                   cpu: 500m
                   memory: 384Mi
+              volumeMounts:
+                - name: reporter-source
+                  mountPath: /src/unifi_security_reporter
+                  readOnly: true
+          volumes:
+            - name: reporter-source
+              configMap:
+                name: unifi-security-reporter-source

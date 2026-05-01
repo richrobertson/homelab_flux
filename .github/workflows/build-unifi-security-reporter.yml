@@ -50,13 +50,3 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Make package publicly pullable
-        if: ${{ github.event_name == 'push' || inputs.push != false }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api \
-            --method PATCH \
-            /user/packages/container/unifi-security-reporter/visibility \
-            --field visibility=public

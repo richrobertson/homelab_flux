@@ -6,3 +6,13 @@ resources:
   - reporter.yaml
   - servicemonitor.yaml
   - alerts.yaml
+configMapGenerator:
+  - name: unifi-security-reporter-source
+    files:
+      - main.py=reporter-source/main.py
+      - __init__.py=reporter-source/__init__.py
+    options:
+      labels:
+        app.kubernetes.io/name: unifi-security-reporter
+        app.kubernetes.io/part-of: security-monitoring
+        app.kubernetes.io/component: reporter-source

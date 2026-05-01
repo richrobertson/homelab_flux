@@ -111,7 +111,11 @@ spec:
 
         - alert: UniFiSecurityDailyEmailMissing
           expr: |
-            absent(kube_cronjob_status_last_successful_time{namespace="monitoring", cronjob="unifi-security-daily-email"})
+            (
+              (time() - kube_cronjob_created{namespace="monitoring", cronjob="unifi-security-daily-email"} > 108000)
+                unless
+              kube_cronjob_status_last_successful_time{namespace="monitoring", cronjob="unifi-security-daily-email"}
+            )
               or
             (time() - kube_cronjob_status_last_successful_time{namespace="monitoring", cronjob="unifi-security-daily-email"} > 108000)
           for: 30m
