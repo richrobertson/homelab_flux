@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: nextcloud
 resources:
   - repository.yaml
-  - secret.yaml
   - postgres.yaml
   - html-pvc.yaml
   - release.yaml
