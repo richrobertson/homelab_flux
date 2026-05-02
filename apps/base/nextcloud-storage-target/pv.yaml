@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nextcloud-data-synology-nfs
+spec:
+  capacity:
+    storage: 10Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: synology-nfs-retain
+  mountOptions:
+    - nfsvers=4.1
+    - hard
+    - noatime
+    - rsize=1048576
+    - wsize=1048576
+    - timeo=600
+    - retrans=2
+  nfs:
+    server: 192.168.50.10
+    path: /volume1/nextcloud-data

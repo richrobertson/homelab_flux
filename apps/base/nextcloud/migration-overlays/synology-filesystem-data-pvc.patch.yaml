@@ -1,0 +1,17 @@
+# Disabled cutover patch for the future S3-primary to filesystem-backed migration.
+#
+# Do not include this patch in a production kustomization until after the
+# migration runbook has been completed and validated. This patch intentionally
+# removes the chart-level S3 primary objectstore configuration and switches the
+# Nextcloud data claim to the filesystem-backed PVC.
+#
+# Namespace note: the current Nextcloud HelmRelease is rendered into the
+# `default` namespace. Kubernetes cannot mount a PVC from another namespace.
+# The requested target PVC is `nextcloud/nextcloud-data`, so the actual cutover
+# must either move the HelmRelease workload into namespace `nextcloud` or create
+# an equivalent same-namespace PVC binding for the app namespace in a later PR.
+- op: remove
+  path: /spec/values/nextcloud/objectStore
+- op: replace
+  path: /spec/values/persistence/existingClaim
+  value: nextcloud-data
