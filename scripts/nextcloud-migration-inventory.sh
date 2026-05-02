@@ -218,19 +218,35 @@ print_storage_inventory() {
 print_bucket_inventory() {
   local bucket host port endpoint scheme
 
-  bucket="$(kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get configmap "${SOURCE_S3_CONFIGMAP}" -o jsonpath='{.data.BUCKET_NAME}')"
-  host="$(kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get configmap "${SOURCE_S3_CONFIGMAP}" -o jsonpath='{.data.BUCKET_HOST}')"
-  port="$(kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get configmap "${SOURCE_S3_CONFIGMAP}" -o jsonpath='{.data.BUCKET_PORT}')"
-  scheme="${SOURCE_BUCKET_SCHEME:-http}"
-  endpoint="${scheme}://${host}"
-  if [[ -n "${port}" ]]; then
-    endpoint="${endpoint}:${port}"
+  if kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get configmap "${SOURCE_S3_CONFIGMAP}" >/dev/null 2>&1; then
+    bucket="$(kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get configmap "${SOURCE_S3_CONFIGMAP}" -o jsonpath='{.data.BUCKET_NAME}')"
+    host="$(kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get configmap "${SOURCE_S3_CONFIGMAP}" -o jsonpath='{.data.BUCKET_HOST}')"
+    port="$(kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get configmap "${SOURCE_S3_CONFIGMAP}" -o jsonpath='{.data.BUCKET_PORT}')"
+  else
+    bucket="$(kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get secret "${SOURCE_S3_SECRET}" -o jsonpath='{.data.S3_BUCKET}' | base64 -d)"
+    host="${SOURCE_BUCKET_HOST:-}"
+    port="${SOURCE_BUCKET_PORT:-}"
   fi
+
+  scheme="${SOURCE_BUCKET_SCHEME:-http}"
 
   printf 'source_bucket_inventory_enabled=true\n'
   printf 'source_bucket_name=%s\n' "${bucket}"
-  printf 'source_bucket_endpoint=%s\n' "${endpoint}"
-  aws --endpoint-url "${endpoint}" s3 ls "s3://${bucket}" --recursive --summarize | \
+  if [[ -n "${host}" ]]; then
+    endpoint="${scheme}://${host}"
+    if [[ -n "${port}" ]]; then
+      endpoint="${endpoint}:${port}"
+    fi
+    printf 'source_bucket_endpoint=%s\n' "${endpoint}"
+    aws --endpoint-url "${endpoint}" s3 ls "s3://${bucket}" --recursive --summarize | \
+      awk '
+        /Total Objects:/ { print "source_bucket_object_count=" $3 }
+        /Total Size:/ { print "source_bucket_total_bytes=" $3 }
+      '
+    return
+  fi
+
+  aws s3 ls "s3://${bucket}" --recursive --summarize | \
     awk '
       /Total Objects:/ { print "source_bucket_object_count=" $3 }
       /Total Size:/ { print "source_bucket_total_bytes=" $3 }
@@ -249,8 +265,12 @@ print_cluster_state "source" "${SOURCE_NAMESPACE}" "${SOURCE_DEPLOYMENT}" "${SOU
 
 section "source objectstore inventory"
 printf 'source_s3_configmap=%s/%s\n' "${SOURCE_NAMESPACE}" "${SOURCE_S3_CONFIGMAP}"
-kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get configmap "${SOURCE_S3_CONFIGMAP}" -o json | \
-  jq -r '.data | to_entries[] | select(.key | test("SECRET|KEY|PASSWORD|TOKEN") | not) | "\(.key)=\(.value)"' | sort
+if kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get configmap "${SOURCE_S3_CONFIGMAP}" >/dev/null 2>&1; then
+  kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get configmap "${SOURCE_S3_CONFIGMAP}" -o json | \
+    jq -r '.data | to_entries[] | select(.key | test("SECRET|KEY|PASSWORD|TOKEN") | not) | "\(.key)=\(.value)"' | sort
+else
+  echo "source_s3_configmap_present=false"
+fi
 printf 'source_s3_secret_keys=\n'
 kubectl --context "${KUBE_CONTEXT}" -n "${SOURCE_NAMESPACE}" get secret "${SOURCE_S3_SECRET}" -o json | \
   jq -r '.data | keys[]' | sort | sed 's/^/  - /'
