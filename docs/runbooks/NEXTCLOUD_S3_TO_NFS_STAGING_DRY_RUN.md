@@ -24,6 +24,15 @@ Migration sandbox:
 - User data PVC: `nextcloud-data` on Synology NFS
 - Public route: none
 
+Clean Strategy A sandbox:
+
+- Namespace: `nextcloud`
+- HelmRelease: `nextcloud-migration-clean`
+- Database: CNPG cluster `nextcloud-migration-clean-cnpg` on `ceph-block`
+- App/config PVC: `nextcloud-migration-clean-html` on `csi-cephfs-sc`
+- User data PVC: `nextcloud-data` on Synology NFS subpath `strategy-a-clean-data`
+- Public route: none
+
 Expected sandbox mounts:
 
 - `/var/www/html`: CephFS app/config storage
@@ -170,7 +179,7 @@ Use one of these approaches before any production cutover.
 
 Recommended path:
 
-1. Reset the sandbox to a clean filesystem-backed Nextcloud instance, or deploy a second clean sandbox.
+1. Use `apps/staging/nextcloud-migration-clean` as the clean filesystem-backed Nextcloud instance.
 2. Recreate users and groups through a controlled process.
 3. Copy user-visible files through Nextcloud WebDAV or another metadata-aware path.
 4. Rebuild previews and search indexes after import.

@@ -23,6 +23,7 @@ resources:
   - tautulli
   - nextcloud
   - nextcloud-migration
+  - nextcloud-migration-clean
   - trilium
 patches:
   - patch: |
