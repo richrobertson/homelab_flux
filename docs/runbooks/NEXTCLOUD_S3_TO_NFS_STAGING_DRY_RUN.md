@@ -303,6 +303,25 @@ Recommended path:
 6. Rebuild previews and search indexes after import.
 7. Decide separately whether shares, calendars, contacts, versions, and trashbin need migration or can be recreated.
 
+Generate a dry-run Strategy A planning artifact before writing any bulk
+migration tooling:
+
+```bash
+source ~/.bash_profile
+
+scripts/nextcloud-strategy-a-plan.sh
+```
+
+The script writes JSON artifacts under `/tmp/nextcloud-strategy-a-plan-*` and
+prints a count-only summary. It reads source/target users, groups, source share
+metadata, file-affecting apps, source version/trashbin counts, and target
+objectstore state. It does not copy files, create users, recreate shares, change
+Nextcloud config, or touch the S3 bucket.
+
+The generated `strategy-a-plan.json` includes identifiers needed for migration
+mapping, so treat the artifact as operational data. Store it with the migration
+notes or delete it when it is no longer needed.
+
 Database-aware path:
 
 1. Select a version-compatible migration tool that understands Nextcloud objectstore mappings.

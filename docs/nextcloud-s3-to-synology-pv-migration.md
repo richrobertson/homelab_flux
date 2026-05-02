@@ -80,6 +80,13 @@ Before importing real data, enable Nextcloud server-side encryption on the clean
 
 Recreate users, groups, shares, calendars, contacts, and app settings as needed, or migrate database state only where there is a tested supported path. This is slower, but safer because it does not depend on interpreting raw S3 object IDs.
 
+Before implementing the final Strategy A copy workflow, generate a dry-run plan
+with `scripts/nextcloud-strategy-a-plan.sh`. The plan is read-only and
+summarizes missing users/groups, group membership gaps, user/group share
+recreation candidates, special shares that need manual review, and the
+versions/trashbin boundary. Treat the generated JSON artifact as operational
+data because it contains user, group, and share identifiers.
+
 ### Strategy B: In-Place Database-Aware Migration
 
 Use this only if a tested, version-compatible migration tool or script is selected. The tool must understand Nextcloud filecache and storage mappings and convert object IDs into filesystem paths. It must be tested against a cloned database and copied bucket first, and it must preserve versions, trashbin, and shares if those are required.
