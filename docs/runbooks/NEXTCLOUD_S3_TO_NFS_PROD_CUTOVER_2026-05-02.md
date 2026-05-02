@@ -129,6 +129,15 @@ Collabora ownership moved to the target HelmRelease. The public
 `nextcloud/nextcloud-migration-ldap-collabora`, and the retained old source no
 longer needs to own the public Office backend.
 
+Post-app-parity backup checkpoint:
+
+- CNPG Backup:
+  `nextcloud-migration-ldap-cnpg-manual-20260502093132`
+  completed.
+- VolSync app/config ReplicationSource:
+  `nextcloud-migration-ldap-html-backup`
+  last successful sync observed at `2026-05-02T09:26:23Z`.
+
 ## Validation Commands
 
 ```bash
