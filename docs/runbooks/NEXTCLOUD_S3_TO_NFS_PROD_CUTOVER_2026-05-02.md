@@ -108,6 +108,15 @@ Manual backup verification after applying the manifests:
   `manual-20260502020249`
   produced `status.lastSyncTime=2026-05-02T09:03:02Z`.
 
+After target backup validation, the old S3-backed source backup controllers
+were paused in Git:
+
+- `default/nextcloud-cnpg-daily` has `spec.suspend: true`.
+- `default/nextcloud-data-pvc-ceph-backup` has `spec.paused: true`.
+
+The old source app, database, app/config PVC, and S3 bucket remain retained for
+rollback; only stale scheduled backups are stopped.
+
 ## Validation Commands
 
 ```bash

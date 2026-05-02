@@ -23,7 +23,7 @@ metadata:
   name: nextcloud-data-pvc-ceph-backup
 spec:
   sourcePVC: nextcloud-data-pvc-ceph-v2
-  paused: false
+  paused: true
   trigger:
     schedule: "21 * * * *"
   restic:
