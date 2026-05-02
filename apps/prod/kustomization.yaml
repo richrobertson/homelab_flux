@@ -27,4 +27,5 @@ resources:
   - tautulli
   - nextcloud
   - nextcloud-migration-clean
+  - nextcloud-migration-ldap
   - volsync

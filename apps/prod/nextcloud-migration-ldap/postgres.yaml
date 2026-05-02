@@ -1,0 +1,19 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: nextcloud-migration-ldap-cnpg
+  labels:
+    app.kubernetes.io/part-of: nextcloud-migration-ldap
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.5
+  bootstrap:
+    initdb:
+      database: nextcloud
+      owner: nextcloud
+  storage:
+    size: 20Gi
+    storageClass: ceph-block
+  walStorage:
+    size: 20Gi
+    storageClass: ceph-block
