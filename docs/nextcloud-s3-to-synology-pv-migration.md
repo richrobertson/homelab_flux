@@ -122,6 +122,12 @@ It requires an explicit `COPY_ROOT`, defaults to `APPLY=false`, uses WebDAV
 only, verifies source/target checksums when copying, and verifies the copied
 raw target files carry the Nextcloud encryption header.
 
+Use `scripts/nextcloud-user-group-reconcile.sh` to prepare the clean target
+identity set before copying files. It defaults to dry-run, creates users/groups
+only on the target when `APPLY=true`, and writes temporary target WebDAV
+passwords to a sensitive local TSV under `/tmp`. Do not commit that password
+file.
+
 ### Strategy B: In-Place Database-Aware Migration
 
 Use this only if a tested, version-compatible migration tool or script is selected. The tool must understand Nextcloud filecache and storage mappings and convert object IDs into filesystem paths. It must be tested against a cloned database and copied bucket first, and it must preserve versions, trashbin, and shares if those are required.
