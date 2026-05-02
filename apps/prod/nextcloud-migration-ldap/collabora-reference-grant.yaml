@@ -1,7 +1,7 @@
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: ReferenceGrant
 metadata:
-  name: allow-prod-nextcloud-route
+  name: allow-prod-nextcloud-collabora-route
 spec:
   from:
     - group: gateway.networking.k8s.io
@@ -10,4 +10,4 @@ spec:
   to:
     - group: ""
       kind: Service
-      name: nextcloud-migration-ldap
+      name: nextcloud-migration-ldap-collabora

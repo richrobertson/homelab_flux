@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: nextcloud
 resources:
   - backup-volsync.yaml
+  - collabora-reference-grant.yaml
   - html-pvc.yaml
   - postgres.yaml
   - postgres-scheduled-backup.yaml
