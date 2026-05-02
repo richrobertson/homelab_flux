@@ -265,6 +265,13 @@ The temporary user is a staging test fixture. Remove it later with
 `php occ user:delete migration-dryrun` only after its test files are no longer
 needed.
 
+For the repeatable version that creates a small nested folder tree and verifies
+multiple checksums, run:
+
+```bash
+scripts/nextcloud-webdav-migration-smoke-test.sh
+```
+
 ```bash
 source ~/.bash_profile
 set -euo pipefail
