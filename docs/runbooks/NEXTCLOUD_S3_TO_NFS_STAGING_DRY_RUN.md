@@ -346,6 +346,26 @@ kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-cle
   php occ files:scan migration-dryrun --path='migration-dryrun/files/migration-dryrun-user-webdav'
 ```
 
+## Strategy A Share Recreation Smoke Test
+
+File shares are Nextcloud metadata. A WebDAV file copy does not preserve shares
+by itself, so shares must be recreated through a supported Nextcloud API or a
+carefully tested migration process.
+
+The staging share smoke test creates disposable owner and recipient users,
+uploads a file to the S3-backed source, creates the source share through the OCS
+Share API, copies the file through WebDAV into the clean NFS-backed sandbox,
+recreates the share through the target OCS Share API, and verifies that the
+recipient can read the shared file with the same checksum.
+
+```bash
+scripts/nextcloud-share-migration-smoke-test.sh
+```
+
+The script accepts the same environment overrides as the WebDAV smoke test:
+`KUBE_CONTEXT`, `SOURCE_NAMESPACE`, `SOURCE_DEPLOYMENT`, `TARGET_NAMESPACE`,
+`TARGET_DEPLOYMENT`, `SOURCE_SERVICE_URL`, and `TARGET_SERVICE_URL`.
+
 ## Dry-Run Validation Checklist
 
 - Users can log in to the sandbox.
