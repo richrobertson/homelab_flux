@@ -9,7 +9,8 @@ primary S3 object storage to filesystem-backed storage on Synology NFS.
 - App/config PVC: `nextcloud-migration-clean-html` on `csi-cephfs-sc`
 - User data PVC: `nextcloud-data`, mounted at subpath `strategy-a-prod-data`
 - Server-side encryption: enabled with Nextcloud's `OC_DEFAULT_MODULE`
-- App secret: rendered from Vault path `secret/nextcloud/prod/app`
+- App secret: `nextcloud-migration-secret`, manually mirrored from
+  `default/nextcloud-secret` into the `nextcloud` namespace
 - Public route: none
 
 Safety boundaries:
@@ -24,6 +25,13 @@ Validation:
 
 ```bash
 source ~/.bash_profile
+kubectl --context admin@prod -n default get secret nextcloud-secret -o json | \
+  jq 'del(.metadata.uid,.metadata.resourceVersion,.metadata.creationTimestamp,.metadata.managedFields,.metadata.annotations,.metadata.ownerReferences)
+      | .metadata.name = "nextcloud-migration-secret"
+      | .metadata.namespace = "nextcloud"
+      | .metadata.labels = {"app.kubernetes.io/name":"nextcloud-migration-clean"}' | \
+  kubectl --context admin@prod apply -f -
+
 kubectl --context admin@prod -n nextcloud get pvc,cluster,hr,pod -o wide
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- php occ status
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- php occ encryption:status
