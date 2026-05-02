@@ -241,6 +241,27 @@ The restore set is valid only if all of these are captured together:
 - `/var/www/html/data/files_encryption` and each user's `files_encryption` directory.
 - The encrypted user files on the Synology NFS PVC.
 
+## Run The Full Validation Suite
+
+After the clean sandbox is healthy, run the full staging validation suite:
+
+```bash
+source ~/.bash_profile
+
+scripts/nextcloud-migration-validation-suite.sh
+```
+
+The suite runs:
+
+- target encryption validation
+- encrypted restore-set inventory
+- metadata-aware WebDAV tree copy
+- user and group share recreation
+- versions and trashbin boundary validation
+
+It is expected to create disposable dry-run users and files in the staging
+source and clean target instances.
+
 ## Choose The Actual File Migration Method
 
 Use one of these approaches before any production cutover.

@@ -6,7 +6,7 @@
 
 - Validation: `validate.sh`
 - Diagnostics and maintenance helpers: `namespace-audit.sh`, `cephfs-mds-tuning-pass.sh`, `telegram_backfill.py`
-- Nextcloud migration validation: `nextcloud-encryption-target-validation.sh`, `nextcloud-encryption-restore-set-inventory.sh`, `nextcloud-webdav-migration-smoke-test.sh`, `nextcloud-share-migration-smoke-test.sh`, `nextcloud-history-migration-smoke-test.sh`
+- Nextcloud migration validation: `nextcloud-migration-validation-suite.sh`, `nextcloud-encryption-target-validation.sh`, `nextcloud-encryption-restore-set-inventory.sh`, `nextcloud-webdav-migration-smoke-test.sh`, `nextcloud-share-migration-smoke-test.sh`, `nextcloud-history-migration-smoke-test.sh`
 - One-off migration manifests: `migrate-*-config-pod.yaml`, `recovery-synology-pvcs.yaml`, and `migrations/`
 - Historical notes that are still colocated here for now: `CEPH_ROOTCAUSE_ANALYSIS.md`, `RADOS_NAMESPACE_INVENTORY.md`, `STAGING_PLEX_IGPU_VALIDATION_2026-04-01.md`, `CLEANUP_READY_TO_PUSH.md`, `CLEANUP_COMPLETION_REPORT.md`
 
