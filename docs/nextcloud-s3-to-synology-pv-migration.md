@@ -96,6 +96,8 @@ Do not use unaudited scripts against production data.
    it has no public route, uses `ceph-block` for its database, uses
    `csi-cephfs-sc` for app/config storage, and mounts the Synology-backed
    `nextcloud-data` PVC only at the Nextcloud data path.
+   The staging execution runbook is
+   `docs/runbooks/NEXTCLOUD_S3_TO_NFS_STAGING_DRY_RUN.md`.
 4. Run the selected migration method.
 5. Validate:
    - Users can log in.

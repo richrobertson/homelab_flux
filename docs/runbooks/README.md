@@ -11,6 +11,7 @@
 - [SynologyNAS container migration playbook](APP_SYNOLOGYNAS_CONTAINER_MIGRATION_PLAYBOOK.md): reusable migration pattern for stateful Synology-to-Kubernetes moves.
 - [Ceph pool consolidation runbook](CEPH_POOL_CONSOLIDATION_RUNBOOK.md): staged storage-pool consolidation plan and validation sequence.
 - [Plex VAAPI option 3 runbook](PLEX_VAAPI_OPTION3_RUNBOOK.md): custom image build and rollout procedure for Plex hardware transcoding.
+- [Nextcloud S3 to NFS staging dry run](NEXTCLOUD_S3_TO_NFS_STAGING_DRY_RUN.md): staging sandbox procedure for validating a safe migration path from primary S3 object storage to Synology NFS-backed filesystem storage.
 
 ## Conventions
 
