@@ -47,6 +47,13 @@ spec:
         proxy.config.php: |-
           <?php
           $CONFIG = array(
+            'trusted_domains' => [
+              'localhost',
+              'nextcloud-migration-clean',
+              'nextcloud-migration-clean.nextcloud',
+              'nextcloud-migration-clean.nextcloud.svc',
+              'nextcloud-migration-clean.nextcloud.svc.cluster.local',
+            ],
             'trusted_proxies' => ['10.0.0.0/8'],
             'forwarded_for_headers' => ['HTTP_X_FORWARDED_FOR'],
             'overwrite.cli.url' => getenv('OVERWRITECLIURL') ?: 'http://nextcloud-migration-clean.nextcloud.svc.cluster.local',
