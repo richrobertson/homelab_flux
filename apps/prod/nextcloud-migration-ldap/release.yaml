@@ -16,6 +16,44 @@ spec:
     disableWait: true
   upgrade:
     disableWait: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: nextcloud-migration-ldap
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/0/startupProbe
+                value:
+                  httpGet:
+                    path: /status.php
+                    port: 80
+                    scheme: HTTP
+                    httpHeaders:
+                      - name: Host
+                        value: localhost
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 60
+                  successThreshold: 1
+              - op: add
+                path: /spec/template/spec/containers/0/livenessProbe/httpGet/httpHeaders
+                value:
+                  - name: Host
+                    value: localhost
+              - op: add
+                path: /spec/template/spec/containers/0/readinessProbe/httpGet/httpHeaders
+                value:
+                  - name: Host
+                    value: localhost
+              - op: add
+                path: /spec/template/spec/containers/0/args
+                value:
+                  - apache2-foreground
+                  - -C
+                  - ServerName cloud.myrobertson.com
   values:
     replicaCount: 1
 
