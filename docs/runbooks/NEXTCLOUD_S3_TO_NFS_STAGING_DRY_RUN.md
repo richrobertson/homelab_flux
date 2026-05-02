@@ -38,6 +38,7 @@ Expected sandbox mounts:
 - `/var/www/html`: CephFS app/config storage
 - `/var/www/html/data`: Synology NFS user data storage
 - `objectstore`: empty
+- `encryption`: enabled with default module `OC_DEFAULT_MODULE`
 
 ## What Has Been Proven
 
@@ -46,6 +47,7 @@ Expected sandbox mounts:
 - The sandbox can write to `/var/www/html/data` as `www-data`.
 - A staging database dump can be restored into the sandbox database for compatibility testing.
 - Restoring the database alone is not a migration. The file blobs still live in the source S3 bucket until a metadata-aware migration method moves them.
+- The clean Strategy A sandbox has Nextcloud server-side encryption enabled. Raw files on the NFS mount should have a Nextcloud encryption header, while WebDAV reads return plaintext through Nextcloud.
 
 ## Important Safety Boundary
 
@@ -173,6 +175,48 @@ Expected result:
 - `/var/www/html/data` is an NFS mount from the staging Synology share.
 - The write test succeeds.
 
+## Validate Target Encryption
+
+The clean target must use Nextcloud-managed server-side encryption before any
+real import. This is separate from Synology Btrfs checksums and from NFS export
+controls.
+
+```bash
+source ~/.bash_profile
+
+kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- \
+  php occ encryption:status
+
+kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- \
+  sh -lc 'find /var/www/html/data -maxdepth 4 -path "*/files_encryption*" -print | head -40'
+```
+
+Expected result:
+
+- `enabled: true`
+- `defaultModule: OC_DEFAULT_MODULE`
+- encrypted key material exists under `files_encryption`
+
+After a WebDAV smoke test, raw target files should not be plaintext:
+
+```bash
+source ~/.bash_profile
+
+kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- \
+  sh -lc 'file="$(find /var/www/html/data/migration-dryrun/files -type f -name README.txt | tail -1)"; head -c 96 "${file}" | grep "HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE"'
+```
+
+If any target files were written before encryption was enabled, keep the target
+offline and run:
+
+```bash
+php occ encryption:encrypt-all
+```
+
+Back up the database, `config.php`, Kubernetes secrets, and `files_encryption`
+key material as one restore set. Encrypted files may be unrecoverable if the
+matching key material or Nextcloud secret is lost.
+
 ## Choose The Actual File Migration Method
 
 Use one of these approaches before any production cutover.
@@ -180,10 +224,12 @@ Use one of these approaches before any production cutover.
 Recommended path:
 
 1. Use `apps/staging/nextcloud-migration-clean` as the clean filesystem-backed Nextcloud instance.
-2. Recreate users and groups through a controlled process.
-3. Copy user-visible files through Nextcloud WebDAV or another metadata-aware path.
-4. Rebuild previews and search indexes after import.
-5. Decide separately whether shares, calendars, contacts, versions, and trashbin need migration or can be recreated.
+2. Verify `php occ encryption:status` reports `enabled: true` and `defaultModule: OC_DEFAULT_MODULE`.
+3. Recreate users and groups through a controlled process.
+4. Copy user-visible files through Nextcloud WebDAV or another metadata-aware path.
+5. Verify raw NFS files are encrypted and WebDAV reads return the original content.
+6. Rebuild previews and search indexes after import.
+7. Decide separately whether shares, calendars, contacts, versions, and trashbin need migration or can be recreated.
 
 Database-aware path:
 
@@ -353,10 +399,10 @@ by itself, so shares must be recreated through a supported Nextcloud API or a
 carefully tested migration process.
 
 The staging share smoke test creates disposable owner and recipient users,
-uploads a file to the S3-backed source, creates the source share through the OCS
-Share API, copies the file through WebDAV into the clean NFS-backed sandbox,
-recreates the share through the target OCS Share API, and verifies that the
-recipient can read the shared file with the same checksum.
+uploads files to the S3-backed source, creates source user and group shares
+through the OCS Share API, copies the files through WebDAV into the clean
+NFS-backed sandbox, recreates the shares through the target OCS Share API, and
+verifies that the recipient can read the shared files with matching checksums.
 
 ```bash
 scripts/nextcloud-share-migration-smoke-test.sh

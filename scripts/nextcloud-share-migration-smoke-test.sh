@@ -58,6 +58,7 @@ kubectl --context "${KUBE_CONTEXT}" -n "${TARGET_NAMESPACE}" exec -i "deploy/${T
   env \
     SMOKE_OWNER="${SMOKE_OWNER}" \
     SMOKE_RECIPIENT="${SMOKE_RECIPIENT}" \
+    SMOKE_GROUP="${SMOKE_GROUP}" \
     SMOKE_PASS="${password}" \
     SMOKE_RUN_ID="${run_id}" \
     SOURCE_SERVICE_URL="${SOURCE_SERVICE_URL}" \
@@ -66,8 +67,8 @@ kubectl --context "${KUBE_CONTEXT}" -n "${TARGET_NAMESPACE}" exec -i "deploy/${T
 set -eu
 
 folder="migration-share-dryrun-${SMOKE_RUN_ID}"
-file="shared-${SMOKE_RUN_ID}.txt"
-payload="Nextcloud share metadata dry run ${SMOKE_RUN_ID}\nowner=${SMOKE_OWNER}\nrecipient=${SMOKE_RECIPIENT}\n"
+user_file="user-shared-${SMOKE_RUN_ID}.txt"
+group_file="group-shared-${SMOKE_RUN_ID}.txt"
 
 source_dav="${SOURCE_SERVICE_URL}/remote.php/dav/files/${SMOKE_OWNER}"
 target_dav="${TARGET_SERVICE_URL}/remote.php/dav/files/${SMOKE_OWNER}"
@@ -91,44 +92,73 @@ mkcol() {
 }
 
 upload() {
-  printf '%b' "${payload}" | curl -fsS -u "${SMOKE_OWNER}:${SMOKE_PASS}" -T - "$1" >/dev/null
+  local destination="$1"
+  local payload="$2"
+  printf '%b' "${payload}" | curl -fsS -u "${SMOKE_OWNER}:${SMOKE_PASS}" -T - "${destination}" >/dev/null
 }
 
 share_file() {
   local ocs_url="$1"
   local path="$2"
+  local share_type="$3"
+  local share_with="$4"
   curl -fsS -u "${SMOKE_OWNER}:${SMOKE_PASS}" \
     -H 'OCS-APIRequest: true' \
     -H 'Accept: application/json' \
     -d "path=${path}" \
-    -d 'shareType=0' \
-    -d "shareWith=${SMOKE_RECIPIENT}" \
+    -d "shareType=${share_type}" \
+    -d "shareWith=${share_with}" \
     "${ocs_url}" | ocs_ok
 }
 
+copy_file() {
+  local file="$1"
+
+  curl -fsS -u "${SMOKE_OWNER}:${SMOKE_PASS}" "${source_dav}/${folder}/${file}" | \
+    curl -fsS -u "${SMOKE_OWNER}:${SMOKE_PASS}" -T - "${target_dav}/${folder}/${file}" >/dev/null
+}
+
+verify_recipient_access() {
+  local file="$1"
+  local label="$2"
+
+  owner_sha="$(curl -fsS -u "${SMOKE_OWNER}:${SMOKE_PASS}" "${target_dav}/${folder}/${file}" | sha256sum | awk '{print $1}')"
+  recipient_sha="$(curl -fsS -u "${SMOKE_RECIPIENT}:${SMOKE_PASS}" "${target_recipient_dav}/${file}" | sha256sum | awk '{print $1}')"
+
+  if [ "${owner_sha}" != "${recipient_sha}" ]; then
+    echo "checksum_mismatch_after_${label}_share_recreate" >&2
+    exit 1
+  fi
+
+  test -f "/var/www/html/data/${SMOKE_OWNER}/files/${folder}/${file}"
+  if ! head -c 96 "/var/www/html/data/${SMOKE_OWNER}/files/${folder}/${file}" | grep -q 'HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE'; then
+    echo "target_file_not_nextcloud_encrypted file=${folder}/${file}" >&2
+    exit 1
+  fi
+  printf 'verified_%s_share file=%s sha256=%s\n' "${label}" "${folder}/${file}" "${owner_sha}"
+}
+
 mkcol "${source_dav}/${folder}"
-upload "${source_dav}/${folder}/${file}"
-share_file "${source_ocs}" "/${folder}/${file}"
+upload "${source_dav}/${folder}/${user_file}" "Nextcloud user share metadata dry run ${SMOKE_RUN_ID}\nowner=${SMOKE_OWNER}\nrecipient=${SMOKE_RECIPIENT}\n"
+upload "${source_dav}/${folder}/${group_file}" "Nextcloud group share metadata dry run ${SMOKE_RUN_ID}\nowner=${SMOKE_OWNER}\ngroup=${SMOKE_GROUP}\n"
+share_file "${source_ocs}" "/${folder}/${user_file}" 0 "${SMOKE_RECIPIENT}"
+share_file "${source_ocs}" "/${folder}/${group_file}" 1 "${SMOKE_GROUP}"
 
 mkcol "${target_dav}/${folder}"
-curl -fsS -u "${SMOKE_OWNER}:${SMOKE_PASS}" "${source_dav}/${folder}/${file}" | \
-  curl -fsS -u "${SMOKE_OWNER}:${SMOKE_PASS}" -T - "${target_dav}/${folder}/${file}" >/dev/null
-share_file "${target_ocs}" "/${folder}/${file}"
+copy_file "${user_file}"
+copy_file "${group_file}"
 
-owner_sha="$(curl -fsS -u "${SMOKE_OWNER}:${SMOKE_PASS}" "${target_dav}/${folder}/${file}" | sha256sum | awk '{print $1}')"
-recipient_sha="$(curl -fsS -u "${SMOKE_RECIPIENT}:${SMOKE_PASS}" "${target_recipient_dav}/${file}" | sha256sum | awk '{print $1}')"
+share_file "${target_ocs}" "/${folder}/${user_file}" 0 "${SMOKE_RECIPIENT}"
+share_file "${target_ocs}" "/${folder}/${group_file}" 1 "${SMOKE_GROUP}"
 
-if [ "${owner_sha}" != "${recipient_sha}" ]; then
-  echo "checksum_mismatch_after_share_recreate" >&2
-  exit 1
-fi
+verify_recipient_access "${user_file}" "user"
+verify_recipient_access "${group_file}" "group"
 
-test -f "/var/www/html/data/${SMOKE_OWNER}/files/${folder}/${file}"
 php occ files:scan "${SMOKE_OWNER}" --path="${SMOKE_OWNER}/files/${folder}" >/tmp/nextcloud-share-smoke-scan.txt
 cat /tmp/nextcloud-share-smoke-scan.txt
 
-printf 'share_recreate_ok owner=%s recipient=%s path=%s/%s sha256=%s\n' \
-  "${SMOKE_OWNER}" "${SMOKE_RECIPIENT}" "${folder}" "${file}" "${owner_sha}"
+printf 'share_recreate_ok owner=%s recipient=%s group=%s root=%s\n' \
+  "${SMOKE_OWNER}" "${SMOKE_RECIPIENT}" "${SMOKE_GROUP}" "${folder}"
 REMOTE
 
 unset password

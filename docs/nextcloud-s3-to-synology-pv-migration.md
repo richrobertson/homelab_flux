@@ -11,6 +11,7 @@ Nextcloud primary object storage does not store the user-visible folder tree dir
 - No S3 bucket deletion or destructive cleanup is introduced.
 - No production Nextcloud data is mounted through hostPath.
 - Database, Redis, app config, preview/cache when separately configurable, and search services remain on SSD-backed storage.
+- Target user files on Synology NFS must be encrypted at rest by Nextcloud server-side encryption using `OC_DEFAULT_MODULE`.
 
 ## Phase 0: Inventory
 
@@ -25,7 +26,7 @@ Record the current state before making changes:
 - Apps that affect files:
   - `files_versions`
   - `files_trashbin`
-  - server-side encryption, if enabled
+  - server-side encryption state and default module
   - full text search
   - external storage
   - Memories, Photos, or Preview Generator, if installed
@@ -71,6 +72,8 @@ Record the current state before making changes:
 
 Stand up a temporary or parallel Nextcloud instance using filesystem-backed storage on the new PVC. Mount or expose old data through the old Nextcloud API/WebDAV or another controlled export path, then copy user-visible files through Nextcloud/WebDAV or another metadata-aware process so files land in the new filesystem storage with normal names.
 
+Before importing real data, enable Nextcloud server-side encryption on the clean target, set `OC_DEFAULT_MODULE` as the default module, and verify a newly imported file is encrypted on the raw NFS mount while remaining readable through WebDAV. Back up `config.php`, the Nextcloud database, and the `files_encryption` key material together; losing any required key material can make encrypted files unrecoverable.
+
 Recreate users, groups, shares, calendars, contacts, and app settings as needed, or migrate database state only where there is a tested supported path. This is slower, but safer because it does not depend on interpreting raw S3 object IDs.
 
 ### Strategy B: In-Place Database-Aware Migration
@@ -103,6 +106,8 @@ Do not use unaudited scripts against production data.
    - Users can log in.
    - Folder trees are correct.
    - File counts match.
+   - `php occ encryption:status` reports `enabled: true` and `defaultModule: OC_DEFAULT_MODULE` on the target.
+   - Newly imported files are encrypted on the raw NFS mount and readable through Nextcloud/WebDAV.
    - Shares still work if expected.
    - Versions and trashbin expectations are understood.
    - Previews regenerate.
@@ -124,8 +129,23 @@ Do not use unaudited scripts against production data.
 6. Make the final S3 bucket backup or snapshot.
 7. Run the final migration.
 8. Update Nextcloud config to remove AWS S3 primary objectstore settings and use the filesystem data directory on the mounted PVC.
-9. Ensure ownership and permissions are correct for the Nextcloud container user.
-10. Run required `occ` commands:
+9. Ensure Nextcloud server-side encryption is enabled on the target before reopening access:
+
+   ```bash
+   php occ app:enable encryption
+   php occ encryption:enable
+   php occ encryption:set-default-module OC_DEFAULT_MODULE
+   php occ encryption:status
+   ```
+
+   If any files were written to the target before encryption was enabled, keep maintenance mode on and run:
+
+   ```bash
+   php occ encryption:encrypt-all
+   ```
+
+10. Ensure ownership and permissions are correct for the Nextcloud container user.
+11. Run required `occ` commands:
 
     ```bash
     php occ maintenance:repair
@@ -136,13 +156,13 @@ Do not use unaudited scripts against production data.
 
     Run `preview:pre-generate` only if Preview Generator is installed; otherwise document the equivalent preview regeneration approach.
 
-11. Turn maintenance mode off:
+12. Turn maintenance mode off:
 
     ```bash
     php occ maintenance:mode --off
     ```
 
-12. Validate application behavior before reopening normal access.
+13. Validate application behavior before reopening normal access.
 
 ## Phase 6: Post-Cutover
 
@@ -156,7 +176,8 @@ Do not use unaudited scripts against production data.
 - Confirm Hyper Backup to Backblaze B2 is running.
 - Test restore from a Synology snapshot.
 - Test restore from Backblaze backup.
-- Document rollback steps, including how to restore the pre-cutover database, config, secrets, S3 bucket state, and Helm values.
+- Test restore of encrypted files with the matching database, `config.php`, secrets, and `files_encryption` key material.
+- Document rollback steps, including how to restore the pre-cutover database, config, secrets, S3 bucket state, encryption keys, and Helm values.
 
 ## Security Controls
 

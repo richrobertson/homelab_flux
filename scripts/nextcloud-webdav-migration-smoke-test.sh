@@ -115,6 +115,16 @@ test -f "/var/www/html/data/${SMOKE_USER}/files/${root}/README.txt"
 test -f "/var/www/html/data/${SMOKE_USER}/files/${root}/nested/notes.txt"
 test -f "/var/www/html/data/${SMOKE_USER}/files/${root}/nested/random.bin"
 
+for raw_path in \
+  "/var/www/html/data/${SMOKE_USER}/files/${root}/README.txt" \
+  "/var/www/html/data/${SMOKE_USER}/files/${root}/nested/notes.txt" \
+  "/var/www/html/data/${SMOKE_USER}/files/${root}/nested/random.bin"; do
+  if ! head -c 96 "${raw_path}" | grep -q 'HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE'; then
+    echo "target_file_not_nextcloud_encrypted raw_path=${raw_path}" >&2
+    exit 1
+  fi
+done
+
 php occ files:scan "${SMOKE_USER}" --path="${SMOKE_USER}/files/${root}" >/tmp/nextcloud-webdav-smoke-scan.txt
 cat /tmp/nextcloud-webdav-smoke-scan.txt
 

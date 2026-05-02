@@ -12,6 +12,7 @@ filesystem-backed Nextcloud install.
 - Database: `nextcloud-migration-clean-cnpg` on `ceph-block`
 - App/config PVC: `nextcloud-migration-clean-html` on `csi-cephfs-sc`
 - User data PVC: `nextcloud-data`, mounted at subpath `strategy-a-clean-data`
+- Server-side encryption: enabled with Nextcloud's `OC_DEFAULT_MODULE`
 - App secret: `nextcloud-migration-secret`, manually mirrored from Vault path
   `secret/nextcloud/staging/migration/app`
 
@@ -28,6 +29,7 @@ Open `http://127.0.0.1:8089/login`.
 ## Safety Notes
 
 - Do not attach this instance to the source S3 primary objectstore.
+- Keep Nextcloud server-side encryption enabled before importing any real data.
 - Do not restore the source database here; keep this instance clean for
   Strategy A testing.
 - Do not copy raw `urn:oid:*` bucket objects into this data directory.
@@ -40,6 +42,7 @@ Open `http://127.0.0.1:8089/login`.
 source ~/.bash_profile
 kubectl --context admin@staging -n nextcloud get pvc,cluster,hr,pod -o wide
 kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- php occ status
+kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- php occ encryption:status
 kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- php occ config:system:get objectstore || true
 kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- df -h /var/www/html /var/www/html/data
 kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- mount | grep /var/www/html/data
@@ -56,6 +59,8 @@ Expected storage placement:
 - Redis: ephemeral.
 
 `php occ config:system:get objectstore` should return no value.
+`php occ encryption:status` should report `enabled: true` and
+`defaultModule: OC_DEFAULT_MODULE`.
 
 ## WebDAV Smoke Test
 

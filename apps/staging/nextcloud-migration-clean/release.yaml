@@ -43,6 +43,8 @@ spec:
           value: "http"
         - name: OVERWRITECLIURL
           value: "http://nextcloud-migration-clean.nextcloud.svc.cluster.local"
+        - name: NEXTCLOUD_ENABLE_SERVER_SIDE_ENCRYPTION
+          value: "true"
       configs:
         proxy.config.php: |-
           <?php
@@ -65,6 +67,7 @@ spec:
             'maintenance_window_start' => 7,
             'default_phone_region' => 'US',
             'enable_previews' => false,
+            'skeletondirectory' => '',
           );
       phpConfigs:
         migration.ini: |-
@@ -73,6 +76,29 @@ spec:
           max_input_time = 3600
           max_execution_time = 3600
           memory_limit = 1G
+      hooks:
+        before-starting: |-
+          #!/bin/sh
+          set -eu
+
+          OCC_STATUS="$(php occ status 2>/dev/null || true)"
+          if ! printf '%s\n' "${OCC_STATUS}" | grep -q 'installed: true'; then
+            echo "Nextcloud not installed yet; skipping migration sandbox encryption bootstrap."
+            exit 0
+          fi
+
+          if printf '%s\n' "${OCC_STATUS}" | grep -q 'needsDbUpgrade: true'; then
+            echo "Nextcloud upgrade pending; skipping migration sandbox encryption bootstrap."
+            exit 0
+          fi
+
+          if [ "${NEXTCLOUD_ENABLE_SERVER_SIDE_ENCRYPTION:-false}" = "true" ]; then
+            php occ app:enable encryption || true
+            php occ encryption:enable || true
+            php occ encryption:set-default-module OC_DEFAULT_MODULE || true
+            php occ encryption:status | grep -q 'enabled: true'
+            php occ encryption:status | grep -q 'defaultModule: OC_DEFAULT_MODULE'
+          fi
 
     internalDatabase:
       enabled: false
