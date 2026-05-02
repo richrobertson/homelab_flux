@@ -146,6 +146,26 @@ Post-app-parity backup checkpoint:
   `nextcloud-migration-ldap-html-backup`
   last successful sync observed at `2026-05-02T09:26:23Z`.
 
+## Post-Cutover Client Auth
+
+After migration app-password cleanup, desktop and mobile sync clients may keep
+retrying old credentials against WebDAV and can trigger Nextcloud brute-force
+protection for the user's source IP. The server-side recovery is:
+
+```bash
+source ~/.bash_profile
+
+kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- \
+  php occ security:bruteforce:attempts <client-ip>
+kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- \
+  php occ security:bruteforce:reset <client-ip>
+```
+
+For the cutover, `50.47.197.121/32` was temporarily added to the
+`bruteForce` app allowlist so the browser login could recover while stale
+clients were still retrying. Remove that allowlist entry after desktop and
+mobile clients have been reconnected with fresh app passwords.
+
 ## Validation Commands
 
 ```bash
