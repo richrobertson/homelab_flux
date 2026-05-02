@@ -202,6 +202,14 @@ After a WebDAV smoke test, raw target files should not be plaintext:
 ```bash
 source ~/.bash_profile
 
+scripts/nextcloud-encryption-target-validation.sh
+```
+
+Manual equivalent:
+
+```bash
+source ~/.bash_profile
+
 kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- \
   sh -lc 'file="$(find /var/www/html/data/migration-dryrun/files -type f -name README.txt | tail -1)"; head -c 96 "${file}" | grep "HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE"'
 ```
