@@ -1,0 +1,158 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nextcloud-migration-clean
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: nextcloud
+      version: ">=6.0.0 <7.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: nextcloud
+        namespace: nextcloud
+  install:
+    disableWait: true
+  upgrade:
+    disableWait: true
+  values:
+    replicaCount: 1
+
+    image:
+      repository: nextcloud
+      tag: 33-apache
+      pullPolicy: IfNotPresent
+
+    nextcloud:
+      host: nextcloud-migration-clean.nextcloud.svc.cluster.local
+      trustedDomains:
+        - nextcloud-migration-clean
+        - nextcloud-migration-clean.nextcloud
+        - nextcloud-migration-clean.nextcloud.svc
+        - nextcloud-migration-clean.nextcloud.svc.cluster.local
+      existingSecret:
+        enabled: true
+        secretName: nextcloud-migration-secret
+        usernameKey: NEXTCLOUD_ADMIN_USER
+        passwordKey: NEXTCLOUD_ADMIN_PASSWORD
+      extraEnv:
+        - name: OVERWRITEPROTOCOL
+          value: "http"
+        - name: OVERWRITECLIURL
+          value: "http://nextcloud-migration-clean.nextcloud.svc.cluster.local"
+        - name: NEXTCLOUD_ENABLE_SERVER_SIDE_ENCRYPTION
+          value: "true"
+      configs:
+        proxy.config.php: |-
+          <?php
+          $CONFIG = array(
+            'trusted_domains' => [
+              'localhost',
+              'nextcloud-migration-clean',
+              'nextcloud-migration-clean.nextcloud',
+              'nextcloud-migration-clean.nextcloud.svc',
+              'nextcloud-migration-clean.nextcloud.svc.cluster.local',
+            ],
+            'trusted_proxies' => ['10.0.0.0/8'],
+            'forwarded_for_headers' => ['HTTP_X_FORWARDED_FOR'],
+            'overwrite.cli.url' => getenv('OVERWRITECLIURL') ?: 'http://nextcloud-migration-clean.nextcloud.svc.cluster.local',
+            'overwriteprotocol' => getenv('OVERWRITEPROTOCOL') ?: 'http',
+          );
+        migration-clean.config.php: |-
+          <?php
+          $CONFIG = array(
+            'maintenance_window_start' => 7,
+            'default_phone_region' => 'US',
+            'enable_previews' => false,
+            'skeletondirectory' => '',
+          );
+      phpConfigs:
+        migration.ini: |-
+          upload_max_filesize = 16G
+          post_max_size = 16G
+          max_input_time = 3600
+          max_execution_time = 3600
+          memory_limit = 1G
+      hooks:
+        before-starting: |-
+          #!/bin/sh
+          set -eu
+
+          OCC_STATUS="$(php occ status 2>/dev/null || true)"
+          if ! printf '%s\n' "${OCC_STATUS}" | grep -q 'installed: true'; then
+            echo "Nextcloud not installed yet; skipping migration target encryption bootstrap."
+            exit 0
+          fi
+
+          if printf '%s\n' "${OCC_STATUS}" | grep -q 'needsDbUpgrade: true'; then
+            echo "Nextcloud upgrade pending; skipping migration target encryption bootstrap."
+            exit 0
+          fi
+
+          if [ "${NEXTCLOUD_ENABLE_SERVER_SIDE_ENCRYPTION:-false}" = "true" ]; then
+            php occ app:enable encryption || true
+            php occ encryption:enable || true
+            php occ encryption:set-default-module OC_DEFAULT_MODULE || true
+            php occ encryption:status | grep -q 'enabled: true'
+            php occ encryption:status | grep -q 'defaultModule: OC_DEFAULT_MODULE'
+          fi
+
+    internalDatabase:
+      enabled: false
+
+    externalDatabase:
+      enabled: true
+      type: postgresql
+      host: nextcloud-migration-clean-cnpg-rw:5432
+      database: nextcloud
+      user: nextcloud
+      existingSecret:
+        enabled: true
+        secretName: nextcloud-migration-clean-cnpg-app
+        usernameKey: user
+        passwordKey: password
+
+    persistence:
+      enabled: true
+      existingClaim: nextcloud-migration-clean-html
+      nextcloudData:
+        enabled: true
+        existingClaim: nextcloud-data
+        subPath: strategy-a-prod-data
+        accessMode: ReadWriteMany
+        size: 10Ti
+
+    redis:
+      enabled: true
+      image:
+        repository: bitnamilegacy/redis
+      auth:
+        enabled: false
+      master:
+        persistence:
+          enabled: false
+      replica:
+        persistence:
+          enabled: false
+
+    metrics:
+      enabled: false
+
+    service:
+      type: ClusterIP
+      port: 80
+
+    ingress:
+      enabled: false
+
+    cronjob:
+      enabled: true
+
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: "2"
+        memory: 2Gi

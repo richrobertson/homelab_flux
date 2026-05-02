@@ -26,4 +26,5 @@ resources:
   - task-control-plane
   - tautulli
   - nextcloud
+  - nextcloud-migration-clean
   - volsync
