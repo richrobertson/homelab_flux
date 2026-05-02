@@ -14,7 +14,7 @@
         secretKey: AWS_SECRET_ACCESS_KEY
 - op: replace
   path: /spec/values/replicaCount
-  value: 3
+  value: 0
 - op: add
   path: /spec/values/affinity
   value:
@@ -48,7 +48,7 @@
 - op: add
   path: /spec/values/collabora
   value:
-    enabled: true
+    enabled: false
     collabora:
       aliasgroups:
         - host: "https://cloud.myrobertson.com:443"
