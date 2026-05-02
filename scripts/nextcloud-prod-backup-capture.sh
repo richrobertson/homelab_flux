@@ -17,6 +17,7 @@ CNPG_APP_SECRET="${CNPG_APP_SECRET:-nextcloud-cnpg-app}"
 S3_SECRET="${S3_SECRET:-nextcloud-s3-secret}"
 OUTPUT_DIR="${OUTPUT_DIR:-/tmp/nextcloud-prod-backup-capture-$(date +%Y%m%d-%H%M%S)}"
 S3_INVENTORY_ENABLED="${S3_INVENTORY_ENABLED:-true}"
+VERIFY_DB_DUMP="${VERIFY_DB_DUMP:-true}"
 
 SECRET_NAMES=(${SECRET_NAMES:-nextcloud-secret nextcloud-s3-secret nextcloud-ldap-secret collabora-secret nextcloud-cnpg-app})
 RESOURCE_NAMES=(${RESOURCE_NAMES:-helmrelease/nextcloud cluster/nextcloud-cnpg scheduledbackup/nextcloud-cnpg-daily deploy/nextcloud pvc/nextcloud-data-pvc-ceph-v2})
@@ -78,6 +79,25 @@ kubectl --context "${KUBE_CONTEXT}" -n "${NAMESPACE}" exec "${primary_pod}" -c p
 unset pg_password
 printf 'captured=%s\n' "${OUTPUT_DIR}/database/nextcloud-db.dump"
 printf 'database_dump_bytes=%s\n' "$(wc -c <"${OUTPUT_DIR}/database/nextcloud-db.dump")"
+
+if [[ "${VERIFY_DB_DUMP}" == "true" ]]; then
+  remote_dump="/controller/nextcloud-db-verify-$(date +%Y%m%d%H%M%S).dump"
+  kubectl --context "${KUBE_CONTEXT}" -n "${NAMESPACE}" cp \
+    "${OUTPUT_DIR}/database/nextcloud-db.dump" \
+    "${primary_pod}:${remote_dump}" \
+    -c postgres
+  kubectl --context "${KUBE_CONTEXT}" -n "${NAMESPACE}" exec "${primary_pod}" -c postgres -- \
+    pg_restore --list "${remote_dump}" >"${OUTPUT_DIR}/database/nextcloud-db.pg_restore.list"
+  kubectl --context "${KUBE_CONTEXT}" -n "${NAMESPACE}" exec "${primary_pod}" -c postgres -- \
+    rm -f "${remote_dump}"
+  printf 'verified_pg_restore_list=%s\n' "${OUTPUT_DIR}/database/nextcloud-db.pg_restore.list"
+  awk '
+    /^;     TOC Entries:/ { print "database_dump_toc_entries=" $4 }
+    /^;     Format:/ { print "database_dump_format=" $3 }
+  ' "${OUTPUT_DIR}/database/nextcloud-db.pg_restore.list"
+else
+  echo "verify_db_dump=false"
+fi
 
 section "kubernetes resources"
 for resource in "${RESOURCE_NAMES[@]}"; do

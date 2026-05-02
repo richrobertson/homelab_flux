@@ -62,9 +62,9 @@ scripts/nextcloud-prod-backup-capture.sh
 The capture writes a sensitive local restore-set directory under
 `/tmp/nextcloud-prod-backup-capture-*` containing `config.php`, a CNPG
 custom-format database dump, selected Kubernetes resource snapshots, selected
-Secret YAML, S3 inventory/versioning metadata, and `SHA256SUMS`. Do not commit
-or casually move this directory. Run it again during maintenance mode for the
-final cutover backup.
+Secret YAML, S3 inventory/versioning metadata, `pg_restore --list` verification
+output, and `SHA256SUMS`. Do not commit or casually move this directory. Run it
+again during maintenance mode for the final cutover backup.
 
 ## Phase 2: Provision Target Storage In Parallel
 
