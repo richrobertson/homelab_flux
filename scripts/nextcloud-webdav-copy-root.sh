@@ -16,6 +16,7 @@ TARGET_SERVICE_URL="${TARGET_SERVICE_URL:-http://127.0.0.1}"
 SOURCE_USER="${SOURCE_USER:-}"
 TARGET_USER="${TARGET_USER:-${SOURCE_USER}}"
 COPY_ROOT="${COPY_ROOT:-}"
+ALLOW_ENTIRE_HOME="${ALLOW_ENTIRE_HOME:-false}"
 APPLY="${APPLY:-false}"
 MAX_FILES="${MAX_FILES:-1000}"
 VERIFY_AFTER_COPY="${VERIFY_AFTER_COPY:-true}"
@@ -35,12 +36,13 @@ if [[ -z "${TARGET_USER}" ]]; then
   exit 2
 fi
 
-if [[ -z "${COPY_ROOT}" ]]; then
-  echo "COPY_ROOT is required. Refusing to operate on an entire user home by default." >&2
-  exit 2
-fi
-
-if [[ "${COPY_ROOT}" == /* || "${COPY_ROOT}" == *".."* ]]; then
+if [[ -z "${COPY_ROOT}" || "${COPY_ROOT}" == "/" ]]; then
+  if [[ "${ALLOW_ENTIRE_HOME}" != "true" ]]; then
+    echo "COPY_ROOT is required. Set ALLOW_ENTIRE_HOME=true to operate on an entire user home." >&2
+    exit 2
+  fi
+  COPY_ROOT=""
+elif [[ "${COPY_ROOT}" == /* || "${COPY_ROOT}" == *".."* ]]; then
   echo "COPY_ROOT must be a relative path without '..'" >&2
   exit 2
 fi
@@ -68,6 +70,7 @@ kubectl --context "${KUBE_CONTEXT}" -n "${TARGET_NAMESPACE}" exec -i "deploy/${T
     SOURCE_PASSWORD="${SOURCE_PASSWORD}" \
     TARGET_PASSWORD="${TARGET_PASSWORD}" \
     COPY_ROOT="${COPY_ROOT}" \
+    ALLOW_ENTIRE_HOME="${ALLOW_ENTIRE_HOME}" \
     APPLY="${APPLY}" \
     MAX_FILES="${MAX_FILES}" \
     VERIFY_AFTER_COPY="${VERIFY_AFTER_COPY}" \
@@ -138,6 +141,73 @@ function request(string $method, string $url, string $user, string $password, ar
         'body' => $response === false ? '' : $response,
         'headers' => $response_headers,
     ];
+}
+
+function curl_status_or_fail($curl, string $label): array {
+    $ok = curl_exec($curl);
+    $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+    $error = curl_error($curl);
+    curl_close($curl);
+
+    if ($ok === false) {
+        fwrite(STDERR, $label . ' curl_error=' . $error . "\n");
+        exit(1);
+    }
+
+    return ['status' => $status, 'body' => '', 'headers' => []];
+}
+
+function curl_download_to_file(string $url, string $user, string $password, string $path): array {
+    $handle = fopen($path, 'wb');
+    if ($handle === false) {
+        fwrite(STDERR, 'Unable to open temporary download path ' . $path . "\n");
+        exit(1);
+    }
+
+    $curl = curl_init($url);
+    curl_setopt_array($curl, [
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_USERPWD => $user . ':' . $password,
+        CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
+        CURLOPT_USERAGENT => 'nextcloud-webdav-copy-root/1.0',
+        CURLOPT_FILE => $handle,
+        CURLOPT_FOLLOWLOCATION => false,
+        CURLOPT_FAILONERROR => false,
+        CURLOPT_CONNECTTIMEOUT => 30,
+        CURLOPT_TIMEOUT => 0,
+    ]);
+
+    $result = curl_status_or_fail($curl, 'GET ' . $url);
+    fclose($handle);
+    return $result;
+}
+
+function curl_upload_file(string $url, string $user, string $password, string $path): array {
+    $handle = fopen($path, 'rb');
+    if ($handle === false) {
+        fwrite(STDERR, 'Unable to open temporary upload path ' . $path . "\n");
+        exit(1);
+    }
+
+    $curl = curl_init($url);
+    curl_setopt_array($curl, [
+        CURLOPT_UPLOAD => true,
+        CURLOPT_CUSTOMREQUEST => 'PUT',
+        CURLOPT_USERPWD => $user . ':' . $password,
+        CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
+        CURLOPT_USERAGENT => 'nextcloud-webdav-copy-root/1.0',
+        CURLOPT_INFILE => $handle,
+        CURLOPT_INFILESIZE => filesize($path),
+        CURLOPT_HTTPHEADER => ['Content-Type: application/octet-stream'],
+        CURLOPT_FOLLOWLOCATION => false,
+        CURLOPT_FAILONERROR => false,
+        CURLOPT_CONNECTTIMEOUT => 30,
+        CURLOPT_TIMEOUT => 0,
+    ]);
+
+    $result = curl_status_or_fail($curl, 'PUT ' . $url);
+    fclose($handle);
+    return $result;
 }
 
 function require_status(array $response, array $allowed, string $label): void {
@@ -223,30 +293,46 @@ function sha256_bytes(string $bytes): string {
 }
 
 function copy_file(array $ctx, string $path): array {
-    $source = request('GET', webdav_url($ctx['source_base'], $path), $ctx['source_user'], $ctx['source_password']);
+    $tmp_source = tempnam(sys_get_temp_dir(), 'nextcloud-source-');
+    $tmp_target = tempnam(sys_get_temp_dir(), 'nextcloud-target-');
+    if ($tmp_source === false || $tmp_target === false) {
+        fwrite(STDERR, "Unable to create temporary copy files\n");
+        exit(1);
+    }
+
+    $source = curl_download_to_file(
+        webdav_url($ctx['source_base'], $path),
+        $ctx['source_user'],
+        $ctx['source_password'],
+        $tmp_source
+    );
     require_status($source, [200], 'GET source ' . $path);
-    $source_sha = sha256_bytes($source['body']);
+    $source_sha = hash_file('sha256', $tmp_source);
+    $bytes = filesize($tmp_source);
 
     $parent = dirname($path);
     if ($parent !== '.' && $parent !== '') {
         ensure_collection($ctx['target_base'], $ctx['target_user'], $ctx['target_password'], $parent);
     }
 
-    $put = request(
-        'PUT',
+    $put = curl_upload_file(
         webdav_url($ctx['target_base'], $path),
         $ctx['target_user'],
         $ctx['target_password'],
-        ['Content-Type: application/octet-stream'],
-        $source['body']
+        $tmp_source
     );
     require_status($put, [200, 201, 204], 'PUT target ' . $path);
 
     $target_sha = null;
     if ($ctx['verify_after_copy']) {
-        $target = request('GET', webdav_url($ctx['target_base'], $path), $ctx['target_user'], $ctx['target_password']);
+        $target = curl_download_to_file(
+            webdav_url($ctx['target_base'], $path),
+            $ctx['target_user'],
+            $ctx['target_password'],
+            $tmp_target
+        );
         require_status($target, [200], 'GET target ' . $path);
-        $target_sha = sha256_bytes($target['body']);
+        $target_sha = hash_file('sha256', $tmp_target);
         if ($source_sha !== $target_sha) {
             fwrite(STDERR, 'checksum_mismatch path=' . $path . "\n");
             exit(1);
@@ -254,7 +340,7 @@ function copy_file(array $ctx, string $path): array {
     }
 
     $raw_encrypted = null;
-    if ($ctx['verify_raw_encryption']) {
+    if ($ctx['verify_raw_encryption'] && $bytes > 0) {
         $raw_encrypted = raw_target_file_is_encrypted($ctx['target_user'], $path);
         if (!$raw_encrypted) {
             fwrite(STDERR, 'target_file_not_nextcloud_encrypted path=' . $path . "\n");
@@ -262,9 +348,12 @@ function copy_file(array $ctx, string $path): array {
         }
     }
 
+    @unlink($tmp_source);
+    @unlink($tmp_target);
+
     return [
         'path' => $path,
-        'bytes' => strlen($source['body']),
+        'bytes' => $bytes,
         'sha256' => $source_sha,
         'target_sha256' => $target_sha,
         'raw_target_file_encrypted' => $raw_encrypted,
@@ -301,7 +390,9 @@ function raw_target_file_is_encrypted(string $target_user, string $path): bool {
 $source_user = env_value('SOURCE_USER');
 $target_user = env_value('TARGET_USER');
 $copy_root = trim(env_value('COPY_ROOT'), '/');
+$copy_root_display = $copy_root === '' ? '/' : $copy_root;
 $apply = bool_env('APPLY');
+$allow_entire_home = bool_env('ALLOW_ENTIRE_HOME');
 $verify_after_copy = bool_env('VERIFY_AFTER_COPY');
 $verify_raw_encryption = bool_env('VERIFY_RAW_ENCRYPTION');
 $max_files = (int) env_value('MAX_FILES');
@@ -362,7 +453,8 @@ $report = [
     'generated_at' => gmdate('c'),
     'source_user' => $source_user,
     'target_user' => $target_user,
-    'copy_root' => $copy_root,
+    'copy_root' => $copy_root_display,
+    'allow_entire_home' => $allow_entire_home,
     'apply' => $apply,
     'max_files' => $max_files,
     'verify_after_copy' => $verify_after_copy,
@@ -395,6 +487,7 @@ jq -r '
   "source_user=" + .source_user,
   "target_user=" + .target_user,
   "copy_root=" + .copy_root,
+  "allow_entire_home=" + (.allow_entire_home | tostring),
   "apply=" + (.apply | tostring),
   "verify_raw_encryption=" + (.verify_raw_encryption | tostring),
   "planned_directories=" + (.planned.directory_count | tostring),
@@ -410,5 +503,6 @@ cat <<EOF
 Wrote WebDAV copy report to:
 ${report_file}
 
-Default mode is dry-run. Set APPLY=true only for a reviewed, scoped COPY_ROOT.
+Default mode is dry-run. Set APPLY=true only for a reviewed COPY_ROOT, or with
+ALLOW_ENTIRE_HOME=true after the whole-home dry-run report has been reviewed.
 EOF

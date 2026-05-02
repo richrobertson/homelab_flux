@@ -128,6 +128,15 @@ only on the target when `APPLY=true`, and writes temporary target WebDAV
 passwords to a sensitive local TSV under `/tmp`. Do not commit that password
 file.
 
+For LDAP-backed or otherwise externally-authenticated source users, use
+`scripts/nextcloud-source-app-passwords.sh` to create temporary source app
+passwords for the migration. The helper writes a sensitive TSV under `/tmp` and
+has a matching `MODE=delete` path for revocation after validation. Use
+`scripts/nextcloud-webdav-copy-users.sh` to run the same WebDAV copy flow across
+the reviewed user list. It defaults to dry-run, requires the source and target
+password TSV files, and only allows a whole-home copy when
+`ALLOW_ENTIRE_HOME=true` is set.
+
 ### Strategy B: In-Place Database-Aware Migration
 
 Use this only if a tested, version-compatible migration tool or script is selected. The tool must understand Nextcloud filecache and storage mappings and convert object IDs into filesystem paths. It must be tested against a cloned database and copied bucket first, and it must preserve versions, trashbin, and shares if those are required.
