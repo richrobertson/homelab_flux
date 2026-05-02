@@ -225,6 +225,22 @@ Back up the database, `config.php`, Kubernetes secrets, and `files_encryption`
 key material as one restore set. Encrypted files may be unrecoverable if the
 matching key material or Nextcloud secret is lost.
 
+Inventory the required encrypted restore set without printing secret values:
+
+```bash
+source ~/.bash_profile
+
+scripts/nextcloud-encryption-restore-set-inventory.sh
+```
+
+The restore set is valid only if all of these are captured together:
+
+- CNPG database dump or backup.
+- `config.php`, including the Nextcloud config secret.
+- Kubernetes secrets used by the app and database.
+- `/var/www/html/data/files_encryption` and each user's `files_encryption` directory.
+- The encrypted user files on the Synology NFS PVC.
+
 ## Choose The Actual File Migration Method
 
 Use one of these approaches before any production cutover.
