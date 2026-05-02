@@ -91,7 +91,11 @@ Do not use unaudited scripts against production data.
 
 1. Clone the production database into a test namespace/database.
 2. Copy or snapshot a representative subset of the S3 bucket.
-3. Deploy a temporary Nextcloud test instance.
+3. Deploy a temporary Nextcloud test instance. The staging sandbox in
+   `apps/staging/nextcloud-migration` is the current private target for this:
+   it has no public route, uses `ceph-block` for its database, uses
+   `csi-cephfs-sc` for app/config storage, and mounts the Synology-backed
+   `nextcloud-data` PVC only at the Nextcloud data path.
 4. Run the selected migration method.
 5. Validate:
    - Users can log in.
