@@ -10,10 +10,11 @@ The current production Nextcloud instance is not cut over by this base. It only 
 
 Kubernetes mounts the Synology NFS export directly through the PV. The Ansible diagnostic mount in `homelab_ansible/roles/kubernetes_nfs_client` is only for validating node NFS client readiness and export reachability.
 
-Before applying to production, replace the placeholder server/path if needed:
+The NFS server uses the local-only Synology DNS name that the Kubernetes nodes
+resolve through the PowerDNS recursor and AD DNS:
 
 ```yaml
 nfs:
-  server: 192.168.50.10
+  server: scooter.myrobertson.net
   path: /volume1/nextcloud-data
 ```
