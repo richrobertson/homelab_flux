@@ -87,6 +87,11 @@ recreation candidates, special shares that need manual review, and the
 versions/trashbin boundary. Treat the generated JSON artifact as operational
 data because it contains user, group, and share identifiers.
 
+Use `scripts/nextcloud-webdav-copy-root.sh` for reviewed one-folder rehearsals.
+It requires an explicit `COPY_ROOT`, defaults to `APPLY=false`, uses WebDAV
+only, verifies source/target checksums when copying, and verifies the copied
+raw target files carry the Nextcloud encryption header.
+
 ### Strategy B: In-Place Database-Aware Migration
 
 Use this only if a tested, version-compatible migration tool or script is selected. The tool must understand Nextcloud filecache and storage mappings and convert object IDs into filesystem paths. It must be tested against a cloned database and copied bucket first, and it must preserve versions, trashbin, and shares if those are required.

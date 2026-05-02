@@ -390,6 +390,51 @@ kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-cle
   sh -lc 'df -h /var/www/html/data && mount | grep /var/www/html/data'
 ```
 
+## Strategy A Scoped WebDAV Copy Helper
+
+After the smoke tests and Strategy A plan are reviewed, use the scoped copy
+helper to rehearse one user-visible folder. It uses WebDAV only, never raw S3
+objects, and refuses to operate on an entire user home because `COPY_ROOT` is
+required.
+
+Dry-run mode is the default:
+
+```bash
+source ~/.bash_profile
+
+source_user="$(kubectl --context admin@staging -n default get secret nextcloud-secret -o jsonpath='{.data.NEXTCLOUD_ADMIN_USER}' | base64 -d)"
+source_pass="$(kubectl --context admin@staging -n default get secret nextcloud-secret -o jsonpath='{.data.NEXTCLOUD_ADMIN_PASSWORD}' | base64 -d)"
+target_user="$(kubectl --context admin@staging -n nextcloud get secret nextcloud-migration-secret -o jsonpath='{.data.NEXTCLOUD_ADMIN_USER}' | base64 -d)"
+target_pass="$(kubectl --context admin@staging -n nextcloud get secret nextcloud-migration-secret -o jsonpath='{.data.NEXTCLOUD_ADMIN_PASSWORD}' | base64 -d)"
+
+SOURCE_USER="${source_user}" \
+SOURCE_PASSWORD="${source_pass}" \
+TARGET_USER="${target_user}" \
+TARGET_PASSWORD="${target_pass}" \
+COPY_ROOT="migration-dryrun-webdav" \
+scripts/nextcloud-webdav-copy-root.sh
+```
+
+To perform a reviewed scoped copy, set `APPLY=true` and keep `MAX_FILES`
+small for the first pass:
+
+```bash
+APPLY=true MAX_FILES=5 \
+SOURCE_USER="${source_user}" \
+SOURCE_PASSWORD="${source_pass}" \
+TARGET_USER="${target_user}" \
+TARGET_PASSWORD="${target_pass}" \
+COPY_ROOT="migration-dryrun-webdav" \
+scripts/nextcloud-webdav-copy-root.sh
+
+unset source_pass target_pass
+```
+
+The helper writes `webdav-copy-root-report.json` under
+`/tmp/nextcloud-webdav-copy-root-*`. When `APPLY=true`, it verifies source and
+target checksums, and on the clean encrypted target it verifies copied raw
+files have the `OC_DEFAULT_MODULE` encryption header.
+
 ## Strategy A Non-Admin WebDAV Smoke Test
 
 Use this to validate the same metadata-aware path with a normal database-backed
