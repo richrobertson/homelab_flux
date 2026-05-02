@@ -59,3 +59,12 @@
         secretName: collabora-secret
     ingress:
       enabled: false
+- op: replace
+  path: /spec/values/redis/enabled
+  value: false
+- op: replace
+  path: /spec/values/metrics/enabled
+  value: false
+- op: replace
+  path: /spec/values/cronjob/enabled
+  value: false

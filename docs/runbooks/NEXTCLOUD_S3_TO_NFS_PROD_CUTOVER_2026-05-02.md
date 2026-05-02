@@ -120,10 +120,10 @@ The old source app, database, app/config PVC, and S3 bucket remain retained for
 rollback; only stale scheduled backups are stopped.
 
 After the target was validated, the old S3-backed source app was scaled to zero
-in Git and the old source-owned Collabora deployment was disabled. The old
-source CNPG database, app/config PVC, S3 bucket, secrets, manifests, and restore
-captures remain retained. This reduces stale source surface area without
-deleting rollback data.
+in Git. Old source-owned Collabora, Redis, metrics, and cron runtime components
+were disabled. The old source CNPG database, app/config PVC, S3 bucket, secrets,
+manifests, and restore captures remain retained. This reduces stale source
+surface area without deleting rollback data.
 
 ## Post-Cutover App Parity
 
@@ -177,10 +177,10 @@ kubectl --context admin@prod -n default get pvc nextcloud-data-pvc-ceph-v2 nextc
   rollback remains possible.
 - The old source HelmRelease is intentionally scaled to zero after validation.
   If rollback is required, restore the old source replica count, re-enable old
-  source Collabora only if needed, wait for pods to become ready, point the
-  `default/nextcloud` HTTPRoute back to service `default/nextcloud`, disable
-  maintenance on the source, and investigate any writes that occurred on the
-  target after cutover.
+  source Redis, metrics, cron, and Collabora as needed, wait for pods to become
+  ready, point the `default/nextcloud` HTTPRoute back to service
+  `default/nextcloud`, disable maintenance on the source, and investigate any
+  writes that occurred on the target after cutover.
 - Keep the source S3 bucket read-only or otherwise protected.
 - Do not delete the source S3 bucket until the retention window has passed and
   restore testing from the new target backups has succeeded.
