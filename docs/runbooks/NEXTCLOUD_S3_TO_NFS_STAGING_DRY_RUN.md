@@ -192,6 +192,67 @@ Database-aware path:
 3. Verify file counts, paths, shares, versions, and trashbin behavior.
 4. Do not run unaudited scripts against production data.
 
+## Strategy A WebDAV Smoke Test
+
+Use this only for staging validation. It creates a tiny test file in the source
+staging Nextcloud admin account, copies that file through WebDAV into the clean
+filesystem-backed sandbox, and verifies the checksum. It does not read from or
+write raw S3 objects.
+
+```bash
+source ~/.bash_profile
+
+source_user="$(kubectl --context admin@staging -n default get secret nextcloud-secret -o jsonpath='{.data.NEXTCLOUD_ADMIN_USER}' | base64 -d)"
+source_pass="$(kubectl --context admin@staging -n default get secret nextcloud-secret -o jsonpath='{.data.NEXTCLOUD_ADMIN_PASSWORD}' | base64 -d)"
+run_id="$(date +%Y%m%d-%H%M%S)"
+
+kubectl --context admin@staging -n nextcloud exec -i deploy/nextcloud-migration-clean -c nextcloud -- sh -s <<SCRIPT
+set -eu
+SOURCE_USER='${source_user}'
+SOURCE_PASS='${source_pass}'
+RUN_ID='${run_id}'
+TARGET_USER="\${NEXTCLOUD_ADMIN_USER}"
+TARGET_PASS="\${NEXTCLOUD_ADMIN_PASSWORD}"
+FOLDER='migration-dryrun-webdav'
+FILE="metadata-aware-import-\${RUN_ID}.txt"
+SOURCE_BASE="http://nextcloud.default.svc.cluster.local/remote.php/dav/files/\${SOURCE_USER}/\${FOLDER}"
+TARGET_BASE="http://127.0.0.1/remote.php/dav/files/\${TARGET_USER}/\${FOLDER}"
+PAYLOAD="Nextcloud metadata-aware WebDAV dry run \${RUN_ID}\\nsource=staging-s3-primary\\ntarget=clean-synology-nfs\\n"
+
+curl -fsS -u "\${SOURCE_USER}:\${SOURCE_PASS}" -X MKCOL "\${SOURCE_BASE}" >/dev/null || true
+printf '%b' "\${PAYLOAD}" | curl -fsS -u "\${SOURCE_USER}:\${SOURCE_PASS}" -T - "\${SOURCE_BASE}/\${FILE}" >/dev/null
+curl -fsS -u "\${TARGET_USER}:\${TARGET_PASS}" -X MKCOL "\${TARGET_BASE}" >/dev/null || true
+curl -fsS -u "\${SOURCE_USER}:\${SOURCE_PASS}" "\${SOURCE_BASE}/\${FILE}" | curl -fsS -u "\${TARGET_USER}:\${TARGET_PASS}" -T - "\${TARGET_BASE}/\${FILE}" >/dev/null
+SOURCE_SHA="\$(curl -fsS -u "\${SOURCE_USER}:\${SOURCE_PASS}" "\${SOURCE_BASE}/\${FILE}" | sha256sum | awk '{print \$1}')"
+TARGET_SHA="\$(curl -fsS -u "\${TARGET_USER}:\${TARGET_PASS}" "\${TARGET_BASE}/\${FILE}" | sha256sum | awk '{print \$1}')"
+
+if [ "\${SOURCE_SHA}" != "\${TARGET_SHA}" ]; then
+  echo checksum_mismatch >&2
+  exit 1
+fi
+
+printf 'webdav_import_ok file=%s/%s sha256=%s\\n' "\${FOLDER}" "\${FILE}" "\${TARGET_SHA}"
+SCRIPT
+
+unset source_pass
+```
+
+Confirm the target file landed on the filesystem-backed NFS mount with a normal
+user-visible path:
+
+```bash
+source ~/.bash_profile
+
+kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- \
+  find /var/www/html/data/admin/files/migration-dryrun-webdav -maxdepth 1 -type f -name 'metadata-aware-import-*.txt' -print
+
+kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- \
+  php occ files:scan admin --path='admin/files/migration-dryrun-webdav'
+
+kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- \
+  sh -lc 'df -h /var/www/html/data && mount | grep /var/www/html/data'
+```
+
 ## Dry-Run Validation Checklist
 
 - Users can log in to the sandbox.

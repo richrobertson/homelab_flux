@@ -56,3 +56,15 @@ Expected storage placement:
 - Redis: ephemeral.
 
 `php occ config:system:get objectstore` should return no value.
+
+## WebDAV Smoke Test
+
+The staging dry-run runbook includes a tiny WebDAV copy test from the current
+S3-backed staging Nextcloud instance into this clean filesystem-backed sandbox:
+
+```text
+docs/runbooks/NEXTCLOUD_S3_TO_NFS_STAGING_DRY_RUN.md
+```
+
+The smoke test is intentionally metadata-aware: it uses Nextcloud WebDAV on both
+ends and never copies raw `urn:oid:*` bucket objects into the data directory.
