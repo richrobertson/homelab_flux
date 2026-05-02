@@ -169,6 +169,8 @@ spec:
           set -eu
 
           if find /usr/local/share/ca-certificates -maxdepth 1 -name '*.crt' | grep -q .; then
+            update-ca-certificates
+
             # Nextcloud uses its own CA bundle for outbound HTTPS, so extend it
             # with any custom certs we mount into the container.
             python3 - <<'PY'
@@ -253,6 +255,8 @@ spec:
           fi
 
           if [ "${NEXTCLOUD_OIDC_ENABLED:-false}" = "true" ]; then
+            php occ config:system:set allow_local_remote_servers --type=boolean --value=true
+
             for i in $(seq 1 30); do
               if [ -n "${NEXTCLOUD_OIDC_CLIENT_ID:-}" ] && [ -n "${NEXTCLOUD_OIDC_CLIENT_SECRET:-}" ] && [ -n "${NEXTCLOUD_OIDC_DISCOVERY_URI:-}" ]; then
                 break
