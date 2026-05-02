@@ -59,8 +59,9 @@ Expected storage placement:
 
 ## WebDAV Smoke Test
 
-The staging dry-run runbook includes a tiny WebDAV copy test from the current
-S3-backed staging Nextcloud instance into this clean filesystem-backed sandbox:
+The staging dry-run runbook includes tiny admin and non-admin WebDAV copy tests
+from the current S3-backed staging Nextcloud instance into this clean
+filesystem-backed sandbox:
 
 ```text
 docs/runbooks/NEXTCLOUD_S3_TO_NFS_STAGING_DRY_RUN.md

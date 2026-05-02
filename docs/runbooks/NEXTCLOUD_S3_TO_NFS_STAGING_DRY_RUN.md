@@ -253,6 +253,92 @@ kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-cle
   sh -lc 'df -h /var/www/html/data && mount | grep /var/www/html/data'
 ```
 
+## Strategy A Non-Admin WebDAV Smoke Test
+
+Use this to validate the same metadata-aware path with a normal database-backed
+user without resetting or borrowing a real user's credentials. It creates or
+updates a temporary `migration-dryrun` user in both staging instances, uploads a
+small file to the S3-backed source through WebDAV, copies it to the clean
+NFS-backed sandbox through WebDAV, and verifies the checksum.
+
+The temporary user is a staging test fixture. Remove it later with
+`php occ user:delete migration-dryrun` only after its test files are no longer
+needed.
+
+```bash
+source ~/.bash_profile
+set -euo pipefail
+
+user="migration-dryrun"
+group="migration-dryrun"
+pass="$(openssl rand -base64 36 | tr -d '\n')"
+
+for ns_app in "default deploy/nextcloud" "nextcloud deploy/nextcloud-migration-clean"; do
+  ns="${ns_app%% *}"
+  deploy="${ns_app#* }"
+
+  kubectl --context admin@staging -n "${ns}" exec "${deploy}" -c nextcloud -- \
+    php occ group:add "${group}" >/dev/null 2>&1 || true
+
+  if kubectl --context admin@staging -n "${ns}" exec "${deploy}" -c nextcloud -- \
+    php occ user:info "${user}" >/dev/null 2>&1; then
+    kubectl --context admin@staging -n "${ns}" exec "${deploy}" -c nextcloud -- \
+      env OC_PASS="${pass}" php occ user:resetpassword --password-from-env "${user}" >/dev/null
+  else
+    kubectl --context admin@staging -n "${ns}" exec "${deploy}" -c nextcloud -- \
+      env OC_PASS="${pass}" php occ user:add --password-from-env \
+      --display-name "Migration Dry Run" \
+      --group "${group}" \
+      "${user}" >/dev/null
+  fi
+
+  kubectl --context admin@staging -n "${ns}" exec "${deploy}" -c nextcloud -- \
+    php occ group:adduser "${group}" "${user}" >/dev/null 2>&1 || true
+done
+
+run_id="$(date +%Y%m%d-%H%M%S)"
+
+kubectl --context admin@staging -n nextcloud exec -i deploy/nextcloud-migration-clean -c nextcloud -- sh -s <<SCRIPT
+set -eu
+USER_ID='${user}'
+USER_PASS='${pass}'
+RUN_ID='${run_id}'
+FOLDER='migration-dryrun-user-webdav'
+FILE="non-admin-import-\${RUN_ID}.txt"
+SOURCE_BASE="http://nextcloud.default.svc.cluster.local/remote.php/dav/files/\${USER_ID}/\${FOLDER}"
+TARGET_BASE="http://127.0.0.1/remote.php/dav/files/\${USER_ID}/\${FOLDER}"
+PAYLOAD="Nextcloud non-admin WebDAV dry run \${RUN_ID}\\nsource=staging-s3-primary\\ntarget=clean-synology-nfs\\nuser=\${USER_ID}\\n"
+
+curl -fsS -u "\${USER_ID}:\${USER_PASS}" -X MKCOL "\${SOURCE_BASE}" >/dev/null || true
+printf '%b' "\${PAYLOAD}" | curl -fsS -u "\${USER_ID}:\${USER_PASS}" -T - "\${SOURCE_BASE}/\${FILE}" >/dev/null
+curl -fsS -u "\${USER_ID}:\${USER_PASS}" -X MKCOL "\${TARGET_BASE}" >/dev/null || true
+curl -fsS -u "\${USER_ID}:\${USER_PASS}" "\${SOURCE_BASE}/\${FILE}" | curl -fsS -u "\${USER_ID}:\${USER_PASS}" -T - "\${TARGET_BASE}/\${FILE}" >/dev/null
+SOURCE_SHA="\$(curl -fsS -u "\${USER_ID}:\${USER_PASS}" "\${SOURCE_BASE}/\${FILE}" | sha256sum | awk '{print \$1}')"
+TARGET_SHA="\$(curl -fsS -u "\${USER_ID}:\${USER_PASS}" "\${TARGET_BASE}/\${FILE}" | sha256sum | awk '{print \$1}')"
+
+if [ "\${SOURCE_SHA}" != "\${TARGET_SHA}" ]; then
+  echo checksum_mismatch >&2
+  exit 1
+fi
+
+printf 'non_admin_webdav_import_ok user=%s file=%s/%s sha256=%s\\n' "\${USER_ID}" "\${FOLDER}" "\${FILE}" "\${TARGET_SHA}"
+SCRIPT
+
+unset pass
+```
+
+Confirm the target file landed on the clean sandbox's NFS data directory:
+
+```bash
+source ~/.bash_profile
+
+kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- \
+  find /var/www/html/data/migration-dryrun/files/migration-dryrun-user-webdav -maxdepth 1 -type f -name 'non-admin-import-*.txt' -print
+
+kubectl --context admin@staging -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- \
+  php occ files:scan migration-dryrun --path='migration-dryrun/files/migration-dryrun-user-webdav'
+```
+
 ## Dry-Run Validation Checklist
 
 - Users can log in to the sandbox.
