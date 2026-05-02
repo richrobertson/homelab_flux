@@ -12,6 +12,7 @@ TARGET_DEPLOYMENT="${TARGET_DEPLOYMENT:-nextcloud-migration-clean}"
 TARGET_CNPG_CLUSTER="${TARGET_CNPG_CLUSTER:-nextcloud-migration-clean-cnpg}"
 TARGET_DB_APP_SECRET="${TARGET_DB_APP_SECRET:-nextcloud-migration-clean-cnpg-app}"
 EXPECTED_MODULE="${EXPECTED_MODULE:-OC_DEFAULT_MODULE}"
+PRINT_IDENTIFIERS="${PRINT_IDENTIFIERS:-false}"
 
 echo "context=${KUBE_CONTEXT}"
 echo "namespace=${TARGET_NAMESPACE}"
@@ -31,7 +32,7 @@ kubectl --context "${KUBE_CONTEXT}" -n "${TARGET_NAMESPACE}" get secret "${TARGE
 
 echo "--- encryption and key material ---"
 kubectl --context "${KUBE_CONTEXT}" -n "${TARGET_NAMESPACE}" exec -i "deploy/${TARGET_DEPLOYMENT}" -c nextcloud -- \
-  env EXPECTED_MODULE="${EXPECTED_MODULE}" sh -s <<'REMOTE'
+  env EXPECTED_MODULE="${EXPECTED_MODULE}" PRINT_IDENTIFIERS="${PRINT_IDENTIFIERS}" sh -s <<'REMOTE'
 set -eu
 
 status="$(php occ encryption:status)"
@@ -66,7 +67,13 @@ printf 'pubshare_private_keys=%s\n' "${pubshare_private_count}"
 printf 'pubshare_public_keys=%s\n' "${pubshare_public_count}"
 
 find /var/www/html/data -path '*/files_encryption/*' -type f -printf '.' | wc -c | awk '{print "files_encryption_file_count=" $1}'
-du -sh /var/www/html/data/files_encryption /var/www/html/data/*/files_encryption 2>/dev/null | sort
+if [ "${PRINT_IDENTIFIERS}" = "true" ]; then
+  du -sh /var/www/html/data/files_encryption /var/www/html/data/*/files_encryption 2>/dev/null | sort
+else
+  du -sc /var/www/html/data/files_encryption /var/www/html/data/*/files_encryption 2>/dev/null | \
+    awk '/total$/ { print "files_encryption_total_kib=" $1 }'
+  echo "files_encryption_paths_printed=false"
+fi
 
 sample="$(find /var/www/html/data -path '*/files/*' -type f ! -path '*/files_encryption/*' | head -1)"
 test -n "${sample}"

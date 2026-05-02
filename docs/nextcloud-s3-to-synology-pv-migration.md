@@ -17,6 +17,10 @@ Nextcloud primary object storage does not store the user-visible folder tree dir
 
 Record the current state before making changes:
 
+- Run `scripts/nextcloud-migration-inventory.sh` in `homelab_flux` for a
+  non-secret source and encrypted target inventory. Use
+  `PRINT_IDENTIFIERS=true` only when intentionally producing a controlled
+  migration mapping file.
 - Current Nextcloud version: `php occ status`
 - Current objectstore configuration from `config.php`, Helm values, and Kubernetes secrets.
 - S3 bucket name, endpoint, region, and IAM role or credential source.

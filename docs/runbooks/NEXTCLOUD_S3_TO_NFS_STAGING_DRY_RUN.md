@@ -76,6 +76,33 @@ If the sandbox database was restored from the source staging database, login sta
 
 Use commands that show structure without printing secret values.
 
+The repeatable inventory helper captures the source S3-primary instance and
+the clean encrypted filesystem target side by side. By default it prints
+counts and storage kinds, but not user IDs, group IDs, database credentials, or
+secret values:
+
+```bash
+source ~/.bash_profile
+
+scripts/nextcloud-migration-inventory.sh
+```
+
+Optional modes:
+
+```bash
+# Include user, group, and storage identifiers when writing a controlled
+# migration mapping file.
+PRINT_IDENTIFIERS=true scripts/nextcloud-migration-inventory.sh
+
+# Query object count and total size for the source bucket. This is inventory
+# only; it is not a filesystem migration method.
+RUN_SOURCE_BUCKET_INVENTORY=true scripts/nextcloud-migration-inventory.sh
+```
+
+The source bucket inventory must only be used for backup sizing and
+cross-checking. Do not use raw object names or `aws s3 sync` output as an
+import list for the new filesystem data directory.
+
 ```bash
 source ~/.bash_profile
 
