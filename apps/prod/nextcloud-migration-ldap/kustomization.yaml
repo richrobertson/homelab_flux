@@ -2,7 +2,44 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: nextcloud
 resources:
+  - backup-volsync.yaml
   - html-pvc.yaml
   - postgres.yaml
+  - postgres-scheduled-backup.yaml
   - reference-grant.yaml
   - release.yaml
+patches:
+  - patch: |
+      - op: add
+        path: /spec/backup
+        value:
+          barmanObjectStore:
+            destinationPath: s3://myrobertson-k8s-prod-volsync/cnpg/nextcloud-migration-ldap-cnpg
+            endpointURL: https://s3.us-west-002.backblazeb2.com
+            wal:
+              compression: gzip
+              encryption: AES256
+            data:
+              compression: gzip
+              encryption: AES256
+            s3Credentials:
+              accessKeyId:
+                name: cnpg-backup-s3
+                key: AWS_ACCESS_KEY_ID
+              secretAccessKey:
+                name: cnpg-backup-s3
+                key: AWS_SECRET_ACCESS_KEY
+          retentionPolicy: 30d
+    target:
+      kind: Cluster
+      name: nextcloud-migration-ldap-cnpg
+  - patch: |
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: nextcloud-migration-ldap-cnpg
+        annotations:
+          cnpg.io/skipEmptyWalArchiveCheck: enabled
+    target:
+      kind: Cluster
+      name: nextcloud-migration-ldap-cnpg

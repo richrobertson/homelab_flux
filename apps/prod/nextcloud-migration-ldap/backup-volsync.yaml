@@ -1,0 +1,31 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: nextcloud-migration-ldap-html-backup
+spec:
+  sourcePVC: nextcloud-migration-ldap-html
+  paused: false
+  trigger:
+    schedule: "26 * * * *"
+  restic:
+    repository: restic-config-nextcloud-migration-ldap-html
+    pruneIntervalDays: 1
+    retain:
+      hourly: 4
+      daily: 0
+      weekly: 0
+      monthly: 0
+      yearly: 0
+    copyMethod: Direct
+    cacheStorageClassName: csi-cephfs-sc
+    moverSecurityContext:
+      runAsUser: 33
+      runAsGroup: 33
+      fsGroup: 33
+    moverResources:
+      requests:
+        cpu: "500m"
+        memory: "2Gi"
+      limits:
+        cpu: "4"
+        memory: "8Gi"

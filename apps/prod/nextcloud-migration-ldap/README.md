@@ -13,6 +13,10 @@ public route cutover.
 - Server-side encryption: enabled with Nextcloud's `OC_DEFAULT_MODULE`
 - Public route: `default/nextcloud` may reference this service during cutover;
   `reference-grant.yaml` allows that cross-namespace Gateway API backend ref.
+- Database backup: `nextcloud-migration-ldap-cnpg-daily` writes native CNPG
+  backups to B2.
+- App/config backup: `nextcloud-migration-ldap-html-backup` protects the
+  CephFS app/config PVC with VolSync/restic.
 
 Safety boundaries:
 
@@ -39,6 +43,19 @@ kubectl --context admin@prod -n default get secret nextcloud-ldap-secret -o json
       | .metadata.namespace = "nextcloud"
       | .metadata.labels = {"app.kubernetes.io/name":"nextcloud-migration-ldap"}' | \
   kubectl --context admin@prod apply -f -
+
+kubectl --context admin@prod -n default get secret cnpg-backup-s3 -o json | \
+  jq 'del(.metadata.uid,.metadata.resourceVersion,.metadata.creationTimestamp,.metadata.managedFields,.metadata.annotations,.metadata.ownerReferences)
+      | .metadata.namespace = "nextcloud"
+      | .metadata.labels = {"app.kubernetes.io/name":"nextcloud-migration-ldap"}' | \
+  kubectl --context admin@prod apply -f -
+
+kubectl --context admin@prod -n default get secret restic-config-nextcloud -o json | \
+  jq 'del(.metadata.uid,.metadata.resourceVersion,.metadata.creationTimestamp,.metadata.managedFields,.metadata.annotations,.metadata.ownerReferences)
+      | .metadata.name = "restic-config-nextcloud-migration-ldap-html"
+      | .metadata.namespace = "nextcloud"
+      | .data.RESTIC_REPOSITORY = ("s3:https://s3.us-west-002.backblazeb2.com/myrobertson-k8s-prod-volsync/volsync/nextcloud/nextcloud-migration-ldap-html" | @base64)' | \
+  kubectl --context admin@prod apply -f -
 ```
 
 Validation:
@@ -48,4 +65,6 @@ kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ encryption:status
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ ldap:test-config s01
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ config:system:get objectstore || true
+kubectl --context admin@prod -n nextcloud get scheduledbackup nextcloud-migration-ldap-cnpg-daily
+kubectl --context admin@prod -n nextcloud get replicationsource nextcloud-migration-ldap-html-backup
 ```

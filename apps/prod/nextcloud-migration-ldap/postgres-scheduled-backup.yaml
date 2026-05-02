@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: nextcloud-migration-ldap-cnpg-daily
+spec:
+  schedule: "0 25 3 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: nextcloud-migration-ldap-cnpg
