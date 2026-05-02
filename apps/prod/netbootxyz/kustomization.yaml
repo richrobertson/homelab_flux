@@ -6,6 +6,13 @@ resources:
   - httpRoute.yaml
 patches:
   - patch: |
+      - op: add
+        path: /spec/loadBalancerIP
+        value: 10.31.0.74
+    target:
+      kind: Service
+      name: netbootxyz-lan
+  - patch: |
       - op: replace
         path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
         value: netbootxyz-config-ceph-v3
