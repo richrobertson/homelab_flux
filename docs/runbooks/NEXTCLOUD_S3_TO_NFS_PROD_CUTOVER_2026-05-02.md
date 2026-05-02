@@ -15,8 +15,10 @@ filesystem-backed, Synology NFS-backed Kubernetes PVC on 2026-05-02.
 - Target auth: LDAP-backed users validated with `php occ ldap:test-config s01`.
 - Target encryption: Nextcloud server-side encryption enabled with
   `OC_DEFAULT_MODULE`.
-- Source S3-backed deployment: `default/nextcloud` retained in maintenance mode
-  for rollback and history.
+- Source S3-backed stack: `default/nextcloud` retained for rollback and
+  history. After validation, the old source app was scaled to zero; its CNPG
+  database, app/config PVC, S3 bucket, secrets, manifests, and restore captures
+  remain retained.
 - S3 bucket: retained. It was not deleted or raw-copied into the target data
   directory.
 
@@ -164,7 +166,9 @@ kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -
 kubectl --context admin@prod -n nextcloud get scheduledbackup nextcloud-migration-ldap-cnpg-daily
 kubectl --context admin@prod -n nextcloud get replicationsource nextcloud-migration-ldap-html-backup
 
-kubectl --context admin@prod -n default exec deploy/nextcloud -c nextcloud -- php occ status
+kubectl --context admin@prod -n default get deploy nextcloud -o jsonpath='{.spec.replicas}{"\n"}'
+kubectl --context admin@prod -n default get cluster nextcloud-cnpg
+kubectl --context admin@prod -n default get pvc nextcloud-data-pvc-ceph-v2 nextcloud-cnpg-1 nextcloud-cnpg-1-wal
 ```
 
 ## Retention And Rollback Notes
