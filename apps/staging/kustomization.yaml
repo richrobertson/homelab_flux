@@ -22,6 +22,7 @@ resources:
   - task-control-plane
   - tautulli
   - nextcloud
+  - nextcloud-migration
   - trilium
 patches:
   - patch: |
