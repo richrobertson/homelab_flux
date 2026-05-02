@@ -51,6 +51,21 @@ Record the current state before making changes:
 7. Verify backups are restorable.
 8. Leave the original S3 bucket untouched until migration validation and retention windows are complete.
 
+For a production backup capture rehearsal before the final maintenance window:
+
+```bash
+source ~/.bash_profile
+
+scripts/nextcloud-prod-backup-capture.sh
+```
+
+The capture writes a sensitive local restore-set directory under
+`/tmp/nextcloud-prod-backup-capture-*` containing `config.php`, a CNPG
+custom-format database dump, selected Kubernetes resource snapshots, selected
+Secret YAML, S3 inventory/versioning metadata, and `SHA256SUMS`. Do not commit
+or casually move this directory. Run it again during maintenance mode for the
+final cutover backup.
+
 ## Phase 2: Provision Target Storage In Parallel
 
 1. Apply the Ansible NFS client prep role to Kubernetes worker nodes.
