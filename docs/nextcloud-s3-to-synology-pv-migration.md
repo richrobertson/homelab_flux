@@ -70,6 +70,21 @@ Record the current state before making changes:
 5. Confirm a temporary debug pod can write to the PVC.
 6. Do not point production Nextcloud at the new PVC yet.
 
+For production readiness, run:
+
+```bash
+source ~/.bash_profile
+
+scripts/nextcloud-prod-preflight.sh
+```
+
+The preflight checks Flux readiness, production Nextcloud health, S3
+objectstore presence, CNPG backup objects, the Synology NFS PV/PVC path and
+binding, and a temporary write marker on the target PVC using the `www-data`
+UID/GID expected by the Nextcloud container. It does not change the production
+Nextcloud deployment, remove S3 config, copy user files, or read raw S3
+objects.
+
 ## Phase 3: Choose Migration Strategy
 
 ### Strategy A: New Clean Instance And Metadata-Aware Copy (Recommended)
