@@ -11,3 +11,6 @@ spec:
     - group: ""
       kind: Service
       name: nextcloud-migration-ldap
+    - group: ""
+      kind: Service
+      name: nextcloud-migration-ldap-collabora

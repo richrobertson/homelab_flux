@@ -17,5 +17,6 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: nextcloud-collabora
+        - name: nextcloud-migration-ldap-collabora
+          namespace: nextcloud
           port: 9980

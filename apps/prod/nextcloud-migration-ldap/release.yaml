@@ -105,6 +105,16 @@ spec:
               name: nextcloud-ldap-secret
               key: LDAP_TLS
               optional: true
+        - name: NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-mail-provisioning
+              key: MASTER_PASSWORD
+              optional: true
+        - name: COLLABORA_PUBLIC_URL
+          value: https://office.myrobertson.com
+        - name: COLLABORA_WOPI_URL
+          value: http://nextcloud-migration-ldap-collabora.nextcloud.svc.cluster.local:9980
       configs:
         proxy.config.php: |-
           <?php
@@ -159,6 +169,122 @@ spec:
             php occ encryption:set-default-module OC_DEFAULT_MODULE || true
             php occ encryption:status | grep -q 'enabled: true'
             php occ encryption:status | grep -q 'defaultModule: OC_DEFAULT_MODULE'
+          fi
+
+          install_or_enable_app() {
+            app="$1"
+            if php occ app:enable "${app}"; then
+              return 0
+            fi
+            if php occ app:install "${app}"; then
+              php occ app:enable "${app}" || true
+              return 0
+            fi
+            echo "WARNING: unable to install or enable Nextcloud app ${app}"
+            return 0
+          }
+
+          for app in \
+            calendar \
+            contacts \
+            drawio \
+            end_to_end_encryption \
+            integration_giphy \
+            integration_google \
+            integration_immich \
+            libresign \
+            mail \
+            notes \
+            richdocuments \
+            spreed \
+            tables \
+            whiteboard
+          do
+            install_or_enable_app "${app}"
+          done
+
+          if [ -n "${COLLABORA_PUBLIC_URL:-}" ]; then
+            COLLABORA_WOPI_URL="${COLLABORA_WOPI_URL:-${COLLABORA_PUBLIC_URL}}"
+
+            collabora_activate() {
+              php occ richdocuments:activate-config \
+                --wopi-url="${COLLABORA_WOPI_URL}" \
+                --callback-url="${OVERWRITECLIURL:-https://cloud.myrobertson.com}"
+            }
+
+            for i in $(seq 1 30); do
+              if collabora_activate; then
+                php occ app:disable richdocumentscode || true
+                php occ config:app:set richdocuments public_wopi_url --value="${COLLABORA_PUBLIC_URL}" || true
+                break
+              fi
+              if [ "$i" -eq 30 ]; then
+                echo "Collabora: unable to validate discovery after 30 attempts; keeping configured values for the next startup."
+                php occ config:app:set richdocuments wopi_url --value="${COLLABORA_WOPI_URL}" || true
+                php occ config:app:set richdocuments wopi_callback_url --value="${OVERWRITECLIURL:-https://cloud.myrobertson.com}" || true
+                php occ config:app:set richdocuments public_wopi_url --value="${COLLABORA_PUBLIC_URL}" || true
+                break
+              fi
+              echo "Collabora: waiting for discovery endpoint... (attempt $i/30)"
+              sleep 2
+            done
+          fi
+
+          if php occ app:list | grep -q '^  - mail:' && [ -n "${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD:-}" ]; then
+            php -r '
+          require_once "/var/www/html/lib/base.php";
+
+          $data = [
+              "provisioningDomain" => "myrobertson.net",
+              "emailTemplate" => "%EMAIL%",
+              "imapUser" => "%EMAIL%*nextcloud",
+              "imapHost" => "mailu-dovecot.default.svc.cluster.local",
+              "imapPort" => 143,
+              "imapSslMode" => "none",
+              "smtpUser" => "%EMAIL%*nextcloud",
+              "smtpHost" => "mailu-postfix.default.svc.cluster.local",
+              "smtpPort" => 10025,
+              "smtpSslMode" => "none",
+              "masterPasswordEnabled" => true,
+              "masterPassword" => getenv("NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD"),
+              "sieveEnabled" => false,
+              "sieveHost" => "",
+              "sieveUser" => "",
+              "sievePort" => null,
+              "sieveSslMode" => "",
+              "ldapAliasesProvisioning" => false,
+              "ldapAliasesAttribute" => "",
+          ];
+
+          $manager = \OC::$server->get(\OCA\Mail\Service\Provisioning\Manager::class);
+          $configs = $manager->getConfigs();
+          $existing = null;
+          foreach ($configs as $config) {
+              if ($config->getProvisioningDomain() === "myrobertson.net") {
+                  $existing = $config;
+                  break;
+              }
+          }
+
+          if ($existing !== null) {
+              $data["id"] = $existing->getId();
+              $manager->updateProvisioning($data);
+          } else {
+              $manager->newProvisioning($data);
+          }
+
+          $count = $manager->provision();
+          $userManager = \OC::$server->get(\OCP\IUserManager::class);
+          $configs = $manager->getConfigs();
+          $userManager->callForAllUsers(function (\OCP\IUser $user) use ($manager, $configs) {
+              $email = $user->getEMailAddress();
+              if ($email !== null && str_ends_with(strtolower($email), "@myrobertson.net")) {
+                  $manager->updatePassword($user, getenv("NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD"), $configs);
+              }
+          });
+
+          echo "Mail: provisioned or updated {$count} accounts.\n";
+          '
           fi
 
           if [ "${LDAP_ENABLED:-false}" != "true" ]; then
@@ -226,6 +352,19 @@ spec:
         subPath: strategy-a-prod-ldap-data
         accessMode: ReadWriteMany
         size: 10Ti
+
+    collabora:
+      enabled: true
+      collabora:
+        aliasgroups:
+          - host: "https://cloud.myrobertson.com:443"
+        extra_params: "--o:ssl.enable=false --o:ssl.termination=true"
+        server_name: office.myrobertson.com
+        existingSecret:
+          enabled: true
+          secretName: collabora-secret
+      ingress:
+        enabled: false
 
     redis:
       enabled: true

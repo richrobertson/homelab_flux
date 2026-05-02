@@ -117,6 +117,18 @@ were paused in Git:
 The old source app, database, app/config PVC, and S3 bucket remain retained for
 rollback; only stale scheduled backups are stopped.
 
+## Post-Cutover App Parity
+
+After cutover, the LDAP/NFS target was updated to install and enable the
+user-facing apps that were enabled on the S3-backed source, including Calendar,
+Contacts, Mail, Notes, Talk, Tables, Whiteboard, Draw.io, and Collabora
+integration.
+
+Collabora ownership moved to the target HelmRelease. The public
+`office.myrobertson.com` route now points at
+`nextcloud/nextcloud-migration-ldap-collabora`, and the retained old source no
+longer needs to own the public Office backend.
+
 ## Validation Commands
 
 ```bash
@@ -130,6 +142,8 @@ kubectl --context admin@prod -n default get httproute nextcloud \
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ status
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ encryption:status
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ ldap:test-config s01
+kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ app:list
+kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ config:list richdocuments --private
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ config:system:get objectstore || true
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- df -h /var/www/html/data
 kubectl --context admin@prod -n nextcloud get scheduledbackup nextcloud-migration-ldap-cnpg-daily

@@ -50,6 +50,18 @@ kubectl --context admin@prod -n default get secret cnpg-backup-s3 -o json | \
       | .metadata.labels = {"app.kubernetes.io/name":"nextcloud-migration-ldap"}' | \
   kubectl --context admin@prod apply -f -
 
+kubectl --context admin@prod -n default get secret collabora-secret -o json | \
+  jq 'del(.metadata.uid,.metadata.resourceVersion,.metadata.creationTimestamp,.metadata.managedFields,.metadata.annotations,.metadata.ownerReferences)
+      | .metadata.namespace = "nextcloud"
+      | .metadata.labels = {"app.kubernetes.io/name":"nextcloud-migration-ldap"}' | \
+  kubectl --context admin@prod apply -f -
+
+kubectl --context admin@prod -n default get secret nextcloud-mail-provisioning -o json | \
+  jq 'del(.metadata.uid,.metadata.resourceVersion,.metadata.creationTimestamp,.metadata.managedFields,.metadata.annotations,.metadata.ownerReferences)
+      | .metadata.namespace = "nextcloud"
+      | .metadata.labels = {"app.kubernetes.io/name":"nextcloud-migration-ldap"}' | \
+  kubectl --context admin@prod apply -f -
+
 kubectl --context admin@prod -n default get secret restic-config-nextcloud -o json | \
   jq 'del(.metadata.uid,.metadata.resourceVersion,.metadata.creationTimestamp,.metadata.managedFields,.metadata.annotations,.metadata.ownerReferences)
       | .metadata.name = "restic-config-nextcloud-migration-ldap-html"
@@ -64,6 +76,7 @@ Validation:
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ status
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ encryption:status
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ ldap:test-config s01
+kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ config:list richdocuments --private
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-ldap -c nextcloud -- php occ config:system:get objectstore || true
 kubectl --context admin@prod -n nextcloud get scheduledbackup nextcloud-migration-ldap-cnpg-daily
 kubectl --context admin@prod -n nextcloud get replicationsource nextcloud-migration-ldap-html-backup
