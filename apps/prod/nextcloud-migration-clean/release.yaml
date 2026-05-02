@@ -17,7 +17,7 @@ spec:
   upgrade:
     disableWait: true
   values:
-    replicaCount: 1
+    replicaCount: 0
 
     image:
       repository: nextcloud
@@ -124,7 +124,7 @@ spec:
         size: 10Ti
 
     redis:
-      enabled: true
+      enabled: false
       image:
         repository: bitnamilegacy/redis
       auth:
@@ -147,7 +147,7 @@ spec:
       enabled: false
 
     cronjob:
-      enabled: true
+      enabled: false
 
     resources:
       requests:

@@ -12,6 +12,8 @@ primary S3 object storage to filesystem-backed storage on Synology NFS.
 - App secret: `nextcloud-migration-secret`, manually mirrored from
   `default/nextcloud-secret` into the `nextcloud` namespace
 - Public route: none
+- Current state after production cutover: parked with app replicas set to `0`,
+  Redis disabled, and cron disabled. The CNPG database and PVCs are retained.
 
 Safety boundaries:
 
@@ -33,6 +35,9 @@ kubectl --context admin@prod -n default get secret nextcloud-secret -o json | \
   kubectl --context admin@prod apply -f -
 
 kubectl --context admin@prod -n nextcloud get pvc,cluster,hr,pod -o wide
+kubectl --context admin@prod -n nextcloud get deploy,statefulset,cluster,pvc | grep nextcloud-migration-clean
+
+# Temporarily restore replicas before running in-pod validation commands.
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- php occ status
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- php occ encryption:status
 kubectl --context admin@prod -n nextcloud exec deploy/nextcloud-migration-clean -c nextcloud -- php occ config:system:get objectstore || true
