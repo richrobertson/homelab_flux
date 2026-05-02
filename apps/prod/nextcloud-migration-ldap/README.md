@@ -11,7 +11,8 @@ public route cutover.
 - User data PVC: `nextcloud-data`, mounted at subpath
   `strategy-a-prod-ldap-data`
 - Server-side encryption: enabled with Nextcloud's `OC_DEFAULT_MODULE`
-- Public route: none
+- Public route: `default/nextcloud` may reference this service during cutover;
+  `reference-grant.yaml` allows that cross-namespace Gateway API backend ref.
 
 Safety boundaries:
 

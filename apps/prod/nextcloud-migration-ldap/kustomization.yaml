@@ -4,4 +4,5 @@ namespace: nextcloud
 resources:
   - html-pvc.yaml
   - postgres.yaml
+  - reference-grant.yaml
   - release.yaml
