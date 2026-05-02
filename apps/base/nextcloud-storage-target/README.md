@@ -18,3 +18,9 @@ nfs:
   server: scooter.myrobertson.net
   path: /volume1/nextcloud-data
 ```
+
+Environment overlays patch the backend path to keep staging and production data
+separate:
+
+- staging: `/volume1/nextcloud-data-stage`
+- production: `/volume1/nextcloud-data-prod`

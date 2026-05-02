@@ -2,3 +2,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../base/nextcloud-storage-target
+
+patches:
+  - target:
+      kind: PersistentVolume
+      name: nextcloud-data-synology-nfs
+    patch: |-
+      - op: replace
+        path: /spec/nfs/path
+        value: /volume1/nextcloud-data-stage

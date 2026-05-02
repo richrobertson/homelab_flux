@@ -49,10 +49,13 @@ Record the current state before making changes:
 ## Phase 2: Provision Target Storage In Parallel
 
 1. Apply the Ansible NFS client prep role to Kubernetes worker nodes.
-2. Configure the Synology shared folder manually:
-   - Shared folder name: `nextcloud-data`
+2. Provision the Synology shared folders with the Ansible playbook in `homelab_ansible/ansible/synology/provision_nextcloud_nfs_share.yml`:
+   - Staging shared folder: `nextcloud-data-stage`.
+   - Production shared folder: `nextcloud-data-prod`.
+   - Btrfs data checksums enabled.
+   - Recycle bin disabled.
    - NFS enabled.
-   - NFS export restricted to Kubernetes node IPs or the storage VLAN.
+   - NFS export restricted to the matching Kubernetes worker node IPs.
    - SMB disabled for this share or no normal-user permissions granted.
    - Guest disabled.
    - Snapshots enabled.
