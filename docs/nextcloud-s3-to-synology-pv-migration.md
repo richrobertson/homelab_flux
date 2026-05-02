@@ -117,6 +117,13 @@ recreation candidates, special shares that need manual review, and the
 versions/trashbin boundary. Treat the generated JSON artifact as operational
 data because it contains user, group, and share identifiers.
 
+Run `scripts/nextcloud-file-state-boundary-report.sh` before approving a plain
+WebDAV Strategy A cutover. It prints aggregate counts and bytes for current
+visible files, trashbin, and versions without file names. If trashbin or
+versions are non-empty, either explicitly accept that plain WebDAV will not
+preserve those states, restore/export those items into the visible file tree
+before the final copy, or choose a tested database-aware migration strategy.
+
 Use `scripts/nextcloud-webdav-copy-root.sh` for reviewed one-folder rehearsals.
 It requires an explicit `COPY_ROOT`, defaults to `APPLY=false`, uses WebDAV
 only, verifies source/target checksums when copying, and verifies the copied
