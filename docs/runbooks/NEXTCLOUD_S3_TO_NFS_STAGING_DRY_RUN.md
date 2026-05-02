@@ -436,6 +436,31 @@ The script accepts the same environment overrides as the WebDAV smoke test:
 `KUBE_CONTEXT`, `SOURCE_NAMESPACE`, `SOURCE_DEPLOYMENT`, `TARGET_NAMESPACE`,
 `TARGET_DEPLOYMENT`, `SOURCE_SERVICE_URL`, and `TARGET_SERVICE_URL`.
 
+## Strategy A Versions And Trashbin Smoke Test
+
+Versions and trashbin entries are Nextcloud metadata. A simple WebDAV copy of
+visible files should be treated as a current-file migration, not a historical
+state migration.
+
+Run the history smoke test:
+
+```bash
+scripts/nextcloud-history-migration-smoke-test.sh
+```
+
+The test creates a versioned source file and a deleted source file, copies only
+the current visible file through WebDAV, verifies the target file is encrypted
+on raw NFS, and reports source/target version and trashbin counts.
+
+The target may create its own version metadata during import. That is not the
+same as preserving the source instance's historical versions. Treat source
+versions and trashbin as out of scope for a plain WebDAV Strategy A copy unless
+a separate supported migration process is selected for them.
+
+Use the result to decide whether production versions and trashbin must be
+migrated through a separate supported process or accepted as intentionally not
+in scope for Strategy A.
+
 ## Dry-Run Validation Checklist
 
 - Users can log in to the sandbox.
