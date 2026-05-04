@@ -60,9 +60,11 @@ patches:
       kind: VaultStaticSecret
       name: task-control-plane-app
   - patch: |
-      - op: replace
-        path: /stringData/client_id
-        value: vikunja_staging
+      $patch: delete
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: vikunja-oidc-secret
     target:
       kind: Secret
       name: vikunja-oidc-secret
@@ -77,11 +79,24 @@ patches:
       name: task-control-plane-vikunja
   - patch: |
       - op: replace
+        path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_NAME
+        value: Keycloak
+      - op: replace
         path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_AUTHURL
-        value: https://auth.staging.myrobertson.net
+        value: https://keycloak.staging.myrobertson.net/realms/homelab
       - op: replace
         path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_LOGOUTURL
-        value: https://auth.staging.myrobertson.net/logout
+        value: https://keycloak.staging.myrobertson.net/realms/homelab/protocol/openid-connect/logout
+      - op: replace
+        path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_CLIENTID
+        value: vikunja_staging
+      - op: replace
+        path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_CLIENTSECRET
+        value:
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-secret
+              key: vikunja-staging-client-secret
       - op: replace
         path: /spec/values/vikunja/configMaps/config/data/config.yml
         value: |
@@ -96,9 +111,9 @@ patches:
               enabled: true
               providers:
                 authelia:
-                  name: Authelia
-                  authurl: https://auth.staging.myrobertson.net
-                  logouturl: https://auth.staging.myrobertson.net/logout
+                  name: Keycloak
+                  authurl: https://keycloak.staging.myrobertson.net/realms/homelab
+                  logouturl: https://keycloak.staging.myrobertson.net/realms/homelab/protocol/openid-connect/logout
                   clientid: ""
                   clientsecret: ""
                   scope: openid profile email groups
@@ -128,19 +143,19 @@ patches:
                             - name: vikunja
                               env:
                                 - name: SSL_CERT_FILE
-                                  value: /etc/ssl/certs/auth-staging-ca.crt
+                                  value: /etc/ssl/certs/keycloak-staging-ca-bundle.crt
                               volumeMounts:
-                                - name: auth-staging-ca
-                                  mountPath: /etc/ssl/certs/auth-staging-ca.crt
-                                  subPath: ca.crt
+                                - name: keycloak-staging-ca-bundle
+                                  mountPath: /etc/ssl/certs/keycloak-staging-ca-bundle.crt
+                                  subPath: keycloak-staging-ca-bundle.crt
                                   readOnly: true
                           volumes:
-                            - name: auth-staging-ca
-                              secret:
-                                secretName: auth-staging-myrobertson-net-cert
+                            - name: keycloak-staging-ca-bundle
+                              configMap:
+                                name: keycloak-staging-ca-bundle
                                 items:
-                                  - key: ca.crt
-                                    path: ca.crt
+                                  - key: keycloak-staging-ca-bundle.crt
+                                    path: keycloak-staging-ca-bundle.crt
     target:
       kind: HelmRelease
       name: vikunja
