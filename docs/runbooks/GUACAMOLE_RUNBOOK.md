@@ -73,7 +73,7 @@ The upstream schema creates the initial local `guacadmin` account. Use that acco
 
 Authelia has environment-specific OIDC clients:
 
-- Staging: `guacamole_staging`, redirect URI `https://rdp.staging.myrobertson.net`
+- Staging: `guacamole_staging`, redirect URI `https://rdp.staging.myrobertson.net`, currently `one_factor` until Authelia MFA enrollment is complete
 - Production: `guacamole`, redirect URI `https://rdp.myrobertson.com`
 
 Guacamole uses:

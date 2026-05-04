@@ -82,7 +82,7 @@ spec:
             - client_id: guacamole_staging
               client_name: Apache Guacamole Staging
               public: true
-              authorization_policy: two_factor
+              authorization_policy: one_factor
               consent_mode: implicit
               require_pkce: false
               pkce_challenge_method: ''
