@@ -23,7 +23,7 @@
 
 ## Documented directories
 
-- Platform and support services: [Authelia](authelia/README.md), [Code Server](code-server/README.md), [External DNS](external-dns/README.md), [Shared Storage](shared_storage/README.md), [VolSync](volsync/README.md)
+- Platform and support services: [Authelia](authelia/README.md), [Code Server](code-server/README.md), [External DNS](external-dns/README.md), [Guacamole](guacamole/README.md), [Shared Storage](shared_storage/README.md), [VolSync](volsync/README.md)
 - Media and sync services: [Bazarr](bazarr/README.md), [Immich](immich/README.md), [Lidarr](lidarr/README.md), [Mealie](mealie/README.md), [Overseerr](overseerr/README.md), [Plex](plex/README.md), [Prowlarr](prowlarr/README.md), [Radarr](radarr/README.md), [Sonarr](sonarr/README.md), [Syncthing](syncthing/README.md)
 - Observability: [Loki Stack](loki-stack/README.md)
 

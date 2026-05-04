@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guacd
+  labels:
+    app.kubernetes.io/name: guacd
+    app.kubernetes.io/component: protocol-proxy
+    app.kubernetes.io/part-of: guacamole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: guacd
+      app.kubernetes.io/component: protocol-proxy
+      app.kubernetes.io/part-of: guacamole
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: guacd
+        app.kubernetes.io/component: protocol-proxy
+        app.kubernetes.io/part-of: guacamole
+    spec:
+      containers:
+        - name: guacd
+          image: guacamole/guacd:1.6.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: LOG_LEVEL
+              value: info
+          ports:
+            - name: guacd
+              containerPort: 4822
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: guacd
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: guacd
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+

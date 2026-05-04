@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: guacamole-theme-park-example
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Accept-Encoding "";
+      sub_filter_once off;
+      sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/guacamole/dark.css"></head>';
+spec:
+  rules: []
+

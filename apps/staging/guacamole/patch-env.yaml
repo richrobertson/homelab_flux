@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guacamole
+spec:
+  template:
+    spec:
+      containers:
+        - name: guacamole
+          env:
+            - name: OPENID_CLIENT_ID
+              value: guacamole_staging
+            - name: OPENID_ISSUER
+              value: https://auth.staging.myrobertson.net
+            - name: OPENID_AUTHORIZATION_ENDPOINT
+              value: https://auth.staging.myrobertson.net/api/oidc/authorization?state=guacamole-staging
+            - name: OPENID_JWKS_ENDPOINT
+              value: https://auth.staging.myrobertson.net/jwks.json
+            - name: OPENID_REDIRECT_URI
+              value: https://rdp.staging.myrobertson.net

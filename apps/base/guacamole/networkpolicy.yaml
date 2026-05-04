@@ -1,0 +1,149 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: guacamole-default-deny
+  labels:
+    app.kubernetes.io/name: guacamole
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: guacamole
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: guacamole-allow-web-ingress
+  labels:
+    app.kubernetes.io/name: guacamole
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: guacamole
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: guacamole
+      app.kubernetes.io/component: web
+      app.kubernetes.io/part-of: guacamole
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: default
+      ports:
+        - protocol: TCP
+          port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: guacamole-allow-guacd
+  labels:
+    app.kubernetes.io/name: guacamole
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: guacamole
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: guacd
+      app.kubernetes.io/component: protocol-proxy
+      app.kubernetes.io/part-of: guacamole
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: guacamole
+              app.kubernetes.io/component: web
+              app.kubernetes.io/part-of: guacamole
+      ports:
+        - protocol: TCP
+          port: 4822
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: guacamole-allow-postgres
+  labels:
+    app.kubernetes.io/name: guacamole
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: guacamole
+spec:
+  podSelector:
+    matchLabels:
+      cnpg.io/cluster: guacamole-cnpg
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: guacamole
+              app.kubernetes.io/component: web
+              app.kubernetes.io/part-of: guacamole
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: guacamole
+              app.kubernetes.io/component: database-bootstrap
+              app.kubernetes.io/part-of: guacamole
+      ports:
+        - protocol: TCP
+          port: 5432
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: guacamole-allow-egress
+  labels:
+    app.kubernetes.io/name: guacamole
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: guacamole
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: guacamole
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: guacd
+              app.kubernetes.io/component: protocol-proxy
+              app.kubernetes.io/part-of: guacamole
+      ports:
+        - protocol: TCP
+          port: 4822
+    - to:
+        - podSelector:
+            matchLabels:
+              cnpg.io/cluster: guacamole-cnpg
+      ports:
+        - protocol: TCP
+          port: 5432
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: default
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: authelia
+      ports:
+        - protocol: TCP
+          port: 80
+    - ports:
+        - protocol: TCP
+          port: 443

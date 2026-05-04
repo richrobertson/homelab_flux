@@ -1,0 +1,27 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: guacamole-cnpg
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: guacamole
+spec:
+  instances: 1
+  enableSuperuserAccess: false
+  storage:
+    size: 10Gi
+    storageClass: ceph-block
+  walStorage:
+    size: 2Gi
+    storageClass: ceph-block
+  managed:
+    roles:
+      - name: guacamole
+        login: true
+        superuser: false
+  bootstrap:
+    initdb:
+      database: guacamole
+      owner: guacamole
+

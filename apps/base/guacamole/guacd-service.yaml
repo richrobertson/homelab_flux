@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: guacd
+  labels:
+    app.kubernetes.io/name: guacd
+    app.kubernetes.io/component: protocol-proxy
+    app.kubernetes.io/part-of: guacamole
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: guacd
+    app.kubernetes.io/component: protocol-proxy
+    app.kubernetes.io/part-of: guacamole
+  ports:
+    - name: guacd
+      port: 4822
+      targetPort: guacd
+      protocol: TCP
+

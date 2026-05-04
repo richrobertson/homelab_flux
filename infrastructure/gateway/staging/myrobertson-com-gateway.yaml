@@ -302,3 +302,16 @@ spec:
       certificateRefs:
         - name: office-staging-myrobertson-net-cert
           kind: Secret
+
+  - name: rdp
+    hostname: rdp.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: rdp-staging-myrobertson-net-cert
+          kind: Secret

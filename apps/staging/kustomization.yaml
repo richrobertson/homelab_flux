@@ -6,6 +6,7 @@ resources:
   - code-server
   - external-dns
   - gotify
+  - guacamole
   - immich
   - lidarr
   - loki-stack
