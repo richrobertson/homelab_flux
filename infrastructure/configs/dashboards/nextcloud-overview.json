@@ -92,7 +92,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "min(nextcloud_up{job=\"monitoring/nextcloud\",namespace=\"default\"}) or on() vector(0)",
+          "expr": "min(nextcloud_up{job=\"monitoring/nextcloud\",namespace=~\"default|nextcloud\"}) or on() vector(0)",
           "instant": true,
           "range": false,
           "refId": "A"
@@ -149,7 +149,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max(nextcloud_users_total{job=\"monitoring/nextcloud\",namespace=\"default\"}) or on() vector(0)",
+          "expr": "max(nextcloud_users_total{job=\"monitoring/nextcloud\",namespace=~\"default|nextcloud\"}) or on() vector(0)",
           "instant": true,
           "range": false,
           "refId": "A"
@@ -206,7 +206,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max(nextcloud_active_users_total{job=\"monitoring/nextcloud\",namespace=\"default\"}) or on() vector(0)",
+          "expr": "max(nextcloud_active_users_total{job=\"monitoring/nextcloud\",namespace=~\"default|nextcloud\"}) or on() vector(0)",
           "instant": true,
           "range": false,
           "refId": "A"
@@ -263,7 +263,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max(nextcloud_files_total{job=\"monitoring/nextcloud\",namespace=\"default\"}) or on() vector(0)",
+          "expr": "max(nextcloud_files_total{job=\"monitoring/nextcloud\",namespace=~\"default|nextcloud\"}) or on() vector(0)",
           "instant": true,
           "range": false,
           "refId": "A"
@@ -328,7 +328,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max(nextcloud_free_space_bytes{job=\"monitoring/nextcloud\",namespace=\"default\"}) or on() vector(0)",
+          "expr": "max(nextcloud_free_space_bytes{job=\"monitoring/nextcloud\",namespace=~\"default|nextcloud\"}) or on() vector(0)",
           "instant": true,
           "range": false,
           "refId": "A"
@@ -389,7 +389,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max(nextcloud_apps_updates_available_total{job=\"monitoring/nextcloud\",namespace=\"default\"}) or on() vector(0)",
+          "expr": "max(nextcloud_apps_updates_available_total{job=\"monitoring/nextcloud\",namespace=~\"default|nextcloud\"}) or on() vector(0)",
           "instant": true,
           "range": false,
           "refId": "A"
@@ -440,7 +440,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max(nextcloud_active_users_total{job=\"monitoring/nextcloud\",namespace=\"default\"}) or on() vector(0)",
+          "expr": "max(nextcloud_active_users_total{job=\"monitoring/nextcloud\",namespace=~\"default|nextcloud\"}) or on() vector(0)",
           "legendFormat": "Active users",
           "range": true,
           "refId": "A"
@@ -490,7 +490,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (type) (nextcloud_shares_total{job=\"monitoring/nextcloud\",namespace=\"default\"})",
+          "expr": "sum by (type) (nextcloud_shares_total{job=\"monitoring/nextcloud\",namespace=~\"default|nextcloud\"})",
           "legendFormat": "{{type}}",
           "range": true,
           "refId": "A"
@@ -518,5 +518,5 @@
   "timezone": "browser",
   "title": "Nextcloud Overview",
   "uid": "nextcloud-overview",
-  "version": 2
+  "version": 3
 }

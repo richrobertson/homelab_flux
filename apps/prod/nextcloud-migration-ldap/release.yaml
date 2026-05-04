@@ -475,7 +475,9 @@ spec:
           enabled: false
 
     metrics:
-      enabled: false
+      enabled: true
+      serviceMonitor:
+        enabled: false
 
     service:
       type: ClusterIP

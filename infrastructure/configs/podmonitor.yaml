@@ -56,9 +56,11 @@ spec:
   namespaceSelector:
     matchNames:
       - default
+      - nextcloud
   selector:
     matchLabels:
       app.kubernetes.io/name: nextcloud
+      app.kubernetes.io/component: metrics
   podMetricsEndpoints:
     - port: metrics
       path: /metrics
