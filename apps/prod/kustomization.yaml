@@ -7,6 +7,7 @@ resources:
   - authelia
   - external-dns
   - gotify
+  - guacamole
   - immich
   - lidarr
   - loki-stack

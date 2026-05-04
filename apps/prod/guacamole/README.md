@@ -6,6 +6,8 @@ Production overlay for Apache Guacamole.
 
 - Exposes Guacamole publicly at `https://rdp.myrobertson.com`.
 - Uses the production Authelia issuer at `https://auth.myrobertson.com`.
+- Uses `one_factor` until Authelia MFA enrollment is complete.
+- Fetches JWKS from the in-cluster Authelia service while keeping the public issuer and browser authorization URL.
 - Enables CloudNativePG object-store backups for the Guacamole PostgreSQL database.
 
 ## Validation

@@ -122,6 +122,27 @@ spec:
               claims_policy: nextcloud
               userinfo_signed_response_alg: none
               token_endpoint_auth_method: client_secret_post
+            - client_id: guacamole
+              client_name: Apache Guacamole
+              public: true
+              authorization_policy: one_factor
+              consent_mode: implicit
+              require_pkce: false
+              pkce_challenge_method: ''
+              redirect_uris:
+                - https://rdp.myrobertson.com
+              scopes:
+                - openid
+                - profile
+                - email
+                - groups
+              response_types:
+                - id_token
+              grant_types:
+                - implicit
+              access_token_signed_response_alg: none
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: none
             - client_id: proxmox_prod
               client_name: Proxmox VE cl0
               client_secret:

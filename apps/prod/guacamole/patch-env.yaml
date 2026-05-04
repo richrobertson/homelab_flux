@@ -15,6 +15,6 @@ spec:
             - name: OPENID_AUTHORIZATION_ENDPOINT
               value: https://auth.myrobertson.com/api/oidc/authorization?state=guacamole-prod
             - name: OPENID_JWKS_ENDPOINT
-              value: https://auth.myrobertson.com/jwks.json
+              value: http://authelia.default.svc.cluster.local/jwks.json
             - name: OPENID_REDIRECT_URI
               value: https://rdp.myrobertson.com

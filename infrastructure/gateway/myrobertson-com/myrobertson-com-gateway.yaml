@@ -343,3 +343,24 @@ spec:
       certificateRefs:
       - name: office-myrobertson-com-cert
         kind: Secret
+
+  - name: rdp
+    hostname: rdp.myrobertson.com
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: rdp-myrobertson-com-cert
+        kind: Secret
+
+  - name: rdp-http
+    hostname: rdp.myrobertson.com
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: All
