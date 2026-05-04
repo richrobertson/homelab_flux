@@ -250,7 +250,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "(count(homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"ScheduledBackup\",exported_namespace=~\"$namespace\",suspended=\"true\"}) or on() vector(0)) + (count((time() - homelab_scheduledbackup_last_schedule_timestamp_seconds{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"ScheduledBackup\",exported_namespace=~\"$namespace\"} > 93600) and on (exported_namespace, name) homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"ScheduledBackup\",exported_namespace=~\"$namespace\",suspended!=\"true\"}) or on() vector(0))",
+          "expr": "(count(homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"ScheduledBackup\",exported_namespace=~\"$namespace\",suspended=\"true\"}) or on() vector(0)) + (count(((time() - homelab_scheduledbackup_last_schedule_timestamp_seconds{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"ScheduledBackup\",exported_namespace=~\"$namespace\"} > 93600) and on (exported_namespace, name) homelab_resource_info{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"ScheduledBackup\",exported_namespace=~\"$namespace\",suspended!=\"true\"}) unless on (exported_namespace, cluster) (time() - label_replace(homelab_cluster_last_successful_backup_timestamp_seconds{customresource_group=\"postgresql.cnpg.io\",customresource_kind=\"Cluster\",exported_namespace=~\"$namespace\"}, \"cluster\", \"$1\", \"name\", \"(.*)\") <= 93600)) or on() vector(0))",
           "instant": true,
           "range": false,
           "refId": "A"

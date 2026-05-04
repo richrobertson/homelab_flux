@@ -57,7 +57,19 @@ spec:
             description: CloudNativePG ScheduledBackup {{ $labels.exported_namespace }}/{{ $labels.name }} is suspended.
 
         - alert: CNPGScheduledBackupStale
-          expr: (time() - homelab_scheduledbackup_last_schedule_timestamp_seconds{customresource_group="postgresql.cnpg.io",customresource_kind="ScheduledBackup"} > 93600) and on (exported_namespace, name) homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="ScheduledBackup",suspended!="true"}
+          expr: >-
+            (
+              (time() - homelab_scheduledbackup_last_schedule_timestamp_seconds{customresource_group="postgresql.cnpg.io",customresource_kind="ScheduledBackup"} > 93600)
+              and on (exported_namespace, name)
+              homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="ScheduledBackup",suspended!="true"}
+            )
+            unless on (exported_namespace, cluster)
+            (
+              time() - label_replace(
+                homelab_cluster_last_successful_backup_timestamp_seconds{customresource_group="postgresql.cnpg.io",customresource_kind="Cluster"},
+                "cluster", "$1", "name", "(.*)"
+              ) <= 93600
+            )
           for: 30m
           labels:
             domain: backups

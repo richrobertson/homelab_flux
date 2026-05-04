@@ -331,6 +331,15 @@ kube-state-metrics:
                   last_backup_succeeded: [ status, conditions, "[type=LastBackupSucceeded]", status ]
                   last_failed_backup: [ status, lastFailedBackup ]
                   phase: [ status, phase ]
+              - name: "cluster_last_successful_backup_timestamp_seconds"
+                help: "The timestamp of the last successful CNPG Cluster backup."
+                each:
+                  type: Gauge
+                  gauge:
+                    path: [ status, lastSuccessfulBackup ]
+                labelsFromPath:
+                  exported_namespace: [ metadata, namespace ]
+                  name: [ metadata, name ]
           - groupVersionKind:
               group: postgresql.cnpg.io
               version: v1
