@@ -3,7 +3,6 @@ kind: ScheduledBackup
 metadata:
   name: nextcloud-cnpg-daily
 spec:
-  suspend: true
   schedule: "0 20 3 * * *"
   backupOwnerReference: self
   cluster:

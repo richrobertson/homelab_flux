@@ -21,7 +21,13 @@ spec:
             description: VolSync ReplicationSource {{ $labels.exported_namespace }}/{{ $labels.name }} has a failed mover result.
 
         - alert: VolSyncReplicationSourceStale
-          expr: time() - homelab_replicationsource_last_sync_timestamp_seconds{customresource_group="volsync.backube",customresource_kind="ReplicationSource"} > 7200
+          expr: >-
+            max by (customresource_group, customresource_kind, customresource_version, exported_namespace, name, source_pvc)
+              (homelab_resource_info{customresource_group="volsync.backube",customresource_kind="ReplicationSource",paused!="true"})
+            * on (exported_namespace, name) group_right (source_pvc)
+              (time() - max by (exported_namespace, name, source_pvc)
+                (homelab_replicationsource_last_sync_timestamp_seconds{customresource_group="volsync.backube",customresource_kind="ReplicationSource"}))
+            > 7200
           for: 15m
           labels:
             domain: backups

@@ -299,19 +299,19 @@ kube-state-metrics:
                   ready: [ status, conditions, "[type=Synchronizing]", status ]
                   mover_result: [ status, latestMoverStatus, result ]
                   source_pvc: [ spec, sourcePVC ]
+                  paused: [ spec, paused ]
                   last_sync_time: [ status, lastSyncTime ]
               - name: "replicationsource_last_sync_timestamp_seconds"
                 help: "The last successful sync timestamp for a VolSync ReplicationSource resource."
                 each:
                   type: Gauge
                   gauge:
-                    path: [ status ]
-                    valueFrom: [ lastSyncTime ]
-                    nilIsZero: true
+                    path: [ status, lastSyncTime ]
                 labelsFromPath:
                   exported_namespace: [ metadata, namespace ]
                   name: [ metadata, name ]
                   source_pvc: [ spec, sourcePVC ]
+                  paused: [ spec, paused ]
           - groupVersionKind:
               group: postgresql.cnpg.io
               version: v1
@@ -356,9 +356,7 @@ kube-state-metrics:
                 each:
                   type: Gauge
                   gauge:
-                    path: [ status ]
-                    valueFrom: [ lastScheduleTime ]
-                    nilIsZero: true
+                    path: [ status, lastScheduleTime ]
                 labelsFromPath:
                   exported_namespace: [ metadata, namespace ]
                   name: [ metadata, name ]
