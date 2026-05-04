@@ -103,17 +103,18 @@ If a future Guacamole release supports an authorization-code flow with a confide
 
 ## Backup and Restore
 
-Production enables CNPG object-store backups for `guacamole-cnpg` using the existing Backblaze-backed CNPG secret convention.
+Production stores the Guacamole database on a `ceph-block` CloudNativePG PVC.
+
+CNPG object-store backups for `guacamole-cnpg` are deferred until the Vault Kubernetes role allows the operator to sync `cnpg-backup-s3` into the `guacamole` namespace. Do not commit Backblaze credentials directly to Git.
 
 Backup checks:
 
 ```sh
-kubectl -n guacamole get scheduledbackup
-kubectl -n guacamole get backup
 kubectl -n guacamole describe cluster guacamole-cnpg
+kubectl -n guacamole get pvc
 ```
 
-Restore should use the CNPG restore workflow from the object-store backup, then redeploy the Guacamole web and guacd deployments against the restored database.
+Until object-store backups are enabled, restore depends on restoring the `ceph-block` PVC from the storage platform. After CNPG object-store backups are enabled, use the normal CNPG restore workflow, then redeploy the Guacamole web and guacd deployments against the restored database.
 
 ## Theme Park
 

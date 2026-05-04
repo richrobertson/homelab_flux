@@ -8,7 +8,7 @@ Production overlay for Apache Guacamole.
 - Uses the production Authelia issuer at `https://auth.myrobertson.com`.
 - Uses `one_factor` until Authelia MFA enrollment is complete.
 - Fetches JWKS from the in-cluster Authelia service while keeping the public issuer and browser authorization URL.
-- Enables CloudNativePG object-store backups for the Guacamole PostgreSQL database.
+- CloudNativePG object-store backups are deferred until the Vault Kubernetes role allows secrets in the `guacamole` namespace. The database PVC remains on `ceph-block`.
 
 ## Validation
 
