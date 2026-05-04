@@ -300,6 +300,18 @@ kube-state-metrics:
                   mover_result: [ status, latestMoverStatus, result ]
                   source_pvc: [ spec, sourcePVC ]
                   last_sync_time: [ status, lastSyncTime ]
+              - name: "replicationsource_last_sync_timestamp_seconds"
+                help: "The last successful sync timestamp for a VolSync ReplicationSource resource."
+                each:
+                  type: Gauge
+                  gauge:
+                    path: [ status ]
+                    valueFrom: [ lastSyncTime ]
+                    nilIsZero: true
+                labelsFromPath:
+                  exported_namespace: [ metadata, namespace ]
+                  name: [ metadata, name ]
+                  source_pvc: [ spec, sourcePVC ]
           - groupVersionKind:
               group: postgresql.cnpg.io
               version: v1
@@ -339,6 +351,19 @@ kube-state-metrics:
                   schedule: [ spec, schedule ]
                   last_schedule_time: [ status, lastScheduleTime ]
                   next_schedule_time: [ status, nextScheduleTime ]
+              - name: "scheduledbackup_last_schedule_timestamp_seconds"
+                help: "The last schedule timestamp for a CNPG ScheduledBackup resource."
+                each:
+                  type: Gauge
+                  gauge:
+                    path: [ status ]
+                    valueFrom: [ lastScheduleTime ]
+                    nilIsZero: true
+                labelsFromPath:
+                  exported_namespace: [ metadata, namespace ]
+                  name: [ metadata, name ]
+                  cluster: [ spec, cluster, name ]
+                  schedule: [ spec, schedule ]
           - groupVersionKind:
               group: postgresql.cnpg.io
               version: v1

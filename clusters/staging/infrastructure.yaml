@@ -127,17 +127,6 @@ spec:
         apiVersion: monitoring.coreos.com/v1
         kind: PrometheusRule
         metadata:
-          name: backup-observability-alerts
-      target:
-        group: monitoring.coreos.com
-        version: v1
-        kind: PrometheusRule
-        name: backup-observability-alerts
-    - patch: |
-        $patch: delete
-        apiVersion: monitoring.coreos.com/v1
-        kind: PrometheusRule
-        metadata:
           name: syncthing-alerts
       target:
         group: monitoring.coreos.com

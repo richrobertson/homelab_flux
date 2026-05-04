@@ -11,37 +11,57 @@ spec:
     - name: backup-observability
       rules:
         - alert: VolSyncReplicationSourceNotReady
-          expr: count(homelab_resource_info{customresource_group="volsync.backube",customresource_kind="ReplicationSource",exported_namespace="default",mover_result="Failed"}) > 0
+          expr: homelab_resource_info{customresource_group="volsync.backube",customresource_kind="ReplicationSource",mover_result="Failed"} > 0
           for: 20m
           labels:
             domain: backups
             severity: warning
           annotations:
-            summary: VolSync replication source not ready
-            description: One or more VolSync ReplicationSource objects have failed mover runs in the default namespace.
+            summary: VolSync replication source failed
+            description: VolSync ReplicationSource {{ $labels.exported_namespace }}/{{ $labels.name }} has a failed mover result.
+
+        - alert: VolSyncReplicationSourceStale
+          expr: time() - homelab_replicationsource_last_sync_timestamp_seconds{customresource_group="volsync.backube",customresource_kind="ReplicationSource"} > 7200
+          for: 15m
+          labels:
+            domain: backups
+            severity: warning
+          annotations:
+            summary: VolSync replication source stale
+            description: VolSync ReplicationSource {{ $labels.exported_namespace }}/{{ $labels.name }} has not completed a sync in over 2 hours.
 
         - alert: CNPGClusterNotReady
-          expr: count(homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Cluster",exported_namespace="default",ready!="True"}) > 0
+          expr: homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Cluster",ready!="True"} > 0
           for: 15m
           labels:
             domain: backups
             severity: critical
           annotations:
             summary: CNPG cluster not ready
-            description: One or more CloudNativePG Cluster resources are not ready in the default namespace.
+            description: CloudNativePG Cluster {{ $labels.exported_namespace }}/{{ $labels.name }} is not ready.
 
         - alert: CNPGScheduledBackupSuspended
-          expr: count(homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="ScheduledBackup",exported_namespace="default",suspended="true"}) > 0
+          expr: homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="ScheduledBackup",suspended="true"} > 0
           for: 10m
           labels:
             domain: backups
             severity: warning
           annotations:
             summary: CNPG scheduled backup suspended
-            description: A CloudNativePG ScheduledBackup resource is suspended in the default namespace.
+            description: CloudNativePG ScheduledBackup {{ $labels.exported_namespace }}/{{ $labels.name }} is suspended.
+
+        - alert: CNPGScheduledBackupStale
+          expr: (time() - homelab_scheduledbackup_last_schedule_timestamp_seconds{customresource_group="postgresql.cnpg.io",customresource_kind="ScheduledBackup"} > 93600) and on (exported_namespace, name) homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="ScheduledBackup",suspended!="true"}
+          for: 30m
+          labels:
+            domain: backups
+            severity: warning
+          annotations:
+            summary: CNPG scheduled backup stale
+            description: CloudNativePG ScheduledBackup {{ $labels.exported_namespace }}/{{ $labels.name }} has not run in over 26 hours.
 
         - alert: CNPGBackupFailedRecently
-          expr: count((homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Backup",exported_namespace="default",phase=~"failed|error"}) and on (cluster, exported_namespace) (homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Cluster",exported_namespace="default",ready="True",last_backup_succeeded!="True"})) > 0
+          expr: count((homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Backup",phase=~"failed|error"}) and on (cluster, exported_namespace) (homelab_resource_info{customresource_group="postgresql.cnpg.io",customresource_kind="Cluster",ready="True",last_backup_succeeded!="True"})) > 0
           for: 5m
           labels:
             domain: backups
@@ -51,7 +71,7 @@ spec:
             description: A CloudNativePG cluster's latest backup state is failed or error.
 
         - alert: BackupJobsFailing
-          expr: kube_job_status_failed{namespace="default",job_name=~".*(backup|volsync).*"} > 0
+          expr: kube_job_status_failed{job_name=~".*(backup|volsync).*"} > 0
           for: 10m
           labels:
             domain: backups
