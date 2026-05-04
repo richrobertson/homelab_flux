@@ -1,0 +1,26 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: keycloak-cnpg
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: keycloak
+spec:
+  instances: 1
+  enableSuperuserAccess: false
+  storage:
+    size: 10Gi
+    storageClass: ceph-block
+  walStorage:
+    size: 2Gi
+    storageClass: ceph-block
+  managed:
+    roles:
+      - name: keycloak
+        login: true
+        superuser: false
+  bootstrap:
+    initdb:
+      database: keycloak
+      owner: keycloak

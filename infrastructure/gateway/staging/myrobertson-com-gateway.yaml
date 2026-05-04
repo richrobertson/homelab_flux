@@ -22,6 +22,27 @@ spec:
         - name: auth-staging-myrobertson-net-cert
           kind: Secret
 
+  - name: keycloak
+    hostname: keycloak.staging.myrobertson.net
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+        - name: keycloak-staging-myrobertson-net-cert
+          kind: Secret
+
+  - name: keycloak-http
+    hostname: keycloak.staging.myrobertson.net
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: All
+
   - name: code
     hostname: code.staging.myrobertson.net
     port: 443

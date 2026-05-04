@@ -1,0 +1,225 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloak-domain-admins-rbac
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: identity-provider-bootstrap
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: keycloak
+        app.kubernetes.io/component: identity-provider-bootstrap
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: configure-domain-admins
+          image: quay.io/keycloak/keycloak:26.6.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KEYCLOAK_URL
+              value: http://keycloak.default.svc.cluster.local
+            - name: KEYCLOAK_REALM
+              value: homelab
+            - name: KEYCLOAK_ADMIN_USERNAME
+              value: admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: admin-password
+            - name: AD_GROUPS_DN
+              value: cn=Users,dc=myrobertson,dc=net
+            - name: DOMAIN_ADMINS_GROUP
+              value: Domain Admins
+          command:
+            - /bin/bash
+            - -ec
+          args:
+            - |
+              cd /opt/keycloak
+
+              csv_first_id() {
+                sed -n 's/^"\([^"]*\)".*/\1/p' | head -1
+              }
+
+              for i in {1..60}; do
+                if bin/kcadm.sh config credentials \
+                  --server "${KEYCLOAK_URL}" \
+                  --realm master \
+                  --user "${KEYCLOAK_ADMIN_USERNAME}" \
+                  --password "${KEYCLOAK_ADMIN_PASSWORD}" >/dev/null; then
+                  break
+                fi
+                if [ "${i}" = "60" ]; then
+                  echo "Timed out waiting for Keycloak admin login." >&2
+                  exit 1
+                fi
+                sleep 5
+              done
+
+              LDAP_ID="$(bin/kcadm.sh get components -r "${KEYCLOAK_REALM}" -q providerId=ldap --fields id,name --format csv | csv_first_id)"
+              if [ -z "${LDAP_ID}" ]; then
+                echo "Could not find LDAP provider in realm ${KEYCLOAK_REALM}." >&2
+                exit 1
+              fi
+
+              ensure_user_attribute_mapper() {
+                local mapper_name="$1"
+                local ldap_attr="$2"
+                local user_model_attr="$3"
+                local read_only="$4"
+                local always_read="$5"
+
+                local mapper_id
+                mapper_id="$(bin/kcadm.sh get components -r "${KEYCLOAK_REALM}" -q providerId=user-attribute-ldap-mapper --fields id,name --format csv | sed -n "s/^\"\\([^\"]*\\)\",\"${mapper_name}\"$/\\1/p" | head -1)"
+                if [ -n "${mapper_id}" ]; then
+                  return
+                fi
+
+                bin/kcadm.sh create components -r "${KEYCLOAK_REALM}" \
+                  -s "name=${mapper_name}" \
+                  -s providerId=user-attribute-ldap-mapper \
+                  -s providerType=org.keycloak.storage.ldap.mappers.LDAPStorageMapper \
+                  -s parentId="${LDAP_ID}" \
+                  -s "config.\"ldap.attribute\"=[\"${ldap_attr}\"]" \
+                  -s "config.\"user.model.attribute\"=[\"${user_model_attr}\"]" \
+                  -s "config.\"read.only\"=[\"${read_only}\"]" \
+                  -s "config.\"always.read.value.from.ldap\"=[\"${always_read}\"]" \
+                  -s 'config."is.mandatory.in.ldap"=["false"]'
+              }
+
+              ensure_user_attribute_mapper username sAMAccountName username true true
+              ensure_user_attribute_mapper firstName givenName firstName true true
+              ensure_user_attribute_mapper lastName sn lastName true true
+              ensure_user_attribute_mapper email mail email true true
+
+              ensure_client_scope() {
+                local scope_name="$1"
+                local scope_id
+                scope_id="$(bin/kcadm.sh get client-scopes -r "${KEYCLOAK_REALM}" --fields id,name --format csv | sed -n "s/^\"\\([^\"]*\\)\",\"${scope_name}\"$/\\1/p" | head -1)"
+                if [ -z "${scope_id}" ]; then
+                  bin/kcadm.sh create client-scopes -r "${KEYCLOAK_REALM}" \
+                    -s "name=${scope_name}" \
+                    -s protocol=openid-connect \
+                    -s 'attributes."include.in.token.scope"=true' \
+                    -s 'attributes."display.on.consent.screen"=true'
+                  scope_id="$(bin/kcadm.sh get client-scopes -r "${KEYCLOAK_REALM}" --fields id,name --format csv | sed -n "s/^\"\\([^\"]*\\)\",\"${scope_name}\"$/\\1/p" | head -1)"
+                fi
+                printf '%s' "${scope_id}"
+              }
+
+              create_scope_mapper() {
+                local scope_id="$1"
+                local mapper_name="$2"
+                local mapper_type="$3"
+                shift 3
+
+                if bin/kcadm.sh get "client-scopes/${scope_id}/protocol-mappers/models" -r "${KEYCLOAK_REALM}" --fields name --format csv | grep -q "\"${mapper_name}\""; then
+                  return
+                fi
+
+                bin/kcadm.sh create "client-scopes/${scope_id}/protocol-mappers/models" -r "${KEYCLOAK_REALM}" \
+                  -s "name=${mapper_name}" \
+                  -s protocol=openid-connect \
+                  -s "protocolMapper=${mapper_type}" \
+                  -s consentRequired=false \
+                  "$@"
+              }
+
+              PROFILE_SCOPE_ID="$(ensure_client_scope profile)"
+              EMAIL_SCOPE_ID="$(ensure_client_scope email)"
+              GROUPS_SCOPE_ID="$(ensure_client_scope groups)"
+
+              create_scope_mapper "${PROFILE_SCOPE_ID}" username oidc-usermodel-property-mapper \
+                -s 'config."user.attribute"=username' \
+                -s 'config."claim.name"=preferred_username' \
+                -s 'config."jsonType.label"=String' \
+                -s 'config."id.token.claim"=true' \
+                -s 'config."access.token.claim"=true' \
+                -s 'config."userinfo.token.claim"=true'
+              create_scope_mapper "${PROFILE_SCOPE_ID}" "full name" oidc-full-name-mapper \
+                -s 'config."id.token.claim"=true' \
+                -s 'config."access.token.claim"=true' \
+                -s 'config."userinfo.token.claim"=true'
+              create_scope_mapper "${EMAIL_SCOPE_ID}" email oidc-usermodel-property-mapper \
+                -s 'config."user.attribute"=email' \
+                -s 'config."claim.name"=email' \
+                -s 'config."jsonType.label"=String' \
+                -s 'config."id.token.claim"=true' \
+                -s 'config."access.token.claim"=true' \
+                -s 'config."userinfo.token.claim"=true'
+              create_scope_mapper "${EMAIL_SCOPE_ID}" "email verified" oidc-usermodel-property-mapper \
+                -s 'config."user.attribute"=emailVerified' \
+                -s 'config."claim.name"=email_verified' \
+                -s 'config."jsonType.label"=boolean' \
+                -s 'config."id.token.claim"=true' \
+                -s 'config."access.token.claim"=true' \
+                -s 'config."userinfo.token.claim"=true'
+
+              MAPPER_ID="$(bin/kcadm.sh get components -r "${KEYCLOAK_REALM}" -q providerId=group-ldap-mapper --fields id,name --format csv | sed -n 's/^"\([^"]*\)","AD groups"$/\1/p' | head -1)"
+              if [ -z "${MAPPER_ID}" ]; then
+                bin/kcadm.sh create components -r "${KEYCLOAK_REALM}" \
+                  -s name="AD groups" \
+                  -s providerId=group-ldap-mapper \
+                  -s providerType=org.keycloak.storage.ldap.mappers.LDAPStorageMapper \
+                  -s parentId="${LDAP_ID}" \
+                  -s 'config."mode"=["READ_ONLY"]' \
+                  -s "config.\"groups.dn\"=[\"${AD_GROUPS_DN}\"]" \
+                  -s 'config."group.name.ldap.attribute"=["cn"]' \
+                  -s 'config."group.object.classes"=["group"]' \
+                  -s 'config."preserve.group.inheritance"=["false"]' \
+                  -s 'config."ignore.missing.groups"=["true"]' \
+                  -s 'config."membership.ldap.attribute"=["member"]' \
+                  -s 'config."membership.attribute.type"=["DN"]' \
+                  -s 'config."membership.user.ldap.attribute"=["distinguishedName"]' \
+                  -s 'config."user.roles.retrieve.strategy"=["LOAD_GROUPS_BY_MEMBER_ATTRIBUTE"]'
+              else
+                bin/kcadm.sh update "components/${MAPPER_ID}" -r "${KEYCLOAK_REALM}" \
+                  -s 'config."preserve.group.inheritance"=["false"]' \
+                  -s 'config."ignore.missing.groups"=["true"]' \
+                  -s "config.\"groups.dn\"=[\"${AD_GROUPS_DN}\"]" \
+                  -s 'config."group.name.ldap.attribute"=["cn"]' \
+                  -s 'config."group.object.classes"=["group"]' \
+                  -s 'config."membership.ldap.attribute"=["member"]' \
+                  -s 'config."membership.attribute.type"=["DN"]' \
+                  -s 'config."membership.user.ldap.attribute"=["distinguishedName"]' \
+                  -s 'config."user.roles.retrieve.strategy"=["LOAD_GROUPS_BY_MEMBER_ATTRIBUTE"]'
+              fi
+
+              GROUP_ID="$(bin/kcadm.sh get groups -r "${KEYCLOAK_REALM}" -q "search=${DOMAIN_ADMINS_GROUP}" --fields id,name --format csv | sed -n "s/^\"\\([^\"]*\\)\",\"${DOMAIN_ADMINS_GROUP}\"$/\\1/p" | head -1)"
+              if [ -z "${GROUP_ID}" ]; then
+                bin/kcadm.sh create groups -r "${KEYCLOAK_REALM}" -s "name=${DOMAIN_ADMINS_GROUP}"
+                GROUP_ID="$(bin/kcadm.sh get groups -r "${KEYCLOAK_REALM}" -q "search=${DOMAIN_ADMINS_GROUP}" --fields id,name --format csv | sed -n "s/^\"\\([^\"]*\\)\",\"${DOMAIN_ADMINS_GROUP}\"$/\\1/p" | head -1)"
+              fi
+              if [ -z "${GROUP_ID}" ]; then
+                echo "Could not find or create group ${DOMAIN_ADMINS_GROUP}." >&2
+                exit 1
+              fi
+
+              REALM_MGMT_ID="$(bin/kcadm.sh get clients -r "${KEYCLOAK_REALM}" -q clientId=realm-management --fields id,clientId --format csv | csv_first_id)"
+              if [ -z "${REALM_MGMT_ID}" ]; then
+                echo "Could not find realm-management client." >&2
+                exit 1
+              fi
+
+              ROLE_JSON="$(bin/kcadm.sh get "clients/${REALM_MGMT_ID}/roles/realm-admin" -r "${KEYCLOAK_REALM}")"
+              bin/kcadm.sh create "groups/${GROUP_ID}/role-mappings/clients/${REALM_MGMT_ID}" -r "${KEYCLOAK_REALM}" -b "[${ROLE_JSON}]" || true
+
+              for client_id in account account-console security-admin-console mealie_staging vikunja_staging; do
+                CLIENT_UUID="$(bin/kcadm.sh get clients -r "${KEYCLOAK_REALM}" -q "clientId=${client_id}" --fields id,clientId --format csv | csv_first_id)"
+                if [ -z "${CLIENT_UUID}" ]; then
+                  continue
+                fi
+                for scope_id in "${PROFILE_SCOPE_ID}" "${EMAIL_SCOPE_ID}" "${GROUPS_SCOPE_ID}"; do
+                  bin/kcadm.sh update "clients/${CLIENT_UUID}/default-client-scopes/${scope_id}" -r "${KEYCLOAK_REALM}" >/dev/null 2>&1 || true
+                done
+              done
+
+              bin/kcadm.sh create clear-user-cache -r "${KEYCLOAK_REALM}" -s "realm=${KEYCLOAK_REALM}" || true
+              bin/kcadm.sh create clear-realm-cache -r "${KEYCLOAK_REALM}" -s "realm=${KEYCLOAK_REALM}" || true
+
+              echo "Granted realm-management realm-admin to ${DOMAIN_ADMINS_GROUP}."

@@ -13,6 +13,7 @@
 - [Plex VAAPI option 3 runbook](PLEX_VAAPI_OPTION3_RUNBOOK.md): custom image build and rollout procedure for Plex hardware transcoding.
 - [Nextcloud S3 to NFS staging dry run](NEXTCLOUD_S3_TO_NFS_STAGING_DRY_RUN.md): staging sandbox procedure for validating a safe migration path from primary S3 object storage to Synology NFS-backed filesystem storage.
 - [Apache Guacamole runbook](GUACAMOLE_RUNBOOK.md): deploy and operate the Guacamole remote desktop gateway with Authelia OIDC and PostgreSQL.
+- [Authelia to Keycloak migration](AUTHELIA_TO_KEYCLOAK_MIGRATION.md): inventory Authelia OIDC/external-authz usage and stage Keycloak with Microsoft AD LDAPS federation.
 
 ## Conventions
 

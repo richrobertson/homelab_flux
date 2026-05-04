@@ -1,0 +1,31 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ../../base/keycloak
+  - httpRoute.yaml
+  - httpRedirect.yaml
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/path
+        value: keycloak/stage
+    target:
+      kind: VaultStaticSecret
+      name: keycloak-secret
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: keycloak
+      spec:
+        template:
+          spec:
+            containers:
+              - name: keycloak
+                env:
+                  - name: KC_HOSTNAME
+                    value: https://keycloak.staging.myrobertson.net
+    target:
+      kind: Deployment
+      name: keycloak

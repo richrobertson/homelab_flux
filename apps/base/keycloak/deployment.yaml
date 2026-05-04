@@ -1,0 +1,215 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: identity-provider
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: identity-provider
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: keycloak
+        app.kubernetes.io/component: identity-provider
+    spec:
+      initContainers:
+        - name: import-realm
+          image: quay.io/keycloak/keycloak:26.6.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - import
+            - --dir
+            - /opt/keycloak/data/import
+            - --override
+            - "false"
+          env:
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL_HOST
+              value: keycloak-cnpg-rw.default.svc.cluster.local
+            - name: KC_DB_URL_DATABASE
+              value: keycloak
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-cnpg-app
+                  key: username
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-cnpg-app
+                  key: password
+            - name: KC_LDAP_BIND_CREDENTIAL
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: ldap-bind-password
+            - name: KC_MEALIE_STAGING_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: mealie-staging-client-secret
+                  optional: true
+            - name: KC_VIKUNJA_STAGING_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: vikunja-staging-client-secret
+                  optional: true
+            - name: KC_HTTP_ENABLED
+              value: "true"
+            - name: KC_TRUSTSTORE_PATHS
+              value: /opt/keycloak/conf/truststores
+          volumeMounts:
+            - name: realm-import
+              mountPath: /opt/keycloak/data/import
+              readOnly: true
+            - name: ldap-ca-certs
+              mountPath: /opt/keycloak/conf/truststores
+              readOnly: true
+        - name: bootstrap-admin
+          image: quay.io/keycloak/keycloak:26.6.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+            - -ec
+          args:
+            - |
+              /opt/keycloak/bin/kc.sh bootstrap-admin user \
+                --username:env KC_BOOTSTRAP_ADMIN_USERNAME \
+                --password:env KC_BOOTSTRAP_ADMIN_PASSWORD \
+                --no-prompt || {
+                  rc="$?"
+                  echo "bootstrap-admin user exited ${rc}; continuing because the admin may already exist."
+                }
+          env:
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL_HOST
+              value: keycloak-cnpg-rw.default.svc.cluster.local
+            - name: KC_DB_URL_DATABASE
+              value: keycloak
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-cnpg-app
+                  key: username
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-cnpg-app
+                  key: password
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              value: admin
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: admin-password
+            - name: KC_HTTP_ENABLED
+              value: "true"
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:26.6.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - start
+          env:
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL_HOST
+              value: keycloak-cnpg-rw.default.svc.cluster.local
+            - name: KC_DB_URL_DATABASE
+              value: keycloak
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-cnpg-app
+                  key: username
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-cnpg-app
+                  key: password
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              value: admin
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: admin-password
+            - name: KC_LDAP_BIND_CREDENTIAL
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: ldap-bind-password
+            - name: KC_MEALIE_STAGING_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: mealie-staging-client-secret
+                  optional: true
+            - name: KC_VIKUNJA_STAGING_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: vikunja-staging-client-secret
+                  optional: true
+            - name: KC_HTTP_ENABLED
+              value: "true"
+            - name: KC_PROXY_HEADERS
+              value: xforwarded
+            - name: KC_HOSTNAME
+              value: https://keycloak.dev.myrobertson.net
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+            - name: KC_METRICS_ENABLED
+              value: "true"
+            - name: KC_TRUSTSTORE_PATHS
+              value: /opt/keycloak/conf/truststores
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: management
+              containerPort: 9000
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: management
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: management
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 250m
+              memory: 768Mi
+            limits:
+              memory: 1536Mi
+          volumeMounts:
+            - name: realm-import
+              mountPath: /opt/keycloak/data/import
+              readOnly: true
+            - name: ldap-ca-certs
+              mountPath: /opt/keycloak/conf/truststores
+              readOnly: true
+      volumes:
+        - name: realm-import
+          configMap:
+            name: keycloak-realm-import
+        - name: ldap-ca-certs
+          secret:
+            secretName: ad-ldap-ca

@@ -4,6 +4,7 @@ namespace: default
 resources:
   - ../../base/mealie
   - httpRoute.yaml
+  - keycloak-staging-ca-bundle.yaml
 patches:
   - path: mealie-values.yaml
     target:

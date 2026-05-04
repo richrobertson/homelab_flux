@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ad-ldap-ca-secret.yaml
+  - postgres.yaml
+  - secret.yaml
+  - realm-configmap.yaml
+  - deployment.yaml
+  - service.yaml
+  - domain-admins-rbac-job.yaml
