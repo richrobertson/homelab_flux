@@ -83,6 +83,8 @@ Guacamole uses:
 - `OPENID_GROUPS_CLAIM_TYPE=groups`
 - `EXTENSION_PRIORITY=openid,postgresql,ban`
 
+Staging keeps the issuer and browser authorization endpoint on `https://auth.staging.myrobertson.net`, but fetches JWKS from `http://authelia.default.svc.cluster.local/jwks.json` so the Guacamole JVM does not need to trust the staging public TLS chain.
+
 Guacamole’s OpenID extension authenticates the browser session only. PostgreSQL/database auth must remain enabled so Guacamole can store and authorize connections.
 
 ## Secret Rotation
