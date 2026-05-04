@@ -15,6 +15,8 @@ Base manifests for Apache Guacamole, a browser-based remote desktop gateway.
 
 The official Guacamole image enables version-matched PostgreSQL and OpenID extensions from the same image when `POSTGRESQL_ENABLED` and `OPENID_ENABLED` are set. No custom image is required for the first milestone.
 
+`EXTENSION_PRIORITY` keeps OpenID ahead of PostgreSQL so unauthenticated users are sent through Authelia SSO while PostgreSQL remains available for connection definitions and permissions.
+
 ## Database bootstrap
 
 `guacamole-postgres-init` renders the official PostgreSQL schema with `/opt/guacamole/bin/initdb.sh --postgresql` and applies it with `psql`. The job exits without changes if the `guacamole_user` table already exists.
@@ -29,4 +31,3 @@ Theme Park for Guacamole requires proxy-side response body injection. This repo 
 
 - Parent: [Base](../README.md)
 - Runbook: [Guacamole runbook](../../../docs/runbooks/GUACAMOLE_RUNBOOK.md)
-

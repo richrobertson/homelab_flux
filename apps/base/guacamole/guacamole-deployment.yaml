@@ -61,6 +61,8 @@ spec:
               value: preferred_username
             - name: OPENID_GROUPS_CLAIM_TYPE
               value: groups
+            - name: EXTENSION_PRIORITY
+              value: openid,postgresql,ban
             - name: OPENID_CLIENT_ID
               value: guacamole
             - name: OPENID_ISSUER

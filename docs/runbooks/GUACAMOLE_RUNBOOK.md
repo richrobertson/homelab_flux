@@ -81,6 +81,7 @@ Guacamole uses:
 - `OPENID_SCOPE=openid profile groups email`
 - `OPENID_USERNAME_CLAIM_TYPE=preferred_username`
 - `OPENID_GROUPS_CLAIM_TYPE=groups`
+- `EXTENSION_PRIORITY=openid,postgresql,ban`
 
 Guacamole’s OpenID extension authenticates the browser session only. PostgreSQL/database auth must remain enabled so Guacamole can store and authorize connections.
 
