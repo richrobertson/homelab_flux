@@ -156,7 +156,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by(instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | message=~\"Login successful.*\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by(instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | message=~\"Login successful.*\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -236,7 +236,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by(instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | message=~\"Login failed.*\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by(instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | message=~\"Login failed.*\" | __error__=\"\" [$__interval]))",
           "hide": false,
           "queryType": "range",
           "refId": "A"
@@ -317,7 +317,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "count by (remoteAddr) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | message=~\"Login failed.*\" | __error__=\"\" [$__interval]))",
+          "expr": "count by (remoteAddr) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | message=~\"Login failed.*\" | __error__=\"\" [$__interval]))",
           "hide": false,
           "legendFormat": "{{ ip }}",
           "queryType": "range",
@@ -412,7 +412,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -488,7 +488,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (bytes_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (bytes_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -564,7 +564,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"POST|PUT|MKCOL\" | message=~\"File written.*\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"POST|PUT|MKCOL\" | message=~\"File written.*\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -640,7 +640,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"DELETE\" | message=~\"File deleted.*\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"DELETE\" | message=~\"File deleted.*\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -716,7 +716,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"MOVE\" | message=~\"File renamed.*\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"MOVE\" | message=~\"File renamed.*\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -792,7 +792,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"PUT|GET\" | message=~\"File accessed.*|Preview accessed.*\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"PUT|GET\" | message=~\"File accessed.*|Preview accessed.*\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -868,7 +868,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | level=\"1\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | level=\"1\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -944,7 +944,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | level=\"2\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | level=\"2\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -1020,7 +1020,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url=~\".*download.*\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url=~\".*download.*\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -1096,7 +1096,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url!~\".*download.*\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url!~\".*download.*\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -1172,7 +1172,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"POST\" | message=~\".*shared.*\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"POST\" | message=~\".*shared.*\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -1248,7 +1248,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"DELETE\" | message=~\".*unshared.*\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"DELETE\" | message=~\".*unshared.*\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -1324,7 +1324,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | level=\"3\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | level=\"3\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -1400,7 +1400,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (instance) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | level=\"4\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (instance) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | level=\"4\" | __error__=\"\" [$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -1468,7 +1468,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (user) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | message=~\"Login successful.*\" | __error__=\"\" [$__interval]))",
+          "expr": "sum by (user) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | message=~\"Login successful.*\" | __error__=\"\" [$__interval]))",
           "hide": false,
           "legendFormat": "{{ user }}",
           "queryType": "range",
@@ -1507,7 +1507,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | level=\"1\" | line_format \"INFO IP {{.remoteAddr}} {{.method}} {{.url }} user {{.user}} message {{.message }} \"",
+          "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | level=\"1\" | line_format \"INFO IP {{.remoteAddr}} {{.method}} {{.url }} user {{.user}} message {{.message }} \"",
           "hide": false,
           "queryType": "range",
           "refId": "A"
@@ -1518,7 +1518,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | level=\"2\" | line_format \"WARNING IP {{.remoteAddr}} {{.method}} {{.url }} user {{.user}} message {{.message }} \"",
+          "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | level=\"2\" | line_format \"WARNING IP {{.remoteAddr}} {{.method}} {{.url }} user {{.user}} message {{.message }} \"",
           "hide": false,
           "queryType": "range",
           "refId": "B"
@@ -1529,7 +1529,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | level=\"3\" | line_format \"ERROR IP {{.remoteAddr}} {{.method}} {{.url }} user {{.user}} message {{.message }} \"",
+          "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | level=\"3\" | line_format \"ERROR IP {{.remoteAddr}} {{.method}} {{.url }} user {{.user}} message {{.message }} \"",
           "hide": false,
           "queryType": "range",
           "refId": "C"
@@ -1540,7 +1540,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | level=\"4\" | line_format \"FATAL IP {{.remoteAddr}} {{.method}} {{.url }} user {{.user}} message {{.message }} \"",
+          "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | level=\"4\" | line_format \"FATAL IP {{.remoteAddr}} {{.method}} {{.url }} user {{.user}} message {{.message }} \"",
           "hide": false,
           "queryType": "range",
           "refId": "D"
@@ -1609,7 +1609,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (username) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | message=~\"Login failed.*\" | pattern `<_>Login failed: <username> (Remote IP: <_>` | __error__=\"\" [$__interval]))",
+          "expr": "sum by (username) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | message=~\"Login failed.*\" | pattern `<_>Login failed: <username> (Remote IP: <_>` | __error__=\"\" [$__interval]))",
           "hide": false,
           "legendFormat": "{{ username }}",
           "queryType": "range",
@@ -1714,7 +1714,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum by (user) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | message=~\"Login successful.*\" | __error__=\"\" [$__interval]))",
+              "expr": "sum by (user) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | message=~\"Login successful.*\" | __error__=\"\" [$__interval]))",
               "legendFormat": "{{ user }}",
               "queryType": "range",
               "refId": "A"
@@ -1858,7 +1858,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | message=~\"Login successful.*\" | __error__=\"\"",
+              "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | message=~\"Login successful.*\" | __error__=\"\"",
               "queryType": "range",
               "refId": "A"
             }
@@ -2045,7 +2045,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (username) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | message=~\"Login failed.*\" | pattern `<_>Login failed: <username> (Remote IP: <_>` | __error__=\"\" [$__interval]))",
+          "expr": "sum by (username) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | message=~\"Login failed.*\" | pattern `<_>Login failed: <username> (Remote IP: <_>` | __error__=\"\" [$__interval]))",
           "legendFormat": "{{ username }}",
           "queryType": "range",
           "refId": "A"
@@ -2190,7 +2190,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | message=~\"Login failed.*\" | pattern `<_>Login failed: <username> (Remote IP: <_>` | __error__=\"\"",
+          "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | message=~\"Login failed.*\" | pattern `<_>Login failed: <username> (Remote IP: <_>` | __error__=\"\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -2369,7 +2369,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum by (user) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"POST|PUT|MKCOL\" | message=~\"File written.*\" | __error__=\"\" [$__interval]))",
+              "expr": "sum by (user) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"POST|PUT|MKCOL\" | message=~\"File written.*\" | __error__=\"\" [$__interval]))",
               "legendFormat": "{{ user }}",
               "queryType": "range",
               "refId": "A"
@@ -2513,7 +2513,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"POST|PUT|MKCOL\" | message=~\"File written.*\" | pattern `<_>File written to: \\\"<uploaded_file>\\\"\"<_>` | __error__=\"\"",
+              "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"POST|PUT|MKCOL\" | message=~\"File written.*\" | pattern `<_>File written to: \\\"<uploaded_file>\\\"\"<_>` | __error__=\"\"",
               "queryType": "range",
               "refId": "A"
             }
@@ -2694,7 +2694,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum by (user) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"DELETE\" | message=~\"File deleted.*\" | __error__=\"\" [$__interval]))",
+              "expr": "sum by (user) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"DELETE\" | message=~\"File deleted.*\" | __error__=\"\" [$__interval]))",
               "legendFormat": "{{ user }}",
               "queryType": "range",
               "refId": "A"
@@ -2838,7 +2838,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"DELETE\" | message=~\"File deleted.*\" | pattern `<_>File deleted: \\\"<deleted_file>\\\"\"<_>` | __error__=\"\"",
+              "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"DELETE\" | message=~\"File deleted.*\" | pattern `<_>File deleted: \\\"<deleted_file>\\\"\"<_>` | __error__=\"\"",
               "queryType": "range",
               "refId": "A"
             }
@@ -3020,7 +3020,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum by (user) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"MOVE\" | message=~\"File renamed.*\" | __error__=\"\" [$__interval]))",
+              "expr": "sum by (user) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"MOVE\" | message=~\"File renamed.*\" | __error__=\"\" [$__interval]))",
               "legendFormat": "{{ user }}",
               "queryType": "range",
               "refId": "A"
@@ -3164,7 +3164,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"MOVE\" | message=~\"File renamed.*\" | pattern `<_>File renamed: \\\"<original_file>\\\" to \\\"<renamed_or_moved_file>\\\"\"<_>` | __error__=\"\"",
+              "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"MOVE\" | message=~\"File renamed.*\" | pattern `<_>File renamed: \\\"<original_file>\\\" to \\\"<renamed_or_moved_file>\\\"\"<_>` | __error__=\"\"",
               "queryType": "range",
               "refId": "A"
             }
@@ -3349,7 +3349,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum by (user) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"PUT|GET\" | message=~\"File accessed.*|Preview accessed.*\" | __error__=\"\" [$__interval]))",
+              "expr": "sum by (user) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"PUT|GET\" | message=~\"File accessed.*|Preview accessed.*\" | __error__=\"\" [$__interval]))",
               "legendFormat": "{{ user }}",
               "queryType": "range",
               "refId": "A"
@@ -3493,7 +3493,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"PUT|GET\" | message=~\"File accessed.*|Preview accessed.*\" | pattern `<_>File accessed: \\\"<accessed_file>\\\"\"<_>` | __error__=\"\"",
+              "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"PUT|GET\" | message=~\"File accessed.*|Preview accessed.*\" | pattern `<_>File accessed: \\\"<accessed_file>\\\"\"<_>` | __error__=\"\"",
               "queryType": "range",
               "refId": "A"
             }
@@ -3675,7 +3675,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum by (user) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"POST\" | message=~\".*shared.*\" | __error__=\"\" [$__interval]))",
+              "expr": "sum by (user) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"POST\" | message=~\".*shared.*\" | __error__=\"\" [$__interval]))",
               "legendFormat": "{{ user }}",
               "queryType": "range",
               "refId": "A"
@@ -3819,7 +3819,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"POST\" | message=~\".*shared.*\" | pattern `<_>The <_> \\\"<shared_file>\\\" with ID<_>` | __error__=\"\"",
+              "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"POST\" | message=~\".*shared.*\" | pattern `<_>The <_> \\\"<shared_file>\\\" with ID<_>` | __error__=\"\"",
               "queryType": "range",
               "refId": "A"
             }
@@ -4002,7 +4002,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum by (user) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"DELETE\" | message=~\".*unshared.*\" | __error__=\"\" [$__interval]))",
+              "expr": "sum by (user) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"DELETE\" | message=~\".*unshared.*\" | __error__=\"\" [$__interval]))",
               "legendFormat": "{{ user }}",
               "queryType": "range",
               "refId": "A"
@@ -4146,7 +4146,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"DELETE\" | message=~\".*unshared.*\" | pattern `<_>The <_> \\\"<unshared_file>\\\" with ID<_>` | __error__=\"\"",
+              "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"DELETE\" | message=~\".*unshared.*\" | pattern `<_>The <_> \\\"<unshared_file>\\\" with ID<_>` | __error__=\"\"",
               "queryType": "range",
               "refId": "A"
             }
@@ -4330,7 +4330,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum by (user) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url=~\".*download.*\" | __error__=\"\" [$__interval]))",
+              "expr": "sum by (user) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url=~\".*download.*\" | __error__=\"\" [$__interval]))",
               "legendFormat": "{{ user }}",
               "queryType": "range",
               "refId": "A"
@@ -4474,7 +4474,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url=~\".*download.*\" | pattern `<_>the token \\\"<download_token>\\\" by \\\"<shared_by_username>\\\" has <_>` | __error__=\"\"",
+              "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url=~\".*download.*\" | pattern `<_>the token \\\"<download_token>\\\" by \\\"<shared_by_username>\\\" has <_>` | __error__=\"\"",
               "queryType": "range",
               "refId": "A"
             }
@@ -4661,7 +4661,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum by (user) (count_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url!~\".*download.*\" | __error__=\"\" [$__interval]))",
+              "expr": "sum by (user) (count_over_time({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url!~\".*download.*\" | __error__=\"\" [$__interval]))",
               "legendFormat": "{{ user }}",
               "queryType": "range",
               "refId": "A"
@@ -4805,7 +4805,7 @@
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "{$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url!~\".*download.*\" | pattern `<_>the token \\\"<accessed_token>\\\" by \\\"<shared_by_username>\\\" has <_>` | __error__=\"\"",
+              "expr": "{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", container=~\"$container\"} | json | method=~\"GET\" | message=~\".*shared.*accesse.*\" | url!~\".*download.*\" | pattern `<_>the token \\\"<accessed_token>\\\" by \\\"<shared_by_username>\\\" has <_>` | __error__=\"\"",
               "queryType": "range",
               "refId": "A"
             }
@@ -4907,117 +4907,113 @@
   "templating": {
     "list": [
       {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "loki",
+        "regex": "",
         "current": {
           "selected": false,
           "text": "Loki",
           "value": "Loki"
         },
-        "hide": 0,
-        "includeAll": false,
-        "label": "Datasource",
-        "multi": false,
-        "name": "datasource",
         "options": [],
-        "query": "loki",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "type": "datasource"
+        "hide": 0,
+        "refresh": 1
       },
       {
-        "current": {},
+        "name": "namespace",
+        "type": "query",
         "datasource": {
           "type": "loki",
           "uid": "${datasource}"
         },
-        "definition": "",
-        "hide": 0,
-        "includeAll": false,
-        "label": "Label Name",
-        "multi": false,
-        "name": "label_name",
-        "options": [],
-        "query": {
-          "label": "",
-          "refId": "LokiVariableQueryEditor-VariableQuery",
-          "stream": "",
-          "type": 0
-        },
-        "refresh": 2,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {},
-        "datasource": {
-          "type": "loki",
-          "uid": "$datasource"
-        },
-        "definition": "label_values($label_value)",
-        "hide": 0,
+        "query": "label_values(namespace)",
+        "definition": "label_values(namespace)",
+        "regex": "/^(default|nextcloud)$/",
         "includeAll": true,
-        "label": "Label Value",
+        "allValue": "default|nextcloud",
         "multi": true,
-        "name": "label_value",
-        "options": [],
-        "query": "label_values($label_name)",
         "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "nextcloud",
+          "value": [
+            "nextcloud"
+          ]
+        },
+        "options": []
       },
       {
-        "current": {},
-        "datasource": {
-          "type": "loki",
-          "uid": "${datasource}"
-        },
-        "definition": "",
-        "hide": 0,
-        "includeAll": true,
-        "label": "Job",
-        "multi": true,
         "name": "job",
-        "options": [],
-        "query": {
-          "label": "job",
-          "refId": "LokiVariableQueryEditor-VariableQuery",
-          "stream": "{$label_name=~\"$label_value\"}",
-          "type": 1
-        },
-        "refresh": 2,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {},
+        "type": "query",
         "datasource": {
           "type": "loki",
-          "uid": "$datasource"
+          "uid": "${datasource}"
         },
-        "definition": "",
-        "hide": 0,
+        "query": "label_values({namespace=~\"$namespace\"}, job)",
+        "definition": "label_values({namespace=~\"$namespace\"}, job)",
+        "regex": "/nextcloud\\/nextcloud/",
         "includeAll": true,
-        "label": "Instance",
+        "allValue": "nextcloud/nextcloud",
         "multi": true,
-        "name": "instance",
-        "options": [],
-        "query": {
-          "label": "instance",
-          "refId": "LokiVariableQueryEditor-VariableQuery",
-          "stream": "{$label_name=~\"$label_value\"}",
-          "type": 1
+        "refresh": 1,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "nextcloud/nextcloud",
+          "value": [
+            "nextcloud/nextcloud"
+          ]
         },
-        "refresh": 2,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
+        "options": []
+      },
+      {
+        "name": "instance",
+        "type": "query",
+        "datasource": {
+          "type": "loki",
+          "uid": "${datasource}"
+        },
+        "query": "label_values({namespace=~\"$namespace\", job=~\"$job\"}, instance)",
+        "definition": "label_values({namespace=~\"$namespace\", job=~\"$job\"}, instance)",
+        "regex": "/nextcloud.*/",
+        "includeAll": true,
+        "allValue": "nextcloud.*",
+        "multi": true,
+        "refresh": 1,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "nextcloud-migration-ldap",
+          "value": [
+            "nextcloud-migration-ldap"
+          ]
+        },
+        "options": []
+      },
+      {
+        "name": "container",
+        "type": "query",
+        "datasource": {
+          "type": "loki",
+          "uid": "${datasource}"
+        },
+        "query": "label_values({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}, container)",
+        "definition": "label_values({namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}, container)",
+        "regex": "/nextcloud-log-tail|nextcloud/",
+        "includeAll": false,
+        "multi": true,
+        "refresh": 1,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "nextcloud-log-tail",
+          "value": [
+            "nextcloud-log-tail"
+          ]
+        },
+        "options": []
       }
     ]
   },
@@ -5029,6 +5025,6 @@
   "timezone": "",
   "title": "Nextcloud Logs",
   "uid": "ILsBP9t4R",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
