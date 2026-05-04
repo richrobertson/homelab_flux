@@ -89,6 +89,22 @@ spec:
                 - groups
               userinfo_signed_response_alg: none
               token_endpoint_auth_method: client_secret_basic
+            - client_id: nextcloud_prod
+              client_name: Nextcloud
+              client_secret: '$2b$12$huUtDpZ2PxHTcApJo2nN7OMigZlgH2ri5YKdukZvsiSvykX/WfDoe'
+              public: false
+              authorization_policy: one_factor
+              consent_mode: implicit
+              redirect_uris:
+                - https://cloud.myrobertson.com/apps/user_oidc/code
+                - https://cloud.myrobertson.com/index.php/apps/user_oidc/code
+              scopes:
+                - openid
+                - profile
+                - email
+                - groups
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_post
             - client_id: proxmox_prod
               client_name: Proxmox VE cl0
               client_secret:

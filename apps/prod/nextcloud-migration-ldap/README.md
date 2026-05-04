@@ -62,6 +62,12 @@ kubectl --context admin@prod -n default get secret nextcloud-mail-provisioning -
       | .metadata.labels = {"app.kubernetes.io/name":"nextcloud-migration-ldap"}' | \
   kubectl --context admin@prod apply -f -
 
+kubectl --context admin@prod -n nextcloud create secret generic nextcloud-oidc-secret \
+  --from-literal=OIDC_CLIENT_ID=nextcloud_prod \
+  --from-literal=OIDC_CLIENT_SECRET="$(vault kv get -field=OIDC_CLIENT_SECRET -mount=secret nextcloud/prod/oidc)" \
+  --dry-run=client -o yaml | \
+  kubectl --context admin@prod apply -f -
+
 kubectl --context admin@prod -n default get secret restic-config-nextcloud -o json | \
   jq 'del(.metadata.uid,.metadata.resourceVersion,.metadata.creationTimestamp,.metadata.managedFields,.metadata.annotations,.metadata.ownerReferences)
       | .metadata.name = "restic-config-nextcloud-migration-ldap-html"

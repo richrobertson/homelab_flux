@@ -83,6 +83,24 @@ spec:
           value: "https://cloud.myrobertson.com"
         - name: NEXTCLOUD_ENABLE_SERVER_SIDE_ENCRYPTION
           value: "true"
+        - name: NEXTCLOUD_OIDC_ENABLED
+          value: "true"
+        - name: NEXTCLOUD_OIDC_PROVIDER_ID
+          value: authelia
+        - name: NEXTCLOUD_OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-oidc-secret
+              key: OIDC_CLIENT_ID
+        - name: NEXTCLOUD_OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-oidc-secret
+              key: OIDC_CLIENT_SECRET
+        - name: NEXTCLOUD_OIDC_DISCOVERY_URI
+          value: https://auth.myrobertson.com/.well-known/openid-configuration
+        - name: NEXTCLOUD_OIDC_ALLOW_MULTIPLE_USER_BACKENDS
+          value: "0"
         - name: LDAP_ENABLED
           valueFrom:
             secretKeyRef:
@@ -207,6 +225,32 @@ spec:
             php occ encryption:set-default-module OC_DEFAULT_MODULE || true
             php occ encryption:status | grep -q 'enabled: true'
             php occ encryption:status | grep -q 'defaultModule: OC_DEFAULT_MODULE'
+          fi
+
+          if [ "${NEXTCLOUD_OIDC_ENABLED:-false}" = "true" ]; then
+            php occ config:system:set allow_local_remote_servers --type=boolean --value=true
+
+            if [ -z "${NEXTCLOUD_OIDC_CLIENT_ID:-}" ] || [ -z "${NEXTCLOUD_OIDC_CLIENT_SECRET:-}" ] || [ -z "${NEXTCLOUD_OIDC_DISCOVERY_URI:-}" ]; then
+              echo "OIDC enabled but required NEXTCLOUD_OIDC_* values are missing; skipping OIDC bootstrap."
+            elif php occ app:enable user_oidc || php occ app:install user_oidc; then
+              OIDC_PROVIDER_ID="${NEXTCLOUD_OIDC_PROVIDER_ID:-authelia}"
+              php occ user_oidc:provider "${OIDC_PROVIDER_ID}" \
+                --clientid="${NEXTCLOUD_OIDC_CLIENT_ID}" \
+                --clientsecret-env=NEXTCLOUD_OIDC_CLIENT_SECRET \
+                --discoveryuri="${NEXTCLOUD_OIDC_DISCOVERY_URI}" \
+                --scope="${NEXTCLOUD_OIDC_SCOPE:-openid email profile groups}" \
+                --unique-uid="${NEXTCLOUD_OIDC_UNIQUE_UID:-0}" \
+                --mapping-uid="${NEXTCLOUD_OIDC_MAPPING_UID:-preferred_username}" \
+                --mapping-email="${NEXTCLOUD_OIDC_MAPPING_EMAIL:-email}" \
+                --mapping-display-name="${NEXTCLOUD_OIDC_MAPPING_DISPLAY_NAME:-name}" \
+                --mapping-groups="${NEXTCLOUD_OIDC_MAPPING_GROUPS:-groups}" \
+                --group-provisioning="${NEXTCLOUD_OIDC_GROUP_PROVISIONING:-1}" \
+                --check-bearer="${NEXTCLOUD_OIDC_CHECK_BEARER:-0}" \
+                --bearer-provisioning="${NEXTCLOUD_OIDC_BEARER_PROVISIONING:-0}"
+              php occ config:app:set --type=string --value="${NEXTCLOUD_OIDC_ALLOW_MULTIPLE_USER_BACKENDS:-0}" user_oidc allow_multiple_user_backends
+            else
+              echo "OIDC: failed to install or enable user_oidc; skipping provider bootstrap."
+            fi
           fi
 
           install_or_enable_app() {
