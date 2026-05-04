@@ -59,7 +59,7 @@ spec:
 
     image:
       repository: nextcloud
-      tag: 33-apache
+      tag: 33.0.3-apache
       pullPolicy: IfNotPresent
 
     nextcloud:
@@ -231,7 +231,7 @@ spec:
           volumeMounts:
             - name: nextcloud-data
               mountPath: /var/www/html/data
-              subPath: strategy-a-prod-ldap-data
+              subPath: strategy-a-prod-ldap-data/data
       hooks:
         before-starting: |-
           #!/bin/sh
