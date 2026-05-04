@@ -4,6 +4,7 @@ namespace: guacamole
 resources:
   - ../../base/guacamole
   - httpRoute.yaml
+  - httpRedirect.yaml
 patches:
   - path: patch-env.yaml
     target:
@@ -19,4 +20,3 @@ patches:
     target:
       kind: Cluster
       name: guacamole-cnpg
-
