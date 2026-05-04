@@ -195,6 +195,11 @@ spec:
             'default_phone_region' => 'US',
             'enable_previews' => false,
             'skeletondirectory' => '',
+            'user_oidc' => [
+              'auto_provision' => true,
+              'soft_auto_provision' => true,
+              'disable_account_creation' => true,
+            ],
           );
       phpConfigs:
         migration.ini: |-
@@ -240,7 +245,7 @@ spec:
                 --discoveryuri="${NEXTCLOUD_OIDC_DISCOVERY_URI}" \
                 --scope="${NEXTCLOUD_OIDC_SCOPE:-openid email profile groups}" \
                 --unique-uid="${NEXTCLOUD_OIDC_UNIQUE_UID:-0}" \
-                --mapping-uid="${NEXTCLOUD_OIDC_MAPPING_UID:-preferred_username}" \
+                --mapping-uid="${NEXTCLOUD_OIDC_MAPPING_UID:-sub}" \
                 --mapping-email="${NEXTCLOUD_OIDC_MAPPING_EMAIL:-email}" \
                 --mapping-display-name="${NEXTCLOUD_OIDC_MAPPING_DISPLAY_NAME:-name}" \
                 --mapping-groups="${NEXTCLOUD_OIDC_MAPPING_GROUPS:-groups}" \
