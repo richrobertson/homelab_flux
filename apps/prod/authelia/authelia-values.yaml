@@ -17,6 +17,8 @@ spec:
             authelia_url: "https://auth.myrobertson.com"
       definitions:
         user_attributes:
+          nextcloud_uid:
+            expression: 'username == "rich" ? "E2E0183E-3217-466A-9A90-03B75D668FCD" : username'
           proxmox_groups:
             expression: '"proxAdmins" in groups ? ["proxAdmins"] : []'
       identity_providers:
@@ -35,11 +37,24 @@ spec:
                 - subject: 'group:proxAdmins'
                   policy: one_factor
           claims_policies:
+            nextcloud:
+              id_token:
+                - email
+                - groups
+                - name
+                - nextcloud_uid
+                - preferred_username
+              custom_claims:
+                nextcloud_uid:
+                  attribute: nextcloud_uid
             proxmox:
               custom_claims:
                 proxmox_groups:
                   attribute: proxmox_groups
           scopes:
+            nextcloud_uid:
+              claims:
+                - nextcloud_uid
             proxmox_groups:
               claims:
                 - proxmox_groups
@@ -103,6 +118,8 @@ spec:
                 - profile
                 - email
                 - groups
+                - nextcloud_uid
+              claims_policy: nextcloud
               userinfo_signed_response_alg: none
               token_endpoint_auth_method: client_secret_post
             - client_id: proxmox_prod

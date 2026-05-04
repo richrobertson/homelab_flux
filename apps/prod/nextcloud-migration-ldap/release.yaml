@@ -99,6 +99,12 @@ spec:
               key: OIDC_CLIENT_SECRET
         - name: NEXTCLOUD_OIDC_DISCOVERY_URI
           value: https://auth.myrobertson.com/.well-known/openid-configuration
+        - name: NEXTCLOUD_OIDC_SCOPE
+          value: "openid email profile groups nextcloud_uid"
+        - name: NEXTCLOUD_OIDC_EXTRA_CLAIMS
+          value: "nextcloud_uid"
+        - name: NEXTCLOUD_OIDC_MAPPING_UID
+          value: nextcloud_uid
         - name: NEXTCLOUD_OIDC_ALLOW_MULTIPLE_USER_BACKENDS
           value: "0"
         - name: LDAP_ENABLED
@@ -199,6 +205,7 @@ spec:
               'auto_provision' => true,
               'soft_auto_provision' => true,
               'disable_account_creation' => true,
+              'enrich_login_id_token_with_userinfo' => true,
             ],
           );
       phpConfigs:
@@ -244,6 +251,7 @@ spec:
                 --clientsecret-env=NEXTCLOUD_OIDC_CLIENT_SECRET \
                 --discoveryuri="${NEXTCLOUD_OIDC_DISCOVERY_URI}" \
                 --scope="${NEXTCLOUD_OIDC_SCOPE:-openid email profile groups}" \
+                --extra-claims="${NEXTCLOUD_OIDC_EXTRA_CLAIMS:-}" \
                 --unique-uid="${NEXTCLOUD_OIDC_UNIQUE_UID:-0}" \
                 --mapping-uid="${NEXTCLOUD_OIDC_MAPPING_UID:-sub}" \
                 --mapping-email="${NEXTCLOUD_OIDC_MAPPING_EMAIL:-email}" \
