@@ -34,7 +34,7 @@ patches:
         value: 1Gi
     target:
       kind: PersistentVolumeClaim
-      name: bitwarden-data-ceph|gotify-data-ceph-v3|overseerr-config-ceph|prowlarr-config-ceph|radarr-config-ceph|tautulli-config-ceph-v2|trilium-data-ceph-v2|vikunja-database
+      name: bitwarden-data-ceph|gotify-data-ceph-v3|overseerr-config-ceph|prowlarr-config-ceph|radarr-config-ceph|tautulli-config-ceph-v2|trilium-data-ceph-v2
   - patch: |
       - op: replace
         path: /spec/resources/requests/storage
@@ -76,7 +76,7 @@ patches:
   - patch: |
       - op: replace
         path: /spec/values/vikunja/persistence/database/size
-        value: 1Gi
+        value: 5Gi
     target:
       kind: HelmRelease
       name: vikunja
