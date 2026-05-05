@@ -1,0 +1,114 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloak-standard-client-scopes
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: identity-provider-bootstrap
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: keycloak
+        app.kubernetes.io/component: identity-provider-bootstrap
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: configure-standard-scopes
+          image: quay.io/keycloak/keycloak:26.6.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KEYCLOAK_URL
+              value: http://keycloak.default.svc.cluster.local
+            - name: KEYCLOAK_REALM
+              value: homelab
+            - name: KEYCLOAK_ADMIN_USERNAME
+              value: admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: admin-password
+          command:
+            - /bin/bash
+            - -ec
+          args:
+            - |
+              cd /opt/keycloak
+
+              csv_first_id() {
+                sed -n 's/^"\([^"]*\)".*/\1/p' | head -1
+              }
+
+              for i in {1..60}; do
+                if bin/kcadm.sh config credentials \
+                  --server "${KEYCLOAK_URL}" \
+                  --realm master \
+                  --user "${KEYCLOAK_ADMIN_USERNAME}" \
+                  --password "${KEYCLOAK_ADMIN_PASSWORD}" >/dev/null; then
+                  break
+                fi
+                if [ "${i}" = "60" ]; then
+                  echo "Timed out waiting for Keycloak admin login." >&2
+                  exit 1
+                fi
+                sleep 5
+              done
+
+              ensure_client_scope() {
+                local scope_name="$1"
+                local scope_id
+                scope_id="$(bin/kcadm.sh get client-scopes -r "${KEYCLOAK_REALM}" --fields id,name --format csv | sed -n "s/^\"\\([^\"]*\\)\",\"${scope_name}\"$/\\1/p" | head -1)"
+                if [ -z "${scope_id}" ]; then
+                  bin/kcadm.sh create client-scopes -r "${KEYCLOAK_REALM}" \
+                    -s "name=${scope_name}" \
+                    -s protocol=openid-connect
+                  scope_id="$(bin/kcadm.sh get client-scopes -r "${KEYCLOAK_REALM}" --fields id,name --format csv | sed -n "s/^\"\\([^\"]*\\)\",\"${scope_name}\"$/\\1/p" | head -1)"
+                fi
+                printf '%s' "${scope_id}"
+              }
+
+              create_scope_mapper() {
+                local scope_id="$1"
+                local mapper_name="$2"
+                local mapper_type="$3"
+
+                if bin/kcadm.sh get "client-scopes/${scope_id}/protocol-mappers/models" -r "${KEYCLOAK_REALM}" --fields name --format csv | grep -q "\"${mapper_name}\""; then
+                  return
+                fi
+
+                bin/kcadm.sh create "client-scopes/${scope_id}/protocol-mappers/models" -r "${KEYCLOAK_REALM}" \
+                  -s "name=${mapper_name}" \
+                  -s protocol=openid-connect \
+                  -s "protocolMapper=${mapper_type}" \
+                  -s consentRequired=false
+              }
+
+              BASIC_SCOPE_ID="$(ensure_client_scope basic)"
+              ROLES_SCOPE_ID="$(ensure_client_scope roles)"
+              WEB_ORIGINS_SCOPE_ID="$(ensure_client_scope web-origins)"
+              ACR_SCOPE_ID="$(ensure_client_scope acr)"
+
+              create_scope_mapper "${BASIC_SCOPE_ID}" sub oidc-sub-mapper
+              create_scope_mapper "${BASIC_SCOPE_ID}" auth_time oidc-usersessionmodel-note-mapper
+              create_scope_mapper "${ROLES_SCOPE_ID}" "realm roles" oidc-usermodel-realm-role-mapper
+              create_scope_mapper "${ROLES_SCOPE_ID}" "client roles" oidc-usermodel-client-role-mapper
+              create_scope_mapper "${ROLES_SCOPE_ID}" "audience resolve" oidc-audience-resolve-mapper
+              create_scope_mapper "${WEB_ORIGINS_SCOPE_ID}" "allowed web origins" oidc-allowed-origins-mapper
+              create_scope_mapper "${ACR_SCOPE_ID}" "acr loa level" oidc-acr-mapper
+
+              for client_id in account account-console security-admin-console mealie_staging vikunja_staging; do
+                CLIENT_UUID="$(bin/kcadm.sh get clients -r "${KEYCLOAK_REALM}" -q "clientId=${client_id}" --fields id,clientId --format csv | csv_first_id)"
+                if [ -z "${CLIENT_UUID}" ]; then
+                  continue
+                fi
+                for scope_id in "${WEB_ORIGINS_SCOPE_ID}" "${ACR_SCOPE_ID}" "${ROLES_SCOPE_ID}" "${BASIC_SCOPE_ID}"; do
+                  bin/kcadm.sh update "clients/${CLIENT_UUID}/default-client-scopes/${scope_id}" -r "${KEYCLOAK_REALM}" >/dev/null 2>&1 || true
+                done
+              done
+
+              bin/kcadm.sh create clear-realm-cache -r "${KEYCLOAK_REALM}" -s "realm=${KEYCLOAK_REALM}" || true
+
+              echo "Ensured standard OIDC client scopes for ${KEYCLOAK_REALM}."

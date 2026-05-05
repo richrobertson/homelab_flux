@@ -9,3 +9,4 @@ resources:
   - deployment.yaml
   - service.yaml
   - domain-admins-rbac-job.yaml
+  - standard-client-scopes-job.yaml

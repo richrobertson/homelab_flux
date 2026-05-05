@@ -126,6 +126,83 @@ data:
               }
             }
           ]
+        },
+        {
+          "name": "basic",
+          "description": "Standard OpenID Connect basic scope.",
+          "protocol": "openid-connect",
+          "protocolMappers": [
+            {
+              "name": "sub",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-sub-mapper",
+              "consentRequired": false,
+              "config": {}
+            },
+            {
+              "name": "auth_time",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-usersessionmodel-note-mapper",
+              "consentRequired": false,
+              "config": {}
+            }
+          ]
+        },
+        {
+          "name": "roles",
+          "description": "Standard OpenID Connect roles scope.",
+          "protocol": "openid-connect",
+          "protocolMappers": [
+            {
+              "name": "realm roles",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-usermodel-realm-role-mapper",
+              "consentRequired": false,
+              "config": {}
+            },
+            {
+              "name": "client roles",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-usermodel-client-role-mapper",
+              "consentRequired": false,
+              "config": {}
+            },
+            {
+              "name": "audience resolve",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-audience-resolve-mapper",
+              "consentRequired": false,
+              "config": {}
+            }
+          ]
+        },
+        {
+          "name": "web-origins",
+          "description": "Standard OpenID Connect web origins scope.",
+          "protocol": "openid-connect",
+          "protocolMappers": [
+            {
+              "name": "allowed web origins",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-allowed-origins-mapper",
+              "consentRequired": false,
+              "config": {}
+            }
+          ]
+        },
+        {
+          "name": "acr",
+          "description": "Standard OpenID Connect ACR scope.",
+          "protocol": "openid-connect",
+          "protocolMappers": [
+            {
+              "name": "acr loa level",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-acr-mapper",
+              "consentRequired": false,
+              "config": {}
+            }
+          ]
         }
       ],
       "components": {
@@ -199,7 +276,7 @@ data:
           "implicitFlowEnabled": false,
           "redirectUris": ["https://mealie.staging.myrobertson.net/login"],
           "webOrigins": ["https://mealie.staging.myrobertson.net"],
-          "defaultClientScopes": ["profile", "email", "groups"]
+          "defaultClientScopes": ["web-origins", "acr", "profile", "roles", "basic", "email", "groups"]
         },
         {
           "clientId": "vikunja_staging",
@@ -214,7 +291,7 @@ data:
           "implicitFlowEnabled": false,
           "redirectUris": ["https://tasks.staging.myrobertson.net/auth/openid/authelia"],
           "webOrigins": ["https://tasks.staging.myrobertson.net"],
-          "defaultClientScopes": ["profile", "email", "groups"]
+          "defaultClientScopes": ["web-origins", "acr", "profile", "roles", "basic", "email", "groups"]
         }
       ]
     }
