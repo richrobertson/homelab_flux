@@ -128,6 +128,31 @@ data:
           ]
         },
         {
+          "name": "nextcloud_uid",
+          "description": "Expose the stable Nextcloud account UID used during the LDAP/OIDC migration.",
+          "protocol": "openid-connect",
+          "attributes": {
+            "include.in.token.scope": "true",
+            "display.on.consent.screen": "true"
+          },
+          "protocolMappers": [
+            {
+              "name": "nextcloud_uid",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-usermodel-attribute-mapper",
+              "consentRequired": false,
+              "config": {
+                "user.attribute": "nextcloud_uid",
+                "claim.name": "nextcloud_uid",
+                "jsonType.label": "String",
+                "id.token.claim": "true",
+                "access.token.claim": "true",
+                "userinfo.token.claim": "true"
+              }
+            }
+          ]
+        },
+        {
           "name": "basic",
           "description": "Standard OpenID Connect basic scope.",
           "protocol": "openid-connect",

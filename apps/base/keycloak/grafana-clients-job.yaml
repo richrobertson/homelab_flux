@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-oidc-clients-v1
+  name: keycloak-oidc-clients-v2
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -85,6 +85,7 @@ spec:
               admin_user = os.environ["KEYCLOAK_ADMIN_USERNAME"]
               admin_password = os.environ["KEYCLOAK_ADMIN_PASSWORD"]
               default_scopes = ["web-origins", "acr", "profile", "roles", "basic", "email", "groups"]
+              nextcloud_uid = "E2E0183E-3217-466A-9A90-03B75D668FCD"
 
               def request(method, path, token=None, data=None):
                   headers = {}
@@ -100,6 +101,46 @@ spec:
                       if not payload:
                           return None
                       return json.loads(payload.decode())
+
+              def find_one(path, predicate):
+                  for item in request("GET", path, token) or []:
+                      if predicate(item):
+                          return item
+                  return None
+
+              def ensure_client_scope(name, mapper=None):
+                  scope = find_one(f"/admin/realms/{realm}/client-scopes", lambda item: item.get("name") == name)
+                  if not scope:
+                      request("POST", f"/admin/realms/{realm}/client-scopes", token, {
+                          "name": name,
+                          "protocol": "openid-connect",
+                          "attributes": {
+                              "include.in.token.scope": "true",
+                              "display.on.consent.screen": "true",
+                          },
+                      })
+                      scope = find_one(f"/admin/realms/{realm}/client-scopes", lambda item: item.get("name") == name)
+                  if mapper:
+                      mappers = request("GET", f"/admin/realms/{realm}/client-scopes/{scope['id']}/protocol-mappers/models", token) or []
+                      existing = next((item for item in mappers if item.get("name") == mapper["name"]), None)
+                      if existing:
+                          mapper = {**existing, **mapper}
+                          request("PUT", f"/admin/realms/{realm}/client-scopes/{scope['id']}/protocol-mappers/models/{existing['id']}", token, mapper)
+                      else:
+                          request("POST", f"/admin/realms/{realm}/client-scopes/{scope['id']}/protocol-mappers/models", token, mapper)
+                  return scope
+
+              def ensure_user_attribute(username, key, value):
+                  users = request("GET", f"/admin/realms/{realm}/users?username={urllib.parse.quote(username)}&exact=true", token) or []
+                  if not users:
+                      return
+                  user = users[0]
+                  attrs = user.get("attributes") or {}
+                  if attrs.get(key) == [value]:
+                      return
+                  attrs[key] = [value]
+                  user["attributes"] = attrs
+                  request("PUT", f"/admin/realms/{realm}/users/{user['id']}", token, user)
 
               token = None
               for attempt in range(60):
@@ -176,6 +217,7 @@ spec:
                           "https://cloud.staging.myrobertson.net/index.php/apps/user_oidc/code",
                       ],
                       "webOrigins": ["https://cloud.staging.myrobertson.net"],
+                      "defaultClientScopes": default_scopes + ["nextcloud_uid"],
                   },
                   {
                       "clientId": "nextcloud_prod",
@@ -186,6 +228,7 @@ spec:
                           "https://cloud.myrobertson.com/index.php/apps/user_oidc/code",
                       ],
                       "webOrigins": ["https://cloud.myrobertson.com"],
+                      "defaultClientScopes": default_scopes + ["nextcloud_uid"],
                   },
                   {
                       "clientId": "guacamole_staging",
@@ -204,6 +247,22 @@ spec:
                       "webOrigins": ["https://rdp.myrobertson.com"],
                   },
               ]
+
+              ensure_client_scope("nextcloud_uid", {
+                  "name": "nextcloud_uid",
+                  "protocol": "openid-connect",
+                  "protocolMapper": "oidc-usermodel-attribute-mapper",
+                  "consentRequired": False,
+                  "config": {
+                      "user.attribute": "nextcloud_uid",
+                      "claim.name": "nextcloud_uid",
+                      "jsonType.label": "String",
+                      "id.token.claim": "true",
+                      "access.token.claim": "true",
+                      "userinfo.token.claim": "true",
+                  },
+              })
+              ensure_user_attribute("rich", "nextcloud_uid", nextcloud_uid)
 
               ensured = []
               skipped = []
@@ -225,7 +284,7 @@ spec:
                       "implicitFlowEnabled": spec.get("implicitFlowEnabled", False),
                       "redirectUris": spec["redirectUris"],
                       "webOrigins": spec["webOrigins"],
-                      "defaultClientScopes": default_scopes,
+                      "defaultClientScopes": spec.get("defaultClientScopes", default_scopes),
                       "optionalClientScopes": [],
                       "attributes": {
                           "post.logout.redirect.uris": "+",
