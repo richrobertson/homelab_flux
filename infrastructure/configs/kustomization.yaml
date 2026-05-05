@@ -114,6 +114,8 @@ configMapGenerator:
     namespace: monitoring
     files:
       - dashboards/keycloak-observability.json
+      - dashboards/keycloak-capacity-planning-dashboard.json
+      - dashboards/keycloak-troubleshooting-dashboard.json
     options:
       labels:
         grafana_dashboard: "1"
