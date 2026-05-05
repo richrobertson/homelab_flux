@@ -117,7 +117,7 @@ Passkeys should be enrolled only against the permanent SSO hostnames:
 
 Do not enroll passkeys against `keycloak.myrobertson.com`, `keycloak.staging.myrobertson.net`, `keycloak.dev.myrobertson.net`, temporary test hostnames, or direct service URLs. WebAuthn binds credentials to the relying party/origin, so enrolling against a temporary hostname creates credentials that may not work after the final SSO hostname is cut over.
 
-The `keycloak-webauthn-default-flow-v1` Job binds the `homelab` realm to `homelab-webauthn-browser-v1` and makes WebAuthn registration a default required action. Users still authenticate with their AD username/password first, but passwords are treated as already-compromisable and are never sufficient by themselves. Keycloak requires users to enroll or use a second factor, with WebAuthn/passkeys as the preferred method. TOTP remains available in the browser flow as the backup MFA method. Passwordless-only login is not enabled.
+The `keycloak-webauthn-default-flow-v2` Job binds the `homelab` realm to `homelab-webauthn-browser-v1` and makes WebAuthn registration a default required action. Users still authenticate with their AD username/password first, but passwords are treated as already-compromisable and are never sufficient by themselves. Keycloak requires users to enroll or use a second factor, with WebAuthn/passkeys as the preferred method. TOTP remains available in the browser flow as the backup MFA method. Passwordless-only login is not enabled.
 
 Manual staging enablement order:
 

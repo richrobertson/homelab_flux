@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-webauthn-default-flow-v1
+  name: keycloak-webauthn-default-flow-v2
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -103,6 +103,10 @@ spec:
               set_execution_requirement "$(execution_id_by_provider auth-otp-form)" ALTERNATIVE
               set_execution_requirement "$(execution_id_by_provider webauthn-authenticator)" ALTERNATIVE
               set_execution_requirement "$(execution_id_by_provider auth-recovery-authn-code-form)" DISABLED
+
+              # The copied browser flow must remain password first, then MFA.
+              bin/kcadm.sh create "authentication/executions/$(execution_id_by_provider auth-username-password-form)/raise-priority" \
+                -r "${KEYCLOAK_REALM}" >/dev/null 2>&1 || true
 
               bin/kcadm.sh update authentication/required-actions/webauthn-register \
                 -r "${KEYCLOAK_REALM}" \
