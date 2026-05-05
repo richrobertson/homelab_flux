@@ -34,7 +34,7 @@ patches:
         value: 1Gi
     target:
       kind: PersistentVolumeClaim
-      name: bitwarden-data-ceph|gotify-data-ceph-v3|overseerr-config-ceph|prowlarr-config-ceph|radarr-config-ceph|tautulli-config-ceph-v2|trilium-data-ceph-v2|vikunja-data|vikunja-database
+      name: bitwarden-data-ceph|gotify-data-ceph-v3|overseerr-config-ceph|prowlarr-config-ceph|radarr-config-ceph|tautulli-config-ceph-v2|trilium-data-ceph-v2|vikunja-database
   - patch: |
       - op: replace
         path: /spec/resources/requests/storage
@@ -48,7 +48,7 @@ patches:
         value: 2Gi
     target:
       kind: Cluster
-      name: cluster-authelia-ceph|cluster-immich-ceph|task-control-plane-cnpg
+      name: cluster-authelia-ceph|cluster-immich-ceph
   - patch: |
       - op: replace
         path: /spec/storage/size

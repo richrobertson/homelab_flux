@@ -13,9 +13,9 @@ This runbook tracks the migration from Authelia to Keycloak while keeping Authel
   - Bind DN: `ldap@myrobertson.net`
 - CA trust source: neutral Kubernetes Secret `ad-ldap-ca`, derived from the same AD CA material Authelia uses.
 - Keycloak realm: `homelab`
-- Keycloak hostnames:
-  - Prod: `https://keycloak.myrobertson.com`
-  - Staging: `https://keycloak.staging.myrobertson.net`
+- Keycloak public identity endpoints:
+  - Prod: `https://sso.myrobertson.com`
+  - Staging: `https://sso.staging.myrobertson.net`
 
 ## Step 1: Authelia Inventory
 
@@ -84,6 +84,7 @@ The initial Keycloak model is intentionally narrow:
 - Keycloak federates AD users through LDAPS.
 - Keycloak imports user records locally for Keycloak metadata, but password validation stays with AD.
 - Keycloak bootstrap admin is local and should be treated as break-glass only.
+- WebAuthn/passkeys are the target MFA method after AD username/password.
 - AD group `proxAdmins` is pre-created in the realm model for Proxmox/PBS claim migration.
 - OIDC application clients are migrated in small staging-first waves.
 - First low-risk staging clients in the realm import: `mealie_staging` and `vikunja_staging`.
@@ -100,6 +101,23 @@ The base realm import lives in `apps/base/keycloak/realm-configmap.yaml`. It con
 - `editMode`: `READ_ONLY`
 
 The first client scope added is `groups`, which emits group membership as a `groups` claim in ID tokens, access tokens, and userinfo responses.
+
+## MFA and Passkey Model
+
+WebAuthn/passkeys are the primary MFA method for the Keycloak migration. The initial model is password plus WebAuthn/passkey: AD still validates the user password over LDAPS, and Keycloak challenges for WebAuthn as the second factor.
+
+TOTP remains enabled as a backup MFA method during and after migration so administrators have a recovery path if a passkey is lost or a device platform has an issue.
+
+The local bootstrap admin is break-glass only. It should not be used for ordinary administration once AD `Domain Admins` access is confirmed.
+
+Passkeys should be enrolled only against the permanent SSO hostnames:
+
+- `https://sso.myrobertson.com`
+- `https://sso.staging.myrobertson.net`
+
+Do not enroll passkeys against `keycloak.myrobertson.com`, `keycloak.staging.myrobertson.net`, `keycloak.dev.myrobertson.net`, temporary test hostnames, or direct service URLs. WebAuthn binds credentials to the relying party/origin, so enrolling against a temporary hostname creates credentials that may not work after the final SSO hostname is cut over.
+
+The realm import includes WebAuthn policy scaffolding for the `homelab` realm, but it does not force passwordless login and does not yet make WebAuthn mandatory for every user. Enable or tune the browser authentication flow in the Keycloak Admin Console only after the `sso.*` endpoints are final and admin passkeys are enrolled in staging.
 
 ## Step 3: Parallel Keycloak Deployment
 
@@ -138,8 +156,8 @@ secret/keycloak/prod
 
 Gateway listeners have been added for:
 
-- `keycloak.myrobertson.com`
-- `keycloak.staging.myrobertson.net`
+- `sso.myrobertson.com`
+- `sso.staging.myrobertson.net`
 
 ## Validation
 
@@ -149,8 +167,14 @@ After Flux reconciles the staging deployment:
 kubectl --context admin@staging -n default get deploy keycloak
 kubectl --context admin@staging -n default rollout status deploy/keycloak
 kubectl --context admin@staging -n default get cluster keycloak-cnpg
-curl -fsS https://keycloak.staging.myrobertson.net/realms/homelab/.well-known/openid-configuration | jq '.issuer'
+curl -fsS https://sso.staging.myrobertson.net/realms/homelab/.well-known/openid-configuration | jq '.issuer'
+curl -fsS https://sso.myrobertson.com/realms/homelab/.well-known/openid-configuration | jq '.issuer'
 ```
+
+Expected issuers:
+
+- Staging: `https://sso.staging.myrobertson.net/realms/homelab`
+- Prod: `https://sso.myrobertson.com/realms/homelab`
 
 Then test in the Keycloak Admin Console:
 
@@ -177,7 +201,7 @@ Results:
 - `cluster.postgresql.cnpg.io/keycloak-cnpg`: healthy.
 - `secret/ad-ldap-ca`: present with two CA entries.
 - `httproute/keycloak`: accepted by the staging Gateway.
-- Discovery endpoint returns issuer `https://keycloak.staging.myrobertson.net/realms/homelab`.
+- Discovery endpoint returns issuer `https://sso.staging.myrobertson.net/realms/homelab`.
 - Keycloak logs show the truststore loading `myrobertson-dc1-ca.crt` and `myrobertson-dc1-ca-1.crt`.
 - An in-cluster OpenSSL probe to `rhonda.myrobertson.net:636` using `/ad-ca/myrobertson-dc1-ca.crt` returned `Verify return code: 0 (ok)`.
 - `kcadm.sh` confirmed `mealie_staging` and `vikunja_staging` clients exist and are enabled in realm `homelab`.
@@ -201,7 +225,7 @@ The throwaway staging Secret has since been replaced with `VaultStaticSecret/key
 AD users who are members of `Domain Admins` should use:
 
 ```text
-https://keycloak.staging.myrobertson.net/admin/homelab/console/
+https://sso.staging.myrobertson.net/admin/homelab/console/
 ```
 
 The group-to-admin mapping is handled by `apps/base/keycloak/domain-admins-rbac-job.yaml`:
@@ -217,10 +241,14 @@ If a Domain Admin authenticates successfully but does not see admin permissions,
 
 ## Next Work
 
-1. Decide whether to switch Vikunja next; Mealie staging now uses Keycloak OIDC.
-2. Design the replacement for Istio external authz policies before touching the Gateway-scoped `AuthorizationPolicy` resources.
-3. Populate and test `secret/keycloak/prod` before enabling production Keycloak manifests.
-4. Migrate Proxmox/PBS only after `proxAdmins` claim mapping is tested end to end.
+1. Finalize `sso.*` before passkey enrollment.
+2. Enroll admin passkeys in staging.
+3. Keep TOTP backup available.
+4. Verify `Domain Admins` admin access.
+5. Migrate Mealie/Vikunja staging to the `sso.staging` issuer.
+6. Do not touch Istio external-authz policies until the replacement OIDC/proxy pattern is designed.
+7. Populate and test `secret/keycloak/prod` before enabling production traffic.
+8. Migrate Proxmox/PBS only after `proxAdmins` claim mapping is tested end to end.
 
 ## References
 

@@ -78,7 +78,7 @@ spec:
                     name: keycloak-secret
                     key: mealie-staging-client-secret
                     expandObjectName: false
-                OIDC_CONFIGURATION_URL: https://keycloak.staging.myrobertson.net/realms/homelab/.well-known/openid-configuration
+                OIDC_CONFIGURATION_URL: https://sso.staging.myrobertson.net/realms/homelab/.well-known/openid-configuration
                 OIDC_GROUPS_CLAIM: groups
                 OIDC_SIGNUP_ENABLED: "true"
                 OIDC_TLS_CACERTFILE: /etc/ssl/certs/keycloak-staging-ca-bundle.crt

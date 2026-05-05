@@ -18,6 +18,15 @@ data:
       "bruteForceProtected": true,
       "defaultSignatureAlgorithm": "RS256",
       "requiredCredentials": ["password"],
+      "webAuthnPolicyRpEntityName": "Homelab SSO",
+      "webAuthnPolicySignatureAlgorithms": ["ES256", "RS256"],
+      "webAuthnPolicyAttestationConveyancePreference": "not specified",
+      "webAuthnPolicyAuthenticatorAttachment": "not specified",
+      "webAuthnPolicyRequireResidentKey": "not specified",
+      "webAuthnPolicyUserVerificationRequirement": "preferred",
+      "webAuthnPolicyCreateTimeout": 0,
+      "webAuthnPolicyAvoidSameAuthenticatorRegister": true,
+      "webAuthnPolicyAcceptableAaguids": [],
       "clientScopes": [
         {
           "name": "profile",

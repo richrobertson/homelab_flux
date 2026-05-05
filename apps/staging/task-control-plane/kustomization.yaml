@@ -83,10 +83,10 @@ patches:
         value: Keycloak
       - op: replace
         path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_AUTHURL
-        value: https://keycloak.staging.myrobertson.net/realms/homelab
+        value: https://sso.staging.myrobertson.net/realms/homelab
       - op: replace
         path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_LOGOUTURL
-        value: https://keycloak.staging.myrobertson.net/realms/homelab/protocol/openid-connect/logout
+        value: https://sso.staging.myrobertson.net/realms/homelab/protocol/openid-connect/logout
       - op: replace
         path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_CLIENTID
         value: vikunja_staging
@@ -112,8 +112,8 @@ patches:
               providers:
                 authelia:
                   name: Keycloak
-                  authurl: https://keycloak.staging.myrobertson.net/realms/homelab
-                  logouturl: https://keycloak.staging.myrobertson.net/realms/homelab/protocol/openid-connect/logout
+                  authurl: https://sso.staging.myrobertson.net/realms/homelab
+                  logouturl: https://sso.staging.myrobertson.net/realms/homelab/protocol/openid-connect/logout
                   clientid: ""
                   clientsecret: ""
                   scope: openid profile email groups

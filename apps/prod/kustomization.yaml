@@ -5,6 +5,7 @@ resources:
   - code-server
   - cnpg-backup-secret.yaml
   - authelia
+  - keycloak
   - external-dns
   - gotify
   - guacamole
