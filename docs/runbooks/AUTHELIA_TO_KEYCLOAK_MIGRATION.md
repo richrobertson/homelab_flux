@@ -33,8 +33,8 @@ Authelia currently has two auth surfaces:
 | prod | `vikunja_prod` | Vikunja | `https://tasks.myrobertson.com/auth/openid/authelia` | Confidential client, `client_secret_basic`, scopes `openid profile email groups`. |
 | prod | `nextcloud_prod` | Nextcloud | `https://cloud.myrobertson.com/apps/user_oidc/code`, `https://cloud.myrobertson.com/index.php/apps/user_oidc/code` | Confidential client, `client_secret_post`, custom `nextcloud_uid` claim. |
 | prod | `guacamole_prod` | Apache Guacamole | `https://rdp.myrobertson.com` | Public implicit client. Replace with authorization-code + PKCE if Guacamole supports it cleanly. |
-| prod | `proxmox_prod` | Proxmox VE cl0 | `https://cl0.myrobertson.net:8006`, `https://pve3.myrobertson.net:8006`, `https://pve4.myrobertson.net:8006`, `https://pve5.myrobertson.net:8006`, plus trailing-slash variants | Restricted to AD group `proxAdmins`; emits `proxmox_groups`. |
-| prod | `pbs_prod` | Proxmox Backup Server | `https://pbs.myrobertson.net:8007`, trailing slash variant | Restricted to AD group `proxAdmins`. |
+| prod | `proxmox_prod` | Proxmox VE cl0 | `https://cl0.myrobertson.net:8006`, `https://pve3.myrobertson.net:8006`, `https://pve4.myrobertson.net:8006`, `https://pve5.myrobertson.net:8006`, plus trailing-slash variants | Keycloak confidential client using the existing `pve_oidc` secret; emits `proxmox_groups`. Proxmox role mappings should grant access only to `proxAdmins`. |
+| prod | `pbs_prod` | Proxmox Backup Server | `https://pbs.myrobertson.net:8007`, trailing slash variant | Keycloak confidential client using the existing `pbs_oidc` secret. PBS role mappings should grant access only to `proxAdmins`. |
 | prod | `synology_scooter_prod` | Synology Scooter | `https://scooter.myrobertson.net:5011/webman/ssoclient/token_relay.html`, `https://scooter.myrobertson.net:5001/webman/ssoclient/token_relay.html` | Confidential client, `client_secret_post`. |
 | prod | `synology_kermit_prod` | Synology Kermit | `https://kermit.myrobertson.com/webman/ssoclient/token_relay.html` | Confidential client, `client_secret_post`. |
 | staging | `mealie_staging` | Mealie Staging | `https://mealie.staging.myrobertson.net/login` | Confidential client, `client_secret_basic`. |
@@ -216,9 +216,32 @@ Vikunja staging has an app-specific Keycloak browser flow managed by `keycloak-v
 Current GitOps state migrates the Kubernetes-native OIDC clients to the `sso.*` Keycloak issuers:
 
 - Staging: Mealie, Grafana, Vikunja/Tasks, Nextcloud, and Guacamole.
-- Production: Mealie, Grafana, Vikunja/Tasks, Nextcloud, Nextcloud migration LDAP, and Guacamole.
+- Production: Mealie, Grafana, Vikunja/Tasks, Nextcloud, Nextcloud migration LDAP, Guacamole, Proxmox VE, and Proxmox Backup Server.
 
-Authelia remains live and external-authz policies are intentionally unchanged. Proxmox, PBS, and Synology clients remain documented as later/manual cutovers because their application-side configuration is outside these Kubernetes manifests.
+Authelia remains live and external-authz policies are intentionally unchanged. Proxmox VE and PBS are now Keycloak-prepared in GitOps, but their application-side realm changes are still applied on the Proxmox/PBS hosts rather than by Kubernetes manifests. Synology clients remain later/manual cutovers.
+
+## Proxmox and PBS Keycloak Cutover
+
+Keycloak clients are created by `apps/base/keycloak/grafana-clients-job.yaml`:
+
+- `proxmox_prod`: confidential OIDC client, secret sourced from `authelia-secret/pve_oidc`, issuer `https://sso.myrobertson.com/realms/homelab`, redirect URIs for `cl0`, `pve3`, `pve4`, and `pve5` on port `8006`, with the `proxmox_groups` scope attached.
+- `pbs_prod`: confidential OIDC client, secret sourced from `authelia-secret/pbs_oidc`, issuer `https://sso.myrobertson.com/realms/homelab`, redirect URI for `pbs.myrobertson.net:8007`.
+
+Use these values when updating Proxmox VE and PBS identity providers:
+
+- Issuer URL: `https://sso.myrobertson.com/realms/homelab`
+- Authorization endpoint: `https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/auth`
+- Token endpoint: `https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/token`
+- Userinfo endpoint: `https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/userinfo`
+- JWKS URL: `https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/certs`
+- Username claim: `preferred_username`
+- Display name claim: `name`
+- Email claim: `email`
+- Proxmox group claim: `proxmox_groups`
+- Scopes for Proxmox VE: `openid profile email groups proxmox_groups`
+- Scopes for PBS: `openid profile email groups`
+
+Keep local `pam`/`root@pam` or another break-glass admin path enabled while testing. Grant Proxmox/PBS privileges to the `proxAdmins` group from Keycloak claims, test a Domain Admin account, then test a non-admin AD account to confirm it does not receive administrative access.
 
 ## Validation
 
@@ -245,7 +268,7 @@ Then test in the Keycloak Admin Console:
 4. Select `Microsoft Active Directory LDAPS`.
 5. Test connection and authentication.
 6. Sync a small user set or search for a known AD user.
-7. Verify group visibility for `proxAdmins` before migrating Proxmox/PBS.
+7. Verify group visibility for `proxAdmins` before cutting Proxmox/PBS over to Keycloak.
 
 ### Staging Validation Checklist
 
@@ -336,13 +359,12 @@ If a Domain Admin authenticates successfully but does not see admin permissions,
 5. Manually tune the Keycloak browser flow for WebAuthn MFA after password, starting with admin users.
 6. Validate Vikunja staging as the already-prepared second app.
 7. Design the replacement OIDC/proxy pattern before touching Istio external-authz policies.
-8. Migrate Proxmox/PBS only after `proxAdmins` claim mapping is tested end to end.
+8. Validate the Proxmox/PBS Keycloak cutover with a Domain Admin and a non-admin AD test user.
 
 ## Do Not Do Yet
 
 - Do not remove Authelia.
 - Do not modify Istio external-authz policies yet.
-- Do not migrate Proxmox/PBS yet.
 - Do not enable passwordless-only login.
 - Do not tighten beyond password plus MFA into passwordless-only login until admin recovery paths are proven.
 - Do not enroll passkeys against any hostname except `sso.myrobertson.com` or `sso.staging.myrobertson.net`.

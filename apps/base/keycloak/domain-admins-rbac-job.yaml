@@ -212,7 +212,7 @@ spec:
               ROLE_JSON="$(bin/kcadm.sh get "clients/${REALM_MGMT_ID}/roles/realm-admin" -r "${KEYCLOAK_REALM}")"
               bin/kcadm.sh create "groups/${GROUP_ID}/role-mappings/clients/${REALM_MGMT_ID}" -r "${KEYCLOAK_REALM}" -b "[${ROLE_JSON}]" || true
 
-              OIDC_CLIENTS="account account-console security-admin-console grafana_staging grafana_prod mealie_staging mealie_prod vikunja_staging vikunja_prod nextcloud_staging nextcloud_prod guacamole_staging guacamole_prod"
+              OIDC_CLIENTS="account account-console security-admin-console grafana_staging grafana_prod mealie_staging mealie_prod vikunja_staging vikunja_prod nextcloud_staging nextcloud_prod guacamole_staging guacamole_prod proxmox_prod pbs_prod"
 
               for client_id in ${OIDC_CLIENTS}; do
                 CLIENT_UUID="$(bin/kcadm.sh get clients -r "${KEYCLOAK_REALM}" -q "clientId=${client_id}" --fields id,clientId --format csv | csv_first_id)"

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-oidc-clients-v3
+  name: keycloak-oidc-clients-v4
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -68,6 +68,18 @@ spec:
                 secretKeyRef:
                   name: vikunja-oidc-secret
                   key: client_secret
+                  optional: true
+            - name: PROXMOX_PROD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: authelia-secret
+                  key: pve_oidc
+                  optional: true
+            - name: PBS_PROD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: authelia-secret
+                  key: pbs_oidc
                   optional: true
           command:
             - python
@@ -259,6 +271,38 @@ spec:
                       "redirectUris": ["https://rdp.myrobertson.com"],
                       "webOrigins": ["https://rdp.myrobertson.com"],
                   },
+                  {
+                      "clientId": "proxmox_prod",
+                      "name": "Proxmox VE cl0",
+                      "secret": os.environ.get("PROXMOX_PROD_CLIENT_SECRET"),
+                      "redirectUris": [
+                          "https://cl0.myrobertson.net:8006",
+                          "https://cl0.myrobertson.net:8006/",
+                          "https://pve3.myrobertson.net:8006",
+                          "https://pve3.myrobertson.net:8006/",
+                          "https://pve4.myrobertson.net:8006",
+                          "https://pve4.myrobertson.net:8006/",
+                          "https://pve5.myrobertson.net:8006",
+                          "https://pve5.myrobertson.net:8006/",
+                      ],
+                      "webOrigins": [
+                          "https://cl0.myrobertson.net:8006",
+                          "https://pve3.myrobertson.net:8006",
+                          "https://pve4.myrobertson.net:8006",
+                          "https://pve5.myrobertson.net:8006",
+                      ],
+                      "defaultClientScopes": default_scopes + ["proxmox_groups"],
+                  },
+                  {
+                      "clientId": "pbs_prod",
+                      "name": "Proxmox Backup Server",
+                      "secret": os.environ.get("PBS_PROD_CLIENT_SECRET"),
+                      "redirectUris": [
+                          "https://pbs.myrobertson.net:8007",
+                          "https://pbs.myrobertson.net:8007/",
+                      ],
+                      "webOrigins": ["https://pbs.myrobertson.net:8007"],
+                  },
               ]
 
               ensure_client_scope("nextcloud_uid", {
@@ -270,6 +314,19 @@ spec:
                       "user.attribute": "nextcloud_uid",
                       "claim.name": "nextcloud_uid",
                       "jsonType.label": "String",
+                      "id.token.claim": "true",
+                      "access.token.claim": "true",
+                      "userinfo.token.claim": "true",
+                  },
+              })
+              ensure_client_scope("proxmox_groups", {
+                  "name": "proxmox_groups",
+                  "protocol": "openid-connect",
+                  "protocolMapper": "oidc-group-membership-mapper",
+                  "consentRequired": False,
+                  "config": {
+                      "claim.name": "proxmox_groups",
+                      "full.path": "false",
                       "id.token.claim": "true",
                       "access.token.claim": "true",
                       "userinfo.token.claim": "true",
