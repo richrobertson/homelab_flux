@@ -9,12 +9,12 @@ spec:
         - name: guacamole
           env:
             - name: OPENID_CLIENT_ID
-              value: guacamole
+              value: guacamole_prod
             - name: OPENID_ISSUER
-              value: https://auth.myrobertson.com
+              value: https://sso.myrobertson.com/realms/homelab
             - name: OPENID_AUTHORIZATION_ENDPOINT
-              value: https://auth.myrobertson.com/api/oidc/authorization?state=guacamole-prod
+              value: https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/auth
             - name: OPENID_JWKS_ENDPOINT
-              value: http://authelia.default.svc.cluster.local/jwks.json
+              value: https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/certs
             - name: OPENID_REDIRECT_URI
               value: https://rdp.myrobertson.com

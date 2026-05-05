@@ -21,7 +21,7 @@ This runbook tracks the migration from Authelia to Keycloak while keeping Authel
 
 Authelia currently has two auth surfaces:
 
-1. OIDC provider clients configured in `apps/prod/authelia/authelia-values.yaml` and `apps/staging/authelia/authelia-values.yaml`.
+1. OIDC provider clients historically configured in `apps/prod/authelia/authelia-values.yaml` and `apps/staging/authelia/authelia-values.yaml`; active Kubernetes app OIDC clients are now upserted into Keycloak by `apps/base/keycloak/grafana-clients-job.yaml`.
 2. Istio external authorization policies pointing at the `authelia` extension provider.
 
 ### OIDC Clients
@@ -32,7 +32,7 @@ Authelia currently has two auth surfaces:
 | prod | `grafana_prod` | Grafana Prod | `https://grafana.prod.myrobertson.net/login/generic_oauth` | Confidential client, `client_secret_basic`, scopes `openid profile email groups`. |
 | prod | `vikunja_prod` | Vikunja | `https://tasks.myrobertson.com/auth/openid/authelia` | Confidential client, `client_secret_basic`, scopes `openid profile email groups`. |
 | prod | `nextcloud_prod` | Nextcloud | `https://cloud.myrobertson.com/apps/user_oidc/code`, `https://cloud.myrobertson.com/index.php/apps/user_oidc/code` | Confidential client, `client_secret_post`, custom `nextcloud_uid` claim. |
-| prod | `guacamole` | Apache Guacamole | `https://rdp.myrobertson.com` | Public implicit client. Replace with authorization-code + PKCE if Guacamole supports it during migration. |
+| prod | `guacamole_prod` | Apache Guacamole | `https://rdp.myrobertson.com` | Public implicit client. Replace with authorization-code + PKCE if Guacamole supports it cleanly. |
 | prod | `proxmox_prod` | Proxmox VE cl0 | `https://cl0.myrobertson.net:8006`, `https://pve3.myrobertson.net:8006`, `https://pve4.myrobertson.net:8006`, `https://pve5.myrobertson.net:8006`, plus trailing-slash variants | Restricted to AD group `proxAdmins`; emits `proxmox_groups`. |
 | prod | `pbs_prod` | Proxmox Backup Server | `https://pbs.myrobertson.net:8007`, trailing slash variant | Restricted to AD group `proxAdmins`. |
 | prod | `synology_scooter_prod` | Synology Scooter | `https://scooter.myrobertson.net:5011/webman/ssoclient/token_relay.html`, `https://scooter.myrobertson.net:5001/webman/ssoclient/token_relay.html` | Confidential client, `client_secret_post`. |
@@ -213,7 +213,12 @@ Vikunja staging has already been moved to the `sso.staging` issuer as part of th
 
 Vikunja staging has an app-specific Keycloak browser flow managed by `keycloak-vikunja-passkey-flow-v2`. The flow is bound only to the `vikunja_staging` client and requires username/password. WebAuthn/passkey is preferred and challenged when already enrolled, while TOTP is not accepted for this client-specific flow. The flow disables the Keycloak cookie authenticator for this client so an existing SSO session cannot bypass the Tasks login ceremony. Do not hard-require WebAuthn in this flow until admin passkeys have been enrolled and tested; otherwise users with no WebAuthn credential can fail before enrollment.
 
-Production apps remain unchanged for this phase.
+Current GitOps state migrates the Kubernetes-native OIDC clients to the `sso.*` Keycloak issuers:
+
+- Staging: Mealie, Grafana, Vikunja/Tasks, Nextcloud, and Guacamole.
+- Production: Mealie, Grafana, Vikunja/Tasks, Nextcloud, Nextcloud migration LDAP, and Guacamole.
+
+Authelia remains live and external-authz policies are intentionally unchanged. Proxmox, PBS, and Synology clients remain documented as later/manual cutovers because their application-side configuration is outside these Kubernetes manifests.
 
 ## Validation
 

@@ -30,8 +30,24 @@ spec:
                     name: mealie-cnpg-main-app
                     key: password
                     expandObjectName: false
+                ALLOW_PASSWORD_LOGIN: "false"
+                OIDC_ADMIN_GROUP: proxAdmins
+                OIDC_AUTH_ENABLED: "true"
+                OIDC_AUTO_REDIRECT: "true"
+                OIDC_CLIENT_ID: mealie_prod
+                OIDC_CLIENT_SECRET:
+                  secretKeyRef:
+                    name: mealie-oidc
+                    key: OIDC_CLIENT_SECRET
+                    expandObjectName: false
+                OIDC_CONFIGURATION_URL: https://sso.myrobertson.com/realms/homelab/.well-known/openid-configuration
+                OIDC_EMAIL_CLAIM: email
+                OIDC_GROUPS_CLAIM: groups
+                OIDC_NAME_CLAIM: name
+                OIDC_SIGNUP_ENABLED: "true"
+                OIDC_USER_CLAIM: preferred_username
+                OIDC_USER_GROUP: proxAdmins
               envFrom:
                 - secretRef:
                     name: mealie-oidc
                     expandObjectName: false
-   

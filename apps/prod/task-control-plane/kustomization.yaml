@@ -64,6 +64,44 @@ patches:
       kind: VaultStaticSecret
       name: task-control-plane-vikunja
   - patch: |
+      - op: replace
+        path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_NAME
+        value: Keycloak
+      - op: replace
+        path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_AUTHURL
+        value: https://sso.myrobertson.com/realms/homelab
+      - op: replace
+        path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_LOGOUTURL
+        value: https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/logout
+      - op: replace
+        path: /spec/values/vikunja/env/VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHELIA_CLIENTID
+        value: vikunja_prod
+      - op: replace
+        path: /spec/values/vikunja/configMaps/config/data/config.yml
+        value: |
+          service:
+            publicurl: https://tasks.myrobertson.com/
+            enableregistration: false
+            timezone: UTC
+          auth:
+            local:
+              enabled: false
+            openid:
+              enabled: true
+              providers:
+                authelia:
+                  name: Keycloak
+                  authurl: https://sso.myrobertson.com/realms/homelab
+                  logouturl: https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/logout
+                  clientid: ""
+                  clientsecret: ""
+                  scope: openid profile email groups
+          log:
+            level: INFO
+    target:
+      kind: HelmRelease
+      name: vikunja
+  - patch: |
       - op: add
         path: /spec/backup
         value:

@@ -86,7 +86,7 @@ spec:
         - name: NEXTCLOUD_OIDC_ENABLED
           value: "true"
         - name: NEXTCLOUD_OIDC_PROVIDER_ID
-          value: authelia
+          value: keycloak
         - name: NEXTCLOUD_OIDC_CLIENT_ID
           valueFrom:
             secretKeyRef:
@@ -98,7 +98,7 @@ spec:
               name: nextcloud-oidc-secret
               key: OIDC_CLIENT_SECRET
         - name: NEXTCLOUD_OIDC_DISCOVERY_URI
-          value: https://auth.myrobertson.com/.well-known/openid-configuration
+          value: https://sso.myrobertson.com/realms/homelab/.well-known/openid-configuration
         - name: NEXTCLOUD_OIDC_SCOPE
           value: "openid email profile groups nextcloud_uid"
         - name: NEXTCLOUD_OIDC_EXTRA_CLAIMS
@@ -262,7 +262,7 @@ spec:
             if [ -z "${NEXTCLOUD_OIDC_CLIENT_ID:-}" ] || [ -z "${NEXTCLOUD_OIDC_CLIENT_SECRET:-}" ] || [ -z "${NEXTCLOUD_OIDC_DISCOVERY_URI:-}" ]; then
               echo "OIDC enabled but required NEXTCLOUD_OIDC_* values are missing; skipping OIDC bootstrap."
             elif php occ app:enable user_oidc || php occ app:install user_oidc; then
-              OIDC_PROVIDER_ID="${NEXTCLOUD_OIDC_PROVIDER_ID:-authelia}"
+              OIDC_PROVIDER_ID="${NEXTCLOUD_OIDC_PROVIDER_ID:-keycloak}"
               php occ user_oidc:provider "${OIDC_PROVIDER_ID}" \
                 --clientid="${NEXTCLOUD_OIDC_CLIENT_ID}" \
                 --clientsecret-env=NEXTCLOUD_OIDC_CLIENT_SECRET \

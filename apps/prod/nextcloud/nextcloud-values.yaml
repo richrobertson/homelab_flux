@@ -46,6 +46,42 @@
     name: COLLABORA_WOPI_URL
     value: http://nextcloud-collabora:9980
 - op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: NEXTCLOUD_OIDC_ENABLED
+    value: "true"
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: NEXTCLOUD_OIDC_PROVIDER_ID
+    value: keycloak
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: NEXTCLOUD_OIDC_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: nextcloud-oidc-secret
+        key: OIDC_CLIENT_ID
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: NEXTCLOUD_OIDC_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: nextcloud-oidc-secret
+        key: OIDC_CLIENT_SECRET
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: NEXTCLOUD_OIDC_DISCOVERY_URI
+    value: https://sso.myrobertson.com/realms/homelab/.well-known/openid-configuration
+- op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: NEXTCLOUD_OIDC_ALLOW_MULTIPLE_USER_BACKENDS
+    value: "0"
+- op: add
   path: /spec/values/collabora
   value:
     enabled: false

@@ -11,10 +11,10 @@ spec:
             - name: OPENID_CLIENT_ID
               value: guacamole_staging
             - name: OPENID_ISSUER
-              value: https://auth.staging.myrobertson.net
+              value: https://sso.staging.myrobertson.net/realms/homelab
             - name: OPENID_AUTHORIZATION_ENDPOINT
-              value: https://auth.staging.myrobertson.net/api/oidc/authorization?state=guacamole-staging
+              value: https://sso.staging.myrobertson.net/realms/homelab/protocol/openid-connect/auth
             - name: OPENID_JWKS_ENDPOINT
-              value: http://authelia.default.svc.cluster.local/jwks.json
+              value: https://sso.staging.myrobertson.net/realms/homelab/protocol/openid-connect/certs
             - name: OPENID_REDIRECT_URI
               value: https://rdp.staging.myrobertson.net

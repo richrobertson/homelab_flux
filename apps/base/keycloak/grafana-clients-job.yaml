@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-grafana-clients-v1
+  name: keycloak-oidc-clients-v1
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -16,7 +16,7 @@ spec:
     spec:
       restartPolicy: OnFailure
       containers:
-        - name: configure-grafana-clients
+        - name: configure-oidc-clients
           image: python:3.13-alpine
           imagePullPolicy: IfNotPresent
           env:
@@ -33,6 +33,42 @@ spec:
                   key: admin-password
             - name: GRAFANA_CLIENT_SECRET
               value: xQ.AhikX8cuKjp1VlNB9F7cDFILvMAeRZ7OSGBENPDjQSpesEYzDlzUJRlJdxTID9_FKvX5s
+            - name: MEALIE_STAGING_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: mealie-staging-client-secret
+                  optional: true
+            - name: VIKUNJA_STAGING_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: vikunja-staging-client-secret
+                  optional: true
+            - name: MEALIE_PROD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mealie-oidc
+                  key: OIDC_CLIENT_SECRET
+                  optional: true
+            - name: NEXTCLOUD_STAGING_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-oidc-secret
+                  key: OIDC_CLIENT_SECRET
+                  optional: true
+            - name: NEXTCLOUD_PROD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-oidc-secret
+                  key: OIDC_CLIENT_SECRET
+                  optional: true
+            - name: VIKUNJA_PROD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: vikunja-oidc-secret
+                  key: client_secret
+                  optional: true
           command:
             - python
             - -c
@@ -48,7 +84,7 @@ spec:
               realm = os.environ["KEYCLOAK_REALM"]
               admin_user = os.environ["KEYCLOAK_ADMIN_USERNAME"]
               admin_password = os.environ["KEYCLOAK_ADMIN_PASSWORD"]
-              client_secret = os.environ["GRAFANA_CLIENT_SECRET"]
+              default_scopes = ["web-origins", "acr", "profile", "roles", "basic", "email", "groups"]
 
               def request(method, path, token=None, data=None):
                   headers = {}
@@ -92,31 +128,101 @@ spec:
                   {
                       "clientId": "grafana_staging",
                       "name": "Grafana Staging",
+                      "secret": os.environ.get("GRAFANA_CLIENT_SECRET"),
                       "redirectUris": ["https://grafana.staging.myrobertson.net/login/generic_oauth"],
                       "webOrigins": ["https://grafana.staging.myrobertson.net"],
                   },
                   {
                       "clientId": "grafana_prod",
                       "name": "Grafana Prod",
+                      "secret": os.environ.get("GRAFANA_CLIENT_SECRET"),
                       "redirectUris": ["https://grafana.prod.myrobertson.net/login/generic_oauth"],
                       "webOrigins": ["https://grafana.prod.myrobertson.net"],
                   },
+                  {
+                      "clientId": "mealie_staging",
+                      "name": "Mealie Staging",
+                      "secret": os.environ.get("MEALIE_STAGING_CLIENT_SECRET"),
+                      "redirectUris": ["https://mealie.staging.myrobertson.net/login"],
+                      "webOrigins": ["https://mealie.staging.myrobertson.net"],
+                  },
+                  {
+                      "clientId": "mealie_prod",
+                      "name": "Mealie",
+                      "secret": os.environ.get("MEALIE_PROD_CLIENT_SECRET"),
+                      "redirectUris": ["https://mealie.myrobertson.com/login"],
+                      "webOrigins": ["https://mealie.myrobertson.com"],
+                  },
+                  {
+                      "clientId": "vikunja_staging",
+                      "name": "Vikunja Staging",
+                      "secret": os.environ.get("VIKUNJA_STAGING_CLIENT_SECRET"),
+                      "redirectUris": ["https://tasks.staging.myrobertson.net/auth/openid/authelia"],
+                      "webOrigins": ["https://tasks.staging.myrobertson.net"],
+                  },
+                  {
+                      "clientId": "vikunja_prod",
+                      "name": "Vikunja",
+                      "secret": os.environ.get("VIKUNJA_PROD_CLIENT_SECRET"),
+                      "redirectUris": ["https://tasks.myrobertson.com/auth/openid/authelia"],
+                      "webOrigins": ["https://tasks.myrobertson.com"],
+                  },
+                  {
+                      "clientId": "nextcloud_staging",
+                      "name": "Nextcloud Staging",
+                      "secret": os.environ.get("NEXTCLOUD_STAGING_CLIENT_SECRET"),
+                      "redirectUris": [
+                          "https://cloud.staging.myrobertson.net/apps/user_oidc/code",
+                          "https://cloud.staging.myrobertson.net/index.php/apps/user_oidc/code",
+                      ],
+                      "webOrigins": ["https://cloud.staging.myrobertson.net"],
+                  },
+                  {
+                      "clientId": "nextcloud_prod",
+                      "name": "Nextcloud",
+                      "secret": os.environ.get("NEXTCLOUD_PROD_CLIENT_SECRET"),
+                      "redirectUris": [
+                          "https://cloud.myrobertson.com/apps/user_oidc/code",
+                          "https://cloud.myrobertson.com/index.php/apps/user_oidc/code",
+                      ],
+                      "webOrigins": ["https://cloud.myrobertson.com"],
+                  },
+                  {
+                      "clientId": "guacamole_staging",
+                      "name": "Apache Guacamole Staging",
+                      "publicClient": True,
+                      "implicitFlowEnabled": True,
+                      "redirectUris": ["https://rdp.staging.myrobertson.net"],
+                      "webOrigins": ["https://rdp.staging.myrobertson.net"],
+                  },
+                  {
+                      "clientId": "guacamole_prod",
+                      "name": "Apache Guacamole",
+                      "publicClient": True,
+                      "implicitFlowEnabled": True,
+                      "redirectUris": ["https://rdp.myrobertson.com"],
+                      "webOrigins": ["https://rdp.myrobertson.com"],
+                  },
               ]
 
-              default_scopes = ["web-origins", "acr", "profile", "roles", "basic", "email", "groups"]
+              ensured = []
+              skipped = []
               for spec in clients:
+                  public_client = spec.get("publicClient", False)
+                  client_secret = spec.get("secret")
+                  if not public_client and not client_secret:
+                      skipped.append(spec["clientId"])
+                      continue
                   matches = request("GET", f"/admin/realms/{realm}/clients?clientId={urllib.parse.quote(spec['clientId'])}", token)
                   payload = {
                       "clientId": spec["clientId"],
                       "name": spec["name"],
                       "enabled": True,
                       "protocol": "openid-connect",
-                      "publicClient": False,
-                      "clientAuthenticatorType": "client-secret",
-                      "secret": client_secret,
+                      "publicClient": public_client,
                       "standardFlowEnabled": True,
                       "directAccessGrantsEnabled": False,
-                      "implicitFlowEnabled": False,
+                      "implicitFlowEnabled": spec.get("implicitFlowEnabled", False),
                       "redirectUris": spec["redirectUris"],
                       "webOrigins": spec["webOrigins"],
                       "defaultClientScopes": default_scopes,
@@ -127,10 +233,14 @@ spec:
                           "oidc.ciba.grant.enabled": "false",
                       },
                   }
+                  if not public_client:
+                      payload["clientAuthenticatorType"] = "client-secret"
+                      payload["secret"] = client_secret
                   if matches:
                       request("PUT", f"/admin/realms/{realm}/clients/{matches[0]['id']}", token, payload)
                   else:
                       request("POST", f"/admin/realms/{realm}/clients", token, payload)
+                  ensured.append(spec["clientId"])
 
               request("POST", f"/admin/realms/{realm}/clear-realm-cache", token)
-              print(f"Ensured Grafana OIDC clients in {realm}: {[client['clientId'] for client in clients]}")
+              print(f"Ensured OIDC clients in {realm}: {ensured}; skipped missing secrets: {skipped}")

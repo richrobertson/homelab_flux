@@ -23,7 +23,7 @@
   path: /spec/values/nextcloud/extraEnv/-
   value:
     name: NEXTCLOUD_OIDC_PROVIDER_ID
-    value: authelia
+    value: keycloak
 - op: add
   path: /spec/values/nextcloud/extraEnv/-
   value:
@@ -44,7 +44,7 @@
   path: /spec/values/nextcloud/extraEnv/-
   value:
     name: NEXTCLOUD_OIDC_DISCOVERY_URI
-    value: https://auth.staging.myrobertson.net/.well-known/openid-configuration
+    value: https://sso.staging.myrobertson.net/realms/homelab/.well-known/openid-configuration
 - op: add
   path: /spec/values/nextcloud/extraEnv/-
   value:

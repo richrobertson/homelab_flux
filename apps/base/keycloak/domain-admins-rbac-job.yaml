@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-domain-admins-rbac
+  name: keycloak-domain-admins-rbac-v2
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -209,7 +209,9 @@ spec:
               ROLE_JSON="$(bin/kcadm.sh get "clients/${REALM_MGMT_ID}/roles/realm-admin" -r "${KEYCLOAK_REALM}")"
               bin/kcadm.sh create "groups/${GROUP_ID}/role-mappings/clients/${REALM_MGMT_ID}" -r "${KEYCLOAK_REALM}" -b "[${ROLE_JSON}]" || true
 
-              for client_id in account account-console security-admin-console mealie_staging vikunja_staging; do
+              OIDC_CLIENTS="account account-console security-admin-console grafana_staging grafana_prod mealie_staging mealie_prod vikunja_staging vikunja_prod nextcloud_staging nextcloud_prod guacamole_staging guacamole_prod"
+
+              for client_id in ${OIDC_CLIENTS}; do
                 CLIENT_UUID="$(bin/kcadm.sh get clients -r "${KEYCLOAK_REALM}" -q "clientId=${client_id}" --fields id,clientId --format csv | csv_first_id)"
                 if [ -z "${CLIENT_UUID}" ]; then
                   continue
