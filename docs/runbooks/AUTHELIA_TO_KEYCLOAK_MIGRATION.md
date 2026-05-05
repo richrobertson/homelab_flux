@@ -119,6 +119,27 @@ Do not enroll passkeys against `keycloak.myrobertson.com`, `keycloak.staging.myr
 
 The realm import includes WebAuthn policy scaffolding for the `homelab` realm, but it does not force passwordless login and does not yet make WebAuthn mandatory for every user. Enable or tune the browser authentication flow in the Keycloak Admin Console only after the `sso.*` endpoints are final and admin passkeys are enrolled in staging.
 
+Manual staging enablement order:
+
+1. Verify the staging discovery issuer:
+
+   ```sh
+   curl -fsS https://sso.staging.myrobertson.net/realms/homelab/.well-known/openid-configuration | jq '.issuer'
+   ```
+
+   Expected: `https://sso.staging.myrobertson.net/realms/homelab`
+
+2. Verify an AD `Domain Admins` user can log in to `https://sso.staging.myrobertson.net/admin/homelab/console/` and has realm-admin access.
+3. Enroll TOTP backup before making WebAuthn required.
+4. Enroll at least two passkey-capable factors for the admin account.
+5. Duplicate the browser authentication flow in the Keycloak Admin Console.
+6. Add `WebAuthn Authenticator` after the username/password step.
+7. Require WebAuthn for the admin group first, not all users.
+8. Test with a private browser session and from a second device.
+9. Only after recovery paths are proven, consider wider enforcement.
+
+Do not automate passkey enrollment. Passkey registration is intentionally an interactive user action tied to the final relying-party hostname.
+
 ## Step 3: Parallel Keycloak Deployment
 
 Initial manifests have been added:
@@ -159,6 +180,30 @@ Gateway listeners have been added for:
 - `sso.myrobertson.com`
 - `sso.staging.myrobertson.net`
 
+Flux ordering:
+
+- `infra-gateway` owns the Gateway listener, certificate, and DNS prerequisites for `sso.*`.
+- `keycloak` owns the Keycloak VaultStaticSecret, CNPG database, deployment, service, HTTPRoute, redirect route, and Domain Admins bootstrap job.
+- `apps` depends on `keycloak`, so apps that consume Keycloak OIDC reconcile only after Keycloak has applied and passed health checks.
+- `apps-operators` remains a staging dependency for app operators that are unrelated to Keycloak.
+
+Kubernetes object names remain `keycloak`; only the public identity endpoint is `sso.*`.
+
+## Controlled Staging App Migration
+
+Mealie staging is the first intended low-risk app for validation against Keycloak on `sso.staging.myrobertson.net`.
+
+Mealie staging GitOps configuration:
+
+- Client ID: `mealie_staging`
+- Discovery URL: `https://sso.staging.myrobertson.net/realms/homelab/.well-known/openid-configuration`
+- Redirect/callback: `https://mealie.staging.myrobertson.net/login`
+- Client secret source: `keycloak-secret` key `mealie-staging-client-secret`
+
+Vikunja staging has already been moved to the `sso.staging` issuer as part of the staging troubleshooting work. Treat it as already actively switched, not as the next app to newly migrate. Validate Mealie first, then validate Vikunja as the second already-prepared staging app before moving to any additional applications.
+
+Production apps remain unchanged for this phase.
+
 ## Validation
 
 After Flux reconciles the staging deployment:
@@ -185,6 +230,31 @@ Then test in the Keycloak Admin Console:
 5. Test connection and authentication.
 6. Sync a small user set or search for a known AD user.
 7. Verify group visibility for `proxAdmins` before migrating Proxmox/PBS.
+
+### Staging Validation Checklist
+
+Required issuer check:
+
+```sh
+curl -fsS https://sso.staging.myrobertson.net/realms/homelab/.well-known/openid-configuration | jq '.issuer'
+```
+
+Expected:
+
+```text
+https://sso.staging.myrobertson.net/realms/homelab
+```
+
+Then verify:
+
+- `https://sso.staging.myrobertson.net/admin/homelab/console/` loads.
+- AD `Domain Admins` users receive realm-admin access.
+- TOTP backup is enrolled for admin users before WebAuthn is required.
+- Passkeys are enrolled against `sso.staging.myrobertson.net`.
+- Mealie staging login redirects through Keycloak and creates/updates the expected Mealie user.
+- Logout and session expiration behavior are acceptable.
+- Authelia still protects apps that have not migrated.
+- Vikunja staging remains stable if validating the already-prepared second app.
 
 ### Staging Smoke Test: 2026-05-04
 
@@ -241,14 +311,23 @@ If a Domain Admin authenticates successfully but does not see admin permissions,
 
 ## Next Work
 
-1. Finalize `sso.*` before passkey enrollment.
-2. Enroll admin passkeys in staging.
-3. Keep TOTP backup available.
-4. Verify `Domain Admins` admin access.
-5. Migrate Mealie/Vikunja staging to the `sso.staging` issuer.
-6. Do not touch Istio external-authz policies until the replacement OIDC/proxy pattern is designed.
-7. Populate and test `secret/keycloak/prod` before enabling production traffic.
+1. Validate Mealie staging through Keycloak on `sso.staging`.
+2. Verify `Domain Admins` admin access.
+3. Enroll TOTP backup for admin users.
+4. Enroll admin passkeys in staging.
+5. Manually tune the Keycloak browser flow for WebAuthn MFA after password, starting with admin users.
+6. Validate Vikunja staging as the already-prepared second app.
+7. Design the replacement OIDC/proxy pattern before touching Istio external-authz policies.
 8. Migrate Proxmox/PBS only after `proxAdmins` claim mapping is tested end to end.
+
+## Do Not Do Yet
+
+- Do not remove Authelia.
+- Do not modify Istio external-authz policies yet.
+- Do not migrate Proxmox/PBS yet.
+- Do not enable passwordless-only login.
+- Do not enforce WebAuthn for all users until admin recovery paths are proven.
+- Do not enroll passkeys against any hostname except `sso.myrobertson.com` or `sso.staging.myrobertson.net`.
 
 ## References
 
