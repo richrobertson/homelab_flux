@@ -284,7 +284,17 @@ Prod Proxmox VE host-side state applied on `pve3`:
 - Proxmox group granted Administrator on `/`: `proxAdmins-keycloak`
 - Previous `authelia` realm remains present as rollback until Keycloak login is proven.
 
-PBS host-side cutover is still pending because SSH currently reports a changed host key for `pbs.myrobertson.net`; verify the host key before applying the `pbs_prod` realm.
+Prod PBS host-side state applied on `pbs.myrobertson.net`:
+
+- Realm name: `keycloak`
+- Realm type: `openid`
+- Client ID: `pbs_prod`
+- Issuer URL: `https://sso.myrobertson.com/realms/homelab`
+- Username claim: `preferred_username`
+- Scopes: `openid profile email groups`
+- `keycloak` is the default PBS login realm.
+- Admin ACLs on `/`: `rich@keycloak`, `roy@keycloak`
+- Previous `authelia` realm remains present as rollback until Keycloak login is proven.
 
 ## Validation
 
