@@ -69,6 +69,8 @@ The `guacamole-postgres-init` job renders the official Guacamole PostgreSQL sche
 
 The upstream schema creates the initial local `guacadmin` account. Use that account only for first setup, rotate its password immediately, grant permissions to Authelia/OIDC users or groups, and then disable or tightly protect local database login.
 
+The `guacamole-admin-groups` job creates the external `Domain Admins` user group in the Guacamole PostgreSQL schema and grants it the `ADMINISTER` system permission. This keeps AD Domain Admins administrative in Guacamole when the OIDC provider emits `Domain Admins` in the `groups` claim.
+
 ## SSO
 
 Authelia has environment-specific OIDC clients:

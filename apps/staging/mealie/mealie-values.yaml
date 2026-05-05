@@ -80,8 +80,10 @@ spec:
                     expandObjectName: false
                 OIDC_CONFIGURATION_URL: https://sso.staging.myrobertson.net/realms/homelab/.well-known/openid-configuration
                 OIDC_GROUPS_CLAIM: groups
+                OIDC_NAME_CLAIM: name
                 OIDC_SIGNUP_ENABLED: "true"
                 OIDC_TLS_CACERTFILE: /etc/ssl/certs/keycloak-staging-ca-bundle.crt
+                OIDC_USER_CLAIM: preferred_username
                 OIDC_USER_GROUP: proxAdmins
               envFrom:
                 - secretRef:

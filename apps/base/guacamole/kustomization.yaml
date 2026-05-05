@@ -5,9 +5,9 @@ resources:
   - namespace.yaml
   - postgres.yaml
   - postgres-init-job.yaml
+  - admin-groups-job.yaml
   - guacd-deployment.yaml
   - guacd-service.yaml
   - guacamole-deployment.yaml
   - guacamole-service.yaml
   - networkpolicy.yaml
-
