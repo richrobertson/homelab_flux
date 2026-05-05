@@ -439,6 +439,17 @@ spec:
           php occ ldap:set-config "${LDAP_CFG_ID}" ldapEmailAttribute mail
           php occ ldap:set-config "${LDAP_CFG_ID}" ldapLoginFilterEmail 1
           php occ ldap:test-config "${LDAP_CFG_ID}"
+          php occ user:list --output=json | php -r '
+          $users = json_decode(stream_get_contents(STDIN), true) ?: [];
+          foreach (array_keys($users) as $uid) {
+              if (preg_match("/^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$/", $uid)) {
+                  passthru("php occ user:setting " . escapeshellarg($uid) . " user_ldap isDeleted false", $rc);
+                  if ($rc !== 0) {
+                      exit($rc);
+                  }
+              }
+          }
+          '
 
     internalDatabase:
       enabled: false
