@@ -189,11 +189,14 @@ Flux ordering:
 
 Kubernetes object names remain `keycloak`; only the public identity endpoint is `sso.*`.
 
-The bare SSO hostnames redirect into the `homelab` realm:
+The bare SSO hostnames redirect into the `homelab` realm admin console:
 
-- `https://sso.staging.myrobertson.net/` redirects to `/realms/homelab/account/`.
-- `https://sso.myrobertson.com/` redirects to `/realms/homelab/account/`.
+- `https://sso.staging.myrobertson.net/` redirects to `/admin/homelab/console/`.
+- `https://sso.myrobertson.com/` redirects to `/admin/homelab/console/`.
 - `/admin` redirects to `/admin/homelab/console/` on both SSO hostnames.
+- Public `/realms/master` and `/admin/master` paths redirect to the `homelab` realm so stale browser flows do not land on the master realm.
+
+Use an internal/port-forward path for break-glass master realm administration if it is ever required.
 
 ## Controlled Staging App Migration
 
