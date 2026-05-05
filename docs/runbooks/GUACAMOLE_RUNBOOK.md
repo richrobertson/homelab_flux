@@ -75,7 +75,7 @@ The `guacamole-admin-groups` job creates the external `Domain Admins` user group
 
 Authelia has environment-specific OIDC clients:
 
-- Staging: `guacamole_staging`, redirect URI `https://rdp.staging.myrobertson.net`, currently `one_factor` until Authelia MFA enrollment is complete
+- Staging: `guacamole_staging`, redirect URI `https://rdp.staging.myrobertson.net`, currently `two_factor` to require Authelia MFA before issuing the Guacamole OIDC token
 - Production: `guacamole`, redirect URI `https://rdp.myrobertson.com`, currently `one_factor` until Authelia MFA enrollment is complete
 
 Guacamole uses:
