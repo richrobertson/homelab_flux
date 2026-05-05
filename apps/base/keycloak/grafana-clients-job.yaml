@@ -1,0 +1,136 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloak-grafana-clients-v1
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: identity-provider-bootstrap
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: keycloak
+        app.kubernetes.io/component: identity-provider-bootstrap
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: configure-grafana-clients
+          image: python:3.13-alpine
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KEYCLOAK_URL
+              value: http://keycloak.default.svc.cluster.local
+            - name: KEYCLOAK_REALM
+              value: homelab
+            - name: KEYCLOAK_ADMIN_USERNAME
+              value: admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: admin-password
+            - name: GRAFANA_CLIENT_SECRET
+              value: xQ.AhikX8cuKjp1VlNB9F7cDFILvMAeRZ7OSGBENPDjQSpesEYzDlzUJRlJdxTID9_FKvX5s
+          command:
+            - python
+            - -c
+          args:
+            - |
+              import json
+              import os
+              import time
+              import urllib.parse
+              import urllib.request
+
+              base = os.environ["KEYCLOAK_URL"].rstrip("/")
+              realm = os.environ["KEYCLOAK_REALM"]
+              admin_user = os.environ["KEYCLOAK_ADMIN_USERNAME"]
+              admin_password = os.environ["KEYCLOAK_ADMIN_PASSWORD"]
+              client_secret = os.environ["GRAFANA_CLIENT_SECRET"]
+
+              def request(method, path, token=None, data=None):
+                  headers = {}
+                  body = None
+                  if token:
+                      headers["Authorization"] = f"Bearer {token}"
+                  if data is not None:
+                      body = json.dumps(data).encode()
+                      headers["Content-Type"] = "application/json"
+                  req = urllib.request.Request(f"{base}{path}", data=body, headers=headers, method=method)
+                  with urllib.request.urlopen(req, timeout=20) as response:
+                      payload = response.read()
+                      if not payload:
+                          return None
+                      return json.loads(payload.decode())
+
+              token = None
+              for attempt in range(60):
+                  try:
+                      form = urllib.parse.urlencode({
+                          "client_id": "admin-cli",
+                          "username": admin_user,
+                          "password": admin_password,
+                          "grant_type": "password",
+                      }).encode()
+                      req = urllib.request.Request(
+                          f"{base}/realms/master/protocol/openid-connect/token",
+                          data=form,
+                          headers={"Content-Type": "application/x-www-form-urlencoded"},
+                          method="POST",
+                      )
+                      with urllib.request.urlopen(req, timeout=20) as response:
+                          token = json.loads(response.read().decode())["access_token"]
+                      break
+                  except Exception:
+                      if attempt == 59:
+                          raise
+                      time.sleep(5)
+
+              clients = [
+                  {
+                      "clientId": "grafana_staging",
+                      "name": "Grafana Staging",
+                      "redirectUris": ["https://grafana.staging.myrobertson.net/login/generic_oauth"],
+                      "webOrigins": ["https://grafana.staging.myrobertson.net"],
+                  },
+                  {
+                      "clientId": "grafana_prod",
+                      "name": "Grafana Prod",
+                      "redirectUris": ["https://grafana.prod.myrobertson.net/login/generic_oauth"],
+                      "webOrigins": ["https://grafana.prod.myrobertson.net"],
+                  },
+              ]
+
+              default_scopes = ["web-origins", "acr", "profile", "roles", "basic", "email", "groups"]
+              for spec in clients:
+                  matches = request("GET", f"/admin/realms/{realm}/clients?clientId={urllib.parse.quote(spec['clientId'])}", token)
+                  payload = {
+                      "clientId": spec["clientId"],
+                      "name": spec["name"],
+                      "enabled": True,
+                      "protocol": "openid-connect",
+                      "publicClient": False,
+                      "clientAuthenticatorType": "client-secret",
+                      "secret": client_secret,
+                      "standardFlowEnabled": True,
+                      "directAccessGrantsEnabled": False,
+                      "implicitFlowEnabled": False,
+                      "redirectUris": spec["redirectUris"],
+                      "webOrigins": spec["webOrigins"],
+                      "defaultClientScopes": default_scopes,
+                      "optionalClientScopes": [],
+                      "attributes": {
+                          "post.logout.redirect.uris": "+",
+                          "oauth2.device.authorization.grant.enabled": "false",
+                          "oidc.ciba.grant.enabled": "false",
+                      },
+                  }
+                  if matches:
+                      request("PUT", f"/admin/realms/{realm}/clients/{matches[0]['id']}", token, payload)
+                  else:
+                      request("POST", f"/admin/realms/{realm}/clients", token, payload)
+
+              request("POST", f"/admin/realms/{realm}/clear-realm-cache", token)
+              print(f"Ensured Grafana OIDC clients in {realm}: {[client['clientId'] for client in clients]}")

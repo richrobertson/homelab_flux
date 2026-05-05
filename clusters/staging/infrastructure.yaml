@@ -82,13 +82,13 @@ spec:
           value: grafana_staging
         - op: replace
           path: /spec/values/grafana/grafana.ini/auth.generic_oauth/auth_url
-          value: https://auth.staging.myrobertson.net/api/oidc/authorization
+          value: https://sso.staging.myrobertson.net/realms/homelab/protocol/openid-connect/auth
         - op: replace
           path: /spec/values/grafana/grafana.ini/auth.generic_oauth/token_url
-          value: https://auth.staging.myrobertson.net/api/oidc/token
+          value: https://sso.staging.myrobertson.net/realms/homelab/protocol/openid-connect/token
         - op: replace
           path: /spec/values/grafana/grafana.ini/auth.generic_oauth/api_url
-          value: https://auth.staging.myrobertson.net/api/oidc/userinfo
+          value: https://sso.staging.myrobertson.net/realms/homelab/protocol/openid-connect/userinfo
         - op: add
           path: /spec/values/prometheusOperator
           value: {}

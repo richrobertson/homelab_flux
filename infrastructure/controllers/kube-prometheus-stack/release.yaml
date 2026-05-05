@@ -98,14 +98,14 @@ spec:
           oauth_auto_login: true
         auth.generic_oauth:
           enabled: true
-          name: Authelia
+          name: Keycloak
           allow_sign_up: true
           client_id: grafana_prod
           client_secret: $__env{GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET}
           scopes: openid profile email groups
-          auth_url: https://auth.myrobertson.com/api/oidc/authorization
-          token_url: https://auth.myrobertson.com/api/oidc/token
-          api_url: https://auth.myrobertson.com/api/oidc/userinfo
+          auth_url: https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/auth
+          token_url: https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/token
+          api_url: https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/userinfo
           login_attribute_path: preferred_username
           email_attribute_path: email
           name_attribute_path: name

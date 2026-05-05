@@ -11,3 +11,4 @@ resources:
   - domain-admins-rbac-job.yaml
   - standard-client-scopes-job.yaml
   - webauthn-default-flow-job.yaml
+  - grafana-clients-job.yaml

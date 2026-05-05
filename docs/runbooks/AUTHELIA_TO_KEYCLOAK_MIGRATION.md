@@ -263,6 +263,7 @@ Then verify:
 - TOTP backup is enrolled for admin users before WebAuthn is required.
 - Passkeys are enrolled against `sso.staging.myrobertson.net`.
 - Mealie staging login redirects through Keycloak and creates/updates the expected Mealie user.
+- Grafana staging login redirects through Keycloak at `https://grafana.staging.myrobertson.net/login/generic_oauth`.
 - Logout and session expiration behavior are acceptable.
 - Authelia still protects apps that have not migrated.
 - Vikunja staging remains stable if validating the already-prepared second app.

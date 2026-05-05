@@ -80,13 +80,13 @@ spec:
           value: grafana_prod
         - op: replace
           path: /spec/values/grafana/grafana.ini/auth.generic_oauth/auth_url
-          value: https://auth.myrobertson.com/api/oidc/authorization
+          value: https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/auth
         - op: replace
           path: /spec/values/grafana/grafana.ini/auth.generic_oauth/token_url
-          value: https://auth.myrobertson.com/api/oidc/token
+          value: https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/token
         - op: replace
           path: /spec/values/grafana/grafana.ini/auth.generic_oauth/api_url
-          value: https://auth.myrobertson.com/api/oidc/userinfo
+          value: https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/userinfo
       target:
         kind: HelmRelease
         name: kube-prometheus-stack
