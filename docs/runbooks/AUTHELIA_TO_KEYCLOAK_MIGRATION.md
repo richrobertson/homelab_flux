@@ -243,6 +243,20 @@ Use these values when updating Proxmox VE and PBS identity providers:
 
 Keep local `pam`/`root@pam` or another break-glass admin path enabled while testing. Grant Proxmox/PBS privileges to the `proxAdmins` group from Keycloak claims, test a Domain Admin account, then test a non-admin AD account to confirm it does not receive administrative access.
 
+Prod Proxmox VE host-side state applied on `pve3`:
+
+- Realm name: `keycloak`
+- Realm type: `openid`
+- Client ID: `proxmox_prod`
+- Issuer URL: `https://sso.myrobertson.com/realms/homelab`
+- Username claim: `preferred_username`
+- Group claim: `proxmox_groups`
+- Scopes: `openid email profile groups proxmox_groups`
+- Proxmox group granted Administrator on `/`: `proxAdmins-keycloak`
+- Previous `authelia` realm remains present as rollback until Keycloak login is proven.
+
+PBS host-side cutover is still pending because SSH currently reports a changed host key for `pbs.myrobertson.net`; verify the host key before applying the `pbs_prod` realm.
+
 ## Validation
 
 After Flux reconciles the staging deployment:
