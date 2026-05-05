@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-webauthn-default-flow-v2
+  name: keycloak-webauthn-default-flow-v3
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -32,7 +32,7 @@ spec:
                   name: keycloak-secret
                   key: admin-password
             - name: KEYCLOAK_FLOW_ALIAS
-              value: homelab-webauthn-browser-v1
+              value: homelab-webauthn-browser-v2
           command:
             - /bin/bash
             - -ec

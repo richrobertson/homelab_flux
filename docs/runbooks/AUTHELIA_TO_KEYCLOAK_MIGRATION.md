@@ -117,7 +117,7 @@ Passkeys should be enrolled only against the permanent SSO hostnames:
 
 Do not enroll passkeys against `keycloak.myrobertson.com`, `keycloak.staging.myrobertson.net`, `keycloak.dev.myrobertson.net`, temporary test hostnames, or direct service URLs. WebAuthn binds credentials to the relying party/origin, so enrolling against a temporary hostname creates credentials that may not work after the final SSO hostname is cut over.
 
-The `keycloak-webauthn-default-flow-v2` Job binds the `homelab` realm to `homelab-webauthn-browser-v1` and makes WebAuthn registration a default required action. Users still authenticate with their AD username/password first, but passwords are treated as already-compromisable and are never sufficient by themselves. Keycloak requires users to enroll or use a second factor, with WebAuthn/passkeys as the preferred method. TOTP remains available in the browser flow as the backup MFA method. Passwordless-only login is not enabled.
+The `keycloak-webauthn-default-flow-v3` Job binds the `homelab` realm to `homelab-webauthn-browser-v2` and makes WebAuthn registration a default required action. Users still authenticate with their AD username/password first, but passwords are treated as already-compromisable and are never sufficient by themselves. Keycloak requires users to enroll or use a second factor, with WebAuthn/passkeys as the preferred method. TOTP remains available in the browser flow as the backup MFA method. Passwordless-only login is not enabled.
 
 Manual staging enablement order:
 
@@ -132,7 +132,7 @@ Manual staging enablement order:
 2. Verify an AD `Domain Admins` user can log in to `https://sso.staging.myrobertson.net/admin/homelab/console/` and has realm-admin access.
 3. Enroll TOTP backup before making WebAuthn required.
 4. Enroll at least two passkey-capable factors for the admin account.
-5. Confirm `homelab-webauthn-browser-v1` is the realm browser flow.
+5. Confirm `homelab-webauthn-browser-v2` is the realm browser flow.
 6. Confirm `webauthn-register` is enabled as a default required action.
 7. Confirm WebAuthn/passkey and TOTP are both available as second-factor options after AD password.
 8. Test with a private browser session and from a second device.
