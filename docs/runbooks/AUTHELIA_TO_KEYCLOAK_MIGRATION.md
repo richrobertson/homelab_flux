@@ -117,7 +117,7 @@ Passkeys should be enrolled only against the permanent SSO hostnames:
 
 Do not enroll passkeys against `keycloak.myrobertson.com`, `keycloak.staging.myrobertson.net`, `keycloak.dev.myrobertson.net`, temporary test hostnames, or direct service URLs. WebAuthn binds credentials to the relying party/origin, so enrolling against a temporary hostname creates credentials that may not work after the final SSO hostname is cut over.
 
-The realm import includes WebAuthn policy scaffolding for the `homelab` realm, but it does not force passwordless login and does not yet make WebAuthn mandatory for every user. Enable or tune the browser authentication flow in the Keycloak Admin Console only after the `sso.*` endpoints are final and admin passkeys are enrolled in staging.
+The `keycloak-webauthn-default-flow-v1` Job binds the `homelab` realm to `homelab-webauthn-browser-v1` and makes WebAuthn registration a default required action. Users still authenticate with their AD username/password first, but passwords are treated as already-compromisable and are never sufficient by themselves. Keycloak requires users to enroll or use a second factor, with WebAuthn/passkeys as the preferred method. TOTP remains available in the browser flow as the backup MFA method. Passwordless-only login is not enabled.
 
 Manual staging enablement order:
 
@@ -132,11 +132,11 @@ Manual staging enablement order:
 2. Verify an AD `Domain Admins` user can log in to `https://sso.staging.myrobertson.net/admin/homelab/console/` and has realm-admin access.
 3. Enroll TOTP backup before making WebAuthn required.
 4. Enroll at least two passkey-capable factors for the admin account.
-5. Duplicate the browser authentication flow in the Keycloak Admin Console.
-6. Add `WebAuthn Authenticator` after the username/password step.
-7. Require WebAuthn for the admin group first, not all users.
+5. Confirm `homelab-webauthn-browser-v1` is the realm browser flow.
+6. Confirm `webauthn-register` is enabled as a default required action.
+7. Confirm WebAuthn/passkey and TOTP are both available as second-factor options after AD password.
 8. Test with a private browser session and from a second device.
-9. Only after recovery paths are proven, consider wider enforcement.
+9. Keep the master-realm bootstrap admin path available as break-glass.
 
 Do not automate passkey enrollment. Passkey registration is intentionally an interactive user action tied to the final relying-party hostname.
 
@@ -338,7 +338,7 @@ If a Domain Admin authenticates successfully but does not see admin permissions,
 - Do not modify Istio external-authz policies yet.
 - Do not migrate Proxmox/PBS yet.
 - Do not enable passwordless-only login.
-- Do not enforce WebAuthn for all users until admin recovery paths are proven.
+- Do not tighten beyond password plus MFA into passwordless-only login until admin recovery paths are proven.
 - Do not enroll passkeys against any hostname except `sso.myrobertson.com` or `sso.staging.myrobertson.net`.
 
 ## References

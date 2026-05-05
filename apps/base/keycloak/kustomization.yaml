@@ -10,3 +10,4 @@ resources:
   - service.yaml
   - domain-admins-rbac-job.yaml
   - standard-client-scopes-job.yaml
+  - webauthn-default-flow-job.yaml
