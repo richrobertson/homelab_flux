@@ -189,6 +189,12 @@ Flux ordering:
 
 Kubernetes object names remain `keycloak`; only the public identity endpoint is `sso.*`.
 
+The bare SSO hostnames redirect into the `homelab` realm:
+
+- `https://sso.staging.myrobertson.net/` redirects to `/realms/homelab/account/`.
+- `https://sso.myrobertson.com/` redirects to `/realms/homelab/account/`.
+- `/admin` redirects to `/admin/homelab/console/` on both SSO hostnames.
+
 ## Controlled Staging App Migration
 
 Mealie staging is the first intended low-risk app for validation against Keycloak on `sso.staging.myrobertson.net`.
