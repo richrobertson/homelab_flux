@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-oidc-clients-v4
+  name: keycloak-oidc-clients-v5
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -80,6 +80,18 @@ spec:
                 secretKeyRef:
                   name: authelia-secret
                   key: pbs_oidc
+                  optional: true
+            - name: SYNOLOGY_SCOOTER_PROD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: authelia-secret
+                  key: synology_scooter_oidc
+                  optional: true
+            - name: SYNOLOGY_KERMIT_PROD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: authelia-secret
+                  key: synology_kermit_oidc
                   optional: true
           command:
             - python
@@ -302,6 +314,28 @@ spec:
                           "https://pbs.myrobertson.net:8007/",
                       ],
                       "webOrigins": ["https://pbs.myrobertson.net:8007"],
+                  },
+                  {
+                      "clientId": "synology_scooter_prod",
+                      "name": "Synology Scooter",
+                      "secret": os.environ.get("SYNOLOGY_SCOOTER_PROD_CLIENT_SECRET"),
+                      "redirectUris": [
+                          "https://scooter.myrobertson.net:5011/webman/ssoclient/token_relay.html",
+                          "https://scooter.myrobertson.net:5001/webman/ssoclient/token_relay.html",
+                      ],
+                      "webOrigins": [
+                          "https://scooter.myrobertson.net:5011",
+                          "https://scooter.myrobertson.net:5001",
+                      ],
+                  },
+                  {
+                      "clientId": "synology_kermit_prod",
+                      "name": "Synology Kermit",
+                      "secret": os.environ.get("SYNOLOGY_KERMIT_PROD_CLIENT_SECRET"),
+                      "redirectUris": [
+                          "https://kermit.myrobertson.com/webman/ssoclient/token_relay.html",
+                      ],
+                      "webOrigins": ["https://kermit.myrobertson.com"],
                   },
               ]
 

@@ -35,8 +35,8 @@ Authelia currently has two auth surfaces:
 | prod | `guacamole_prod` | Apache Guacamole | `https://rdp.myrobertson.com` | Public implicit client. Replace with authorization-code + PKCE if Guacamole supports it cleanly. |
 | prod | `proxmox_prod` | Proxmox VE cl0 | `https://cl0.myrobertson.net:8006`, `https://pve3.myrobertson.net:8006`, `https://pve4.myrobertson.net:8006`, `https://pve5.myrobertson.net:8006`, plus trailing-slash variants | Keycloak confidential client using the existing `pve_oidc` secret; emits `proxmox_groups`. Proxmox role mappings should grant access only to `proxAdmins`. |
 | prod | `pbs_prod` | Proxmox Backup Server | `https://pbs.myrobertson.net:8007`, trailing slash variant | Keycloak confidential client using the existing `pbs_oidc` secret. PBS role mappings should grant access only to `proxAdmins`. |
-| prod | `synology_scooter_prod` | Synology Scooter | `https://scooter.myrobertson.net:5011/webman/ssoclient/token_relay.html`, `https://scooter.myrobertson.net:5001/webman/ssoclient/token_relay.html` | Confidential client, `client_secret_post`. |
-| prod | `synology_kermit_prod` | Synology Kermit | `https://kermit.myrobertson.com/webman/ssoclient/token_relay.html` | Confidential client, `client_secret_post`. |
+| prod | `synology_scooter_prod` | Synology Scooter | `https://scooter.myrobertson.net:5011/webman/ssoclient/token_relay.html`, `https://scooter.myrobertson.net:5001/webman/ssoclient/token_relay.html` | Keycloak confidential client using the existing `authelia-secret/synology_scooter_oidc` secret, scopes `openid profile email groups`. |
+| prod | `synology_kermit_prod` | Synology Kermit | `https://kermit.myrobertson.com/webman/ssoclient/token_relay.html` | Keycloak confidential client using the existing `authelia-secret/synology_kermit_oidc` secret, scopes `openid profile email groups`. |
 | staging | `mealie_staging` | Mealie Staging | `https://mealie.staging.myrobertson.net/login` | Confidential client, `client_secret_basic`. |
 | staging | `grafana_staging` | Grafana Staging | `https://grafana.staging.myrobertson.net/login/generic_oauth` | Confidential client, `client_secret_basic`. |
 | staging | `vikunja_staging` | Vikunja Staging | `https://tasks.staging.myrobertson.net/auth/openid/authelia` | Confidential client, `client_secret_basic`. |
@@ -216,9 +216,38 @@ Vikunja staging has an app-specific Keycloak browser flow managed by `keycloak-v
 Current GitOps state migrates the Kubernetes-native OIDC clients to the `sso.*` Keycloak issuers:
 
 - Staging: Mealie, Grafana, Vikunja/Tasks, Nextcloud, and Guacamole.
-- Production: Mealie, Grafana, Vikunja/Tasks, Nextcloud, Nextcloud migration LDAP, Guacamole, Proxmox VE, and Proxmox Backup Server.
+- Production: Mealie, Grafana, Vikunja/Tasks, Nextcloud, Nextcloud migration LDAP, Guacamole, Proxmox VE, Proxmox Backup Server, Synology Scooter, and Synology Kermit.
 
-Authelia remains live and external-authz policies are intentionally unchanged. Proxmox VE and PBS are now Keycloak-prepared in GitOps, but their application-side realm changes are still applied on the Proxmox/PBS hosts rather than by Kubernetes manifests. Synology clients remain later/manual cutovers.
+Authelia remains live and external-authz policies are intentionally unchanged. Proxmox VE, PBS, and Synology are now Keycloak-prepared in GitOps, but their application-side realm changes are still applied on the appliance hosts rather than by Kubernetes manifests.
+
+## Synology Keycloak Cutover
+
+Keycloak clients are created by `apps/base/keycloak/grafana-clients-job.yaml`:
+
+- `synology_scooter_prod`: confidential OIDC client, secret sourced from `authelia-secret/synology_scooter_oidc`, issuer `https://sso.myrobertson.com/realms/homelab`, redirect URIs for Scooter DSM on ports `5011` and `5001`.
+- `synology_kermit_prod`: confidential OIDC client, secret sourced from `authelia-secret/synology_kermit_oidc`, issuer `https://sso.myrobertson.com/realms/homelab`, redirect URI for Kermit DSM at `kermit.myrobertson.com`.
+
+Use these values when updating DSM SSO Client settings on Scooter and Kermit:
+
+- Issuer URL: `https://sso.myrobertson.com/realms/homelab`
+- Discovery URL: `https://sso.myrobertson.com/realms/homelab/.well-known/openid-configuration`
+- Authorization endpoint: `https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/auth`
+- Token endpoint: `https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/token`
+- Userinfo endpoint: `https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/userinfo`
+- JWKS URL: `https://sso.myrobertson.com/realms/homelab/protocol/openid-connect/certs`
+- Username claim: `preferred_username`
+- Display name claim: `name`
+- Email claim: `email`
+- Group claim: `groups`
+- Scopes: `openid profile email groups`
+
+Redirect URIs:
+
+- Scooter: `https://scooter.myrobertson.net:5011/webman/ssoclient/token_relay.html`
+- Scooter fallback: `https://scooter.myrobertson.net:5001/webman/ssoclient/token_relay.html`
+- Kermit: `https://kermit.myrobertson.com/webman/ssoclient/token_relay.html`
+
+Keep DSM local administrator access enabled as the break-glass path. Do not remove the Authelia DSM clients until both appliances have logged in through Keycloak and local rollback has been verified.
 
 ## Proxmox and PBS Keycloak Cutover
 
