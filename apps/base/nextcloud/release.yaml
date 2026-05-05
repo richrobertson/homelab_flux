@@ -281,6 +281,8 @@ spec:
                 --check-bearer="${NEXTCLOUD_OIDC_CHECK_BEARER:-0}" \
                 --bearer-provisioning="${NEXTCLOUD_OIDC_BEARER_PROVISIONING:-0}"
               php occ config:app:set --type=string --value="${NEXTCLOUD_OIDC_ALLOW_MULTIPLE_USER_BACKENDS:-1}" user_oidc allow_multiple_user_backends
+              php occ config:app:set --type=boolean --value=true user_oidc auto_provision
+              php occ config:app:set --type=boolean --value=true user_oidc soft_auto_provision
             else
               echo "OIDC: failed to install or enable user_oidc; skipping provider bootstrap."
             fi
