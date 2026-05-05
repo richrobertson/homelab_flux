@@ -547,7 +547,7 @@
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "{namespace=\"default\", app=\"keycloak\", container=\"keycloak\"} | json",
+          "expr": "{namespace=\"default\", container=\"keycloak\"} | json",
           "queryType": "range",
           "refId": "A"
         }

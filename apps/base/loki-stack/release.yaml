@@ -39,6 +39,7 @@ spec:
             datasources:
             - name: Loki
               type: loki
+              uid: loki
               access: proxy
               url: http://loki:{{ .Values.loki.server.http_listen_port }}
               version: 1
