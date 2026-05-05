@@ -96,7 +96,9 @@ spec:
               ensure_user_attribute_mapper firstName givenName firstName true true
               ensure_user_attribute_mapper lastName sn lastName true true
               ensure_user_attribute_mapper email mail email true true
-              ensure_user_attribute_mapper "nextcloud uid" objectGUID nextcloud_uid true true
+              # Do not map AD objectGUID directly to nextcloud_uid here. Keycloak
+              # normalizes the binary objectGUID value to lowercase, while the
+              # existing Nextcloud LDAP usernames are uppercase GUIDs.
 
               ensure_client_scope() {
                 local scope_name="$1"

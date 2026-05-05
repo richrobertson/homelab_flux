@@ -445,7 +445,7 @@ spec:
           $users = json_decode(stream_get_contents(STDIN), true) ?: [];
           foreach (array_keys($users) as $uid) {
               if (preg_match("/^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$/", $uid)) {
-                  passthru("php occ user:setting " . escapeshellarg($uid) . " user_ldap isDeleted false", $rc);
+                  passthru("php occ user:setting " . escapeshellarg($uid) . " user_ldap isDeleted 0", $rc);
                   if ($rc !== 0) {
                       exit($rc);
                   }
