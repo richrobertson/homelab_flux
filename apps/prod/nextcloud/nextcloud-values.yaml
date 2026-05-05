@@ -82,6 +82,11 @@
     name: NEXTCLOUD_OIDC_ALLOW_MULTIPLE_USER_BACKENDS
     value: "1"
 - op: add
+  path: /spec/values/nextcloud/extraEnv/-
+  value:
+    name: NEXTCLOUD_OIDC_GROUP_PROVISIONING
+    value: "0"
+- op: add
   path: /spec/values/collabora
   value:
     enabled: false
