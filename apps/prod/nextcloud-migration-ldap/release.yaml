@@ -279,6 +279,9 @@ spec:
                 --group-provisioning="${NEXTCLOUD_OIDC_GROUP_PROVISIONING:-0}" \
                 --check-bearer="${NEXTCLOUD_OIDC_CHECK_BEARER:-0}" \
                 --bearer-provisioning="${NEXTCLOUD_OIDC_BEARER_PROVISIONING:-0}"
+              if [ "${OIDC_PROVIDER_ID}" != "authelia" ]; then
+                php occ user_oidc:provider:delete authelia --force || true
+              fi
               php occ config:app:set --type=string --value="${NEXTCLOUD_OIDC_ALLOW_MULTIPLE_USER_BACKENDS:-1}" user_oidc allow_multiple_user_backends
             else
               echo "OIDC: failed to install or enable user_oidc; skipping provider bootstrap."
