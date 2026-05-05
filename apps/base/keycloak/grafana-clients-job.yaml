@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-oidc-clients-v2
+  name: keycloak-oidc-clients-v3
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -141,6 +141,19 @@ spec:
                   attrs[key] = [value]
                   user["attributes"] = attrs
                   request("PUT", f"/admin/realms/{realm}/users/{user['id']}", token, user)
+
+              def attach_default_scope(client_id, scope_name):
+                  clients = request("GET", f"/admin/realms/{realm}/clients?clientId={urllib.parse.quote(client_id)}", token) or []
+                  if not clients:
+                      return
+                  scope = find_one(f"/admin/realms/{realm}/client-scopes", lambda item: item.get("name") == scope_name)
+                  if not scope:
+                      return
+                  try:
+                      request("PUT", f"/admin/realms/{realm}/clients/{clients[0]['id']}/default-client-scopes/{scope['id']}", token)
+                  except urllib.error.HTTPError as exc:
+                      if exc.code != 409:
+                          raise
 
               token = None
               for attempt in range(60):
@@ -299,6 +312,8 @@ spec:
                       request("PUT", f"/admin/realms/{realm}/clients/{matches[0]['id']}", token, payload)
                   else:
                       request("POST", f"/admin/realms/{realm}/clients", token, payload)
+                  for scope_name in spec.get("defaultClientScopes", default_scopes):
+                      attach_default_scope(spec["clientId"], scope_name)
                   ensured.append(spec["clientId"])
 
               request("POST", f"/admin/realms/{realm}/clear-realm-cache", token)
