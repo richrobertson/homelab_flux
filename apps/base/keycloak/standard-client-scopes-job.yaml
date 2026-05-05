@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-standard-client-scopes
+  name: keycloak-standard-client-scopes-v2
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -108,6 +108,13 @@ spec:
                   bin/kcadm.sh update "clients/${CLIENT_UUID}/default-client-scopes/${scope_id}" -r "${KEYCLOAK_REALM}" >/dev/null 2>&1 || true
                 done
               done
+
+              ACCOUNT_CLIENT_UUID="$(bin/kcadm.sh get clients -r "${KEYCLOAK_REALM}" -q clientId=account --fields id,clientId --format csv | csv_first_id)"
+              ACCOUNT_CONSOLE_CLIENT_UUID="$(bin/kcadm.sh get clients -r "${KEYCLOAK_REALM}" -q clientId=account-console --fields id,clientId --format csv | csv_first_id)"
+              if [ -n "${ACCOUNT_CLIENT_UUID}" ] && [ -n "${ACCOUNT_CONSOLE_CLIENT_UUID}" ]; then
+                MANAGE_ACCOUNT_ROLE_JSON="$(bin/kcadm.sh get "clients/${ACCOUNT_CLIENT_UUID}/roles/manage-account" -r "${KEYCLOAK_REALM}")"
+                bin/kcadm.sh create "clients/${ACCOUNT_CONSOLE_CLIENT_UUID}/scope-mappings/clients/${ACCOUNT_CLIENT_UUID}" -r "${KEYCLOAK_REALM}" -b "[${MANAGE_ACCOUNT_ROLE_JSON}]" >/dev/null 2>&1 || true
+              fi
 
               bin/kcadm.sh create clear-realm-cache -r "${KEYCLOAK_REALM}" -s "realm=${KEYCLOAK_REALM}" || true
 
