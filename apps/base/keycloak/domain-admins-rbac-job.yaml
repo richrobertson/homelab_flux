@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-domain-admins-rbac-v2
+  name: keycloak-domain-admins-rbac-v3
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -96,6 +96,7 @@ spec:
               ensure_user_attribute_mapper firstName givenName firstName true true
               ensure_user_attribute_mapper lastName sn lastName true true
               ensure_user_attribute_mapper email mail email true true
+              ensure_user_attribute_mapper "nextcloud uid" objectGUID nextcloud_uid true true
 
               ensure_client_scope() {
                 local scope_name="$1"

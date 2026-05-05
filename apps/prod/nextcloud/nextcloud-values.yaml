@@ -80,7 +80,7 @@
   path: /spec/values/nextcloud/extraEnv/-
   value:
     name: NEXTCLOUD_OIDC_ALLOW_MULTIPLE_USER_BACKENDS
-    value: "0"
+    value: "1"
 - op: add
   path: /spec/values/collabora
   value:
