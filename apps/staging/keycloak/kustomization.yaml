@@ -5,6 +5,7 @@ resources:
   - ../../base/keycloak
   - httpRoute.yaml
   - httpRedirect.yaml
+  - vikunja-passkey-flow-job.yaml
 patches:
   - patch: |
       - op: replace

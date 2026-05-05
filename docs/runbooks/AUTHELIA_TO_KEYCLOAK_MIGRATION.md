@@ -211,6 +211,8 @@ Mealie staging GitOps configuration:
 
 Vikunja staging has already been moved to the `sso.staging` issuer as part of the staging troubleshooting work. Treat it as already actively switched, not as the next app to newly migrate. Validate Mealie first, then validate Vikunja as the second already-prepared staging app before moving to any additional applications.
 
+Vikunja staging has an app-specific Keycloak browser flow managed by `keycloak-vikunja-passkey-flow`. The flow is bound only to the `vikunja_staging` client and requires username/password followed by WebAuthn/passkey. The flow disables the Keycloak cookie authenticator for this client so an existing SSO session cannot bypass the passkey challenge. TOTP is not accepted for this client-specific flow.
+
 Production apps remain unchanged for this phase.
 
 ## Validation
