@@ -4,6 +4,7 @@ namespace: monitoring
 resources:
   - gotify-token.yaml
   - syncthing-metrics-token.yaml
+  - myrobertson-trusted-root-ca.yaml
   - ClusterRoleBinding.yaml
   - repository.yaml
   - release.yaml

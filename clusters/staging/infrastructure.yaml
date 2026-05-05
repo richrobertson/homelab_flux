@@ -90,6 +90,17 @@ spec:
           path: /spec/values/grafana/grafana.ini/auth.generic_oauth/api_url
           value: https://sso.staging.myrobertson.net/realms/homelab/protocol/openid-connect/userinfo
         - op: add
+          path: /spec/values/grafana/grafana.ini/auth.generic_oauth/tls_client_ca
+          value: /etc/grafana/certs/myrobertson-DC1-CA-1.crt
+        - op: add
+          path: /spec/values/grafana/extraConfigmapMounts
+          value:
+            - name: myrobertson-trusted-root-ca
+              configMap: myrobertson-trusted-root-ca
+              mountPath: /etc/grafana/certs/myrobertson-DC1-CA-1.crt
+              subPath: myrobertson-DC1-CA-1.crt
+              readOnly: true
+        - op: add
           path: /spec/values/prometheusOperator
           value: {}
         - op: add
