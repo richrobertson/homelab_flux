@@ -19,6 +19,7 @@ resources:
   - istio-gateway-alerts.yaml
   - syncthing-alerts.yaml
   - powerdns-alerts.yaml
+  - keycloak-observability.yaml
   - backup-observability-alerts.yaml
   - proxmox-temperature-alerts.yaml
   - proxmox-thunderbolt-ring-alerts.yaml
@@ -107,6 +108,16 @@ configMapGenerator:
       labels:
         grafana_dashboard: "1"
         app.kubernetes.io/part-of: task-control-plane
+        app.kubernetes.io/component: monitoring
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: keycloak-grafana-dashboards
+    namespace: monitoring
+    files:
+      - dashboards/keycloak-observability.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        app.kubernetes.io/part-of: keycloak
         app.kubernetes.io/component: monitoring
         kustomize.toolkit.fluxcd.io/substitute: disabled
   - name: syncthing-grafana-dashboards

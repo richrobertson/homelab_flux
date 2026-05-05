@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-standard-client-scopes-v4
+  name: keycloak-standard-client-scopes-v5
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -189,4 +189,49 @@ spec:
               mapped_names = sorted(item["name"] for item in mapped)
               if "manage-account" not in mapped_names:
                   raise RuntimeError(f"account-console scope mapping missing manage-account: {mapped_names}")
-              print(f"Ensured account-console -> account/manage-account scope mapping for {realm}: {mapped_names}")
+
+              mapper_configs = {
+                  "realm roles": {
+                      "introspection.token.claim": "true",
+                      "userinfo.token.claim": "true",
+                      "multivalued": "true",
+                      "id.token.claim": "true",
+                      "access.token.claim": "true",
+                      "claim.name": "realm_access.roles",
+                      "jsonType.label": "String",
+                  },
+                  "client roles": {
+                      "introspection.token.claim": "true",
+                      "userinfo.token.claim": "true",
+                      "multivalued": "true",
+                      "id.token.claim": "true",
+                      "access.token.claim": "true",
+                      "claim.name": "resource_access.${client_id}.roles",
+                      "jsonType.label": "String",
+                  },
+                  "audience resolve": {
+                      "introspection.token.claim": "true",
+                      "access.token.claim": "true",
+                  },
+              }
+
+              for attempt in range(60):
+                  scopes = request("GET", f"/admin/realms/{realm}/client-scopes", token)
+                  roles_scope = next((scope for scope in scopes if scope.get("name") == "roles"), None)
+                  if roles_scope:
+                      mappers = request("GET", f"/admin/realms/{realm}/client-scopes/{roles_scope['id']}/protocol-mappers/models", token)
+                      if mapper_configs.keys() <= {mapper.get("name") for mapper in mappers}:
+                          break
+                  if attempt == 59:
+                      raise RuntimeError("Timed out waiting for roles client scope protocol mappers")
+                  time.sleep(5)
+
+              for mapper in mappers:
+                  config = mapper_configs.get(mapper.get("name"))
+                  if not config:
+                      continue
+                  mapper["config"] = config
+                  request("PUT", f"/admin/realms/{realm}/client-scopes/{roles_scope['id']}/protocol-mappers/models/{mapper['id']}", token, mapper)
+
+              request("POST", f"/admin/realms/{realm}/clear-realm-cache", token)
+              print(f"Ensured account-console scope mapping and roles token mappers for {realm}: {mapped_names}")

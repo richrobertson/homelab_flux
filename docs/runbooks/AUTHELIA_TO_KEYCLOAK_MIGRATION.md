@@ -296,7 +296,7 @@ Smoke-test fixes discovered and folded into the manifests:
 - Running `start --import-realm` caused the long-running pod to exit during import; the manifests now use a dedicated import init container and plain `start` for the main container.
 - Bootstrap admin creation must happen after import initializes the DB, so the manifests now include a `bootstrap-admin` init container.
 - Keycloak client scopes `profile`, `email`, `groups`, `basic`, `roles`, `web-origins`, and `acr` are defined explicitly for new realm imports.
-- The `keycloak-standard-client-scopes-v4` Job backfills the standard Keycloak OIDC scopes and the `account-console` to `account/manage-account` client scope mapping for existing realms so the Account Console and Admin Console receive the expected `sub`, role, origin, ACR, and account-management token claims.
+- The `keycloak-standard-client-scopes-v5` Job backfills the standard Keycloak OIDC scopes, the role token mapper config, and the `account-console` to `account/manage-account` client scope mapping for existing realms so the Account Console and Admin Console receive the expected `sub`, role, origin, ACR, and account-management token claims.
 - LDAP user attribute mappers are required for AD imports; without the `username` mapper, Keycloak can find the AD user but fails with `User returned from LDAP has null username`.
 - AD built-in groups can have multiple parents, so the group mapper uses flattened groups with `preserve.group.inheritance=false`.
 

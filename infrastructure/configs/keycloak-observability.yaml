@@ -1,0 +1,102 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: keycloak
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/part-of: keycloak
+    app.kubernetes.io/component: monitoring
+spec:
+  jobLabel: app.kubernetes.io/name
+  namespaceSelector:
+    matchNames:
+      - default
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: identity-provider
+  endpoints:
+    - port: management
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 15s
+      honorLabels: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: keycloak-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/part-of: keycloak
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: keycloak-health
+      rules:
+        - alert: KeycloakMetricsEndpointDown
+          expr: max_over_time(up{job="keycloak", namespace="default"}[10m]) < 1 or absent_over_time(up{job="keycloak", namespace="default"}[10m])
+          for: 10m
+          labels:
+            domain: identity
+            severity: critical
+          annotations:
+            summary: Keycloak metrics endpoint unavailable
+            description: Prometheus has not scraped Keycloak management metrics from the default namespace for at least 10 minutes.
+
+        - alert: KeycloakHighServerErrorRate
+          expr: |
+            (
+              sum(rate(http_server_requests_seconds_count{job="keycloak", namespace="default", status=~"5.."}[5m]))
+              /
+              clamp_min(sum(rate(http_server_requests_seconds_count{job="keycloak", namespace="default"}[5m])), 0.001)
+            ) > 0.05
+          for: 10m
+          labels:
+            domain: identity
+            severity: warning
+          annotations:
+            summary: Keycloak 5xx rate is elevated
+            description: More than 5% of Keycloak HTTP requests have returned 5xx responses for 10 minutes.
+
+        - alert: KeycloakHighRequestLatency
+          expr: |
+            (
+              sum(rate(http_server_requests_seconds_sum{job="keycloak", namespace="default"}[5m]))
+              /
+              clamp_min(sum(rate(http_server_requests_seconds_count{job="keycloak", namespace="default"}[5m])), 0.001)
+            ) > 2
+          for: 15m
+          labels:
+            domain: identity
+            severity: warning
+          annotations:
+            summary: Keycloak average request latency is high
+            description: Keycloak average HTTP request latency has been above 2 seconds for 15 minutes.
+
+        - alert: KeycloakDatabasePoolExhausted
+          expr: max(agroal_available_count{job="keycloak", namespace="default"}) == 0 and max(agroal_awaiting_count{job="keycloak", namespace="default"}) > 0
+          for: 5m
+          labels:
+            domain: identity
+            severity: critical
+          annotations:
+            summary: Keycloak database pool is exhausted
+            description: Keycloak has no available database connections and requests are waiting for a connection.
+
+        - alert: KeycloakJvmHeapPressure
+          expr: |
+            (
+              sum(jvm_memory_used_bytes{job="keycloak", namespace="default", area="heap"})
+              /
+              sum(jvm_memory_max_bytes{job="keycloak", namespace="default", area="heap"} > 0)
+            ) > 0.85
+          for: 15m
+          labels:
+            domain: identity
+            severity: warning
+          annotations:
+            summary: Keycloak JVM heap pressure is high
+            description: Keycloak heap usage has stayed above 85% for 15 minutes.

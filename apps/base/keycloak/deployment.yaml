@@ -170,6 +170,14 @@ spec:
               value: "true"
             - name: KC_METRICS_ENABLED
               value: "true"
+            - name: KC_HTTP_METRICS_HISTOGRAMS_ENABLED
+              value: "true"
+            - name: KC_LOG
+              value: console
+            - name: KC_LOG_CONSOLE_OUTPUT
+              value: json
+            - name: KC_LOG_LEVEL
+              value: INFO
             - name: KC_TRUSTSTORE_PATHS
               value: /opt/keycloak/conf/truststores
           ports:
