@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-standard-client-scopes-v3
+  name: keycloak-standard-client-scopes-v4
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -109,14 +109,84 @@ spec:
                 done
               done
 
-              ACCOUNT_CLIENT_UUID="$(bin/kcadm.sh get clients -r "${KEYCLOAK_REALM}" -q clientId=account --fields id,clientId --format csv | csv_first_id)"
-              ACCOUNT_CONSOLE_CLIENT_UUID="$(bin/kcadm.sh get clients -r "${KEYCLOAK_REALM}" -q clientId=account-console --fields id,clientId --format csv | csv_first_id)"
-              if [ -n "${ACCOUNT_CLIENT_UUID}" ] && [ -n "${ACCOUNT_CONSOLE_CLIENT_UUID}" ]; then
-                MANAGE_ACCOUNT_ROLE_ID="$(bin/kcadm.sh get "clients/${ACCOUNT_CLIENT_UUID}/roles/manage-account" -r "${KEYCLOAK_REALM}" --fields id --format csv | csv_first_id)"
-                printf '[{"id":"%s","name":"manage-account","clientRole":true,"containerId":"%s"}]' "${MANAGE_ACCOUNT_ROLE_ID}" "${ACCOUNT_CLIENT_UUID}" > /tmp/account-console-scope-mapping.json
-                bin/kcadm.sh create "clients/${ACCOUNT_CONSOLE_CLIENT_UUID}/scope-mappings/clients/${ACCOUNT_CLIENT_UUID}" -r "${KEYCLOAK_REALM}" -f /tmp/account-console-scope-mapping.json >/dev/null 2>&1 || true
-              fi
-
               bin/kcadm.sh create clear-realm-cache -r "${KEYCLOAK_REALM}" -s "realm=${KEYCLOAK_REALM}" || true
 
               echo "Ensured standard OIDC client scopes for ${KEYCLOAK_REALM}."
+        - name: configure-account-console-scope-mapping
+          image: python:3.13-alpine
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KEYCLOAK_URL
+              value: http://keycloak.default.svc.cluster.local
+            - name: KEYCLOAK_REALM
+              value: homelab
+            - name: KEYCLOAK_ADMIN_USERNAME
+              value: admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: admin-password
+          command:
+            - python
+            - -c
+          args:
+            - |
+              import json
+              import os
+              import time
+              import urllib.parse
+              import urllib.request
+
+              base = os.environ["KEYCLOAK_URL"].rstrip("/")
+              realm = os.environ["KEYCLOAK_REALM"]
+              admin_user = os.environ["KEYCLOAK_ADMIN_USERNAME"]
+              admin_password = os.environ["KEYCLOAK_ADMIN_PASSWORD"]
+
+              def request(method, path, token=None, data=None):
+                  headers = {}
+                  body = None
+                  if token:
+                      headers["Authorization"] = f"Bearer {token}"
+                  if data is not None:
+                      body = json.dumps(data).encode()
+                      headers["Content-Type"] = "application/json"
+                  req = urllib.request.Request(f"{base}{path}", data=body, headers=headers, method=method)
+                  with urllib.request.urlopen(req, timeout=20) as response:
+                      payload = response.read()
+                      if not payload:
+                          return None
+                      return json.loads(payload.decode())
+
+              token = None
+              for attempt in range(60):
+                  try:
+                      form = urllib.parse.urlencode({
+                          "client_id": "admin-cli",
+                          "username": admin_user,
+                          "password": admin_password,
+                          "grant_type": "password",
+                      }).encode()
+                      req = urllib.request.Request(
+                          f"{base}/realms/master/protocol/openid-connect/token",
+                          data=form,
+                          headers={"Content-Type": "application/x-www-form-urlencoded"},
+                          method="POST",
+                      )
+                      with urllib.request.urlopen(req, timeout=20) as response:
+                          token = json.loads(response.read().decode())["access_token"]
+                      break
+                  except Exception:
+                      if attempt == 59:
+                          raise
+                      time.sleep(5)
+
+              account = request("GET", f"/admin/realms/{realm}/clients?clientId=account", token)[0]
+              account_console = request("GET", f"/admin/realms/{realm}/clients?clientId=account-console", token)[0]
+              role = request("GET", f"/admin/realms/{realm}/clients/{account['id']}/roles/manage-account", token)
+              request("POST", f"/admin/realms/{realm}/clients/{account_console['id']}/scope-mappings/clients/{account['id']}", token, [role])
+              mapped = request("GET", f"/admin/realms/{realm}/clients/{account_console['id']}/scope-mappings/clients/{account['id']}", token)
+              mapped_names = sorted(item["name"] for item in mapped)
+              if "manage-account" not in mapped_names:
+                  raise RuntimeError(f"account-console scope mapping missing manage-account: {mapped_names}")
+              print(f"Ensured account-console -> account/manage-account scope mapping for {realm}: {mapped_names}")
