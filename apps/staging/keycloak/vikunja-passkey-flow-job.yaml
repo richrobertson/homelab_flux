@@ -104,9 +104,9 @@ spec:
               }
 
               set_execution_requirement "$(execution_id_by_provider auth-cookie)" DISABLED
-              set_execution_requirement "$(execution_id_by_display_name "${KEYCLOAK_FLOW_ALIAS} Browser - Conditional 2FA")" REQUIRED
+              set_execution_requirement "$(execution_id_by_display_name "${KEYCLOAK_FLOW_ALIAS} Browser - Conditional 2FA")" CONDITIONAL
               set_execution_requirement "$(execution_id_by_provider auth-otp-form)" DISABLED
-              set_execution_requirement "$(execution_id_by_provider webauthn-authenticator)" REQUIRED
+              set_execution_requirement "$(execution_id_by_provider webauthn-authenticator)" ALTERNATIVE
 
               FLOW_ID="$(flow_id_by_alias "${KEYCLOAK_FLOW_ALIAS}")"
               CLIENT_UUID="$(bin/kcadm.sh get clients -r "${KEYCLOAK_REALM}" -q "clientId=${KEYCLOAK_CLIENT_ID}" --fields id,clientId --format csv | csv_first_id)"
@@ -121,4 +121,4 @@ spec:
 
               bin/kcadm.sh create clear-realm-cache -r "${KEYCLOAK_REALM}" -s "realm=${KEYCLOAK_REALM}" || true
 
-              echo "Bound ${KEYCLOAK_CLIENT_ID} to ${KEYCLOAK_FLOW_ALIAS} with required WebAuthn."
+              echo "Bound ${KEYCLOAK_CLIENT_ID} to ${KEYCLOAK_FLOW_ALIAS} with WebAuthn preferred when enrolled."
