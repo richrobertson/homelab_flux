@@ -75,6 +75,8 @@ spec:
                 send_resolved: true
       alertmanagerSpec:
         replicas: 3
+        podAntiAffinity: hard
+        podAntiAffinityTopologyKey: kubernetes.io/hostname
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
@@ -82,19 +84,6 @@ spec:
                 - matchExpressions:
                     - key: node-role.kubernetes.io/control-plane
                       operator: DoesNotExist
-          podAntiAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
-                  matchExpressions:
-                    - key: app.kubernetes.io/name
-                      operator: In
-                      values:
-                        - alertmanager
-                    - key: alertmanager
-                      operator: In
-                      values:
-                        - kube-prometheus-stack-alertmanager
-                topologyKey: kubernetes.io/hostname
         topologySpreadConstraints:
           - maxSkew: 1
             topologyKey: kubernetes.io/hostname
