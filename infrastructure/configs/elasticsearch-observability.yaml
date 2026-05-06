@@ -12,7 +12,7 @@ spec:
     - name: eck-operator
       rules:
         - alert: ECKOperatorMetricsDown
-          expr: absent_over_time(up{job=~"eck-operator|elastic-operator", namespace="elastic-system"}[10m])
+          expr: max_over_time(up{job=~"(monitoring/)?(eck-operator|elastic-operator)", namespace="elastic-system"}[10m]) < 1 or absent_over_time(up{job=~"(monitoring/)?(eck-operator|elastic-operator)", namespace="elastic-system"}[10m])
           for: 10m
           labels:
             domain: search
