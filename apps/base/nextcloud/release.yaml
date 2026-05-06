@@ -299,9 +299,9 @@ spec:
               "imapHost" => "mailu-dovecot.default.svc.cluster.local",
               "imapPort" => 143,
               "imapSslMode" => "none",
-              "smtpUser" => "%EMAIL%*nextcloud",
+              "smtpUser" => "",
               "smtpHost" => "mailu-postfix.default.svc.cluster.local",
-              "smtpPort" => 10025,
+              "smtpPort" => 25,
               "smtpSslMode" => "none",
               "masterPasswordEnabled" => true,
               "masterPassword" => getenv("NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD"),
@@ -373,14 +373,14 @@ spec:
                   --imap-user="${MAIL_ADDRESS}*nextcloud" \
                   --imap-password="${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD}" \
                   --smtp-host=mailu-postfix.default.svc.cluster.local \
-                  --smtp-port=10025 \
+                  --smtp-port=25 \
                   --smtp-ssl-mode=none \
-                  --smtp-user="${MAIL_ADDRESS}" \
-                  --smtp-password="${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD}"
+                  --smtp-user="" \
+                  --smtp-password=""
               else
                 php occ mail:account:create "${MAIL_USER_ID}" "${DISPLAY_NAME}" "${MAIL_ADDRESS}" \
                   mailu-dovecot.default.svc.cluster.local 143 none "${MAIL_ADDRESS}*nextcloud" "${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD}" \
-                  mailu-postfix.default.svc.cluster.local 10025 none "${MAIL_ADDRESS}" "${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD}" \
+                  mailu-postfix.default.svc.cluster.local 25 none "" "" \
                   password
               fi
             done
