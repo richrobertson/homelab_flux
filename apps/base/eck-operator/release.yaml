@@ -29,8 +29,6 @@ spec:
       interval: 30s
       scrapeTimeout: 10s
       labels:
-        app.kubernetes.io/name: eck-operator
-        app.kubernetes.io/part-of: elasticsearch
         app.kubernetes.io/component: monitoring
     telemetry:
       disabled: true

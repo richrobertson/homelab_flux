@@ -19,17 +19,11 @@ spec:
       retries: 3
   values:
     replicaCount: 1
-    commonLabels:
-      app.kubernetes.io/name: nextcloud-search-exporter
-      app.kubernetes.io/part-of: nextcloud
-      app.kubernetes.io/component: monitoring
     podLabels:
-      app.kubernetes.io/name: nextcloud-search-exporter
       app.kubernetes.io/part-of: nextcloud
       app.kubernetes.io/component: monitoring
     service:
       labels:
-        app.kubernetes.io/name: nextcloud-search-exporter
         app.kubernetes.io/part-of: nextcloud
         app.kubernetes.io/component: monitoring
         elasticsearch.k8s.elastic.co/cluster-name: nextcloud-search
@@ -62,7 +56,6 @@ spec:
       scrapeTimeout: 10s
       jobLabel: app.kubernetes.io/name
       labels:
-        app.kubernetes.io/name: nextcloud-search-exporter
         app.kubernetes.io/part-of: nextcloud
         app.kubernetes.io/component: monitoring
       targetLabels:
