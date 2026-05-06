@@ -461,12 +461,12 @@ spec:
               -u "elastic:${NEXTCLOUD_ELASTICSEARCH_PASSWORD}" \
               -H 'Content-Type: application/json' \
               -X PUT 'http://nextcloud-search-es-http.nextcloud.svc.cluster.local:9200/_index_template/nextcloud-fulltext' \
-              -d '{"index_patterns":["nextcloud_*"],"template":{"settings":{"number_of_replicas":0}}}' || true
+              -d '{"index_patterns":["nextcloud_*"],"template":{"settings":{"number_of_replicas":1}}}' || true
             curl -fsS -o /dev/null \
               -u "elastic:${NEXTCLOUD_ELASTICSEARCH_PASSWORD}" \
               -H 'Content-Type: application/json' \
               -X PUT "http://nextcloud-search-es-http.nextcloud.svc.cluster.local:9200/${INDEX_NAME}/_settings" \
-              -d '{"index":{"number_of_replicas":0}}' || true
+              -d '{"index":{"number_of_replicas":1}}' || true
           }
 
           if app_enabled fulltextsearch && \
