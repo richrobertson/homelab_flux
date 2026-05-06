@@ -44,7 +44,7 @@ spec:
             description: Prometheus cannot scrape the Nextcloud Elasticsearch exporter in the nextcloud namespace.
 
         - alert: NextcloudElasticsearchScrapeError
-          expr: elasticsearch_exporter_last_scrape_error{job="nextcloud-search-exporter", namespace="nextcloud"} > 0
+          expr: min by (job, namespace) (elasticsearch_scrape_success{job="nextcloud-search-exporter", namespace="nextcloud"}) < 1
           for: 10m
           labels:
             domain: search

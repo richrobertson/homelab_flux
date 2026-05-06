@@ -107,14 +107,14 @@
             {
               "options": {
                 "0": {
-                  "color": "green",
+                  "color": "red",
                   "index": 0,
-                  "text": "OK"
+                  "text": "Error"
                 },
                 "1": {
-                  "color": "red",
+                  "color": "green",
                   "index": 1,
-                  "text": "Error"
+                  "text": "OK"
                 }
               },
               "type": "value"
@@ -124,11 +124,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
               },
               {
-                "color": "red",
+                "color": "green",
                 "value": 1
               }
             ]
@@ -164,8 +164,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "elasticsearch_exporter_last_scrape_error{job=\"nextcloud-search-exporter\", namespace=\"nextcloud\"}",
-          "legendFormat": "scrape error"
+          "expr": "min(elasticsearch_scrape_success{job=\"nextcloud-search-exporter\", namespace=\"nextcloud\"})",
+          "legendFormat": "scrape success"
         }
       ],
       "title": "Scrape",
@@ -429,7 +429,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "elasticsearch_indices_docs{job=\"nextcloud-search-exporter\", namespace=\"nextcloud\", index=~\"nextcloud_.*\"}",
+          "expr": "elasticsearch_indices_docs_primary{job=\"nextcloud-search-exporter\", namespace=\"nextcloud\", index=~\"nextcloud_.*\"}",
           "legendFormat": "{{ index }}"
         }
       ],
@@ -473,7 +473,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "elasticsearch_indices_store_size_bytes{job=\"nextcloud-search-exporter\", namespace=\"nextcloud\", index=~\"nextcloud_.*\"}",
+          "expr": "elasticsearch_indices_store_size_bytes_primary{job=\"nextcloud-search-exporter\", namespace=\"nextcloud\", index=~\"nextcloud_.*\"}",
           "legendFormat": "{{ index }}"
         }
       ],
