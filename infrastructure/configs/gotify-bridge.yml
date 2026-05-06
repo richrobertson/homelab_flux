@@ -5,7 +5,12 @@ metadata:
   name: gotify-bridge
   namespace: monitoring
 spec:
-  replicas: 1
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
   selector:
     matchLabels:
       app: gotify-bridge
@@ -14,6 +19,26 @@ spec:
       labels:
         app: gotify-bridge
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: gotify-bridge
+              topologyKey: kubernetes.io/hostname
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: gotify-bridge
       containers:
       - name: gotify-bridge
         image: druggeri/alertmanager_gotify_bridge@sha256:242441023c6a7956fc7bcdd30350a8fed38f791e703d670aa286fc0465f88b41
@@ -48,13 +73,29 @@ spec:
       port: 80
       targetPort: 8080
 ---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: gotify-bridge
+  namespace: monitoring
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: gotify-bridge
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gotify-bridge-flux
   namespace: monitoring
 spec:
-  replicas: 1
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
   selector:
     matchLabels:
       app: gotify-bridge-flux
@@ -63,6 +104,26 @@ spec:
       labels:
         app: gotify-bridge-flux
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: gotify-bridge-flux
+              topologyKey: kubernetes.io/hostname
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: gotify-bridge-flux
       containers:
       - name: gotify-bridge
         image: druggeri/alertmanager_gotify_bridge@sha256:242441023c6a7956fc7bcdd30350a8fed38f791e703d670aa286fc0465f88b41
@@ -100,3 +161,14 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: gotify-bridge-flux
+  namespace: monitoring
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: gotify-bridge-flux

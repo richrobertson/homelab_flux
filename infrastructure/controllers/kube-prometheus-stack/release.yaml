@@ -27,6 +27,9 @@ spec:
   values:
     alertmanager:
       enabled: true
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 2
       config:
         global:
           resolve_timeout: 3m
@@ -71,6 +74,35 @@ spec:
               - url: 'http://gotify-bridge-flux.monitoring.svc.cluster.local/gotify_webhook'
                 send_resolved: true
       alertmanagerSpec:
+        replicas: 3
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: DoesNotExist
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                        - alertmanager
+                    - key: alertmanager
+                      operator: In
+                      values:
+                        - kube-prometheus-stack-alertmanager
+                topologyKey: kubernetes.io/hostname
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: DoNotSchedule
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: alertmanager
+                alertmanager: kube-prometheus-stack-alertmanager
         storage:
           volumeClaimTemplate:
             spec:
