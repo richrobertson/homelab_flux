@@ -21,7 +21,7 @@ resources:
   - trilium
   - prowlarr
   - radarr
-  - redis-operator
+  - nextcloud-elasticsearch
   - sonarr
   - syncthing
   - task-control-plane

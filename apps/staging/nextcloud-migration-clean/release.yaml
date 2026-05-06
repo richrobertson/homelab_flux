@@ -100,6 +100,33 @@ spec:
             php occ encryption:status | grep -q 'defaultModule: OC_DEFAULT_MODULE'
           fi
 
+          install_or_enable_app() {
+            app="$1"
+            if php occ app:enable "${app}"; then
+              return 0
+            fi
+            if php occ app:install "${app}"; then
+              php occ app:enable "${app}" || true
+              return 0
+            fi
+            echo "WARNING: unable to install or enable Nextcloud app ${app}"
+            return 0
+          }
+
+          for app in fulltextsearch fulltextsearch_elasticsearch files_fulltextsearch; do
+            install_or_enable_app "${app}"
+          done
+
+          if php occ app:is-enabled fulltextsearch >/dev/null 2>&1 && \
+             php occ app:is-enabled fulltextsearch_elasticsearch >/dev/null 2>&1 && \
+             php occ app:is-enabled files_fulltextsearch >/dev/null 2>&1; then
+            php occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
+            php occ fulltextsearch_elasticsearch:configure '{"elastic_host":"http://nextcloud-search-es-http.nextcloud.svc.cluster.local:9200","elastic_index":"nextcloud_staging_clean","elastic_logger_enabled":false,"analyzer_tokenizer":"standard","allow_self_signed_cert":false}'
+            php occ files_fulltextsearch:configure '{"files_local":true,"files_external":0,"files_group_folders":false,"files_size":20,"files_office":true,"files_pdf":true,"files_zip":false,"files_chunk_size":2,"files_open_result_directly":false}'
+          else
+            echo "Full-text search apps are not all enabled; skipping Elasticsearch bootstrap."
+          fi
+
     internalDatabase:
       enabled: false
 

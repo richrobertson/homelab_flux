@@ -1,0 +1,31 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: eck-operator
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: eck-operator
+      version: 3.4.0
+      sourceRef:
+        kind: HelmRepository
+        name: elastic
+        namespace: elastic-system
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  values:
+    installCRDs: true
+    managedNamespaces:
+      - nextcloud
+    telemetry:
+      disabled: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 150Mi
+      limits:
+        cpu: "1"
+        memory: 1Gi

@@ -19,6 +19,7 @@ resources:
   - prowlarr
   - radarr
   - redis-operator-namespace.yaml
+  - nextcloud-elasticsearch
   - sonarr
   - task-control-plane
   - tautulli

@@ -10,7 +10,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./apps/staging/redis-operator-bootstrap
+  path: ./apps/staging/apps-operators
   prune: true
   wait: true
   timeout: 5m0s

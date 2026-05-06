@@ -2,6 +2,23 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
+  name: apps-operators
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: infra-gateway
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/prod/apps-operators
+  prune: true
+  wait: true
+  timeout: 10m0s
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
   name: keycloak
   namespace: flux-system
 spec:
@@ -42,6 +59,7 @@ spec:
   interval: 10m0s
   dependsOn:
     - name: infra-gateway
+    - name: apps-operators
     - name: keycloak
     - name: nextcloud-storage-target
   sourceRef:

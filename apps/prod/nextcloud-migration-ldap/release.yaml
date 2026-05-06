@@ -316,6 +316,9 @@ spec:
             contacts \
             drawio \
             end_to_end_encryption \
+            files_fulltextsearch \
+            fulltextsearch \
+            fulltextsearch_elasticsearch \
             integration_giphy \
             integration_google \
             integration_immich \
@@ -329,6 +332,16 @@ spec:
           do
             install_or_enable_app "${app}"
           done
+
+          if php occ app:is-enabled fulltextsearch >/dev/null 2>&1 && \
+             php occ app:is-enabled fulltextsearch_elasticsearch >/dev/null 2>&1 && \
+             php occ app:is-enabled files_fulltextsearch >/dev/null 2>&1; then
+            php occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
+            php occ fulltextsearch_elasticsearch:configure '{"elastic_host":"http://nextcloud-search-es-http.nextcloud.svc.cluster.local:9200","elastic_index":"nextcloud_prod","elastic_logger_enabled":false,"analyzer_tokenizer":"standard","allow_self_signed_cert":false}'
+            php occ files_fulltextsearch:configure '{"files_local":true,"files_external":0,"files_group_folders":false,"files_size":20,"files_office":true,"files_pdf":true,"files_zip":false,"files_chunk_size":2,"files_open_result_directly":false}'
+          else
+            echo "Full-text search apps are not all enabled; skipping Elasticsearch bootstrap."
+          fi
 
           if [ -n "${COLLABORA_PUBLIC_URL:-}" ]; then
             COLLABORA_WOPI_URL="${COLLABORA_WOPI_URL:-${COLLABORA_PUBLIC_URL}}"
