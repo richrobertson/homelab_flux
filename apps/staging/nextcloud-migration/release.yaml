@@ -43,6 +43,11 @@ spec:
           value: "http"
         - name: OVERWRITECLIURL
           value: "http://nextcloud-migration.nextcloud.svc.cluster.local"
+        - name: NEXTCLOUD_ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-search-es-elastic-user
+              key: elastic
       configs:
         proxy.config.php: |-
           <?php
@@ -106,9 +111,11 @@ spec:
           if app_enabled fulltextsearch && \
              app_enabled fulltextsearch_elasticsearch && \
              app_enabled files_fulltextsearch; then
-            php occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
-            php occ fulltextsearch_elasticsearch:configure '{"elastic_host":"http://nextcloud-search-es-http.nextcloud.svc.cluster.local:9200","elastic_index":"nextcloud_staging","elastic_logger_enabled":false,"analyzer_tokenizer":"standard","allow_self_signed_cert":false}'
-            php occ files_fulltextsearch:configure '{"files_local":true,"files_external":0,"files_group_folders":false,"files_size":20,"files_office":true,"files_pdf":true,"files_zip":false,"files_chunk_size":2,"files_open_result_directly":false}'
+            ELASTICSEARCH_PASSWORD_ENCODED="$(php -r 'echo rawurlencode(getenv("NEXTCLOUD_ELASTICSEARCH_PASSWORD") ?: "");')"
+            ELASTICSEARCH_HOST="http://elastic:${ELASTICSEARCH_PASSWORD_ENCODED}@nextcloud-search-es-http.nextcloud.svc.cluster.local:9200"
+            php occ fulltextsearch:configure --quiet '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
+            php occ fulltextsearch_elasticsearch:configure --quiet "{\"elastic_host\":\"${ELASTICSEARCH_HOST}\",\"elastic_index\":\"nextcloud_staging\",\"elastic_logger_enabled\":false,\"analyzer_tokenizer\":\"standard\",\"allow_self_signed_cert\":false}"
+            php occ files_fulltextsearch:configure --quiet '{"files_local":true,"files_external":0,"files_group_folders":false,"files_size":20,"files_office":true,"files_pdf":true,"files_zip":false,"files_chunk_size":2,"files_open_result_directly":false}'
           else
             echo "Full-text search apps are not all enabled; skipping Elasticsearch bootstrap."
           fi
