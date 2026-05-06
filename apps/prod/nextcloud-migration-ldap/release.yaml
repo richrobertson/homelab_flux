@@ -250,6 +250,16 @@ spec:
             exit 0
           fi
 
+          php occ config:system:set mail_smtpmode --value=smtp
+          php occ config:system:set mail_smtphost --value=mailu-postfix.default.svc.cluster.local
+          php occ config:system:set mail_smtpport --type=integer --value=25
+          php occ config:system:set mail_smtpauth --type=boolean --value=false
+          php occ config:system:set mail_from_address --value=calendar
+          php occ config:system:set mail_domain --value=myrobertson.net
+          php occ config:system:delete mail_smtpsecure || true
+          php occ config:system:delete mail_smtpname || true
+          php occ config:system:delete mail_smtppassword || true
+
           if [ "${NEXTCLOUD_ENABLE_SERVER_SIDE_ENCRYPTION:-false}" = "true" ]; then
             php occ app:enable encryption || true
             php occ encryption:enable || true
