@@ -7,8 +7,21 @@ metadata:
     app.kubernetes.io/component: database
     app.kubernetes.io/part-of: keycloak
 spec:
-  instances: 1
+  instances: 3
+  enablePDB: true
   enableSuperuserAccess: false
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
+  affinity:
+    enablePodAntiAffinity: true
+    podAntiAffinityType: required
+    topologyKey: kubernetes.io/hostname
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
   storage:
     size: 10Gi
     storageClass: ceph-block

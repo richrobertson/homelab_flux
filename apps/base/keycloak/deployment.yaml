@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app.kubernetes.io/name: keycloak
@@ -17,6 +17,28 @@ spec:
         app.kubernetes.io/name: keycloak
         app.kubernetes.io/component: identity-provider
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: keycloak
+                  app.kubernetes.io/component: identity-provider
+              topologyKey: kubernetes.io/hostname
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: keycloak
+              app.kubernetes.io/component: identity-provider
       initContainers:
         - name: import-realm
           image: quay.io/keycloak/keycloak:26.6.1
@@ -166,6 +188,10 @@ spec:
               value: xforwarded
             - name: KC_HOSTNAME
               value: https://keycloak.dev.myrobertson.net
+            - name: KC_CACHE
+              value: ispn
+            - name: KC_CACHE_STACK
+              value: jdbc-ping
             - name: KC_HEALTH_ENABLED
               value: "true"
             - name: KC_METRICS_ENABLED

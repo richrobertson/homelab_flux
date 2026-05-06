@@ -7,8 +7,10 @@ resources:
   - secret.yaml
   - realm-configmap.yaml
   - deployment.yaml
+  - pdb.yaml
   - service.yaml
   - domain-admins-rbac-job.yaml
+  - realm-settings-job.yaml
   - standard-client-scopes-job.yaml
   - webauthn-default-flow-job.yaml
   - grafana-clients-job.yaml

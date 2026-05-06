@@ -1,0 +1,86 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloak-realm-settings-v1
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: identity-provider-bootstrap
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: keycloak
+        app.kubernetes.io/component: identity-provider-bootstrap
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: configure-realm-settings
+          image: quay.io/keycloak/keycloak:26.6.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KEYCLOAK_URL
+              value: http://keycloak.default.svc.cluster.local
+            - name: KEYCLOAK_REALM
+              value: homelab
+            - name: KEYCLOAK_ADMIN_USERNAME
+              value: admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: admin-password
+          command:
+            - /bin/bash
+            - -ec
+          args:
+            - |
+              cd /opt/keycloak
+
+              for i in {1..60}; do
+                if bin/kcadm.sh config credentials \
+                  --server "${KEYCLOAK_URL}" \
+                  --realm master \
+                  --user "${KEYCLOAK_ADMIN_USERNAME}" \
+                  --password "${KEYCLOAK_ADMIN_PASSWORD}" >/dev/null; then
+                  break
+                fi
+                if [ "${i}" = "60" ]; then
+                  echo "Timed out waiting for Keycloak admin login." >&2
+                  exit 1
+                fi
+                sleep 5
+              done
+
+              bin/kcadm.sh update "realms/${KEYCLOAK_REALM}" \
+                -s sslRequired=external \
+                -s registrationAllowed=false \
+                -s resetPasswordAllowed=false \
+                -s rememberMe=true \
+                -s loginWithEmailAllowed=true \
+                -s duplicateEmailsAllowed=false \
+                -s editUsernameAllowed=false \
+                -s bruteForceProtected=true \
+                -s permanentLockout=false \
+                -s failureFactor=5 \
+                -s waitIncrementSeconds=60 \
+                -s maxFailureWaitSeconds=900 \
+                -s maxDeltaTimeSeconds=43200 \
+                -s quickLoginCheckMilliSeconds=1000 \
+                -s minimumQuickLoginWaitSeconds=60 \
+                -s accessTokenLifespan=300 \
+                -s accessTokenLifespanForImplicitFlow=900 \
+                -s ssoSessionIdleTimeout=28800 \
+                -s ssoSessionMaxLifespan=43200 \
+                -s offlineSessionIdleTimeout=2592000 \
+                -s revokeRefreshToken=true \
+                -s refreshTokenMaxReuse=0 \
+                -s eventsEnabled=true \
+                -s adminEventsEnabled=true \
+                -s adminEventsDetailsEnabled=true \
+                -s eventsExpiration=2592000
+
+              bin/kcadm.sh create clear-realm-cache -r "${KEYCLOAK_REALM}" -s "realm=${KEYCLOAK_REALM}" || true
+
+              echo "Hardened ${KEYCLOAK_REALM} realm settings."
