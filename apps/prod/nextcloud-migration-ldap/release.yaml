@@ -55,7 +55,33 @@ spec:
                   - -C
                   - ServerName cloud.myrobertson.com
   values:
-    replicaCount: 1
+    replicaCount: 3
+
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: DoesNotExist
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/component: app
+                app.kubernetes.io/name: nextcloud
+                app.kubernetes.io/instance: nextcloud-migration-ldap
+            topologyKey: kubernetes.io/hostname
+
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/component: app
+            app.kubernetes.io/name: nextcloud
+            app.kubernetes.io/instance: nextcloud-migration-ldap
 
     image:
       repository: nextcloud

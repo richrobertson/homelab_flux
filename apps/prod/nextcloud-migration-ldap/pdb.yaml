@@ -1,0 +1,15 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nextcloud-migration-ldap
+  labels:
+    app.kubernetes.io/name: nextcloud
+    app.kubernetes.io/instance: nextcloud-migration-ldap
+    app.kubernetes.io/component: app
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nextcloud
+      app.kubernetes.io/instance: nextcloud-migration-ldap
+      app.kubernetes.io/component: app
