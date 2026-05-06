@@ -299,7 +299,7 @@ spec:
               "imapHost" => "mailu-dovecot.default.svc.cluster.local",
               "imapPort" => 143,
               "imapSslMode" => "none",
-              "smtpUser" => "",
+              "smtpUser" => "%EMAIL%",
               "smtpHost" => "mailu-postfix.default.svc.cluster.local",
               "smtpPort" => 25,
               "smtpSslMode" => "none",
@@ -341,6 +341,14 @@ spec:
               }
           });
 
+          $db = \OC::$server->getDatabaseConnection();
+          $db->executeStatement(
+              "UPDATE *PREFIX*mail_accounts
+               SET outbound_host = ?, outbound_port = ?, outbound_ssl_mode = ?, outbound_user = NULL, outbound_password = NULL
+               WHERE lower(email) LIKE ?",
+              ["mailu-postfix.default.svc.cluster.local", "25", "none", "%@myrobertson.net"]
+          );
+
           echo "Mail: provisioned or updated {$count} accounts.\n";
           '
 
@@ -375,15 +383,26 @@ spec:
                   --smtp-host=mailu-postfix.default.svc.cluster.local \
                   --smtp-port=25 \
                   --smtp-ssl-mode=none \
-                  --smtp-user="" \
-                  --smtp-password=""
+                  --smtp-user="${MAIL_ADDRESS}" \
+                  --smtp-password="${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD}"
               else
                 php occ mail:account:create "${MAIL_USER_ID}" "${DISPLAY_NAME}" "${MAIL_ADDRESS}" \
                   mailu-dovecot.default.svc.cluster.local 143 none "${MAIL_ADDRESS}*nextcloud" "${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD}" \
-                  mailu-postfix.default.svc.cluster.local 25 none "" "" \
+                  mailu-postfix.default.svc.cluster.local 25 none "${MAIL_ADDRESS}" "${NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD}" \
                   password
               fi
             done
+
+            php -r '
+          require_once "/var/www/html/lib/base.php";
+          $db = \OC::$server->getDatabaseConnection();
+          $db->executeStatement(
+              "UPDATE *PREFIX*mail_accounts
+               SET outbound_host = ?, outbound_port = ?, outbound_ssl_mode = ?, outbound_user = NULL, outbound_password = NULL
+               WHERE lower(email) LIKE ?",
+              ["mailu-postfix.default.svc.cluster.local", "25", "none", "%@myrobertson.net"]
+          );
+          '
           fi
 
           if [ -n "${COLLABORA_PUBLIC_URL:-}" ]; then

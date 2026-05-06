@@ -520,7 +520,7 @@ spec:
               "imapHost" => "mailu-dovecot.default.svc.cluster.local",
               "imapPort" => 143,
               "imapSslMode" => "none",
-              "smtpUser" => "",
+              "smtpUser" => "%EMAIL%",
               "smtpHost" => "mailu-postfix.default.svc.cluster.local",
               "smtpPort" => 25,
               "smtpSslMode" => "none",
@@ -561,6 +561,14 @@ spec:
                   $manager->updatePassword($user, getenv("NEXTCLOUD_MAIL_PROVISIONING_MASTER_PASSWORD"), $configs);
               }
           });
+
+          $db = \OC::$server->getDatabaseConnection();
+          $db->executeStatement(
+              "UPDATE *PREFIX*mail_accounts
+               SET outbound_host = ?, outbound_port = ?, outbound_ssl_mode = ?, outbound_user = NULL, outbound_password = NULL
+               WHERE lower(email) LIKE ?",
+              ["mailu-postfix.default.svc.cluster.local", "25", "none", "%@myrobertson.net"]
+          );
 
           echo "Mail: provisioned or updated {$count} accounts.\n";
           '
