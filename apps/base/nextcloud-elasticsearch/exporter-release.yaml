@@ -54,7 +54,7 @@ spec:
       namespace: monitoring
       interval: 30s
       scrapeTimeout: 10s
-      jobLabel: app.kubernetes.io/name
+      jobLabel: app.kubernetes.io/instance
       labels:
         app.kubernetes.io/part-of: nextcloud
         app.kubernetes.io/component: monitoring
