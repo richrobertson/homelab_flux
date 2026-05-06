@@ -15,6 +15,8 @@ data:
   EMAIL_FROM: "security-reporter@myrobertson.net"
   EMAIL_TO: "roy@myrobertson.com"
   EMAIL_SUBJECT_PREFIX: "[homelab security]"
+  TREND_LOOKBACK_DAYS: "60"
+  TREND_EVENT_LIMIT: "20000"
 ---
 apiVersion: apps/v1
 kind: Deployment
