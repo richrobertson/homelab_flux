@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-standard-client-scopes-v6
+  name: keycloak-standard-client-scopes-v7
   labels:
     app.kubernetes.io/name: keycloak
     app.kubernetes.io/component: identity-provider-bootstrap
@@ -99,7 +99,7 @@ spec:
               create_scope_mapper "${WEB_ORIGINS_SCOPE_ID}" "allowed web origins" oidc-allowed-origins-mapper
               create_scope_mapper "${ACR_SCOPE_ID}" "acr loa level" oidc-acr-mapper
 
-              OIDC_CLIENTS="account account-console security-admin-console grafana_staging grafana_prod mealie_staging mealie_prod vikunja_staging vikunja_prod nextcloud_staging nextcloud_prod guacamole_staging guacamole_prod"
+              OIDC_CLIENTS="account account-console security-admin-console grafana_staging grafana_prod mealie_staging mealie_prod vikunja_staging vikunja_prod nextcloud_staging nextcloud_prod guacamole_staging guacamole_prod proxmox_prod pbs_prod synology_scooter_prod synology_kermit_prod"
 
               for client_id in ${OIDC_CLIENTS}; do
                 CLIENT_UUID="$(bin/kcadm.sh get clients -r "${KEYCLOAK_REALM}" -q "clientId=${client_id}" --fields id,clientId --format csv | csv_first_id)"
