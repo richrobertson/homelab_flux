@@ -20,6 +20,7 @@ resources:
   - syncthing-alerts.yaml
   - powerdns-alerts.yaml
   - keycloak-observability.yaml
+  - elasticsearch-observability.yaml
   - backup-observability-alerts.yaml
   - proxmox-temperature-alerts.yaml
   - proxmox-thunderbolt-ring-alerts.yaml
@@ -159,6 +160,7 @@ configMapGenerator:
     files:
       - dashboards/nextcloud-overview.json
       - dashboards/nextcloud-logs.json
+      - dashboards/nextcloud-elasticsearch.json
     options:
       labels:
         grafana_dashboard: "1"

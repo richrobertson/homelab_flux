@@ -1,0 +1,114 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: elasticsearch-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/part-of: nextcloud
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: eck-operator
+      rules:
+        - alert: ECKOperatorMetricsDown
+          expr: absent_over_time(up{job=~"eck-operator|elastic-operator", namespace="elastic-system"}[10m])
+          for: 10m
+          labels:
+            domain: search
+            severity: critical
+          annotations:
+            summary: ECK operator metrics are unavailable
+            description: Prometheus has not scraped ECK operator metrics from elastic-system for at least 10 minutes.
+
+        - alert: ECKOperatorRestarting
+          expr: increase(kube_pod_container_status_restarts_total{namespace="elastic-system", pod=~"elastic-operator-.*"}[15m]) > 0
+          for: 5m
+          labels:
+            domain: search
+            severity: warning
+          annotations:
+            summary: ECK operator restarted
+            description: The ECK operator pod has restarted within the last 15 minutes.
+
+    - name: nextcloud-elasticsearch
+      rules:
+        - alert: NextcloudElasticsearchExporterDown
+          expr: max_over_time(up{job="nextcloud-search-exporter", namespace="nextcloud"}[10m]) < 1 or absent_over_time(up{job="nextcloud-search-exporter", namespace="nextcloud"}[10m])
+          for: 10m
+          labels:
+            domain: search
+            severity: critical
+          annotations:
+            summary: Nextcloud Elasticsearch exporter is unavailable
+            description: Prometheus cannot scrape the Nextcloud Elasticsearch exporter in the nextcloud namespace.
+
+        - alert: NextcloudElasticsearchScrapeError
+          expr: elasticsearch_exporter_last_scrape_error{job="nextcloud-search-exporter", namespace="nextcloud"} > 0
+          for: 10m
+          labels:
+            domain: search
+            severity: critical
+          annotations:
+            summary: Nextcloud Elasticsearch exporter cannot scrape Elasticsearch
+            description: The Elasticsearch exporter is reachable but is failing to collect metrics from nextcloud-search.
+
+        - alert: NextcloudElasticsearchClusterNotGreen
+          expr: elasticsearch_cluster_health_status{job="nextcloud-search-exporter", namespace="nextcloud", color!="green"} == 1
+          for: 15m
+          labels:
+            domain: search
+            severity: warning
+          annotations:
+            summary: Nextcloud Elasticsearch cluster is not green
+            description: The nextcloud-search Elasticsearch cluster has reported {{ $labels.color }} health for at least 15 minutes.
+
+        - alert: NextcloudElasticsearchNoNodes
+          expr: elasticsearch_cluster_health_number_of_nodes{job="nextcloud-search-exporter", namespace="nextcloud"} < 1
+          for: 5m
+          labels:
+            domain: search
+            severity: critical
+          annotations:
+            summary: Nextcloud Elasticsearch has no nodes
+            description: The nextcloud-search Elasticsearch exporter reports fewer than one Elasticsearch node.
+
+        - alert: NextcloudElasticsearchHeapHigh
+          expr: |
+            (
+              elasticsearch_jvm_memory_used_bytes{job="nextcloud-search-exporter", namespace="nextcloud", area="heap"}
+              /
+              clamp_min(elasticsearch_jvm_memory_max_bytes{job="nextcloud-search-exporter", namespace="nextcloud", area="heap"}, 1)
+            ) > 0.85
+          for: 15m
+          labels:
+            domain: search
+            severity: warning
+          annotations:
+            summary: Nextcloud Elasticsearch heap pressure is high
+            description: Elasticsearch heap usage has been above 85% for 15 minutes on {{ $labels.node }}.
+
+        - alert: NextcloudElasticsearchDiskLow
+          expr: |
+            (
+              elasticsearch_filesystem_data_available_bytes{job="nextcloud-search-exporter", namespace="nextcloud"}
+              /
+              clamp_min(elasticsearch_filesystem_data_size_bytes{job="nextcloud-search-exporter", namespace="nextcloud"}, 1)
+            ) < 0.15
+          for: 15m
+          labels:
+            domain: search
+            severity: warning
+          annotations:
+            summary: Nextcloud Elasticsearch disk space is low
+            description: Elasticsearch data disk free space is below 15% on {{ $labels.node }}.
+
+        - alert: NextcloudElasticsearchPodNotReady
+          expr: kube_pod_status_ready{namespace="nextcloud", pod=~"nextcloud-search-es-.*", condition="true"} == 0
+          for: 10m
+          labels:
+            domain: search
+            severity: critical
+          annotations:
+            summary: Nextcloud Elasticsearch pod is not ready
+            description: Pod {{ $labels.namespace }}/{{ $labels.pod }} has not been ready for at least 10 minutes.
