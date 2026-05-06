@@ -427,6 +427,7 @@ spec:
           LDAP_USER_FILTER="${LDAP_USER_FILTER:-(|(objectclass=person)(objectclass=user))}"
           LDAP_GROUP_FILTER="${LDAP_GROUP_FILTER:-(|(objectclass=group)(objectclass=groupOfNames))}"
           LDAP_TLS="${LDAP_TLS:-1}"
+          LDAP_ADMIN_GROUP="${LDAP_ADMIN_GROUP:-Domain Admins}"
 
           php occ ldap:set-config "${LDAP_CFG_ID}" ldapConfigurationActive 1
           php occ ldap:set-config "${LDAP_CFG_ID}" ldapHost "${LDAP_HOST}"
@@ -443,6 +444,7 @@ spec:
           php occ ldap:set-config "${LDAP_CFG_ID}" turnOffCertCheck 1
           php occ ldap:set-config "${LDAP_CFG_ID}" ldapEmailAttribute mail
           php occ ldap:set-config "${LDAP_CFG_ID}" ldapLoginFilterEmail 1
+          php occ ldap:set-config "${LDAP_CFG_ID}" ldapAdminGroup "${LDAP_ADMIN_GROUP}"
           php occ ldap:test-config "${LDAP_CFG_ID}"
           php occ user:list --output=json | php -r '
           $users = json_decode(stream_get_contents(STDIN), true) ?: [];

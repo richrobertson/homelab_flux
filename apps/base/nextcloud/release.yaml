@@ -438,7 +438,7 @@ spec:
           LDAP_USER_FILTER="${LDAP_USER_FILTER:-(|(objectclass=person)(objectclass=user))}"
           LDAP_GROUP_FILTER="${LDAP_GROUP_FILTER:-(|(objectclass=group)(objectclass=groupOfNames))}"
           LDAP_TLS="${LDAP_TLS:-1}"
-          LDAP_ADMIN_GROUP="${LDAP_ADMIN_GROUP:-cn=Domain Admins,cn=Users,dc=myrobertson,dc=net}"
+          LDAP_ADMIN_GROUP="${LDAP_ADMIN_GROUP:-Domain Admins}"
 
           php occ app:enable user_ldap || php occ app:install user_ldap || true
 
