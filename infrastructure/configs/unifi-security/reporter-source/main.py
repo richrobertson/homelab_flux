@@ -13,7 +13,7 @@ import smtplib
 import socket
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import paramiko
@@ -42,6 +42,8 @@ class Settings:
     email_from: str = os.getenv("EMAIL_FROM", "security-reporter@myrobertson.net")
     email_to: str = os.getenv("EMAIL_TO", "roy@myrobertson.com")
     email_subject_prefix: str = os.getenv("EMAIL_SUBJECT_PREFIX", "[homelab security]")
+    trend_lookback_days: int = int(os.getenv("TREND_LOOKBACK_DAYS", "60"))
+    trend_event_limit: int = int(os.getenv("TREND_EVENT_LIMIT", "20000"))
 
 
 @dataclass(frozen=True)
@@ -53,6 +55,7 @@ class ThreatEvent:
     src_ip: str
     dst_ip: str
     device_name: str
+    details: dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def from_doc(cls, doc: dict[str, Any]) -> "ThreatEvent":
@@ -65,6 +68,7 @@ class ThreatEvent:
             src_ip=_param_name(params, "SRC_IP"),
             dst_ip=_param_name(params, "DST_IP"),
             device_name=_param_name(params, "DEVICE"),
+            details=_event_details(doc, params),
         )
 
     @property
@@ -89,12 +93,92 @@ class ThreatEvent:
             "src_ip": self.src_ip,
             "dst_ip": self.dst_ip,
             "device_name": self.device_name,
+            "details": self.details,
         }
+
+    @property
+    def summary(self) -> str:
+        return _format_details(self.details)
 
 
 def _param_name(params: dict[str, Any], key: str) -> str:
-    value = params.get(key) or {}
-    return str(value.get("name") or value.get("ip") or value.get("target_id") or "unknown")
+    value = _param_value(params, key) or {}
+    if isinstance(value, dict):
+        return str(value.get("name") or value.get("ip") or value.get("target_id") or "unknown")
+    return str(value or "unknown")
+
+
+def _param_scalar(params: dict[str, Any], key: str) -> str:
+    value = _param_value(params, key)
+    if isinstance(value, dict):
+        value = value.get("name") or value.get("value") or value.get("ip") or value.get("target_id")
+    if value in (None, ""):
+        return ""
+    return str(value)
+
+
+def _param_value(params: dict[str, Any], key: str) -> Any:
+    for candidate in (key, key.upper(), key.lower()):
+        if candidate in params:
+            return params[candidate]
+    normalized = key.replace("_", "").lower()
+    for param_key, value in params.items():
+        if str(param_key).replace("_", "").lower() == normalized:
+            return value
+    return None
+
+
+def _event_details(doc: dict[str, Any], params: dict[str, Any]) -> dict[str, str]:
+    fields = {
+        "message": doc.get("message") or doc.get("msg") or doc.get("description"),
+        "signature": _first_param(params, "SIGNATURE", "SIG_NAME", "THREAT_NAME", "NAME"),
+        "category": _first_param(params, "CATEGORY", "CAT", "CLASSIFICATION", "APP_CATEGORY"),
+        "protocol": _first_param(params, "PROTOCOL", "PROTO", "L4_PROTO"),
+        "source_port": _first_param(params, "SRC_PORT", "SOURCE_PORT", "SPORT"),
+        "target_port": _first_param(params, "DST_PORT", "DESTINATION_PORT", "DPORT"),
+        "direction": _first_param(params, "DIRECTION", "FLOW_DIRECTION"),
+        "action": _first_param(params, "ACTION", "RULE_ACTION"),
+        "interface": _first_param(params, "INTERFACE", "IN_INTERFACE", "OUT_INTERFACE"),
+    }
+    details = {key: str(value) for key, value in fields.items() if value not in (None, "")}
+    if details:
+        return details
+
+    ignored = {"SRC_IP", "DST_IP", "DEVICE"}
+    for key, value in params.items():
+        if str(key).upper() in ignored:
+            continue
+        scalar = _param_scalar(params, str(key))
+        if scalar:
+            details[str(key).lower()] = scalar
+        if len(details) >= 6:
+            break
+    return details
+
+
+def _first_param(params: dict[str, Any], *keys: str) -> str:
+    for key in keys:
+        value = _param_scalar(params, key)
+        if value:
+            return value
+    return ""
+
+
+def _format_details(details: dict[str, str]) -> str:
+    if not details:
+        return "No additional threat characteristics reported by UniFi"
+    labels = {
+        "message": "Message",
+        "signature": "Signature",
+        "category": "Category",
+        "protocol": "Protocol",
+        "source_port": "Src port",
+        "target_port": "Dst port",
+        "direction": "Direction",
+        "action": "Action",
+        "interface": "Interface",
+    }
+    return "; ".join(f"{labels.get(key, key.replace('_', ' ').title())}: {value}" for key, value in details.items())
 
 
 def _mongo_epoch_millis(value: Any) -> float:
@@ -109,7 +193,7 @@ def _js_string(value: str) -> str:
     return json.dumps(value)
 
 
-def fetch_events(settings: Settings, lookback_hours: int | None = None) -> list[ThreatEvent]:
+def fetch_events(settings: Settings, lookback_hours: int | None = None, limit: int = 2000) -> list[ThreatEvent]:
     if not settings.unifi_ssh_username or not settings.unifi_ssh_password:
         raise RuntimeError("UNIFI_SSH_USERNAME and UNIFI_SSH_PASSWORD are required")
 
@@ -128,23 +212,24 @@ def fetch_events(settings: Settings, lookback_hours: int | None = None) -> list[
         "time": 1,
         "status": 1,
         "severity": 1,
-        "parameters.SRC_IP": 1,
-        "parameters.DST_IP": 1,
-        "parameters.DEVICE": 1,
+        "message": 1,
+        "msg": 1,
+        "description": 1,
+        "parameters": 1,
     }
     js = (
         "var docs=db.alert.find("
         + _js_string(json.dumps(query))
         + ", "
         + _js_string(json.dumps(projection))
-        + ").sort({time:-1}).limit(2000).toArray();"
+        + ").sort({time:-1}).limit(" + str(limit) + ").toArray();"
         + "print(JSON.stringify(docs));"
     )
     # mongo's shell accepts JavaScript objects, not JSON strings, so parse inside the shell.
     js = (
         "var q=JSON.parse(" + _js_string(json.dumps(query)) + ");"
         "var p=JSON.parse(" + _js_string(json.dumps(projection)) + ");"
-        "print(JSON.stringify(db.alert.find(q,p).sort({time:-1}).limit(2000).toArray()));"
+        "print(JSON.stringify(db.alert.find(q,p).sort({time:-1}).limit(" + str(limit) + ").toArray()));"
     )
 
     output = run_gateway_command(settings, f"mongo --quiet --port 27117 ace --eval {_shell_quote(js)}")
@@ -441,9 +526,14 @@ def run_exporter(settings: Settings) -> None:
 
 def send_daily_report(settings: Settings) -> None:
     events = fetch_events(settings, lookback_hours=24)
+    trend_events = fetch_events(
+        settings,
+        lookback_hours=settings.trend_lookback_days * 24,
+        limit=settings.trend_event_limit,
+    )
     subject_date = dt.datetime.now(UTC).astimezone().strftime("%Y-%m-%d")
     subject = f"{settings.email_subject_prefix} daily situational awareness - {subject_date}"
-    text_body, html_body = render_report(events)
+    text_body, html_body = render_report(events, trend_events=trend_events, trend_days=settings.trend_lookback_days)
     msg = email.message.EmailMessage()
     msg["From"] = settings.email_from
     msg["To"] = settings.email_to
@@ -458,16 +548,120 @@ def send_daily_report(settings: Settings) -> None:
         smtp.starttls()
         smtp.login(settings.smtp_username, settings.smtp_password)
         smtp.send_message(msg)
-    LOG.info("sent daily report to %s with %s events", settings.email_to, len(events))
+    LOG.info(
+        "sent daily report to %s with %s events and %s trend events",
+        settings.email_to,
+        len(events),
+        len(trend_events),
+    )
 
 
-def render_report(events: list[ThreatEvent]) -> tuple[str, str]:
+def _severity_trend(events: list[ThreatEvent], days: int, now: dt.datetime) -> list[tuple[dt.date, collections.Counter[str]]]:
+    end_date = now.date()
+    start_date = end_date - dt.timedelta(days=days - 1)
+    daily: dict[dt.date, collections.Counter[str]] = {
+        start_date + dt.timedelta(days=offset): collections.Counter() for offset in range(days)
+    }
+    for event in events:
+        event_date = dt.datetime.fromtimestamp(event.timestamp, UTC).astimezone().date()
+        if start_date <= event_date <= end_date:
+            daily[event_date][event.severity or "unknown"] += 1
+    return [(day, daily[day]) for day in sorted(daily)]
+
+
+def _trend_text_lines(trend: list[tuple[dt.date, collections.Counter[str]]]) -> list[str]:
+    if not trend:
+        return ["- none"]
+    lines = []
+    for day, counts in trend:
+        total = sum(counts.values())
+        if not total:
+            lines.append(f"- {day.isoformat()}: 0")
+            continue
+        severities = ", ".join(f"{severity}={count}" for severity, count in _ordered_counts(counts))
+        lines.append(f"- {day.isoformat()}: {total} ({severities})")
+    return lines
+
+
+def _ordered_counts(counts: collections.Counter[str]) -> list[tuple[str, int]]:
+    order = ["critical", "high", "medium", "low", "unknown"]
+    known = [(severity, counts[severity]) for severity in order if counts[severity]]
+    other = sorted((severity, count) for severity, count in counts.items() if severity not in order and count)
+    return known + other
+
+
+def _trend_html_chart(trend: list[tuple[dt.date, collections.Counter[str]]]) -> str:
+    colors = {
+        "critical": "#b91c1c",
+        "high": "#f97316",
+        "medium": "#eab308",
+        "low": "#2563eb",
+        "unknown": "#6b7280",
+    }
+    max_total = max((sum(counts.values()) for _day, counts in trend), default=0)
+    legend = " ".join(
+        f'<span style="white-space:nowrap;margin-right:12px;"><span style="display:inline-block;width:10px;height:10px;background:{color};"></span> {html.escape(severity.title())}</span>'
+        for severity, color in colors.items()
+    )
+    rows = []
+    for day, counts in trend:
+        total = sum(counts.values())
+        if max_total and total:
+            segments = []
+            for severity, count in _ordered_counts(counts):
+                width = max(2, round((count / max_total) * 100))
+                color = colors.get(severity, "#6b7280")
+                label = html.escape(f"{severity}: {count}")
+                segments.append(
+                    f'<span title="{label}" style="display:inline-block;height:14px;width:{width}%;background:{color};"></span>'
+                )
+            bar = "".join(segments)
+        else:
+            bar = '<span style="color:#6b7280;">none</span>'
+        rows.append(
+            "<tr>"
+            f"<td>{html.escape(day.isoformat())}</td>"
+            f'<td style="text-align:right;">{total}</td>'
+            f'<td style="min-width:220px;width:70%;">{bar}</td>'
+            "</tr>"
+        )
+    body_rows = "".join(rows) or '<tr><td colspan="3">none</td></tr>'
+    return (
+        "<h3>60-day threat count trend by severity</h3>"
+        f"<p>{legend}</p>"
+        "<table>"
+        "<tr><th>Date</th><th>Total</th><th>Severity trend</th></tr>"
+        f"{body_rows}"
+        "</table>"
+    )
+
+
+def _important_event_row(event: ThreatEvent) -> str:
+    return (
+        "<tr>"
+        f"<td>{html.escape(event.timestamp_text)}</td>"
+        f"<td>{html.escape(event.severity.upper())}</td>"
+        f"<td>{html.escape(event.summary)}</td>"
+        f"<td>{html.escape(event.src_ip)}</td>"
+        f"<td>{html.escape(event.dst_ip)}</td>"
+        f"<td>{html.escape(event.device_name)}</td>"
+        f"<td>{html.escape(event.status)}</td>"
+        "</tr>"
+    )
+
+
+def render_report(
+    events: list[ThreatEvent],
+    trend_events: list[ThreatEvent] | None = None,
+    trend_days: int = 60,
+) -> tuple[str, str]:
     now = dt.datetime.now(UTC).astimezone()
     high = [event for event in events if event.severity in {"high", "critical"}]
     by_target = collections.Counter(event.dst_ip for event in high if event.dst_ip != "unknown")
     by_source = collections.Counter(event.src_ip for event in high if event.src_ip != "unknown")
     by_key = collections.Counter(event.key for event in high)
     important_events = sorted((event for event in events if event.is_important()), key=lambda item: item.timestamp, reverse=True)[:15]
+    trend = _severity_trend(trend_events if trend_events is not None else events, trend_days, now)
     newest = max((event.timestamp for event in events), default=0)
     newest_text = (
         dt.datetime.fromtimestamp(newest, UTC).astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
@@ -478,9 +672,10 @@ def render_report(events: list[ThreatEvent]) -> tuple[str, str]:
     source_lines = [f"- {src}: {count}" for src, count in by_source.most_common(10)] or ["- none"]
     key_lines = [f"- {key}: {count}" for key, count in by_key.most_common(10)] or ["- none"]
     important_lines = [
-        f"- {event.timestamp_text} {event.severity.upper()} {event.key} src={event.src_ip} dst={event.dst_ip} device={event.device_name} status={event.status}"
+        f"- {event.timestamp_text} {event.severity.upper()} {event.summary} src={event.src_ip} dst={event.dst_ip} device={event.device_name} status={event.status}"
         for event in important_events
     ] or ["- none"]
+    trend_lines = _trend_text_lines(trend)
 
     lines = [
         "Homelab security situational awareness",
@@ -500,6 +695,9 @@ def render_report(events: list[ThreatEvent]) -> tuple[str, str]:
         "",
         "Important event details:",
         *important_lines,
+        "",
+        f"Threat count trend by severity ({trend_days} days):",
+        *trend_lines,
     ]
     text_body = "\n".join(lines)
 
@@ -517,13 +715,14 @@ def render_report(events: list[ThreatEvent]) -> tuple[str, str]:
         <p><strong>Generated:</strong> {html.escape(f"{now:%Y-%m-%d %H:%M:%S %Z}")}</p>
         <p><strong>High/critical gateway threat blocks in the last 24h:</strong> {len(high)}</p>
         <p><strong>Newest security event:</strong> {html.escape(newest_text)}</p>
+        {_trend_html_chart(trend)}
         {table(by_target, "Top targeted internal IPs")}
         {table(by_source, "Top external sources")}
         {table(by_key, "Event types")}
         <h3>Important event details</h3>
         <table>
-          <tr><th>Time</th><th>Severity</th><th>Type</th><th>Source</th><th>Target</th><th>Device</th><th>Status</th></tr>
-          {''.join(f'<tr><td>{html.escape(event.timestamp_text)}</td><td>{html.escape(event.severity.upper())}</td><td>{html.escape(event.key)}</td><td>{html.escape(event.src_ip)}</td><td>{html.escape(event.dst_ip)}</td><td>{html.escape(event.device_name)}</td><td>{html.escape(event.status)}</td></tr>' for event in important_events) or '<tr><td colspan="7">none</td></tr>'}
+          <tr><th>Time</th><th>Severity</th><th>Characteristics</th><th>Source</th><th>Target</th><th>Device</th><th>Status</th></tr>
+          {''.join(_important_event_row(event) for event in important_events) or '<tr><td colspan="7">none</td></tr>'}
         </table>
       </body>
     </html>
