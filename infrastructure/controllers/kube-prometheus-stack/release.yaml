@@ -41,10 +41,18 @@ spec:
           repeat_interval: 12h
           routes:
             - match:
+                alertname: InfoInhibitor
+              receiver: 'null'
+            - match:
                 alertname: Watchdog
               receiver: 'null'
             - match:
                 alertname: FluxKustomizationHealthcheckfailed
+              receiver: 'null'
+            - matchers:
+                - alertname = KubeJobFailed
+                - namespace = monitoring
+                - job_name =~ unifi-security-daily-email-.*
               receiver: 'null'
             - match_re:
                 alertname: '^Flux.*'

@@ -24,6 +24,13 @@ LOG = logging.getLogger("unifi_security_reporter")
 UTC = dt.timezone.utc
 
 
+def env_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 @dataclass(frozen=True)
 class Settings:
     unifi_host: str = os.getenv("UNIFI_HOST", "192.168.1.1")
@@ -39,6 +46,8 @@ class Settings:
     smtp_port: int = int(os.getenv("SMTP_PORT", "587"))
     smtp_username: str = os.getenv("SMTP_USERNAME", "")
     smtp_password: str = os.getenv("SMTP_PASSWORD", "")
+    smtp_starttls: bool = env_bool("SMTP_STARTTLS", True)
+    smtp_auth_required: bool = env_bool("SMTP_AUTH_REQUIRED", True)
     email_from: str = os.getenv("EMAIL_FROM", "security-reporter@myrobertson.net")
     email_to: str = os.getenv("EMAIL_TO", "roy@myrobertson.com")
     email_subject_prefix: str = os.getenv("EMAIL_SUBJECT_PREFIX", "[homelab security]")
@@ -541,12 +550,14 @@ def send_daily_report(settings: Settings) -> None:
     msg.set_content(text_body)
     msg.add_alternative(html_body, subtype="html")
 
-    if not settings.smtp_username or not settings.smtp_password:
+    if settings.smtp_auth_required and (not settings.smtp_username or not settings.smtp_password):
         raise RuntimeError("SMTP_USERNAME and SMTP_PASSWORD are required for email reports")
 
     with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=30) as smtp:
-        smtp.starttls()
-        smtp.login(settings.smtp_username, settings.smtp_password)
+        if settings.smtp_starttls:
+            smtp.starttls()
+        if settings.smtp_auth_required:
+            smtp.login(settings.smtp_username, settings.smtp_password)
         smtp.send_message(msg)
     LOG.info(
         "sent daily report to %s with %s events and %s trend events",

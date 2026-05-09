@@ -10,8 +10,10 @@ data:
   TOP_LIMIT: "10"
   GATEWAY_INTERFACES: "eth9,eth10"
   METRICS_PORT: "8080"
-  SMTP_HOST: "email-smtp.us-west-2.amazonaws.com"
-  SMTP_PORT: "587"
+  SMTP_HOST: "mailu-postfix.default.svc.cluster.local"
+  SMTP_PORT: "25"
+  SMTP_STARTTLS: "false"
+  SMTP_AUTH_REQUIRED: "false"
   EMAIL_FROM: "security-reporter@myrobertson.net"
   EMAIL_TO: "roy@myrobertson.com"
   EMAIL_SUBJECT_PREFIX: "[homelab security]"
@@ -126,7 +128,7 @@ spec:
   failedJobsHistoryLimit: 7
   jobTemplate:
     spec:
-      backoffLimit: 2
+      backoffLimit: 0
       ttlSecondsAfterFinished: 86400
       template:
         metadata:
