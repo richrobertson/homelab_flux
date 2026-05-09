@@ -228,14 +228,13 @@ spec:
             memory: 500Mi
           limits:
             memory: 2000Mi
-            
-      storageSpec:
-        volumeClaimTemplate:
-          spec:
-            accessModes: ["ReadWriteOnce"]
-            resources:
-              requests:
-                storage: 100Gi
-            storageClassName: ceph-block
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 100Gi
+              storageClassName: ceph-block
         
    
