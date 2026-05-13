@@ -25,6 +25,11 @@ spec:
     valuesKey: kube-state-metrics-config.yaml
   # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
   values:
+    defaultRules:
+      rules:
+        # This generated group is too expensive for the current homelab
+        # Prometheus cardinality and misses its 30s evaluation interval.
+        kubeApiserverBurnrate: false
     alertmanager:
       enabled: true
       podDisruptionBudget:
@@ -33,6 +38,27 @@ spec:
       config:
         global:
           resolve_timeout: 3m
+        inhibit_rules:
+          - source_matchers:
+              - 'severity = critical'
+            target_matchers:
+              - 'severity =~ warning|info'
+            equal:
+              - namespace
+              - alertname
+          - source_matchers:
+              - 'severity = warning'
+            target_matchers:
+              - 'severity = info'
+            equal:
+              - namespace
+              - alertname
+          - source_matchers:
+              - 'alertname = InfoInhibitor'
+            target_matchers:
+              - 'severity = info'
+            equal:
+              - namespace
         route:
           receiver: 'gotify-receiver'
           group_by: ['alertname']
@@ -224,10 +250,10 @@ spec:
         retentionSize: 50GB
         resources:
           requests:
-            cpu: 75m
-            memory: 500Mi
+            cpu: 1000m
+            memory: 1Gi
           limits:
-            memory: 2000Mi
+            memory: 3Gi
         storageSpec:
           volumeClaimTemplate:
             spec:
