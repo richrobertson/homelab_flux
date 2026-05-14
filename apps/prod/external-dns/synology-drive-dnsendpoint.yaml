@@ -1,0 +1,14 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: synology-drive
+spec:
+  endpoints:
+    - dnsName: drive.myrobertson.com
+      recordType: CNAME
+      recordTTL: 300
+      targets:
+        - myrobertson.com
+      providerSpecific:
+        - name: external-dns.alpha.kubernetes.io/cloudflare-proxied
+          value: "false"

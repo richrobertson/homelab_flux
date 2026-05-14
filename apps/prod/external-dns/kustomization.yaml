@@ -5,6 +5,7 @@ resources:
   - cloudflare-api-key.yaml
   - powerdns-api-key.yaml
   - external-dns-pdns.yaml
+  - synology-drive-dnsendpoint.yaml
   - ../../base/external-dns
 patches:
   - path: external-dns-values.yaml

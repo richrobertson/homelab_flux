@@ -6,3 +6,4 @@ resources:
   - myrobertson-com/myrobertson-com-gateway.yaml
   - myrobertson-com/myrobertson-com-redirect.yaml
   - externalServices/kermit.yaml
+  - externalServices/synology-drive-certificate.yaml
