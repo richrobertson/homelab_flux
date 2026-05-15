@@ -69,7 +69,7 @@ spec:
           path: /spec/values/prometheus/prometheusSpec/retentionSize
           value: 1GB
         - op: replace
-          path: /spec/values/prometheus/storageSpec/volumeClaimTemplate/spec/resources/requests/storage
+          path: /spec/values/prometheus/prometheusSpec/storageSpec/volumeClaimTemplate/spec/resources/requests/storage
           value: 2Gi
         - op: replace
           path: /spec/values/grafana/grafana.ini/server/domain

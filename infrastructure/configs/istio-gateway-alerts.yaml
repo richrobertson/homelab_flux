@@ -54,13 +54,13 @@ spec:
               )
             ) > 1000
             and
-            sum(rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])) > 1
+            sum(rate(istio_requests_total{source_workload="myrobertson-com-gateway-istio",reporter="source"}[5m])) > 5
           for: 15m
           labels:
             severity: warning
           annotations:
             summary: High gateway p95 latency
-            description: Gateway p95 latency is above the warning upper bound of 1000ms for 15m.
+            description: Gateway p95 latency is above the warning upper bound of 1000ms for 15m with sustained traffic.
 
         - alert: IstioGatewayHighP95LatencyCritical
           expr: |
