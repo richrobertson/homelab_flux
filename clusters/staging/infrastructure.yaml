@@ -112,6 +112,12 @@ spec:
         - op: replace
           path: /spec/values/prometheusOperator/admissionWebhooks/certManager/enabled
           value: true
+        - op: add
+          path: /spec/values/alertmanager/config/route/routes/-
+          value:
+            match_re:
+              alertname: '^UniFiSecurityDailyEmail.*'
+            receiver: 'null'
       target:
         kind: HelmRelease
         name: kube-prometheus-stack
@@ -258,20 +264,11 @@ spec:
         name: alertmanager
     - patch: |
         - op: replace
-          path: /data/SMTP_HOST
-          value: mail.myrobertson.net
-        - op: replace
-          path: /data/SMTP_PORT
-          value: "587"
-        - op: replace
-          path: /data/SMTP_STARTTLS
-          value: "true"
-        - op: replace
-          path: /data/SMTP_AUTH_REQUIRED
-          value: "true"
+          path: /spec/suspend
+          value: true
       target:
-        kind: ConfigMap
-        name: unifi-security-reporter-config
+        kind: CronJob
+        name: unifi-security-daily-email
     - patch: |
         - op: replace
           path: /spec/eventMetadata/env
