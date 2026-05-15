@@ -258,6 +258,22 @@ spec:
         name: alertmanager
     - patch: |
         - op: replace
+          path: /data/SMTP_HOST
+          value: mail.myrobertson.net
+        - op: replace
+          path: /data/SMTP_PORT
+          value: "587"
+        - op: replace
+          path: /data/SMTP_STARTTLS
+          value: "true"
+        - op: replace
+          path: /data/SMTP_AUTH_REQUIRED
+          value: "true"
+      target:
+        kind: ConfigMap
+        name: unifi-security-reporter-config
+    - patch: |
+        - op: replace
           path: /spec/eventMetadata/env
           value: staging
       target:
