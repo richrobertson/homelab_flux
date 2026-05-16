@@ -4,7 +4,7 @@ metadata:
   name: promtail
 spec:
   interval: 5m
-  timeout: 1m
+  timeout: 5m
   dependsOn:
     - name: kube-prometheus-stack
   chart:
