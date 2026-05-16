@@ -3,6 +3,29 @@ kind: HelmRelease
 metadata:
   name: lidarr
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: lidarr
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: lidarr
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: lidarr
+                        resources:
+                          requests:
+                            memory: 512Mi
+                      - name: lidarr-exportarr
+                        resources:
+                          requests:
+                            memory: 128Mi
   values:
 
     lidarr:
@@ -17,4 +40,3 @@ spec:
         enabled: true
       downloads:
         enabled: true
-   

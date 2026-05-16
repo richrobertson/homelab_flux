@@ -3,8 +3,26 @@ kind: HelmRelease
 metadata:
   name: seerr
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: seerr
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: seerr
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: seerr
+                        resources:
+                          requests:
+                            memory: 512Mi
   values:
     workload:
       main:
         replicas: 1
-   

@@ -3,6 +3,29 @@ kind: HelmRelease
 metadata:
   name: prowlarr
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: prowlarr
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: prowlarr
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: prowlarr
+                        resources:
+                          requests:
+                            memory: 512Mi
+                      - name: prowlarr-exportarr
+                        resources:
+                          requests:
+                            memory: 128Mi
   values:
 
     prowlarr:
@@ -12,4 +35,3 @@ spec:
     workload:
       main:
         replicas: 1
-   

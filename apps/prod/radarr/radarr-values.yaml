@@ -3,6 +3,29 @@ kind: HelmRelease
 metadata:
   name: radarr
 spec:
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: radarr
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: radarr
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: radarr
+                        resources:
+                          requests:
+                            memory: 1Gi
+                      - name: radarr-exportarr
+                        resources:
+                          requests:
+                            memory: 128Mi
   values:
 
     radarr:
@@ -19,4 +42,3 @@ spec:
         enabled: true
       downloads:
         enabled: true
-   

@@ -16,6 +16,12 @@ spec:
         name: grafana-charts
       interval: 60m
   values:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
     # https://grafana.com/docs/loki/latest/send-data/promtail/installation/
     config:
     # publish data to loki

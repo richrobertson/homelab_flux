@@ -100,6 +100,12 @@ spec:
       enabled: false
     deploymentMode: SingleBinary
     singleBinary:
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2Gi
+        limits:
+          memory: 3Gi
       extraArgs:
         - -config.expand-env=true
       extraEnvFrom:

@@ -13,6 +13,26 @@ spec:
               - op: add
                 path: /spec/endpoints/0/scrapeTimeout
                 value: "30s"
+          - target:
+              kind: Deployment
+              name: sonarr
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: sonarr
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: sonarr
+                        resources:
+                          requests:
+                            memory: 1Gi
+                      - name: sonarr-exportarr
+                        resources:
+                          requests:
+                            memory: 128Mi
   values:
 
     sonarr:
