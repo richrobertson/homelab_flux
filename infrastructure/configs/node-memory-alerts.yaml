@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-memory-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/part-of: node
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: node-memory-alerts
+      rules:
+        - alert: NodeMemoryMajorPagesFaults
+          expr: >-
+            rate(node_vmstat_pgmajfault{job="node-exporter"}[5m]) > 500
+            and on (instance)
+            (
+              node_memory_MemAvailable_bytes{job="node-exporter"}
+              / node_memory_MemTotal_bytes{job="node-exporter"} < 0.10
+            )
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Memory major page faults with low available memory
+            description: >-
+              Memory major page faults are occurring at a high rate on
+              {{ $labels.instance }}, and available memory is below 10%.
+              Please check memory pressure on this node.

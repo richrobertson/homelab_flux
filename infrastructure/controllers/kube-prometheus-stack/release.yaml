@@ -26,6 +26,8 @@ spec:
   # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
   values:
     defaultRules:
+      disabled:
+        NodeMemoryMajorPagesFaults: true
       rules:
         # This generated group is too expensive for the current homelab
         # Prometheus cardinality and misses its 30s evaluation interval.

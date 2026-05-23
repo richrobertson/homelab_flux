@@ -19,6 +19,7 @@ resources:
   - istio-gateway-alerts.yaml
   - syncthing-alerts.yaml
   - powerdns-alerts.yaml
+  - node-memory-alerts.yaml
   - keycloak-observability.yaml
   - elasticsearch-observability.yaml
   - backup-observability-alerts.yaml
