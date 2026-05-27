@@ -14,7 +14,7 @@ data:
   SMTP_PORT: "25"
   SMTP_STARTTLS: "false"
   SMTP_AUTH_REQUIRED: "false"
-  EMAIL_FROM: "security-reporter@myrobertson.net"
+  EMAIL_FROM: "noreply@myrobertson.net"
   EMAIL_TO: "roy@myrobertson.com"
   EMAIL_SUBJECT_PREFIX: "[homelab security]"
   TREND_LOOKBACK_DAYS: "60"

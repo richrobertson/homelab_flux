@@ -133,7 +133,7 @@ spec:
         enabled: true
         type: LoadBalancer
         loadBalancerIP: 10.31.0.73
-        externalTrafficPolicy: Cluster
+        externalTrafficPolicy: Local
         annotations:
           metallb.io/allow-shared-ip: mailu-front
           metallb.universe.tf/allow-shared-ip: mailu-front
