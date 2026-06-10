@@ -83,7 +83,7 @@ jobs:
 
       - name: Build and push (if requested)
         if: steps.pushmode.outputs.should_push == 'true'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: docker-builds/plex-vaapi
           push: true
@@ -97,7 +97,7 @@ jobs:
 
       - name: Build only (dry-run)
         if: steps.pushmode.outputs.should_push != 'true'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: docker-builds/plex-vaapi
           push: false
