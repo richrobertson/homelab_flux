@@ -12,7 +12,7 @@ spec:
       database: nextcloud
       owner: nextcloud
   storage:
-    size: 20Gi
+    size: 60Gi
     storageClass: ceph-block
   walStorage:
     size: 20Gi
